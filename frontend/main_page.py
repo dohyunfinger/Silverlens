@@ -1,45 +1,28 @@
 import streamlit as st
-import os
-from PIL import Image
 
-# 1. 메인 타이틀 및 소개
-st.title("silverLense팀 프로젝트 시작!!!")
-st.write("코드가 성공적으로 작동 중입니다.")
+from backend.ai_service import generate_response
 
-st.markdown("---")
 
-# 2. 팀원 B 수집 데이터 영역 (기초 지식 / 센서 정보)
-st.header("1. 프로젝트 기초 지식 및 데이터")
+def render_main_page() -> None:
+    st.title("SilverLens AI 프로젝트")
+    st.caption("웹사이트 연결 테스트")
 
-# 텍스트 파일 불러오기 예시
-text_file_path = os.path.join("data", "textbook_texts", "sensor_info.txt")
-if os.path.exists(text_file_path):
-    with open(text_file_path, "r", encoding="utf-8") as f:
-        sensor_text = f.read()
-    st.subheader("교과서 및 기초 지식 내용")
-    st.write(sensor_text)
-else:
-    st.info("수집된 기초 지식 텍스트 파일(data/textbook_texts/sensor_info.txt)이 준비 중입니다.")
+    st.divider()
 
-# 3. 이미지 및 센서 핀맵 출력 영역
-st.header("2. 센서 핀맵 및 전자부품 사진")
+    user_input = st.text_area(
+        "내용을 입력하세요.",
+        placeholder="예: 테스트 문장을 입력하세요.",
+        height=150,
+    )
 
-col1, col2 = st.columns(2)
+    if st.button("실행", use_container_width=True):
+        try:
+            result = generate_response(user_input)
+            st.success("백엔드 연결 성공")
+            st.write(result)
 
-with col1:
-    st.subheader("센서 핀맵")
-    pinmap_path = os.path.join("assets", "pinmaps", "sensor_pinmap.png")
-    if os.path.exists(pinmap_path):
-        image = Image.open(pinmap_path)
-        st.image(image, caption="센서 핀맵 안내", use_column_width=True)
-    else:
-        st.info("핀맵 이미지 파일이 준비 중입니다.")
+        except ValueError as error:
+            st.warning(str(error))
 
-with col2:
-    st.subheader("테스트용 전자부품 사진")
-    component_path = os.path.join("assets", "components", "component_sample.jpg")
-    if os.path.exists(component_path):
-        image = Image.open(component_path)
-        st.image(image, caption="전자부품 이미지", use_column_width=True)
-    else:
-        st.info("전자부품 사진 파일이 준비 중입니다.")
+        except Exception:
+            st.error("처리 중 오류가 발생했습니다.")
