@@ -1,4 +1,17 @@
 import streamlit as st
 
-st.title("SilverLense팀 프로젝트 시작!!!")
-st.write("코드가 성공적으로 작동 중입니다.")
+from frontend.main_page import render_main_page
+
+
+def main() -> None:
+    st.set_page_config(
+        page_title="SilverLens",
+        page_icon="🤖",
+        layout="wide",
+    )
+
+    render_main_page()
+
+
+if __name__ == "__main__":
+    main()
