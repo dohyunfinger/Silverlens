@@ -5,7 +5,7 @@ from frontend.main_page import render_main_page
 
 def main() -> None:
     st.set_page_config(
-        page_title="SilverLens",
+        page_title="SilverLens 우승 예 동의합니다",
         page_icon="✅",
         layout="wide",
     )
