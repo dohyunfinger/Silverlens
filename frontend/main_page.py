@@ -15,7 +15,13 @@ from backend.stt_service import (
     STTServiceError,
     transcribe_audio,
 )
-
+from backend.tts_service import (
+    TTSServiceError,
+    generate_speech,
+)
+from frontend.components.backup_browser_tts import (
+    render_backup_browser_tts,
+)
 
 def get_gemini_api_key() -> str:
     """Streamlit secrets에서 Gemini API 키를 읽는다."""
@@ -252,3 +258,56 @@ def render_main_page() -> None:
     if last_answer:
         st.markdown("#### Gemini 답변")
         st.success(last_answer)
+
+        st.markdown("#### 답변 음성으로 듣기")
+
+        if st.button(
+            "Gemini 음성 만들기",
+            use_container_width=True,
+        ):
+            try:
+                api_key = get_gemini_api_key()
+
+                with st.spinner(
+                    "듣기 편한 음성을 만들고 있어요..."
+                ):
+                    audio_bytes = generate_speech(
+                        api_key=api_key,
+                        text=last_answer,
+                    )
+
+                st.session_state["answer_audio"] = audio_bytes
+                st.session_state["tts_fallback_required"] = False
+
+            except (
+                TTSServiceError,
+                ValueError,
+            ) as error:
+                st.session_state["tts_fallback_required"] = True
+
+                st.warning(
+                    "Gemini 음성 서비스를 현재 사용할 수 없습니다. "
+                    "무료 백업 음성 기능을 사용해 주세요."
+                )
+
+                st.caption(str(error))
+
+        answer_audio = st.session_state.get(
+            "answer_audio",
+        )
+
+        if answer_audio:
+            st.audio(
+                answer_audio,
+                format="audio/wav",
+            )
+
+        if st.session_state.get(
+            "tts_fallback_required",
+            False,
+        ):
+            # BACKUP: Gemini TTS 실패 시에만 표시
+            render_backup_browser_tts(
+                text=last_answer,
+                button_label="백업 음성으로 듣기",
+            )
