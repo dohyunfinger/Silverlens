@@ -25,7 +25,7 @@
 
 ---
 
-## 🛠️ 기술 아키텍처 (Architecture)
+## 🛠️ 기술 아키텍처 (Architecture) 수정필요
 
 ### 🔄 데이터 및 서비스 흐름 (Data & Service Flow)
 
