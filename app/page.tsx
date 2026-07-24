@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import {
   KeyboardEvent,
   TouchEvent,
@@ -15,6 +14,15 @@ type Language = "ko-KR" | "en-US" | "ja-JP";
 type Gender = "male" | "female";
 type SetupStep = "language" | "gender" | "age" | "complete";
 type RiskLevel = "danger" | "caution" | "good";
+type FoodCard = {
+  level: RiskLevel;
+  status: string;
+  ingredient: string;
+  emoji: string;
+  headline: string;
+  body: string;
+  detail: string;
+};
 
 const languages: Array<{
   id: Language;
@@ -29,43 +37,146 @@ const languages: Array<{
 
 const ageBands = Array.from({ length: 12 }, (_, index) => (index + 1) * 10);
 
-const cards: Array<{
-  level: RiskLevel;
-  status: string;
-  ingredient: string;
-  emoji: string;
-  headline: string;
-  body: string;
-  detail: string;
-}> = [
+const generalFoodCards: FoodCard[] = [
   {
-    level: "danger",
-    status: "위험해요",
-    ingredient: "새우",
-    emoji: "🦐",
-    headline: "알레르기 정보와 맞지 않아요",
-    body: "등록한 알레르기 정보에 새우가 포함되어 있어요.",
-    detail: "먹지 말고 다른 식재료로 바꾸는 것이 안전해요.",
-  },
-  {
-    level: "caution",
-    status: "주의해요",
-    ingredient: "부추",
-    emoji: "🌿",
-    headline: "이 식재료는 주의가 필요해요",
-    body: "한 번에 너무 많이 먹으면 속이 불편할 수 있어요.",
-    detail: "처음에는 소량만 드시고 몸 상태를 살펴보세요.",
+    level: "good",
+    status: "추천해요",
+    ingredient: "여러 색의 채소",
+    emoji: "🥦",
+    headline: "채소를 식사에 넉넉히 더해 보세요",
+    body: "브로콜리, 배추, 당근처럼 여러 색의 채소를 골고루 드세요.",
+    detail: "기름과 소금은 적게 쓰고, 씹기 편하게 익혀 드세요.",
   },
   {
     level: "good",
-    status: "좋아요",
-    ingredient: "사과",
-    emoji: "🍎",
-    headline: "적당량이면 좋은 선택이에요",
-    body: "깨끗이 씻어 한 번에 적당량만 드세요.",
-    detail: "개인의 건강 상태에 따라 섭취량은 달라질 수 있어요.",
+    status: "추천해요",
+    ingredient: "통곡물",
+    emoji: "🌾",
+    headline: "정제된 곡물 대신 통곡물을 골라 보세요",
+    body: "현미, 보리, 귀리 같은 통곡물을 식사에 조금씩 활용해 보세요.",
+    detail: "평소 소화 상태와 씹는 힘에 맞게 충분히 부드럽게 조리하세요.",
+  },
+  {
+    level: "good",
+    status: "추천해요",
+    ingredient: "단백질 식품",
+    emoji: "🍽️",
+    headline: "매 끼니 단백질 식품을 챙겨 보세요",
+    body: "콩, 두부, 달걀, 생선, 살코기 중 먹을 수 있는 식품을 고르세요.",
+    detail: "등록한 알레르기가 있는 식품은 반드시 제외해야 해요.",
   },
 ];
+
+const hypertensionCards: FoodCard[] = [
+  {
+    level: "good",
+    status: "추천해요",
+    ingredient: "싱겁게 조리한 채소",
+    emoji: "🥬",
+    headline: "채소는 싱겁게 조리해 드세요",
+    body: "국물, 소금, 간장 사용을 줄이고 채소를 다양하게 드세요.",
+    detail: "절임·가공식품보다 신선하거나 냉동한 채소가 나트륨을 줄이기 쉬워요.",
+  },
+  {
+    level: "good",
+    status: "추천해요",
+    ingredient: "통곡물",
+    emoji: "🌾",
+    headline: "흰 곡물 대신 통곡물을 활용해 보세요",
+    body: "현미, 보리, 귀리처럼 덜 정제된 곡물을 부드럽게 조리해 보세요.",
+    detail: "양은 평소 식사량과 의료진의 안내에 맞추세요.",
+  },
+];
+
+const diabetesCards: FoodCard[] = [
+  {
+    level: "good",
+    status: "추천해요",
+    ingredient: "전분이 적은 채소",
+    emoji: "🥗",
+    headline: "접시의 절반은 채소로 채워 보세요",
+    body: "브로콜리, 시금치, 배추 같은 전분이 적은 채소를 활용해 보세요.",
+    detail: "단맛이 강한 소스와 설탕은 적게 쓰는 편이 좋아요.",
+  },
+  {
+    level: "good",
+    status: "추천해요",
+    ingredient: "통곡물과 단백질",
+    emoji: "🍚",
+    headline: "곡물과 단백질은 나누어 담아 보세요",
+    body: "통곡물과 먹을 수 있는 단백질 식품을 한쪽씩 적당히 담으세요.",
+    detail: "식사량과 혈당 관리 방법은 담당 의료진의 안내를 우선하세요.",
+  },
+];
+
+const kidneySafetyCards: FoodCard[] = [
+  {
+    level: "caution",
+    status: "먼저 확인해요",
+    ingredient: "개인 맞춤 식단",
+    emoji: "🩺",
+    headline: "신장 질환은 검사 결과에 따라 식단이 달라져요",
+    body: "칼륨, 인, 단백질, 수분 제한 여부를 이 화면에서 임의로 정할 수 없어요.",
+    detail: "담당 의료진이나 임상영양사가 정한 식단을 먼저 확인해 주세요.",
+  },
+  {
+    level: "good",
+    status: "도와드릴게요",
+    ingredient: "식사 기록",
+    emoji: "📝",
+    headline: "평소 드시는 음식을 기록해 두세요",
+    body: "음식 이름과 양을 적어 두면 의료진에게 더 정확히 설명할 수 있어요.",
+    detail: "사진을 찍어 식사 기록으로 남기는 방법도 좋아요.",
+  },
+];
+
+const normalize = (value: string) => value.trim().toLocaleLowerCase();
+
+function includesAny(values: string[], keywords: string[]) {
+  return values.some((value) => {
+    const normalized = normalize(value);
+    return keywords.some((keyword) => normalized.includes(keyword));
+  });
+}
+
+function conflictsWithAllergy(card: FoodCard, allergies: string[]) {
+  const cardText = normalize(`${card.ingredient} ${card.headline} ${card.body} ${card.detail}`);
+  return allergies.some((allergy) => {
+    const normalized = normalize(allergy);
+    return normalized.length > 0 && cardText.includes(normalized);
+  });
+}
+
+function buildRecommendationCards(allergies: string[], conditions: string[]): FoodCard[] {
+  if (includesAny(conditions, ["신장", "콩팥", "투석"])) {
+    return kidneySafetyCards;
+  }
+
+  const candidates: FoodCard[] = [];
+  if (includesAny(conditions, ["고혈압", "혈압"])) candidates.push(...hypertensionCards);
+  if (includesAny(conditions, ["당뇨", "혈당"])) candidates.push(...diabetesCards);
+  candidates.push(...generalFoodCards);
+
+  const unique = candidates.filter(
+    (card, index, items) =>
+      items.findIndex((item) => item.ingredient === card.ingredient) === index,
+  );
+  const safeCards = unique.filter((card) => !conflictsWithAllergy(card, allergies));
+
+  if (safeCards.length > 0) return safeCards.slice(0, 5);
+
+  return [
+    {
+      level: "caution",
+      status: "확인이 필요해요",
+      ingredient: "알레르기 대체 식품",
+      emoji: "🛡️",
+      headline: "등록한 알레르기와 겹치지 않는 식품을 골라야 해요",
+      body: "현재 추천 후보가 등록한 알레르기 정보와 겹쳐 자동으로 제외했어요.",
+      detail: "의료진이나 임상영양사에게 안전한 대체 식품을 확인해 주세요.",
+    },
+  ];
+}
 
 const promptCopy: Record<Language, Record<SetupStep, string>> = {
   "ko-KR": {
@@ -138,7 +249,7 @@ export default function Home() {
   const [conditions, setConditions] = useState<string[]>([]);
   const [showAllergyInput, setShowAllergyInput] = useState(false);
   const [showConditionInput, setShowConditionInput] = useState(false);
-  const [cardIndex, setCardIndex] = useState(1);
+  const [cardIndex, setCardIndex] = useState(0);
   const [recordingContext, setRecordingContext] = useState<"setup" | "chat" | null>(null);
   const [recordedUrl, setRecordedUrl] = useState<string | null>(null);
   const [recordingError, setRecordingError] = useState("");
@@ -280,7 +391,12 @@ export default function Home() {
     }
   };
 
-  const card = cards[cardIndex];
+  const cards = useMemo(
+    () => buildRecommendationCards(allergies, conditions),
+    [allergies, conditions],
+  );
+  const visibleCardIndex = Math.min(cardIndex, cards.length - 1);
+  const card = cards[visibleCardIndex];
 
   const cardTts = useMemo(
     () => `${card.status}. ${card.ingredient}. ${card.headline}. ${card.body} ${card.detail}`,
@@ -289,7 +405,7 @@ export default function Home() {
 
   const moveCard = useCallback(
     (direction: -1 | 1) => {
-      const next = (cardIndex + direction + cards.length) % cards.length;
+      const next = (visibleCardIndex + direction + cards.length) % cards.length;
       setCardIndex(next);
       const nextCard = cards[next];
       speak(
@@ -297,7 +413,7 @@ export default function Home() {
         "ko-KR",
       );
     },
-    [cardIndex, speak],
+    [cards, speak, visibleCardIndex],
   );
 
   const handleTouchStart = (event: TouchEvent) => {
@@ -318,8 +434,17 @@ export default function Home() {
       announceNext();
       return;
     }
+    setCardIndex(0);
     setScreen("chat");
-    window.setTimeout(() => speak(cardTts, "ko-KR"), 180);
+    const firstCard = cards[0];
+    window.setTimeout(
+      () =>
+        speak(
+          `${firstCard.status}. ${firstCard.ingredient}. ${firstCard.headline}. ${firstCard.body} ${firstCard.detail}`,
+          "ko-KR",
+        ),
+      180,
+    );
   };
 
   if (screen === "chat") {
@@ -340,16 +465,17 @@ export default function Home() {
 
           <h1>오늘은 무엇을 도와드릴까요?</h1>
 
-          <div className="conversation-stage">
-            <div className="grandson-panel">
-              <Image
-                src="/grandson.png"
-                alt="다정하게 이야기를 듣는 어린 손자 캐릭터"
-                width={1024}
-                height={1536}
-                priority
-              />
-              <div className="speech-bubble">할머니, 할아버지 말씀을 잘 듣고 있어요.</div>
+          <div className="recommendation-stage">
+            <div className="recommendation-summary">
+              <span className="waiting-chip">식재료 정보 대기 중</span>
+              <div>
+                <h2>먼저 드시기 좋은 선택을 알려드릴게요</h2>
+                <p>
+                  {conditions.length > 0
+                    ? `등록한 질병 정보(${conditions.join(", ")})와 알레르기를 반영한 일반 식생활 안내예요.`
+                    : "등록한 알레르기를 제외하고, 균형 잡힌 식사에 도움이 되는 일반 식품을 보여드려요."}
+                </p>
+              </div>
             </div>
 
             <div
@@ -365,7 +491,7 @@ export default function Home() {
                 <div className="ingredient-row">
                   <span className="ingredient-emoji" aria-hidden="true">{card.emoji}</span>
                   <div>
-                    <span className="eyebrow">식재료</span>
+                    <span className="eyebrow">추천 안내</span>
                     <strong>{card.ingredient}</strong>
                   </div>
                 </div>
@@ -377,11 +503,11 @@ export default function Home() {
                 ›
               </button>
               <div className="carousel-footer">
-                <div className="dots" aria-label={`${cardIndex + 1}번째 정보`}>
+                <div className="dots" aria-label={`${visibleCardIndex + 1}번째 정보`}>
                   {cards.map((item, index) => (
                     <button
-                      key={item.status}
-                      className={index === cardIndex ? "dot active" : "dot"}
+                      key={`${item.status}-${item.ingredient}`}
+                      className={index === visibleCardIndex ? "dot active" : "dot"}
                       onClick={() => {
                         setCardIndex(index);
                         const selected = cards[index];
@@ -398,7 +524,7 @@ export default function Home() {
 
           <div className="answer-audio">
             <button onClick={() => speak(cardTts, "ko-KR")}>🔊 답변 다시 듣기</button>
-            <span>이전 카드로 돌아가면 해당 안내를 다시 들려드려요.</span>
+            <span>카드를 옮기면 선택한 추천 내용을 자동으로 다시 들려드려요.</span>
           </div>
 
           <div className="chat-actions">
@@ -431,7 +557,15 @@ export default function Home() {
             </div>
           )}
           {recordingError && <p className="error-message" role="alert">{recordingError}</p>}
-          <p className="medical-note">🛡 건강 정보는 참고용이며, 증상이 있으면 의료진과 상담하세요.</p>
+          <p className="medical-note">
+            🛡 이 내용은 일반 식생활 참고용이며 진단·치료를 대신하지 않아요. 처방받은 식단이 있으면 그 안내를 우선하세요.
+            <span className="source-links">
+              기준 자료:
+              <a href="https://www.nia.nih.gov/health/healthy-eating-nutrition-and-diet/healthy-eating-you-age-know-your-food-groups" target="_blank" rel="noreferrer">미국 국립노화연구소</a>
+              <a href="https://www.cdc.gov/diabetes/healthy-eating/diabetes-meal-planning.html" target="_blank" rel="noreferrer">미국 CDC</a>
+              <a href="https://www.nhlbi.nih.gov/health/dash-eating-plan" target="_blank" rel="noreferrer">미국 NHLBI</a>
+            </span>
+          </p>
         </section>
       </main>
     );
