@@ -1,108 +1,96 @@
-# vinext-starter
+# SilverLens
 
-A clean full-stack starter running on
-[vinext](https://github.com/cloudflare/vinext), with optional Cloudflare D1 and
-Drizzle support.
+시니어가 음성·사진·글자로 식재료 정보를 질문하는 웹 서비스입니다.
 
-## Prerequisites
+## API 키 입력 위치
 
-- Node.js `>=22.13.0`
-- Linux with `flock`, `curl`, and GNU `timeout`
+프로젝트 최상위 폴더에 `.env.local` 파일을 만들고 아래처럼 입력합니다.
 
-## Sites Lifecycle
-
-The Sites lifecycle CLI runs the locked dependency install before returning this checkout. Edit the source under `app/`, then checkpoint when a coherent milestone is ready to inspect or share. The remote Sites builder runs `npm run build` against the pushed commit. Do not repeat install or build as a normal pre-checkpoint step.
-
-This starter does not use `wrangler.jsonc`.
-
-`install:ci` is intentionally a single, non-retrying `npm ci`. It refuses a concurrent install for the same project, consumes a matching image-seeded npm cache with `--prefer-offline` while retaining registry fallback for a missing cache object, otherwise downloads and verifies the complete vinext tarball recorded in `package-lock.json`, limits npm to one socket, and terminates a stalled install. `build` applies a short timeout and then validates the Sites artifact. These helpers target Linux and use GNU `timeout`; they are not native macOS scripts.
-
-Scripts that need writable project-scoped home, npm, XDG, and temporary paths use `scripts/sites-env.sh`. The `dev` and `start` scripts honor the caller's runtime environment and keep Wrangler logs inside the checkout. The generated `.sites-runtime/` directory is disposable and ignored by Git.
-
-## Included Shape
-
-- edit site code under `app/`
-- `app/chatgpt-auth.ts` provides optional dispatch-owned ChatGPT sign-in helpers
-- `.openai/hosting.json` declares optional Sites D1 and R2 bindings
-- `vite.config.ts` simulates declared bindings for local development
-- `db/index.ts` reads the D1 binding from the Cloudflare Worker environment
-- `db/schema.ts` starts intentionally empty
-- `examples/d1/` contains an optional D1 example surface
-- `drizzle.config.ts` supports local migration generation when needed
-
-## Workspace Auth Headers
-
-OpenAI workspace sites can read the current user's email from
-`oai-authenticated-user-email`.
-
-SIWC-authenticated workspace sites may also receive
-`oai-authenticated-user-full-name` when the user's SIWC profile has a non-empty
-`name` claim. The full-name value is percent-encoded UTF-8 and is accompanied by
-`oai-authenticated-user-full-name-encoding: percent-encoded-utf-8`.
-
-Treat the full name as optional and fall back to email when it is absent:
-
-```tsx
-import { headers } from "next/headers";
-
-export default async function Home() {
-  const requestHeaders = await headers();
-  const email = requestHeaders.get("oai-authenticated-user-email");
-  const encodedFullName = requestHeaders.get("oai-authenticated-user-full-name");
-  const fullName =
-    encodedFullName &&
-    requestHeaders.get("oai-authenticated-user-full-name-encoding") ===
-      "percent-encoded-utf-8"
-      ? decodeURIComponent(encodedFullName)
-      : null;
-
-  const displayName = fullName ?? email;
-  // ...
-}
+```env
+GEMINI_API_KEY=Google_AI_Studio에서_발급한_키
+GEMINI_TEXT_MODEL=gemini-2.5-flash
+GEMINI_TTS_MODEL=gemini-2.5-flash-preview-tts
+NEXT_PUBLIC_STT_API_URL=http://127.0.0.1:8000
 ```
 
-## Optional Dispatch-Owned ChatGPT Sign-In
+- 파일명: `.env.local`
+- 전체 경로: `SilverLens/.env.local`
+- 키 변수명: `GEMINI_API_KEY`
+- `.env.local`은 `.gitignore`에 포함되어 GitHub에 업로드되지 않습니다.
 
-Import the ready-to-use helpers from `app/chatgpt-auth.ts` when the site needs
-optional or required ChatGPT sign-in:
+## 전체 구조
 
-- Use `getChatGPTUser()` for optional signed-in UI.
-- Use `requireChatGPTUser(returnTo)` for server-rendered pages that should send
-  anonymous visitors through Sign in with ChatGPT.
-- Use `chatGPTSignInPath(returnTo)` and `chatGPTSignOutPath(returnTo)` for
-  browser links or actions.
-- Pass a same-origin relative `returnTo` path for the destination after sign-in
-  or sign-out. The helper validates and safely encodes it.
-- Mark protected pages with `export const dynamic = "force-dynamic"` because
-  they depend on per-request identity headers.
+```text
+SilverLens/
+├── .env.example
+├── .env.local                  # 직접 생성: 실제 API 키
+├── .gitignore
+├── app/                        # Next.js 진입점과 서버 API
+│   ├── api/
+│   │   ├── chat/route.ts       # Gemini 대화 API
+│   │   └── tts/route.ts        # Gemini 2.5 Flash TTS API
+│   ├── globals.css
+│   ├── layout.tsx
+│   └── page.tsx
+├── frontend/
+│   └── SilverLensApp.tsx       # 설정·대화·서비스·팀원 화면
+├── backend/
+│   ├── config/env.ts           # 환경변수 검사
+│   ├── data/loadData.ts        # JSON 자료 메모리 캐시
+│   ├── services/
+│   │   ├── geminiService.ts
+│   │   └── ttsService.ts
+│   └── local_stt/
+│       ├── main.py             # faster-whisper 로컬 서버
+│       └── requirements.txt
+├── data/
+│   ├── dialect_terms.json
+│   ├── food_aliases.json
+│   └── safety_rules.json
+├── package.json
+└── tsconfig.json
+```
 
-Dispatch owns `/signin-with-chatgpt`, `/signout-with-chatgpt`, `/callback`, the
-OAuth cookies, and identity header injection. Do not implement app routes for
-those reserved paths. Routes that do not import and call the helper remain
-anonymous-compatible.
+`data/*.json`은 `backend/data/loadData.ts`가 최초 요청 때 읽고 메모리에 보관합니다.
 
-SIWC establishes identity only; it does not prove workspace membership. Use the
-Sites hosting platform's access policy controls for workspace-wide restrictions,
-or enforce explicit server-side membership or allowlist checks.
+## VS Code 실행
 
-Use SIWC for account pages, user-specific dashboards, saved records, and write
-actions tied to the current ChatGPT user. Leave public content anonymous.
+Node.js 웹 서버:
 
-## Diagnostic Commands
+```bash
+npm install
+npm run dev
+```
 
-- `npm run install:ci`: perform the one bounded lockfile install
-- `npm run dev`: start the Vite/Vinext development server
-- `npm run build`: build and validate the deployable Sites artifact
-- `npm run start`: start the built Vinext application
-- `npm test`: build, validate, and verify the rendered development-preview metadata
-- `npm run validate:artifact`: recheck an existing artifact's manifest and ESM `default.fetch` export
-- `npm run db:generate`: generate Drizzle migrations after schema changes
+브라우저에서 `http://localhost:3000`을 엽니다.
 
-Use build and validation commands for targeted diagnosis after a remote failure, not as part of the normal checkpoint path.
+faster-whisper 로컬 STT 서버는 새 터미널에서 실행합니다.
 
-The timeout defaults can be overridden for a controlled canary with `SITES_INSTALL_TIMEOUT`, `SITES_INSTALL_KILL_AFTER`, `SITES_BUILD_TIMEOUT`, and `SITES_BUILD_KILL_AFTER`. A timeout fails the command; the helpers never retry an unchanged install or build.
+```bash
+python -m venv .venv
+```
 
-## Learn More
+Windows:
 
-- [vinext Documentation](https://github.com/cloudflare/vinext)
-- [Drizzle D1 Guide](https://orm.drizzle.team/docs/get-started/d1-new)
+```powershell
+.\.venv\Scripts\Activate.ps1
+pip install -r backend/local_stt/requirements.txt
+uvicorn backend.local_stt.main:app --reload --port 8000
+```
+
+macOS/Linux:
+
+```bash
+source .venv/bin/activate
+pip install -r backend/local_stt/requirements.txt
+uvicorn backend.local_stt.main:app --reload --port 8000
+```
+
+## AI 구성
+
+- 언어 모델: Gemini API
+- 음성 인식: faster-whisper 로컬 서버
+- 음성 안내: Gemini 2.5 Flash TTS
+- 음성 안내 예비 수단: Web Speech API 기반 브라우저 TTS
+
+Gemini TTS 요청이 실패하거나 API 키가 없으면 브라우저 TTS로 자동 전환합니다.
