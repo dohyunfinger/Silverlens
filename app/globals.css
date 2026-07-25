@@ -998,7 +998,7 @@ textarea:focus-visible {
 
 .chat-actions {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(2, minmax(0, 1fr));
   gap: 14px;
   margin-top: 14px;
 }
@@ -1031,12 +1031,6 @@ textarea:focus-visible {
   color: var(--green-900);
   border-color: #9bbca8;
   background: #f6fbf7;
-}
-
-.action-button.keyboard {
-  color: #214c78;
-  border-color: #a6c7e9;
-  background: #f1f7fd;
 }
 
 .action-button.recording {

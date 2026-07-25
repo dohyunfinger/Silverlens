@@ -278,6 +278,10 @@ export default function SilverLensApp() {
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const narrationAudioRef = useRef<HTMLAudioElement | null>(null);
+  const narrationUrlRef = useRef<string | null>(null);
+  const narrationRequestRef = useRef<AbortController | null>(null);
+  const narrationSequenceRef = useRef(0);
+  const announceTimerRef = useRef<number | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const initialTtsPlayed = useRef(false);
   const touchStartX = useRef<number | null>(null);
@@ -285,54 +289,121 @@ export default function SilverLensApp() {
   const nextStep = getNextStep(language, gender, ageConfirmed);
   const activeLanguage = language ?? "ko-KR";
 
-  const speak = useCallback(
-    async (text: string, lang: Language = activeLanguage) => {
+  const stopNarration = useCallback(() => {
+    narrationSequenceRef.current += 1;
+
+    if (announceTimerRef.current !== null) {
+      window.clearTimeout(announceTimerRef.current);
+      announceTimerRef.current = null;
+    }
+
+    narrationRequestRef.current?.abort();
+    narrationRequestRef.current = null;
+
+    const audio = narrationAudioRef.current;
+    if (audio) {
+      audio.pause();
+      audio.currentTime = 0;
+      narrationAudioRef.current = null;
+    }
+
+    if (narrationUrlRef.current) {
+      URL.revokeObjectURL(narrationUrlRef.current);
+      narrationUrlRef.current = null;
+    }
+
+    if (typeof window !== "undefined" && "speechSynthesis" in window) {
+      window.speechSynthesis.cancel();
+    }
+  }, []);
+
+  const speakWithBrowser = useCallback(
+    (text: string, lang: Language = activeLanguage) => {
       if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
-      const browserFallback = () => {
-        window.speechSynthesis.cancel();
-        const utterance = new SpeechSynthesisUtterance(text);
-        utterance.lang = lang;
-        utterance.rate = 0.82;
-        utterance.pitch = 1.02;
-        window.speechSynthesis.speak(utterance);
-      };
+      stopNarration();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = lang;
+      utterance.rate = 0.82;
+      utterance.pitch = 1.02;
+      window.speechSynthesis.speak(utterance);
+    },
+    [activeLanguage, stopNarration],
+  );
+
+  const speakGeminiAnswer = useCallback(
+    async (text: string, lang: Language = activeLanguage) => {
+      if (typeof window === "undefined") return;
+
+      stopNarration();
+      const sequence = narrationSequenceRef.current;
+      const controller = new AbortController();
+      narrationRequestRef.current = controller;
+
       try {
-        narrationAudioRef.current?.pause();
         const response = await fetch("/api/tts", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ text }),
+          signal: controller.signal,
         });
         if (!response.ok) throw new Error("Gemini TTS를 사용할 수 없습니다.");
+
         const blob = await response.blob();
+        if (sequence !== narrationSequenceRef.current) return;
+
         const url = URL.createObjectURL(blob);
         const audio = new Audio(url);
+        narrationUrlRef.current = url;
         narrationAudioRef.current = audio;
-        audio.addEventListener("ended", () => URL.revokeObjectURL(url), { once: true });
+        narrationRequestRef.current = null;
+
+        audio.addEventListener(
+          "ended",
+          () => {
+            if (narrationAudioRef.current === audio) {
+              narrationAudioRef.current = null;
+            }
+            if (narrationUrlRef.current === url) {
+              URL.revokeObjectURL(url);
+              narrationUrlRef.current = null;
+            }
+          },
+          { once: true },
+        );
         await audio.play();
       } catch {
-        browserFallback();
+        if (controller.signal.aborted || sequence !== narrationSequenceRef.current) return;
+        narrationRequestRef.current = null;
+        speakWithBrowser(text, lang);
       }
     },
-    [activeLanguage],
+    [activeLanguage, speakWithBrowser, stopNarration],
+  );
+
+  const queueBrowserNarration = useCallback(
+    (text: string, lang: Language, delay: number) => {
+      stopNarration();
+      announceTimerRef.current = window.setTimeout(() => {
+        announceTimerRef.current = null;
+        speakWithBrowser(text, lang);
+      }, delay);
+    },
+    [speakWithBrowser, stopNarration],
   );
 
   useEffect(() => {
     if (initialTtsPlayed.current) return;
     initialTtsPlayed.current = true;
-    const timer = window.setTimeout(() => speak(promptCopy["ko-KR"].language, "ko-KR"), 450);
-    return () => window.clearTimeout(timer);
-  }, [speak]);
+    queueBrowserNarration(promptCopy["ko-KR"].language, "ko-KR", 450);
+  }, [queueBrowserNarration]);
 
   useEffect(() => {
     return () => {
       if (recordedUrl) URL.revokeObjectURL(recordedUrl);
       streamRef.current?.getTracks().forEach((track) => track.stop());
-      if (typeof window !== "undefined" && "speechSynthesis" in window) {
-        window.speechSynthesis.cancel();
-      }
+      stopNarration();
     };
-  }, [recordedUrl]);
+  }, [recordedUrl, stopNarration]);
 
   const announceNext = useCallback(
     (
@@ -342,9 +413,9 @@ export default function SilverLensApp() {
     ) => {
       const step = getNextStep(nextLanguage, nextGender, nextAgeConfirmed);
       const lang = nextLanguage ?? "ko-KR";
-      window.setTimeout(() => speak(promptCopy[lang][step], lang), 80);
+      queueBrowserNarration(promptCopy[lang][step], lang, 80);
     },
-    [ageConfirmed, gender, language, speak],
+    [ageConfirmed, gender, language, queueBrowserNarration],
   );
 
   const toggleLanguage = (id: Language) => {
@@ -424,7 +495,7 @@ export default function SilverLensApp() {
         streamRef.current = null;
         mediaRecorderRef.current = null;
         setRecordingContext(null);
-        speak("녹음이 저장되었습니다.", "ko-KR");
+        speakWithBrowser("녹음이 저장되었습니다.", "ko-KR");
         const sttUrl = process.env.NEXT_PUBLIC_STT_API_URL;
         if (sttUrl) {
           try {
@@ -470,12 +541,12 @@ export default function SilverLensApp() {
       const next = (visibleCardIndex + direction + cards.length) % cards.length;
       setCardIndex(next);
       const nextCard = cards[next];
-      speak(
+      speakWithBrowser(
         `${nextCard.status}. ${nextCard.ingredient}. ${nextCard.headline}. ${nextCard.body} ${nextCard.detail}`,
         "ko-KR",
       );
     },
-    [cards, speak, visibleCardIndex],
+    [cards, speakWithBrowser, visibleCardIndex],
   );
 
   const handleTouchStart = (event: TouchEvent) => {
@@ -501,7 +572,7 @@ export default function SilverLensApp() {
     const firstCard = cards[0];
     window.setTimeout(
       () =>
-        speak(
+        speakWithBrowser(
           `${firstCard.status}. ${firstCard.ingredient}. ${firstCard.headline}. ${firstCard.body} ${firstCard.detail}`,
           "ko-KR",
         ),
@@ -533,7 +604,7 @@ export default function SilverLensApp() {
       }
       setAiAnswer(payload.answer);
       setChatInput("");
-      speak(payload.answer.replace(/[#*_`>-]/g, " "), activeLanguage);
+      speakGeminiAnswer(payload.answer.replace(/[#*_`>-]/g, " "), activeLanguage);
     } catch (error) {
       setChatError(error instanceof Error ? error.message : "답변을 불러오지 못했습니다.");
     } finally {
@@ -620,7 +691,10 @@ export default function SilverLensApp() {
                       onClick={() => {
                         setCardIndex(index);
                         const selected = cards[index];
-                        speak(`${selected.status}. ${selected.ingredient}. ${selected.headline}. ${selected.body}`, "ko-KR");
+                        speakWithBrowser(
+                          `${selected.status}. ${selected.ingredient}. ${selected.headline}. ${selected.body}`,
+                          "ko-KR",
+                        );
                       }}
                       aria-label={`${index + 1}번째 카드`}
                     />
@@ -632,8 +706,8 @@ export default function SilverLensApp() {
           </div>
 
           <div className="answer-audio">
-            <button onClick={() => speak(cardTts, "ko-KR")}>🔊 답변 다시 듣기</button>
-            <span>카드를 옮기면 선택한 추천 내용을 자동으로 다시 들려드려요.</span>
+            <button onClick={() => speakWithBrowser(cardTts, "ko-KR")}>🔊 추천 다시 듣기</button>
+            <span>추천 안내는 브라우저 음성으로 한 번씩 차례대로 재생돼요.</span>
           </div>
 
           <section className="text-chat-panel">
@@ -655,7 +729,11 @@ export default function SilverLensApp() {
               <article className="ai-answer" aria-live="polite">
                 <h2>AI 답변</h2>
                 <ReactMarkdown>{aiAnswer}</ReactMarkdown>
-                <button onClick={() => speak(aiAnswer.replace(/[#*_`>-]/g, " "), activeLanguage)}>
+                <button
+                  onClick={() =>
+                    speakGeminiAnswer(aiAnswer.replace(/[#*_`>-]/g, " "), activeLanguage)
+                  }
+                >
                   🔊 답변 다시 듣기
                 </button>
               </article>
@@ -675,11 +753,6 @@ export default function SilverLensApp() {
               <span>📷</span>
               <strong>사진 찍기</strong>
               <small>식재료를 보여주세요</small>
-            </button>
-            <button className="action-button keyboard">
-              <span>⌨️</span>
-              <strong>글자로 입력</strong>
-              <small>큰 글씨 입력창 열기</small>
             </button>
           </div>
 
