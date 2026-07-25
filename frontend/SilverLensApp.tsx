@@ -25,6 +25,117 @@ type FoodCard = {
   body: string;
   detail: string;
 };
+type ChatTurn = {
+  id: string;
+  question: string;
+  answer: string;
+  pages: string[];
+};
+type AnswerCard = {
+  id: string;
+  question: string;
+  answer: string;
+  content: string;
+  turnIndex: number;
+  pageIndex: number;
+  pageCount: number;
+};
+
+function plainTextFromMarkdown(markdown: string) {
+  return markdown
+    .replace(/!\[([^\]]*)\]\([^)]+\)/g, "$1")
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, "$1")
+    .replace(/[`*_>#~|-]/g, " ")
+    .replace(/\s+/g, " ")
+    .trim();
+}
+
+function splitByLength(text: string, maxChars: number) {
+  const words = text.split(/\s+/).filter(Boolean);
+  const chunks: string[] = [];
+  let current = "";
+
+  for (const word of words) {
+    if (word.length > maxChars) {
+      if (current) chunks.push(current);
+      for (let index = 0; index < word.length; index += maxChars) {
+        chunks.push(word.slice(index, index + maxChars));
+      }
+      current = "";
+      continue;
+    }
+
+    const candidate = current ? `${current} ${word}` : word;
+    if (candidate.length > maxChars && current) {
+      chunks.push(current);
+      current = word;
+    } else {
+      current = candidate;
+    }
+  }
+
+  if (current) chunks.push(current);
+  return chunks;
+}
+
+function splitNarrationText(text: string, maxChars = 180) {
+  const normalized = text.replace(/\s+/g, " ").trim();
+  if (!normalized) return [];
+
+  const sentences =
+    normalized.match(/[^.!?。！？]+(?:[.!?。！？]+|$)/g)?.map((item) => item.trim()) ??
+    [normalized];
+  const chunks: string[] = [];
+  let current = "";
+
+  for (const sentence of sentences) {
+    for (const part of splitByLength(sentence, maxChars)) {
+      const candidate = current ? `${current} ${part}` : part;
+      if (candidate.length > maxChars && current) {
+        chunks.push(current);
+        current = part;
+      } else {
+        current = candidate;
+      }
+    }
+  }
+
+  if (current) chunks.push(current);
+  return chunks;
+}
+
+function splitAnswerIntoPages(markdown: string, maxChars = 300) {
+  const blocks = markdown
+    .trim()
+    .split(/\n{2,}/)
+    .map((block) => block.trim())
+    .filter(Boolean);
+  const pages: string[] = [];
+  let current = "";
+
+  const appendBlock = (block: string) => {
+    const candidate = current ? `${current}\n\n${block}` : block;
+    if (candidate.length <= maxChars) {
+      current = candidate;
+      return;
+    }
+    if (current) pages.push(current);
+    current = block;
+  };
+
+  for (const block of blocks) {
+    if (block.length <= maxChars) {
+      appendBlock(block);
+      continue;
+    }
+
+    const plainParts = splitNarrationText(block, maxChars);
+    for (const part of plainParts) appendBlock(part);
+  }
+
+  if (current) pages.push(current);
+  return pages.length > 0 ? pages : [markdown.trim()];
+}
 
 const languages: Array<{
   id: Language;
@@ -271,9 +382,11 @@ export default function SilverLensApp() {
   const [recordedUrl, setRecordedUrl] = useState<string | null>(null);
   const [recordingError, setRecordingError] = useState("");
   const [chatInput, setChatInput] = useState("");
-  const [aiAnswer, setAiAnswer] = useState("");
+  const [chatTurns, setChatTurns] = useState<ChatTurn[]>([]);
+  const [answerCardIndex, setAnswerCardIndex] = useState(0);
   const [chatError, setChatError] = useState("");
   const [isLoadingAnswer, setIsLoadingAnswer] = useState(false);
+  const [isNarrating, setIsNarrating] = useState(false);
   const [transcript, setTranscript] = useState("");
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
@@ -285,12 +398,14 @@ export default function SilverLensApp() {
   const chunksRef = useRef<Blob[]>([]);
   const initialTtsPlayed = useRef(false);
   const touchStartX = useRef<number | null>(null);
+  const answerTouchStartX = useRef<number | null>(null);
 
   const nextStep = getNextStep(language, gender, ageConfirmed);
   const activeLanguage = language ?? "ko-KR";
 
   const stopNarration = useCallback(() => {
     narrationSequenceRef.current += 1;
+    setIsNarrating(false);
 
     if (announceTimerRef.current !== null) {
       window.clearTimeout(announceTimerRef.current);
@@ -321,11 +436,35 @@ export default function SilverLensApp() {
     (text: string, lang: Language = activeLanguage) => {
       if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
       stopNarration();
-      const utterance = new SpeechSynthesisUtterance(text);
-      utterance.lang = lang;
-      utterance.rate = 0.82;
-      utterance.pitch = 1.02;
-      window.speechSynthesis.speak(utterance);
+      const chunks = splitNarrationText(text);
+      if (chunks.length === 0) return;
+
+      const sequence = narrationSequenceRef.current;
+      setIsNarrating(true);
+
+      const speakChunk = (index: number) => {
+        if (sequence !== narrationSequenceRef.current) return;
+        if (index >= chunks.length) {
+          setIsNarrating(false);
+          return;
+        }
+
+        const utterance = new SpeechSynthesisUtterance(chunks[index]);
+        utterance.lang = lang;
+        utterance.rate = 0.82;
+        utterance.pitch = 1.02;
+        utterance.addEventListener("end", () => speakChunk(index + 1), { once: true });
+        utterance.addEventListener(
+          "error",
+          () => {
+            if (sequence === narrationSequenceRef.current) setIsNarrating(false);
+          },
+          { once: true },
+        );
+        window.speechSynthesis.speak(utterance);
+      };
+
+      speakChunk(0);
     },
     [activeLanguage, stopNarration],
   );
@@ -338,6 +477,7 @@ export default function SilverLensApp() {
       const sequence = narrationSequenceRef.current;
       const controller = new AbortController();
       narrationRequestRef.current = controller;
+      setIsNarrating(true);
 
       try {
         const response = await fetch("/api/tts", {
@@ -367,6 +507,19 @@ export default function SilverLensApp() {
               URL.revokeObjectURL(url);
               narrationUrlRef.current = null;
             }
+            setIsNarrating(false);
+          },
+          { once: true },
+        );
+        audio.addEventListener(
+          "error",
+          () => {
+            if (narrationAudioRef.current === audio) narrationAudioRef.current = null;
+            if (narrationUrlRef.current === url) {
+              URL.revokeObjectURL(url);
+              narrationUrlRef.current = null;
+            }
+            setIsNarrating(false);
           },
           { once: true },
         );
@@ -580,6 +733,51 @@ export default function SilverLensApp() {
     );
   };
 
+  const answerCards = useMemo<AnswerCard[]>(
+    () =>
+      chatTurns.flatMap((turn, turnIndex) =>
+        turn.pages.map((content, pageIndex) => ({
+          id: `${turn.id}-${pageIndex}`,
+          question: turn.question,
+          answer: turn.answer,
+          content,
+          turnIndex,
+          pageIndex,
+          pageCount: turn.pages.length,
+        })),
+      ),
+    [chatTurns],
+  );
+  const visibleAnswerCardIndex = Math.min(
+    answerCardIndex,
+    Math.max(0, answerCards.length - 1),
+  );
+  const activeAnswerCard = answerCards[visibleAnswerCardIndex];
+
+  const moveAnswerCard = useCallback(
+    (direction: -1 | 1) => {
+      if (answerCards.length === 0) return;
+      stopNarration();
+      setAnswerCardIndex((current) =>
+        Math.min(answerCards.length - 1, Math.max(0, current + direction)),
+      );
+    },
+    [answerCards.length, stopNarration],
+  );
+
+  const handleAnswerTouchStart = (event: TouchEvent) => {
+    answerTouchStartX.current = event.touches[0]?.clientX ?? null;
+  };
+
+  const handleAnswerTouchEnd = (event: TouchEvent) => {
+    if (answerTouchStartX.current === null) return;
+    const endX = event.changedTouches[0]?.clientX ?? answerTouchStartX.current;
+    const distance = endX - answerTouchStartX.current;
+    answerTouchStartX.current = null;
+    if (Math.abs(distance) < 45) return;
+    moveAnswerCard(distance < 0 ? 1 : -1);
+  };
+
   const askGemini = async () => {
     const cleaned = chatInput.trim();
     if (!cleaned || !/[\p{L}\p{N}]/u.test(cleaned)) {
@@ -602,9 +800,16 @@ export default function SilverLensApp() {
       if (!response.ok || !payload.answer) {
         throw new Error(payload.error || "답변을 불러오지 못했습니다.");
       }
-      setAiAnswer(payload.answer);
+      const nextTurn: ChatTurn = {
+        id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        question: cleaned,
+        answer: payload.answer,
+        pages: splitAnswerIntoPages(payload.answer),
+      };
+      setAnswerCardIndex(answerCards.length);
+      setChatTurns((turns) => [...turns, nextTurn]);
       setChatInput("");
-      speakGeminiAnswer(payload.answer.replace(/[#*_`>-]/g, " "), activeLanguage);
+      void speakGeminiAnswer(plainTextFromMarkdown(payload.answer), activeLanguage);
     } catch (error) {
       setChatError(error instanceof Error ? error.message : "답변을 불러오지 못했습니다.");
     } finally {
@@ -725,18 +930,64 @@ export default function SilverLensApp() {
               </button>
             </div>
             {chatError && <p className="error-message" role="alert">{chatError}</p>}
-            {aiAnswer && (
-              <article className="ai-answer" aria-live="polite">
-                <h2>AI 답변</h2>
-                <ReactMarkdown>{aiAnswer}</ReactMarkdown>
-                <button
-                  onClick={() =>
-                    speakGeminiAnswer(aiAnswer.replace(/[#*_`>-]/g, " "), activeLanguage)
-                  }
+            {activeAnswerCard && (
+              <section className="answer-history" aria-live="polite">
+                <div className="answer-history-heading">
+                  <h2>AI 답변</h2>
+                  <span>
+                    대화 {activeAnswerCard.turnIndex + 1} · 답변{" "}
+                    {activeAnswerCard.pageIndex + 1}/{activeAnswerCard.pageCount}
+                  </span>
+                </div>
+                <div
+                  className="answer-carousel"
+                  onTouchStart={handleAnswerTouchStart}
+                  onTouchEnd={handleAnswerTouchEnd}
                 >
-                  🔊 답변 다시 듣기
-                </button>
-              </article>
+                  <button
+                    className="answer-arrow"
+                    onClick={() => moveAnswerCard(-1)}
+                    disabled={visibleAnswerCardIndex === 0}
+                    aria-label="이전 대화 또는 이전 답변"
+                  >
+                    ‹
+                  </button>
+                  <article className="ai-answer-card">
+                    <p className="answer-question">
+                      <span>질문</span>
+                      {activeAnswerCard.question}
+                    </p>
+                    <div className="answer-markdown">
+                      <ReactMarkdown>{activeAnswerCard.content}</ReactMarkdown>
+                    </div>
+                  </article>
+                  <button
+                    className="answer-arrow"
+                    onClick={() => moveAnswerCard(1)}
+                    disabled={visibleAnswerCardIndex === answerCards.length - 1}
+                    aria-label="다음 답변 또는 새 대화"
+                  >
+                    ›
+                  </button>
+                </div>
+                <div className="answer-history-footer">
+                  <span>← 이전 대화</span>
+                  <div className="answer-dots" aria-label="답변 카드 선택">
+                    {answerCards.map((item, index) => (
+                      <button
+                        key={item.id}
+                        className={index === visibleAnswerCardIndex ? "active" : ""}
+                        onClick={() => {
+                          stopNarration();
+                          setAnswerCardIndex(index);
+                        }}
+                        aria-label={`${item.turnIndex + 1}번째 대화 ${item.pageIndex + 1}번째 답변`}
+                      />
+                    ))}
+                  </div>
+                  <span>새 답변 →</span>
+                </div>
+              </section>
             )}
           </section>
 
@@ -753,6 +1004,30 @@ export default function SilverLensApp() {
               <span>📷</span>
               <strong>사진 찍기</strong>
               <small>식재료를 보여주세요</small>
+            </button>
+            <button
+              className="action-button replay"
+              disabled={!activeAnswerCard}
+              onClick={() => {
+                if (isNarrating) {
+                  stopNarration();
+                  return;
+                }
+                if (activeAnswerCard) {
+                  void speakGeminiAnswer(
+                    plainTextFromMarkdown(activeAnswerCard.answer),
+                    activeLanguage,
+                  );
+                }
+              }}
+            >
+              <span>{isNarrating ? "■" : "🔊"}</span>
+              <strong>{isNarrating ? "답변 재생 멈추기" : "답변 다시 듣기"}</strong>
+              <small>
+                {activeAnswerCard
+                  ? `${activeAnswerCard.turnIndex + 1}번째 대화 전체 답변`
+                  : "AI 답변이 생성되면 들을 수 있어요"}
+              </small>
             </button>
           </div>
 

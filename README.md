@@ -90,7 +90,11 @@ uvicorn backend.local_stt.main:app --reload --port 8000
 
 - 언어 모델: Gemini API
 - 음성 인식: faster-whisper 로컬 서버
-- 음성 안내: Gemini 2.5 Flash TTS
-- 음성 안내 예비 수단: Web Speech API 기반 브라우저 TTS
+- 설정·추천 안내: Web Speech API 기반 브라우저 TTS
+- AI 답변 음성: Gemini 2.5 Flash TTS
+- AI 답변 음성 예비 수단: Web Speech API 기반 브라우저 TTS
 
-Gemini TTS 요청이 실패하거나 API 키가 없으면 브라우저 TTS로 자동 전환합니다.
+긴 AI 답변은 문장 단위로 나누어 음성을 생성한 뒤 하나의 WAV로 이어 붙입니다.
+화면에서는 답변을 큰 글자 카드로 나누고, 왼쪽은 이전 대화, 오른쪽은 이어지는
+답변과 새 대화 순서로 이동합니다. Gemini TTS 요청이 실패하거나 API 키가 없으면
+브라우저 TTS로 자동 전환합니다.

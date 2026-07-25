@@ -38,8 +38,36 @@ function pcmToWav(pcm: Uint8Array, sampleRate = 24000) {
   return wav;
 }
 
-export async function generateNarration(text: string) {
-  const { apiKey, ttsModel } = getGeminiConfig();
+function splitText(text: string, maxChars = 420) {
+  const normalized = text.replace(/\s+/g, " ").trim();
+  if (!normalized) return [];
+  const sentences =
+    normalized.match(/[^.!?。！？]+(?:[.!?。！？]+|$)/g)?.map((item) => item.trim()) ??
+    [normalized];
+  const chunks: string[] = [];
+  let current = "";
+
+  for (const sentence of sentences) {
+    const parts =
+      sentence.length <= maxChars
+        ? [sentence]
+        : sentence.match(new RegExp(`.{1,${maxChars}}`, "g")) ?? [sentence];
+    for (const part of parts) {
+      const candidate = current ? `${current} ${part}` : part;
+      if (candidate.length > maxChars && current) {
+        chunks.push(current);
+        current = part;
+      } else {
+        current = candidate;
+      }
+    }
+  }
+
+  if (current) chunks.push(current);
+  return chunks;
+}
+
+async function generateNarrationPcm(text: string, apiKey: string, ttsModel: string) {
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(ttsModel)}:generateContent`,
     {
@@ -75,6 +103,27 @@ export async function generateNarration(text: string) {
     (part) => part.inlineData?.data,
   )?.inlineData;
   if (!inlineData?.data) throw new Error("Gemini TTS가 빈 음성을 반환했습니다.");
-  const pcm = Uint8Array.from(atob(inlineData.data), (value) => value.charCodeAt(0));
-  return pcmToWav(pcm);
+  return Uint8Array.from(atob(inlineData.data), (value) => value.charCodeAt(0));
+}
+
+export async function generateNarration(text: string) {
+  const { apiKey, ttsModel } = getGeminiConfig();
+  const chunks = splitText(text);
+  if (chunks.length === 0) throw new Error("읽을 답변이 비어 있습니다.");
+
+  const pcmChunks: Uint8Array[] = [];
+  const silence = new Uint8Array(Math.round(24000 * 2 * 0.12));
+  for (let index = 0; index < chunks.length; index += 1) {
+    pcmChunks.push(await generateNarrationPcm(chunks[index], apiKey, ttsModel));
+    if (index < chunks.length - 1) pcmChunks.push(silence);
+  }
+
+  const byteLength = pcmChunks.reduce((total, chunk) => total + chunk.byteLength, 0);
+  const combined = new Uint8Array(byteLength);
+  let offset = 0;
+  for (const chunk of pcmChunks) {
+    combined.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return pcmToWav(combined);
 }
