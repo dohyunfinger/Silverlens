@@ -148,6 +148,26 @@ textarea:focus-visible {
   background: var(--paper);
 }
 
+.placeholder-page {
+  display: grid;
+  grid-template-rows: auto 1fr;
+  min-height: calc(100vh - 32px);
+  background: white;
+}
+
+.placeholder-page > div {
+  align-self: center;
+  justify-self: center;
+  text-align: center;
+}
+
+.placeholder-page > div p {
+  margin: 0;
+  color: #747b77;
+  font-size: 28px;
+  font-weight: 800;
+}
+
 .page-kicker {
   color: var(--green-800);
   font-weight: 900;

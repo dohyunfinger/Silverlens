@@ -14,7 +14,7 @@ import ReactMarkdown from "react-markdown";
 type Language = "ko-KR" | "en-US" | "ja-JP";
 type Gender = "male" | "female";
 type SetupStep = "language" | "gender" | "age" | "complete";
-type PageScreen = "setup" | "chat" | "service" | "team";
+type PageScreen = "setup" | "chat" | "about" | "team";
 type RiskLevel = "danger" | "caution" | "good";
 type FoodCard = {
   level: RiskLevel;
@@ -227,10 +227,17 @@ function Sidebar({
       </div>
       <nav>
         <button
-          className={active === "service" ? "nav-item active" : "nav-item"}
-          onClick={() => onNavigate("service")}
+          className={active === "setup" || active === "chat" ? "nav-item active" : "nav-item"}
+          onClick={() => onNavigate(active === "chat" ? "chat" : "setup")}
         >
           <span aria-hidden="true">⌂</span>
+          서비스
+        </button>
+        <button
+          className={active === "about" ? "nav-item active" : "nav-item"}
+          onClick={() => onNavigate("about")}
+        >
+          <span aria-hidden="true">▤</span>
           서비스 소개
         </button>
         <button
@@ -239,13 +246,6 @@ function Sidebar({
         >
           <span aria-hidden="true">●●</span>
           팀원 소개
-        </button>
-        <button
-          className={active === "chat" || active === "setup" ? "nav-item active" : "nav-item"}
-          onClick={() => onNavigate(active === "chat" ? "chat" : "setup")}
-        >
-          <span aria-hidden="true">▤</span>
-          대화 개요
         </button>
       </nav>
       <div className="sidebar-note">
@@ -541,46 +541,16 @@ export default function SilverLensApp() {
     }
   };
 
-  if (screen === "service" || screen === "team") {
+  if (screen === "about" || screen === "team") {
     return (
       <main className="app-shell">
         <Sidebar active={screen} onNavigate={setScreen} />
-        <section className="content-page">
-          <button className="back-button" onClick={() => setScreen("setup")}>← 대화로 돌아가기</button>
-          {screen === "service" ? (
-            <>
-              <span className="page-kicker">SERVICE</span>
-              <h1>실버렌즈 서비스 소개</h1>
-              <p className="page-lead">
-                타자 입력이 어렵거나 사투리를 사용하는 시니어가 음성·사진·글자로
-                식재료 정보를 편하게 물어볼 수 있도록 돕는 AI 서비스입니다.
-              </p>
-              <div className="intro-grid">
-                <article><strong>말로 질문</strong><p>faster-whisper가 로컬 환경에서 음성을 글자로 바꿉니다.</p></article>
-                <article><strong>쉬운 설명</strong><p>Gemini 언어 모델이 등록한 건강 정보와 질문을 바탕으로 답합니다.</p></article>
-                <article><strong>소리로 안내</strong><p>Gemini 2.5 Flash TTS를 우선 사용하고 브라우저 TTS를 예비 수단으로 사용합니다.</p></article>
-              </div>
-              <section className="link-placeholder">
-                <h2>기준 자료 링크</h2>
-                <p>팀에서 확정한 기준 자료 링크를 이 영역에 추가할 수 있습니다.</p>
-              </section>
-            </>
-          ) : (
-            <>
-              <span className="page-kicker">TEAM</span>
-              <h1>팀원 소개</h1>
-              <p className="page-lead">이름과 역할이 확정되면 아래 카드의 내용을 바꿔 주세요.</p>
-              <div className="team-grid">
-                {["팀 리더", "백엔드", "프론트엔드", "허브 관리자"].map((role) => (
-                  <article key={role}>
-                    <span className="team-avatar" aria-hidden="true">{role.slice(0, 1)}</span>
-                    <strong>{role}</strong>
-                    <p>이름 및 담당 업무를 입력해 주세요.</p>
-                  </article>
-                ))}
-              </div>
-            </>
-          )}
+        <section className="content-page placeholder-page">
+          <button className="back-button" onClick={() => setScreen("setup")}>← 서비스로 돌아가기</button>
+          <div>
+            <h1>{screen === "about" ? "서비스 소개" : "팀원 소개"}</h1>
+            <p>구성중</p>
+          </div>
         </section>
       </main>
     );
