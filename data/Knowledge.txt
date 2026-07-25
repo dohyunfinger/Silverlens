@@ -7921,210 +7921,210 @@ food_data = [
     "standard_name": "꾸지뽕",
     "dialects": {"중부": ["꾸지뽕"], "동남": ["구지뽕", "꾸지뽕"], "서남": ["꾸지뽕"], "제주": ["꾸지뽕"]},
     "daily_recommended_amount": "1~2잔 (차 형태)",
-        "elderly_friendly_guide": "할머니, 혈액순환을 돕고 당뇨에 좋다고 알려진 꾸지뽕이에요! 열매나 잎을 연하게 끓여 따뜻한 차로 매일 조금씩 드시면 뼈 건강에도 아주 좋답니다.",
-        "disease_info": {
-            "caution_diseases": ["수족냉증", "설사 잦은 체질"],
-            "caution_reason": "찬 성질을 띠고 있어 평소 배가 차고 설사를 자주 하시는 어르신은 따뜻한 물에 연하게 우려 드시는 것이 좋습니다.",
-            "good_compatibility": "대추, 감초",
-            "bad_compatibility": "없음"
-        }
-  },
-  {
-        "id": 557,
-        "category": "채소류",
-        "standard_name": "근대",
-        "dialects": {"중부": ["근대"], "동남": ["근대", "곤대"], "서남": ["근대"], "제주": ["근대"]},
-        "daily_recommended_amount": "약 70g~100g",
-        "elderly_friendly_guide": "어르신, 시금치보다 잎이 부드럽고 소화가 잘 되어 국거리로 최고인 근대예요! 된장 삼삼하게 풀고 건새우 넣어 푹 끓인 근대국 한 그릇 하시면 속이 참 편안하실 거예요.",
-        "disease_info": {
-            "caution_diseases": ["신장 결석 환자"],
-            "caution_reason": "수산 성분이 함유되어 있어 신장이 약하시거나 결석 병력이 있으신 분은 반드시 끓는 물에 살짝 데쳐 수산을 빼내고 조리하셔야 합니다.",
-            "good_compatibility": "된장, 건새우",
-            "bad_compatibility": "없음"
-        }
-  },
-  {
-        "id": 558,
-        "category": "약용작물/특용작물",
-        "standard_name": "둥굴레",
-        "dialects": {"중부": ["둥굴레"], "동남": ["둥굴레"], "서남": ["둥굴레"], "제주": ["둥굴레"]},
-        "daily_recommended_amount": "1~2잔 (차 형태)",
-        "elderly_friendly_guide": "할아버지, 구수한 맛이 일품이고 피로 해소에 참 좋은 둥굴레예요! 맹물 대신 연하게 끓여서 차로 드시면 갈증도 풀리고 기력 회복에도 도움이 된답니다.",
-        "disease_info": {
-            "caution_diseases": ["소화불량 (속이 찬 체질)"],
-            "caution_reason": "성질이 차가운 편이라 위장이 약하고 속이 차가운 어르신이 진하게 달여 물 대신 다량 마실 경우 복통을 유발할 수 있습니다.",
-            "good_compatibility": "물",
-            "bad_compatibility": "변비약 (약효를 떨어뜨릴 수 있음)"
-        }
-  },
-  {
-        "id": 559,
-        "category": "채소류/특용작물",
-        "standard_name": "모시풀 (모시잎)",
-        "dialects": {"중부": ["모시풀", "모시잎"], "동남": ["모시"], "서남": ["모시풀"], "제주": ["모시"]},
-        "daily_recommended_amount": "약 30g~50g",
-        "elderly_friendly_guide": "할머니, 뼈를 튼튼하게 해주는 칼슘이 우유보다 훨씬 많이 든 모시잎이에요! 그냥 드시긴 질기니 가루를 내어 반죽에 넣거나 쫀득한 모싯잎 송편으로 쪄서 드시면 참 맛있어요.",
-        "disease_info": {
-            "caution_diseases": ["소화 장애 (생식 불가)"],
-            "caution_reason": "잎의 섬유질이 매우 질기므로 생으로 드시면 소화가 되지 않습니다. 반드시 삶아서 갈아내어 떡 등의 재료로 활용하셔야 합니다.",
-            "good_compatibility": "쌀(떡), 팥",
-            "bad_compatibility": "없음"
-        }
-  },
-  {
-        "id": 560,
-        "category": "채소류 (허브)",
-        "standard_name": "바질",
-        "dialects": {"중부": ["바질"], "동남": ["바질"], "서남": ["바질"], "제주": ["바질"]},
-        "daily_recommended_amount": "약 5g~10g",
-        "elderly_friendly_guide": "어르신, 향긋해서 신경을 안정시켜주고 소화를 돕는 서양 채소 바질이에요! 토마토랑 아주 찰떡궁합이니까 샐러드 드실 때 잎사귀 몇 장 썰어 올리시면 입맛이 살아납니다.",
-        "disease_info": {
-            "caution_diseases": ["특별한 부작용 없음"],
-            "caution_reason": "소화를 돕고 심신 안정에 좋은 허브류로 향에 거부감만 없다면 어르신들께서 드시기에 무리가 없습니다.",
-            "good_compatibility": "토마토, 올리브오일, 치즈",
-            "bad_compatibility": "없음"
-        }
-  },
-  {
-        "id": 561,
-        "category": "약용작물/채소류",
-        "standard_name": "뽕잎",
-        "dialects": {"중부": ["뽕잎"], "동남": ["뽕잎"], "서남": ["뽕잎"], "제주": ["뽕잎"]},
-        "daily_recommended_amount": "1~2잔 (차) 또는 30g (나물)",
-        "elderly_friendly_guide": "할아버지, 혈당을 낮춰주어 당뇨에 아주 좋다고 옛날부터 소문난 뽕잎이에요! 연한 봄잎은 살짝 데쳐 나물로 무쳐 드시고, 말린 잎은 따뜻하게 차로 우려 드시면 보약이 따로 없어요.",
-        "disease_info": {
-            "caution_diseases": ["수족냉증 환자"],
-            "caution_reason": "뽕잎은 차가운 성질을 가지고 있어 과다 섭취 시 속이 차가운 어르신은 소화불량이나 복통이 발생할 수 있습니다.",
-            "good_compatibility": "된장(나물 무침), 물(차)",
-            "bad_compatibility": "없음"
-        }
-  },
-  {
-        "id": 562,
-        "category": "특용작물",
-        "standard_name": "선인장 (백년초/천년초)",
-        "dialects": {"중부": ["선인장", "백년초", "천년초"], "동남": ["백년초"], "서남": ["백년초"], "제주": ["백년초"]},
-        "daily_recommended_amount": "약 30g~50g (즙 또는 분말)",
-        "elderly_friendly_guide": "어르신, 관절염과 위장 건강에 도움을 주는 선인장(백년초) 열매예요! 가시가 있으니 손질 조심하시고, 생으로 씹어 드시기보단 즙을 내거나 갈아서 요구르트에 타 드시는 게 삼키기 편안합니다.",
-        "disease_info": {
-            "caution_diseases": ["위장 냉증", "잦은 설사"],
-            "caution_reason": "열을 내리는 찬 성질이 강하므로 몸이 차가우신 분들은 꿀을 약간 섞어 따뜻하게 드시거나 소량만 섭취하셔야 합니다.",
-            "good_compatibility": "요구르트, 꿀",
-            "bad_compatibility": "없음"
-        }
-  },
-  {
-        "id": 563,
-        "category": "채소류/양념",
-        "standard_name": "생강",
-        "dialects": {"중부": ["생강"], "동남": ["생강", "새앙"], "서남": ["생강"], "제주": ["새앙"]},
-        "daily_recommended_amount": "약 5g~10g (양념 및 차)",
-        "elderly_friendly_guide": "할머니, 몸을 따뜻하게 데워주고 혈액순환을 도와 감기 예방에 최고인 생강이에요! 매운맛이 강하니 생으로 드시지 말고 요리에 다져 넣으시거나 꿀과 함께 대추 생강차로 드시면 참 좋아요.",
-        "disease_info": {
-            "caution_diseases": ["위궤양", "치질", "고열 환자"],
-            "caution_reason": "열을 내고 위액 분비를 촉진하므로 궤양이 있거나 감기로 인해 이미 고열이 나는 상태에서는 섭취를 피하시는 것이 좋습니다.",
-            "good_compatibility": "대추, 꿀, 고기(비린내 제거)",
-            "bad_compatibility": "없음"
-        }
-  },
-  {
-        "id": 564,
-        "category": "채소류",
-        "standard_name": "쌈추",
-        "dialects": {"중부": ["쌈추"], "동남": ["쌈추"], "서남": ["쌈추"], "제주": ["쌈추"]},
-        "daily_recommended_amount": "약 50g~100g",
-        "elderly_friendly_guide": "할아버지, 배추와 양배추의 좋은 점만 모아서 만든 새로운 채소 쌈추예요! 잎이 아주 부드럽고 즙이 많아서 이가 약하신 어르신들도 고기 싸서 씹어 드시기에 참 달큼하고 연하답니다.",
-        "disease_info": {
-            "caution_diseases": ["특별한 부작용 없음"],
-            "caution_reason": "질긴 섬유질이 적어 어르신들의 치아에 부담이 없고 칼슘과 철분이 풍부해 아주 유익한 채소입니다.",
-            "good_compatibility": "돼지고기, 된장",
-            "bad_compatibility": "없음"
-        }
-  },
-  {
-        "id": 565,
-        "category": "특용작물",
-        "standard_name": "알로에",
-        "dialects": {"중부": ["알로에"], "동남": ["알로에"], "서남": ["알로에"], "제주": ["알로에"]},
-        "daily_recommended_amount": "약 50g~100g",
-        "elderly_friendly_guide": "어르신, 위장 점막을 보호해주고 변비를 시원하게 해결해 주는 알로에예요! 질긴 껍질은 깎아내고 안쪽의 투명하고 미끄러운 젤리 부분만 요구르트에 부드럽게 갈아 드시면 삼키기 꿀떡꿀떡 넘어가요.",
-        "disease_info": {
-            "caution_diseases": ["잦은 설사", "신장 질환자"],
-            "caution_reason": "수분과 찬 성질이 많고 칼륨 배출에 영향을 줄 수 있어 신장이 약하거나 장이 예민하신 분은 과식을 피하셔야 합니다.",
-            "good_compatibility": "요구르트, 꿀",
-            "bad_compatibility": "없음"
-        }
-  },
-  {
-        "id": 566,
-        "category": "채소류",
-        "standard_name": "유채 (유채나물, 동초)",
-        "dialects": {"중부": ["유채나물", "동초"], "동남": ["유채", "하루나"], "서남": ["유채나물"], "제주": ["유채", "지름나물"]},
-        "daily_recommended_amount": "약 70g~100g",
-        "elderly_friendly_guide": "할머니, 비타민 C가 풍부해서 봄철 춘곤증을 싹 가시게 해주는 달큼한 유채나물이에요! 끓는 물에 연하게 데쳐서 된장이나 참기름에 조물조물 무쳐 드시면 입맛이 확 도실 거예요.",
-        "disease_info": {
-            "caution_diseases": ["특별한 부작용 없음"],
-            "caution_reason": "부드럽고 소화가 잘되며 영양가가 높아 노약자 및 어르신들의 봄철 입맛을 돋우는 데 아주 훌륭한 식재료입니다.",
-            "good_compatibility": "된장, 참기름",
-            "bad_compatibility": "없음"
-        }
-  },
-  {
-        "id": 567,
-        "category": "채소류/산나물",
-        "standard_name": "제비쑥",
-        "dialects": {"중부": ["제비쑥"], "동남": ["제비쑥"], "서남": ["제비쑥"], "제주": ["제비쑥"]},
-        "daily_recommended_amount": "약 50g~70g",
-        "elderly_friendly_guide": "할아버지, 피를 맑게 하고 위장을 따뜻하게 해주는 제비쑥이에요! 잎이 억세지기 전 이른 봄에 연할 때 뜯어서 구수한 된장국에 푹 끓여 드시면 향긋하니 보약이 따로 없답니다.",
-        "disease_info": {
-            "caution_diseases": ["과다 섭취 주의"],
-            "caution_reason": "소화력이 약한 어르신이 과도하게 섭취할 경우 위장에 부담을 주거나 설사를 유발할 수 있으니 국이나 무침으로 적당량만 드세요.",
-            "good_compatibility": "된장, 쌀(떡)",
-            "bad_compatibility": "없음"
-        }
-  },
-  {
-        "id": 568,
-        "category": "채소류/산나물",
-        "standard_name": "줄나물",
-        "dialects": {"중부": ["줄나물"], "동남": ["줄나물"], "서남": ["줄나물"], "제주": ["줄나물"]},
-        "daily_recommended_amount": "약 50g~70g",
-        "elderly_friendly_guide": "어르신, 비타민과 미네랄이 풍부해서 피로 해소에 참 좋은 줄나물이에요! 억센 줄기는 떼어내고 연한 부분만 살짝 데쳐서 국을 끓이거나 무쳐 드셔야 씹기 부드럽습니다.",
-        "disease_info": {
-            "caution_diseases": ["신장 결석 환자"],
-            "caution_reason": "미량의 독성(수산)이 있을 수 있으므로 생식하지 마시고 반드시 끓는 물에 충분히 데치고 헹구어 조리하셔야 안전합니다.",
-            "good_compatibility": "간장, 들기름",
-            "bad_compatibility": "없음"
-        }
-  },
-  {
-        "id": 569,
-        "category": "약용작물/산나물",
-        "standard_name": "조뱅이",
-        "dialects": {"중부": ["조뱅이"], "동남": ["조뱅이", "지칭개"], "서남": ["조뱅이"], "제주": ["조뱅이"]},
-        "daily_recommended_amount": "약 30g~50g",
-        "elderly_friendly_guide": "할머니, 지혈 작용을 돕고 어혈을 풀어주는 훌륭한 약초인 조뱅이예요! 쓴맛이 나고 자라면 가시가 생기니까, 아주 어린잎만 채취해서 끓는 물에 데친 뒤 물에 충분히 우려내고 나물로 무쳐 드세요.",
-        "disease_info": {
-            "caution_diseases": ["위장 냉증", "소화불량"],
-            "caution_reason": "성질이 서늘한 편이므로 평소 속이 차가우신 어르신은 따뜻한 성질의 참기름이나 고추장을 곁들여 소량만 드시는 것이 좋습니다.",
-            "good_compatibility": "고추장, 참기름",
-            "bad_compatibility": "없음"
-        }
-  },
-  {
-        "id": 570,
-        "category": "채소류",
-        "standard_name": "할라페뇨 (할라페뇨 고추)",
-        "dialects": {"중부": ["할라페뇨"], "동남": ["할라페뇨"], "서남": ["할라페뇨"], "제주": ["할라페뇨"]},
-        "daily_recommended_amount": "10g~20g (소량)",
-        "elderly_friendly_guide": "할아버지, 서양에서 온 매콤한 고추 할라페뇨예요! 우리나라 청양고추처럼 매운맛이 아주 강하니까 위가 약하시면 피하시고, 고기처럼 느끼한 음식 드실 때 얇게 썰어 장아찌로 한두 조각만 곁들여 드세요.",
-        "disease_info": {
-            "caution_diseases": ["위염", "식도염", "위궤양 환자"],
-            "caution_reason": "강한 매운맛(캡사이신)이 위 점막을 자극하여 속 쓰림이나 염증을 악화시킬 수 있으므로 위장이 약한 어르신은 섭취를 금하거나 극소량만 드셔야 합니다.",
-            "good_compatibility": "치즈, 피자, 고기",
-            "bad_compatibility": "없음"
-        }
+    "elderly_friendly_guide": "할머니, 혈액순환을 돕고 당뇨에 좋다고 알려진 꾸지뽕이에요! 열매나 잎을 연하게 끓여 따뜻한 차로 매일 조금씩 드시면 뼈 건강에도 아주 좋답니다.",
+    "disease_info": {
+        "caution_diseases": ["수족냉증", "설사 잦은 체질"],
+        "caution_reason": "찬 성질을 띠고 있어 평소 배가 차고 설사를 자주 하시는 어르신은 따뜻한 물에 연하게 우려 드시는 것이 좋습니다.",
+        "good_compatibility": "대추, 감초",
+        "bad_compatibility": "없음"
     }
+  },
+  {
+    "id": 557,
+    "category": "채소류",
+    "standard_name": "근대",
+    "dialects": {"중부": ["근대"], "동남": ["근대", "곤대"], "서남": ["근대"], "제주": ["근대"]},
+    "daily_recommended_amount": "약 70g~100g",
+    "elderly_friendly_guide": "어르신, 시금치보다 잎이 부드럽고 소화가 잘 되어 국거리로 최고인 근대예요! 된장 삼삼하게 풀고 건새우 넣어 푹 끓인 근대국 한 그릇 하시면 속이 참 편안하실 거예요.",
+    "disease_info": {
+        "caution_diseases": ["신장 결석 환자"],
+        "caution_reason": "수산 성분이 함유되어 있어 신장이 약하시거나 결석 병력이 있으신 분은 반드시 끓는 물에 살짝 데쳐 수산을 빼내고 조리하셔야 합니다.",
+        "good_compatibility": "된장, 건새우",
+        "bad_compatibility": "없음"
+    }
+  },
+  {
+    "id": 558,
+    "category": "채소류",
+    "standard_name": "둥굴레",
+    "dialects": {"중부": ["둥굴레"], "동남": ["둥굴레"], "서남": ["둥굴레"], "제주": ["둥굴레"]},
+    "daily_recommended_amount": "1~2잔 (차 형태)",
+    "elderly_friendly_guide": "할아버지, 구수한 맛이 일품이고 피로 해소에 참 좋은 둥굴레예요! 맹물 대신 연하게 끓여서 차로 드시면 갈증도 풀리고 기력 회복에도 도움이 된답니다.",
+    "disease_info": {
+        "caution_diseases": ["소화불량 (속이 찬 체질)"],
+        "caution_reason": "성질이 차가운 편이라 위장이 약하고 속이 차가운 어르신이 진하게 달여 물 대신 다량 마실 경우 복통을 유발할 수 있습니다.",
+        "good_compatibility": "물",
+        "bad_compatibility": "변비약 (약효를 떨어뜨릴 수 있음)"
+    }
+  },
+  {
+    "id": 559,
+    "category": "채소류",
+    "standard_name": "모시풀 (모시잎)",
+    "dialects": {"중부": ["모시풀", "모시잎"], "동남": ["모시"], "서남": ["모시풀"], "제주": ["모시"]},
+    "daily_recommended_amount": "약 30g~50g",
+    "elderly_friendly_guide": "할머니, 뼈를 튼튼하게 해주는 칼슘이 우유보다 훨씬 많이 든 모시잎이에요! 그냥 드시긴 질기니 가루를 내어 반죽에 넣거나 쫀득한 모싯잎 송편으로 쪄서 드시면 참 맛있어요.",
+    "disease_info": {
+        "caution_diseases": ["소화 장애 (생식 불가)"],
+        "caution_reason": "잎의 섬유질이 매우 질기므로 생으로 드시면 소화가 되지 않습니다. 반드시 삶아서 갈아내어 떡 등의 재료로 활용하셔야 합니다.",
+        "good_compatibility": "쌀(떡), 팥",
+        "bad_compatibility": "없음"
+    }
+  },
+  {
+    "id": 560,
+    "category": "채소류",
+    "standard_name": "바질",
+    "dialects": {"중부": ["바질"], "동남": ["바질"], "서남": ["바질"], "제주": ["바질"]},
+    "daily_recommended_amount": "약 5g~10g",
+    "elderly_friendly_guide": "어르신, 향긋해서 신경을 안정시켜주고 소화를 돕는 서양 채소 바질이에요! 토마토랑 아주 찰떡궁합이니까 샐러드 드실 때 잎사귀 몇 장 썰어 올리시면 입맛이 살아납니다.",
+    "disease_info": {
+        "caution_diseases": ["특별한 부작용 없음"],
+        "caution_reason": "소화를 돕고 심신 안정에 좋은 허브류로 향에 거부감만 없다면 어르신들께서 드시기에 무리가 없습니다.",
+        "good_compatibility": "토마토, 올리브오일, 치즈",
+        "bad_compatibility": "없음"
+    }
+  },
+  {
+    "id": 561,
+    "category": "채소류",
+    "standard_name": "뽕잎",
+    "dialects": {"중부": ["뽕잎"], "동남": ["뽕잎"], "서남": ["뽕잎"], "제주": ["뽕잎"]},
+    "daily_recommended_amount": "1~2잔 (차) 또는 30g (나물)",
+    "elderly_friendly_guide": "할아버지, 혈당을 낮춰주어 당뇨에 아주 좋다고 옛날부터 소문난 뽕잎이에요! 연한 봄잎은 살짝 데쳐 나물로 무쳐 드시고, 말린 잎은 따뜻하게 차로 우려 드시면 보약이 따로 없어요.",
+    "disease_info": {
+        "caution_diseases": ["수족냉증 환자"],
+        "caution_reason": "뽕잎은 차가운 성질을 가지고 있어 과다 섭취 시 속이 차가운 어르신은 소화불량이나 복통이 발생할 수 있습니다.",
+        "good_compatibility": "된장(나물 무침), 물(차)",
+        "bad_compatibility": "없음"
+    }
+  },
+  {
+    "id": 562,
+    "category": "채소류",
+    "standard_name": "선인장 (백년초/천년초)",
+    "dialects": {"중부": ["선인장", "백년초", "천년초"], "동남": ["백년초"], "서남": ["백년초"], "제주": ["백년초"]},
+    "daily_recommended_amount": "약 30g~50g (즙 또는 분말)",
+    "elderly_friendly_guide": "어르신, 관절염과 위장 건강에 도움을 주는 선인장(백년초) 열매예요! 가시가 있으니 손질 조심하시고, 생으로 씹어 드시기보단 즙을 내거나 갈아서 요구르트에 타 드시는 게 삼키기 편안합니다.",
+    "disease_info": {
+        "caution_diseases": ["위장 냉증", "잦은 설사"],
+        "caution_reason": "열을 내리는 찬 성질이 강하므로 몸이 차가우신 분들은 꿀을 약간 섞어 따뜻하게 드시거나 소량만 섭취하셔야 합니다.",
+        "good_compatibility": "요구르트, 꿀",
+        "bad_compatibility": "없음"
+    }
+  },
+  {
+    "id": 563,
+    "category": "채소류",
+    "standard_name": "생강",
+    "dialects": {"중부": ["생강"], "동남": ["생강", "새앙"], "서남": ["생강"], "제주": ["새앙"]},
+    "daily_recommended_amount": "약 5g~10g (양념 및 차)",
+    "elderly_friendly_guide": "할머니, 몸을 따뜻하게 데워주고 혈액순환을 도와 감기 예방에 최고인 생강이에요! 매운맛이 강하니 생으로 드시지 말고 요리에 다져 넣으시거나 꿀과 함께 대추 생강차로 드시면 참 좋아요.",
+    "disease_info": {
+        "caution_diseases": ["위궤양", "치질", "고열 환자"],
+        "caution_reason": "열을 내고 위액 분비를 촉진하므로 궤양이 있거나 감기로 인해 이미 고열이 나는 상태에서는 섭취를 피하시는 것이 좋습니다.",
+        "good_compatibility": "대추, 꿀, 고기(비린내 제거)",
+        "bad_compatibility": "없음"
+    }
+  },
+  {
+    "id": 564,
+    "category": "채소류",
+    "standard_name": "쌈추",
+    "dialects": {"중부": ["쌈추"], "동남": ["쌈추"], "서남": ["쌈추"], "제주": ["쌈추"]},
+    "daily_recommended_amount": "약 50g~100g",
+    "elderly_friendly_guide": "할아버지, 배추와 양배추의 좋은 점만 모아서 만든 새로운 채소 쌈추예요! 잎이 아주 부드럽고 즙이 많아서 이가 약하신 어르신들도 고기 싸서 씹어 드시기에 참 달큼하고 연하답니다.",
+    "disease_info": {
+        "caution_diseases": ["특별한 부작용 없음"],
+        "caution_reason": "질긴 섬유질이 적어 어르신들의 치아에 부담이 없고 칼슘과 철분이 풍부해 아주 유익한 채소입니다.",
+        "good_compatibility": "돼지고기, 된장",
+        "bad_compatibility": "없음"
+    }
+  },
+  {
+    "id": 565,
+    "category": "채소류",
+    "standard_name": "알로에",
+    "dialects": {"중부": ["알로에"], "동남": ["알로에"], "서남": ["알로에"], "제주": ["알로에"]},
+    "daily_recommended_amount": "약 50g~100g",
+    "elderly_friendly_guide": "어르신, 위장 점막을 보호해주고 변비를 시원하게 해결해 주는 알로에예요! 질긴 껍질은 깎아내고 안쪽의 투명하고 미끄러운 젤리 부분만 요구르트에 부드럽게 갈아 드시면 삼키기 꿀떡꿀떡 넘어가요.",
+    "disease_info": {
+        "caution_diseases": ["잦은 설사", "신장 질환자"],
+        "caution_reason": "수분과 찬 성질이 많고 칼륨 배출에 영향을 줄 수 있어 신장이 약하거나 장이 예민하신 분은 과식을 피하셔야 합니다.",
+        "good_compatibility": "요구르트, 꿀",
+        "bad_compatibility": "없음"
+    }
+  },
+  {
+    "id": 566,
+    "category": "채소류",
+    "standard_name": "유채 (유채나물, 동초)",
+    "dialects": {"중부": ["유채나물", "동초"], "동남": ["유채", "하루나"], "서남": ["유채나물"], "제주": ["유채", "지름나물"]},
+    "daily_recommended_amount": "약 70g~100g",
+    "elderly_friendly_guide": "할머니, 비타민 C가 풍부해서 봄철 춘곤증을 싹 가시게 해주는 달큼한 유채나물이에요! 끓는 물에 연하게 데쳐서 된장이나 참기름에 조물조물 무쳐 드시면 입맛이 확 도실 거예요.",
+    "disease_info": {
+        "caution_diseases": ["특별한 부작용 없음"],
+        "caution_reason": "부드럽고 소화가 잘되며 영양가가 높아 노약자 및 어르신들의 봄철 입맛을 돋우는 데 아주 훌륭한 식재료입니다.",
+        "good_compatibility": "된장, 참기름",
+        "bad_compatibility": "없음"
+    }
+  },
+  {
+    "id": 567,
+    "category": "채소류",
+    "standard_name": "제비쑥",
+    "dialects": {"중부": ["제비쑥"], "동남": ["제비쑥"], "서남": ["제비쑥"], "제주": ["제비쑥"]},
+    "daily_recommended_amount": "약 50g~70g",
+    "elderly_friendly_guide": "할아버지, 피를 맑게 하고 위장을 따뜻하게 해주는 제비쑥이에요! 잎이 억세지기 전 이른 봄에 연할 때 뜯어서 구수한 된장국에 푹 끓여 드시면 향긋하니 보약이 따로 없답니다.",
+    "disease_info": {
+        "caution_diseases": ["과다 섭취 주의"],
+        "caution_reason": "소화력이 약한 어르신이 과도하게 섭취할 경우 위장에 부담을 주거나 설사를 유발할 수 있으니 국이나 무침으로 적당량만 드세요.",
+        "good_compatibility": "된장, 쌀(떡)",
+        "bad_compatibility": "없음"
+    }
+  },
+  {
+    "id": 568,
+    "category": "채소류",
+    "standard_name": "줄나물",
+    "dialects": {"중부": ["줄나물"], "동남": ["줄나물"], "서남": ["줄나물"], "제주": ["줄나물"]},
+    "daily_recommended_amount": "약 50g~70g",
+    "elderly_friendly_guide": "어르신, 비타민과 미네랄이 풍부해서 피로 해소에 참 좋은 줄나물이에요! 억센 줄기는 떼어내고 연한 부분만 살짝 데쳐서 국을 끓이거나 무쳐 드셔야 씹기 부드럽습니다.",
+    "disease_info": {
+        "caution_diseases": ["신장 결석 환자"],
+        "caution_reason": "미량의 독성(수산)이 있을 수 있으므로 생식하지 마시고 반드시 끓는 물에 충분히 데치고 헹구어 조리하셔야 안전합니다.",
+        "good_compatibility": "간장, 들기름",
+        "bad_compatibility": "없음"
+    }
+  },
+  {
+    "id": 569,
+    "category": "채소류",
+    "standard_name": "조뱅이",
+    "dialects": {"중부": ["조뱅이"], "동남": ["조뱅이", "지칭개"], "서남": ["조뱅이"], "제주": ["조뱅이"]},
+    "daily_recommended_amount": "약 30g~50g",
+    "elderly_friendly_guide": "할머니, 지혈 작용을 돕고 어혈을 풀어주는 훌륭한 약초인 조뱅이예요! 쓴맛이 나고 자라면 가시가 생기니까, 아주 어린잎만 채취해서 끓는 물에 데친 뒤 물에 충분히 우려내고 나물로 무쳐 드세요.",
+    "disease_info": {
+        "caution_diseases": ["위장 냉증", "소화불량"],
+        "caution_reason": "성질이 서늘한 편이므로 평소 속이 차가우신 어르신은 따뜻한 성질의 참기름이나 고추장을 곁들여 소량만 드시는 것이 좋습니다.",
+        "good_compatibility": "고추장, 참기름",
+        "bad_compatibility": "없음"
+    }
+  },
+  {
+    "id": 570,
+    "category": "채소류",
+    "standard_name": "할라페뇨 (할라페뇨 고추)",
+    "dialects": {"중부": ["할라페뇨"], "동남": ["할라페뇨"], "서남": ["할라페뇨"], "제주": ["할라페뇨"]},
+    "daily_recommended_amount": "10g~20g (소량)",
+    "elderly_friendly_guide": "할아버지, 서양에서 온 매콤한 고추 할라페뇨예요! 우리나라 청양고추처럼 매운맛이 아주 강하니까 위가 약하시면 피하시고, 고기처럼 느끼한 음식 드실 때 얇게 썰어 장아찌로 한두 조각만 곁들여 드세요.",
+    "disease_info": {
+        "caution_diseases": ["위염", "식도염", "위궤양 환자"],
+        "caution_reason": "강한 매운맛(캡사이신)이 위 점막을 자극하여 속 쓰림이나 염증을 악화시킬 수 있으므로 위장이 약한 어르신은 섭취를 금하거나 극소량만 드셔야 합니다.",
+        "good_compatibility": "치즈, 피자, 고기",
+        "bad_compatibility": "없음"
+    }
+  },
   
 
   
