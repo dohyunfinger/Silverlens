@@ -21,7 +21,6 @@ type NarrationStatus = "preparing" | "ready" | "error";
 type ChatTurn = {
   id: string;
   question: string;
-  answer: string;
   pages: string[];
   attachmentLabels: string[];
 };
@@ -29,7 +28,6 @@ type AnswerCard = {
   id: string;
   turnId: string;
   question: string;
-  answer: string;
   content: string;
   attachmentLabels: string[];
   turnIndex: number;
@@ -45,44 +43,11 @@ type PendingImage = {
   file: File;
   url: string;
 };
-
-const commonAllergyTerms = [
-  "땅콩",
-  "우유",
-  "달걀",
-  "계란",
-  "메밀",
-  "밀",
-  "대두",
-  "콩",
-  "호두",
-  "잣",
-  "새우",
-  "게",
-  "고등어",
-  "복숭아",
-  "토마토",
-  "조개",
-  "굴",
-];
-
-const commonConditionTerms = [
-  "당뇨",
-  "고혈압",
-  "고지혈증",
-  "통풍",
-  "위염",
-  "골다공증",
-  "신장 질환",
-  "신장질환",
-  "신부전",
-  "심장 질환",
-  "심장질환",
-  "간 질환",
-  "간질환",
-  "갑상선 질환",
-  "갑상선질환",
-];
+type VoiceAnalysis = {
+  text: string;
+  allergies: string[];
+  conditions: string[];
+};
 
 function plainTextFromMarkdown(markdown: string) {
   return markdown
@@ -182,58 +147,6 @@ function splitAnswerIntoPages(markdown: string, maxChars = 210) {
 
 function uniqueItems(items: string[]) {
   return [...new Set(items.map((item) => item.trim()).filter(Boolean))];
-}
-
-function cleanSpokenProfileItem(value: string, kind: "allergy" | "condition") {
-  const commonWords =
-    kind === "allergy"
-      ? /(?:알레르기|알러지|먹으면\s*(?:불편|아파|두드러기)|못\s*먹(?:어요|습니다)?)/g
-      : /(?:질병|질환|병|진단|치료\s*중|앓고\s*있(?:어요|습니다)?)/g;
-
-  return value
-    .replace(/(?:저는|제가|나에게는|나는|그리고|또|현재|지금)/g, " ")
-    .replace(commonWords, " ")
-    .replace(/(?:이|가|은|는|을|를)?\s*(?:있어요|있습니다|있어|입니다|이에요|예요)/g, " ")
-    .replace(/[.!?。！？]/g, " ")
-    .replace(/\s+/g, " ")
-    .trim();
-}
-
-function splitSpokenProfileItems(text: string, kind: "allergy" | "condition") {
-  const pieces = text
-    .split(/[,/·\n]|(?:\s*(?:하고|이랑|랑|및|또는|와|과)\s*)/)
-    .map((item) => cleanSpokenProfileItem(item, kind))
-    .filter((item) => item.length > 0 && item.length <= 30);
-  return uniqueItems(pieces);
-}
-
-function extractProfileItems(text: string) {
-  const normalized = text.replace(/\s+/g, " ").trim();
-  const keepLongestMatches = (terms: string[]) =>
-    terms.filter(
-      (term) =>
-        normalized.includes(term) &&
-        !terms.some(
-          (other) =>
-            other !== term && other.includes(term) && normalized.includes(other),
-        ),
-    );
-  const allergies = keepLongestMatches(commonAllergyTerms);
-  const conditions = keepLongestMatches(commonConditionTerms);
-
-  for (const clause of normalized.split(/[,.\n]|(?:있고|있으며|그리고|또)/)) {
-    if (/(?:알레르기|알러지|먹으면\s*(?:불편|아파|두드러기)|못\s*먹)/.test(clause)) {
-      allergies.push(...splitSpokenProfileItems(clause, "allergy"));
-    }
-    if (/(?:질병|질환|진단|치료\s*중|앓고\s*있)/.test(clause)) {
-      conditions.push(...splitSpokenProfileItems(clause, "condition"));
-    }
-  }
-
-  return {
-    allergies: uniqueItems(allergies),
-    conditions: uniqueItems(conditions),
-  };
 }
 
 function formatDuration(totalSeconds: number) {
@@ -441,7 +354,9 @@ export default function SilverLensApp() {
   const narrationAudioRef = useRef<HTMLAudioElement | null>(null);
   const narrationUrlRef = useRef<string | null>(null);
   const narrationFinishRef = useRef<(() => void) | null>(null);
-  const narrationChunksRef = useRef<Map<string, Array<Promise<Blob>>>>(new Map());
+  const narrationChunksRef = useRef<
+    Map<string, Array<Array<Promise<Blob>>>>
+  >(new Map());
   const narrationControllersRef = useRef<Set<AbortController>>(new Set());
   const narrationSequenceRef = useRef(0);
   const announceTimerRef = useRef<number | null>(null);
@@ -540,19 +455,23 @@ export default function SilverLensApp() {
   }, []);
 
   const prepareGeminiAnswer = useCallback(
-    (turnId: string, text: string, lang: Language = activeLanguage) => {
+    (turnId: string, pages: string[], lang: Language = activeLanguage) => {
       const cacheKey = `${turnId}:${lang}`;
       const cached = narrationChunksRef.current.get(cacheKey);
       if (cached) return cached;
 
-      const chunks = splitNarrationText(text, 210);
-      if (chunks.length === 0) return [];
+      const pageRequests = pages.map((page) =>
+        splitNarrationText(plainTextFromMarkdown(page), 210).map((chunk) =>
+          fetchNarrationChunk(chunk, lang),
+        ),
+      );
+      const allRequests = pageRequests.flat();
+      if (allRequests.length === 0) return [];
 
       setNarrationStatus((current) => ({ ...current, [turnId]: "preparing" }));
-      const requests = chunks.map((chunk) => fetchNarrationChunk(chunk, lang));
-      narrationChunksRef.current.set(cacheKey, requests);
+      narrationChunksRef.current.set(cacheKey, pageRequests);
 
-      void Promise.all(requests).then(
+      void Promise.all(allRequests).then(
         () => {
           setNarrationStatus((current) => ({ ...current, [turnId]: "ready" }));
         },
@@ -561,65 +480,139 @@ export default function SilverLensApp() {
           setNarrationStatus((current) => ({ ...current, [turnId]: "error" }));
         },
       );
-      return requests;
+      return pageRequests;
     },
     [activeLanguage, fetchNarrationChunk],
   );
 
+  const speakAnswerPagesWithBrowser = useCallback(
+    (
+      pages: string[],
+      startPage: number,
+      firstCardIndex: number,
+      lang: Language = activeLanguage,
+    ) => {
+      if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
+      stopNarration();
+      const sequence = narrationSequenceRef.current;
+      setIsNarrating(true);
+
+      const speakPage = (pageIndex: number) => {
+        if (sequence !== narrationSequenceRef.current) return;
+        if (pageIndex >= pages.length) {
+          setIsNarrating(false);
+          return;
+        }
+        setAnswerCardIndex(firstCardIndex + pageIndex);
+        const chunks = splitNarrationText(
+          plainTextFromMarkdown(pages[pageIndex]),
+        );
+
+        const speakChunk = (chunkIndex: number) => {
+          if (sequence !== narrationSequenceRef.current) return;
+          if (chunkIndex >= chunks.length) {
+            speakPage(pageIndex + 1);
+            return;
+          }
+          const utterance = new SpeechSynthesisUtterance(chunks[chunkIndex]);
+          utterance.lang = lang;
+          utterance.rate = 0.82;
+          utterance.pitch = 1.02;
+          utterance.addEventListener(
+            "end",
+            () => speakChunk(chunkIndex + 1),
+            { once: true },
+          );
+          utterance.addEventListener(
+            "error",
+            () => {
+              if (sequence === narrationSequenceRef.current) {
+                setIsNarrating(false);
+              }
+            },
+            { once: true },
+          );
+          window.speechSynthesis.speak(utterance);
+        };
+
+        if (chunks.length === 0) speakPage(pageIndex + 1);
+        else speakChunk(0);
+      };
+
+      speakPage(startPage);
+    },
+    [activeLanguage, stopNarration],
+  );
+
   const speakGeminiAnswer = useCallback(
-    async (turnId: string, text: string, lang: Language = activeLanguage) => {
+    async (
+      turnId: string,
+      pages: string[],
+      startPage: number,
+      firstCardIndex: number,
+      lang: Language = activeLanguage,
+    ) => {
       if (typeof window === "undefined") return;
 
       stopNarration();
       const sequence = narrationSequenceRef.current;
-      const chunks = prepareGeminiAnswer(turnId, text, lang);
-      if (chunks.length === 0) return;
+      const pageRequests = prepareGeminiAnswer(turnId, pages, lang);
+      if (pageRequests.length === 0) return;
 
       try {
-        for (const chunkRequest of chunks) {
+        for (
+          let pageIndex = startPage;
+          pageIndex < pageRequests.length;
+          pageIndex += 1
+        ) {
           if (sequence !== narrationSequenceRef.current) return;
-          const blob = await chunkRequest;
-          if (sequence !== narrationSequenceRef.current) return;
+          setAnswerCardIndex(firstCardIndex + pageIndex);
 
-          const url = URL.createObjectURL(blob);
-          const audio = new Audio(url);
-          narrationUrlRef.current = url;
-          narrationAudioRef.current = audio;
-          setIsNarrating(true);
+          for (const chunkRequest of pageRequests[pageIndex]) {
+            if (sequence !== narrationSequenceRef.current) return;
+            const blob = await chunkRequest;
+            if (sequence !== narrationSequenceRef.current) return;
 
-          await new Promise<void>((resolve, reject) => {
-            let settled = false;
-            const finish = (error?: Error) => {
-              if (settled) return;
-              settled = true;
-              if (narrationAudioRef.current === audio) {
-                narrationAudioRef.current = null;
-              }
-              if (narrationUrlRef.current === url) {
-                URL.revokeObjectURL(url);
-                narrationUrlRef.current = null;
-              }
-              if (narrationFinishRef.current === finish) {
-                narrationFinishRef.current = null;
-              }
-              if (error) reject(error);
-              else resolve();
-            };
-            narrationFinishRef.current = () => finish();
-            audio.addEventListener("ended", () => finish(), { once: true });
-            audio.addEventListener(
-              "error",
-              () => finish(new Error("Gemini 음성을 재생하지 못했습니다.")),
-              { once: true },
-            );
-            audio.play().catch((error: unknown) =>
-              finish(
-                error instanceof Error
-                  ? error
-                  : new Error("Gemini 음성을 재생하지 못했습니다."),
-              ),
-            );
-          });
+            const url = URL.createObjectURL(blob);
+            const audio = new Audio(url);
+            narrationUrlRef.current = url;
+            narrationAudioRef.current = audio;
+            setIsNarrating(true);
+
+            await new Promise<void>((resolve, reject) => {
+              let settled = false;
+              const finish = (error?: Error) => {
+                if (settled) return;
+                settled = true;
+                if (narrationAudioRef.current === audio) {
+                  narrationAudioRef.current = null;
+                }
+                if (narrationUrlRef.current === url) {
+                  URL.revokeObjectURL(url);
+                  narrationUrlRef.current = null;
+                }
+                if (narrationFinishRef.current === finish) {
+                  narrationFinishRef.current = null;
+                }
+                if (error) reject(error);
+                else resolve();
+              };
+              narrationFinishRef.current = () => finish();
+              audio.addEventListener("ended", () => finish(), { once: true });
+              audio.addEventListener(
+                "error",
+                () => finish(new Error("Gemini 음성을 재생하지 못했습니다.")),
+                { once: true },
+              );
+              audio.play().catch((error: unknown) =>
+                finish(
+                  error instanceof Error
+                    ? error
+                    : new Error("Gemini 음성을 재생하지 못했습니다."),
+                ),
+              );
+            });
+          }
         }
 
         if (sequence === narrationSequenceRef.current) {
@@ -628,10 +621,20 @@ export default function SilverLensApp() {
       } catch {
         if (sequence !== narrationSequenceRef.current) return;
         setNarrationStatus((current) => ({ ...current, [turnId]: "error" }));
-        speakWithBrowser(text, lang);
+        speakAnswerPagesWithBrowser(
+          pages,
+          startPage,
+          firstCardIndex,
+          lang,
+        );
       }
     },
-    [activeLanguage, prepareGeminiAnswer, speakWithBrowser, stopNarration],
+    [
+      activeLanguage,
+      prepareGeminiAnswer,
+      speakAnswerPagesWithBrowser,
+      stopNarration,
+    ],
   );
 
   const queueBrowserNarration = useCallback(
@@ -736,30 +739,35 @@ export default function SilverLensApp() {
     if (recorder && recorder.state !== "inactive") recorder.stop();
   };
 
-  const transcribeRecording = useCallback(async (blob: Blob) => {
-    const sttUrl = process.env.NEXT_PUBLIC_STT_API_URL;
+  const normalizeDialectLocally = useCallback(async (text: string) => {
+    const dialectUrl = process.env.NEXT_PUBLIC_DIALECT_API_URL;
     const isLocalBrowser =
       typeof window !== "undefined" &&
       (window.location.hostname === "localhost" ||
         window.location.hostname === "127.0.0.1");
+    if (!dialectUrl || !isLocalBrowser || !text.trim()) return text;
 
-    if (sttUrl && isLocalBrowser) {
-      try {
-        const formData = new FormData();
-        formData.append("audio", blob, "recording.webm");
-        const response = await fetch(`${sttUrl.replace(/\/$/, "")}/transcribe`, {
-          method: "POST",
-          body: formData,
-        });
-        const payload = (await response.json()) as { text?: string; detail?: string };
-        if (!response.ok) throw new Error(payload.detail || "음성을 인식하지 못했습니다.");
-        const text = payload.text?.trim() || "";
-        if (text) return text;
-      } catch {
-        // 로컬 STT가 꺼져 있으면 같은 사이트의 Gemini STT로 이어서 시도합니다.
-      }
+    try {
+      const response = await fetch(`${dialectUrl.replace(/\/$/, "")}/normalize`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ text }),
+      });
+      const payload = (await response.json()) as {
+        normalized?: string;
+        detail?: string;
+      };
+      if (!response.ok || !payload.normalized?.trim()) return text;
+      return payload.normalized.trim();
+    } catch {
+      return text;
     }
+  }, []);
 
+  const transcribeRecording = useCallback(async (
+    blob: Blob,
+    purpose: RecordingContext,
+  ): Promise<VoiceAnalysis> => {
     let uploadBlob = blob;
     try {
       uploadBlob = await convertRecordingToWav(blob);
@@ -770,13 +778,22 @@ export default function SilverLensApp() {
     const response = await fetch("/api/transcribe", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ audio }),
+      body: JSON.stringify({ audio, purpose }),
     });
-    const payload = (await response.json()) as { text?: string; error?: string };
+    const payload = (await response.json()) as {
+      text?: string;
+      allergies?: string[];
+      conditions?: string[];
+      error?: string;
+    };
     if (!response.ok || !payload.text?.trim()) {
       throw new Error(payload.error || "음성을 인식하지 못했습니다.");
     }
-    return payload.text.trim();
+    return {
+      text: payload.text.trim(),
+      allergies: uniqueItems(payload.allergies ?? []),
+      conditions: uniqueItems(payload.conditions ?? []),
+    };
   }, []);
 
   const toggleRecording = async (context: RecordingContext) => {
@@ -835,37 +852,29 @@ export default function SilverLensApp() {
           setProfileVoiceNotice("음성을 글자로 바꾸고 있어요. 잠시만 기다려 주세요.");
         }
         try {
-            const text = await transcribeRecording(blob);
+            const analysis = await transcribeRecording(blob, context);
+            const text =
+              context === "chat"
+                ? await normalizeDialectLocally(analysis.text)
+                : analysis.text;
             setTranscript(text);
             if (context === "chat") {
               setChatInput(text);
-            } else if (context === "allergy") {
-              const items = splitSpokenProfileItems(text, "allergy");
-              setAllergies((current) => uniqueItems([...current, ...items]));
-              setShowAllergyInput(false);
-              setProfileVoiceNotice(
-                items.length > 0
-                  ? `알레르기 정보에 ${items.join(", ")}을(를) 입력했어요.`
-                  : "알레르기 내용을 찾지 못했어요. 다시 짧게 말해 주세요.",
-              );
-            } else if (context === "condition") {
-              const items = splitSpokenProfileItems(text, "condition");
-              setConditions((current) => uniqueItems([...current, ...items]));
-              setShowConditionInput(false);
-              setProfileVoiceNotice(
-                items.length > 0
-                  ? `질병 정보에 ${items.join(", ")}을(를) 입력했어요.`
-                  : "질병 내용을 찾지 못했어요. 다시 짧게 말해 주세요.",
-              );
             } else {
-              const extracted = extractProfileItems(text);
-              setAllergies((current) => uniqueItems([...current, ...extracted.allergies]));
-              setConditions((current) => uniqueItems([...current, ...extracted.conditions]));
-              const total = extracted.allergies.length + extracted.conditions.length;
+              setAllergies((current) =>
+                uniqueItems([...current, ...analysis.allergies]),
+              );
+              setConditions((current) =>
+                uniqueItems([...current, ...analysis.conditions]),
+              );
+              setShowAllergyInput(false);
+              setShowConditionInput(false);
+              const total =
+                analysis.allergies.length + analysis.conditions.length;
               setProfileVoiceNotice(
                 total > 0
-                  ? `음성에서 알레르기 ${extracted.allergies.length}개, 질병 ${extracted.conditions.length}개를 입력했어요.`
-                  : "자동으로 구분하지 못했어요. 알레르기 또는 질병 카드의 말하기 버튼을 이용해 주세요.",
+                  ? `AI가 음성을 확인해 알레르기 ${analysis.allergies.length}개, 질병 ${analysis.conditions.length}개를 나누어 입력했어요.`
+                  : "음성에서 분명하게 말한 알레르기나 질병 정보를 찾지 못했어요.",
               );
             }
         } catch (error) {
@@ -908,7 +917,6 @@ export default function SilverLensApp() {
             id: `${turn.id}-${pageIndex}`,
             turnId: turn.id,
           question: turn.question,
-          answer: turn.answer,
           content,
           attachmentLabels: turn.attachmentLabels,
           turnIndex,
@@ -1023,7 +1031,6 @@ export default function SilverLensApp() {
       const nextTurn: ChatTurn = {
         id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
         question: questionLabel,
-        answer: payload.answer,
         pages: splitAnswerIntoPages(payload.answer),
         attachmentLabels,
       };
@@ -1033,9 +1040,14 @@ export default function SilverLensApp() {
       setPendingAudio(null);
       setPendingImage(null);
       setTranscript("");
-      const narrationText = plainTextFromMarkdown(payload.answer);
-      prepareGeminiAnswer(nextTurn.id, narrationText, activeLanguage);
-      void speakGeminiAnswer(nextTurn.id, narrationText, activeLanguage);
+      prepareGeminiAnswer(nextTurn.id, nextTurn.pages, activeLanguage);
+      void speakGeminiAnswer(
+        nextTurn.id,
+        nextTurn.pages,
+        0,
+        answerCards.length,
+        activeLanguage,
+      );
     } catch (error) {
       setChatError(error instanceof Error ? error.message : "답변을 불러오지 못했습니다.");
     } finally {
@@ -1171,14 +1183,24 @@ export default function SilverLensApp() {
                   return;
                 }
                 if (activeAnswerCard) {
-                  const narrationText = plainTextFromMarkdown(activeAnswerCard.answer);
+                  const turn = chatTurns[activeAnswerCard.turnIndex];
+                  const firstCardIndex =
+                    visibleAnswerCardIndex - activeAnswerCard.pageIndex;
+                  if (!turn) return;
                   if (narrationStatus[activeAnswerCard.turnId] === "error") {
-                    speakWithBrowser(narrationText, activeLanguage);
+                    speakAnswerPagesWithBrowser(
+                      turn.pages,
+                      activeAnswerCard.pageIndex,
+                      firstCardIndex,
+                      activeLanguage,
+                    );
                     return;
                   }
                   void speakGeminiAnswer(
                     activeAnswerCard.turnId,
-                    narrationText,
+                    turn.pages,
+                    activeAnswerCard.pageIndex,
+                    firstCardIndex,
                     activeLanguage,
                   );
                 }

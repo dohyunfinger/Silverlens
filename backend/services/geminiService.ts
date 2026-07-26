@@ -1,5 +1,5 @@
 import { getGeminiConfig } from "../config/env";
-import { loadKnowledgeData } from "../data/loadData";
+import { findRelevantKnowledge } from "../data/loadData";
 
 export type UserProfile = {
   language?: string;
@@ -44,7 +44,7 @@ export async function generateSeniorFriendlyAnswer(
   media: { audio?: InlineMedia | null; image?: InlineMedia | null } = {},
 ) {
   const { apiKey, textModel } = getGeminiConfig();
-  const knowledge = loadKnowledgeData();
+  const knowledge = findRelevantKnowledge(message, profile);
   const prompt = [
     "당신은 시니어에게 식재료 정보를 쉬운 말로 설명하는 보조 AI입니다.",
     "의학적 진단이나 치료 지시를 하지 말고, 위험 가능성이 있으면 의료진 확인을 권하세요.",
@@ -55,11 +55,18 @@ export async function generateSeniorFriendlyAnswer(
     "핵심 내용을 빠뜨리지 말고, 마지막 문장을 끝까지 완결해서 작성하세요.",
     "첨부된 글, 음성, 사진이 있으면 각각 따로 답하지 말고 하나의 질문으로 함께 이해하세요.",
     "사진이 있으면 사진 속 식재료를 확인하고, 음성이 있으면 말한 질문의 뜻을 반영하세요.",
+    "사용자 질문에 방언이 있으면 방언 참고 자료를 이용해 표준어 의미로 이해하세요.",
+    "아래 식품 자료는 답변 후보를 찾기 위한 내부 참고 자료입니다.",
+    "자료에 있는 건강 효능·권장량 문구를 검증된 의학 사실처럼 단정하지 마세요.",
+    "사용자 알레르기나 질병 정보와 충돌하거나 불확실하면 안전 원칙을 우선하세요.",
     `사용자 나이대: ${profile.ageBand ?? "미입력"}대`,
     `알레르기: ${(profile.allergies ?? []).join(", ") || "미입력"}`,
     `질병 정보: ${(profile.conditions ?? []).join(", ") || "미입력"}`,
-    `사투리 참고: ${JSON.stringify(knowledge.dialectTerms)}`,
+    `질문에서 찾은 방언 참고: ${JSON.stringify(knowledge.dialectHints)}`,
+    `기존 방언 참고: ${JSON.stringify(knowledge.legacyDialectTerms)}`,
     `식재료 별칭 참고: ${JSON.stringify(knowledge.foodAliases)}`,
+    `관련 요리·재료 자료: ${JSON.stringify(knowledge.recipes)}`,
+    `관련 시니어 식품 자료: ${JSON.stringify(knowledge.foods)}`,
     `안전 원칙: ${JSON.stringify(knowledge.safetyRules)}`,
     `사용자 글 질문: ${message || "없음. 첨부된 음성이나 사진을 중심으로 답변할 것"}`,
   ].join("\n");

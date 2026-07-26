@@ -2,7 +2,10 @@ import { NextResponse } from "next/server";
 import {
   type InlineMedia,
 } from "../../../backend/services/geminiService";
-import { transcribeAudio } from "../../../backend/services/transcriptionService";
+import {
+  transcribeAudio,
+  type TranscriptionPurpose,
+} from "../../../backend/services/transcriptionService";
 
 const MAX_AUDIO_DATA_LENGTH = 14 * 1024 * 1024;
 
@@ -20,14 +23,33 @@ function isInlineAudio(value: unknown): value is InlineMedia {
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as { audio?: unknown };
+    const body = (await request.json()) as {
+      audio?: unknown;
+      purpose?: unknown;
+    };
     if (!isInlineAudio(body.audio)) {
       return NextResponse.json(
         { error: "지원되는 음성 파일을 보내 주세요." },
         { status: 400 },
       );
     }
-    return NextResponse.json({ text: await transcribeAudio(body.audio) });
+    const allowedPurposes: TranscriptionPurpose[] = [
+      "chat",
+      "setup",
+      "allergy",
+      "condition",
+    ];
+    const purpose = allowedPurposes.includes(
+      body.purpose as TranscriptionPurpose,
+    )
+      ? (body.purpose as TranscriptionPurpose)
+      : "chat";
+    const result = await transcribeAudio(body.audio, purpose);
+    return NextResponse.json({
+      text: result.transcript,
+      allergies: result.allergies,
+      conditions: result.conditions,
+    });
   } catch (error) {
     const message =
       error instanceof Error ? error.message : "음성을 글자로 바꾸지 못했습니다.";
