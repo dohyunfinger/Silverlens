@@ -1,4 +1,4 @@
-# 1~250번 전체 데이터 정밀 검수 완료: 순수 의학 진단명(학문명) 36종 다국어 사전
+# 1~300번 전체 데이터 5차 검수 완료: 순수 의학 진단명(학문명) 38종 다국어 사전
 academic_diseases_map = {
     "고지혈증": {
         "en": "Hyperlipidemia",
@@ -179,6 +179,16 @@ academic_diseases_map = {
         "en": "Renal Failure",
         "ja": "腎不全",
         "ja_romaji": "Jinfuzen"
+    },
+    "요로결석": {
+        "en": "Urolithiasis",
+        "ja": "尿路結石",
+        "ja_romaji": "Nyouro Kesseki"
+    },
+    "대장염": {
+        "en": "Colitis",
+        "ja": "大腸炎",
+        "ja_romaji": "Daichouen"
     }
 }
 
@@ -190,6 +200,6 @@ def get_academic_disease(name: str, lang: str = "en") -> str:
     return name
 
 # 실행 테스트
-print("1. 신부전증 (영어):", get_academic_disease("신부전증", "en"))
-print("2. 천식 (일본어):", get_academic_disease("천식", "ja"))
-print("3. 전립선 질환 (영어):", get_academic_disease("전립선 질환", "en"))
+print("1. 요로결석 (영어):", get_academic_disease("요로결석", "en"))
+print("2. 대장염 (일본어):", get_academic_disease("대장염", "ja"))
+print("3. 신부전증 (영어):", get_academic_disease("신부전증", "en"))
