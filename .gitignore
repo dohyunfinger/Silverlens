@@ -1,0 +1,5 @@
+.sites-runtime/
+.openai/
+.vinext/
+.next/
+node_modules/
