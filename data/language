@@ -1,4 +1,4 @@
-# 1~300번 전체 데이터 5차 검수 완료: 순수 의학 진단명(학문명) 38종 다국어 사전
+# 1~570번 전체 데이터 5차 정밀 검수 완료: 순수 의학 진단명(학문명) 47종 다국어 사전
 academic_diseases_map = {
     "고지혈증": {
         "en": "Hyperlipidemia",
@@ -170,6 +170,11 @@ academic_diseases_map = {
         "ja": "前立腺疾患",
         "ja_romaji": "Zenritsusen Shikkan"
     },
+    "면역결핍증": {
+        "en": "Immunodeficiency",
+        "ja": "免疫不全症",
+        "ja_romaji": "Men'eki Fuzenshou"
+    },
     "천식": {
         "en": "Asthma",
         "ja": "喘息",
@@ -189,6 +194,51 @@ academic_diseases_map = {
         "en": "Colitis",
         "ja": "大腸炎",
         "ja_romaji": "Daichouen"
+    },
+    "아나필락시스": {
+        "en": "Anaphylaxis",
+        "ja": "アナフィラキシー",
+        "ja_romaji": "Anafirakishii"
+    },
+    "중독증": {
+        "en": "Intoxication",
+        "ja": "中毒症",
+        "ja_romaji": "Chuudokushou"
+    },
+    "유당불내증": {
+        "en": "Lactose Intolerance",
+        "ja": "乳糖不耐症",
+        "ja_romaji": "Nyuutou Futaishou"
+    },
+    "저혈당증": {
+        "en": "Hypoglycemia",
+        "ja": "低血糖症",
+        "ja_romaji": "Teikettoushou"
+    },
+    "유방암": {
+        "en": "Breast Cancer",
+        "ja": "乳がん",
+        "ja_romaji": "Nyugan"
+    },
+    "자궁근종": {
+        "en": "Uterine Fibroids",
+        "ja": "子宮筋腫",
+        "ja_romaji": "Shikyuu Kinshu"
+    },
+    "치질": {
+        "en": "Hemorrhoids",
+        "ja": "痔",
+        "ja_romaji": "Ji"
+    },
+    "셀레늄 중독증": {
+        "en": "Selenium Toxicity",
+        "ja": "セレン中毒症",
+        "ja_romaji": "Seren Chuudokushou"
+    },
+    "소화불량": {
+        "en": "Dyspepsia",
+        "ja": "消化不良",
+        "ja_romaji": "Shouka Furyou"
     }
 }
 
