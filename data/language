@@ -1,4 +1,4 @@
-# 1~172번 전체 데이터 정밀 검수 완료: 순수 의학 진단명(학문명) 32종 다국어 사전
+# 1~250번 전체 데이터 정밀 검수 완료: 순수 의학 진단명(학문명) 36종 다국어 사전
 academic_diseases_map = {
     "고지혈증": {
         "en": "Hyperlipidemia",
@@ -159,5 +159,37 @@ academic_diseases_map = {
         "en": "Hypotension",
         "ja": "低血圧",
         "ja_romaji": "Teiketsuatsu"
+    },
+    "알레르기 질환": {
+        "en": "Allergic Disease",
+        "ja": "アレルギー疾患",
+        "ja_romaji": "Arerugii Shikkan"
+    },
+    "전립선 질환": {
+        "en": "Prostate Disease",
+        "ja": "前立腺疾患",
+        "ja_romaji": "Zenritsusen Shikkan"
+    },
+    "천식": {
+        "en": "Asthma",
+        "ja": "喘息",
+        "ja_romaji": "Zensoku"
+    },
+    "신부전증": {
+        "en": "Renal Failure",
+        "ja": "腎不全",
+        "ja_romaji": "Jinfuzen"
     }
 }
+
+# 변환 함수 예시
+def get_academic_disease(name: str, lang: str = "en") -> str:
+    disease = academic_diseases_map.get(name)
+    if disease:
+        return disease.get(lang, name)
+    return name
+
+# 실행 테스트
+print("1. 신부전증 (영어):", get_academic_disease("신부전증", "en"))
+print("2. 천식 (일본어):", get_academic_disease("천식", "ja"))
+print("3. 전립선 질환 (영어):", get_academic_disease("전립선 질환", "en"))
