@@ -8,7 +8,7 @@
 
 ```env
 GEMINI_API_KEY=Google_AI_Studio에서_발급한_키
-GEMINI_TEXT_MODEL=gemini-2.5-flash
+GEMINI_TEXT_MODEL=gemini-3.6-flash
 GEMINI_TTS_MODEL=gemini-2.5-flash-preview-tts
 NEXT_PUBLIC_STT_API_URL=http://127.0.0.1:8000
 ```
@@ -28,6 +28,7 @@ SilverLens/
 ├── app/                        # Next.js 진입점과 서버 API
 │   ├── api/
 │   │   ├── chat/route.ts       # Gemini 대화 API
+│   │   ├── transcribe/route.ts # 휴대폰·배포 환경 Gemini STT
 │   │   └── tts/route.ts        # Gemini 2.5 Flash TTS API
 │   ├── globals.css
 │   ├── layout.tsx
@@ -39,6 +40,7 @@ SilverLens/
 │   ├── data/loadData.ts        # JSON 자료 메모리 캐시
 │   ├── services/
 │   │   ├── geminiService.ts
+│   │   ├── transcriptionService.ts
 │   │   └── ttsService.ts
 │   └── local_stt/
 │       ├── main.py             # faster-whisper 로컬 서버
@@ -54,6 +56,22 @@ SilverLens/
 `data/*.json`은 `backend/data/loadData.ts`가 최초 요청 때 읽고 메모리에 보관합니다.
 
 ## VS Code 실행
+
+프로젝트 폴더를 VS Code에서 연 뒤 터미널에서 환경 설정 파일을 만듭니다.
+
+Windows PowerShell:
+
+```powershell
+Copy-Item .env.example .env.local
+```
+
+macOS/Linux:
+
+```bash
+cp .env.example .env.local
+```
+
+생성된 `.env.local`을 열어 `GEMINI_API_KEY` 값을 입력합니다.
 
 Node.js 웹 서버:
 
@@ -88,13 +106,15 @@ uvicorn backend.local_stt.main:app --reload --port 8000
 
 ## AI 구성
 
-- 언어 모델: Gemini API
+- 언어 모델: Gemini 3.6 Flash
 - 음성 인식: faster-whisper 로컬 서버
+- 휴대폰·배포 환경 음성 인식: Gemini 오디오 입력
 - 설정·추천 안내: Web Speech API 기반 브라우저 TTS
 - AI 답변 음성: Gemini 2.5 Flash TTS
 - AI 답변 음성 예비 수단: Web Speech API 기반 브라우저 TTS
 
-긴 AI 답변은 문장 단위로 나누어 음성을 생성한 뒤 하나의 WAV로 이어 붙입니다.
+AI 답변 음성은 짧은 문장 묶음으로 동시에 준비하고 브라우저 메모리에 보관합니다.
+같은 답변을 다시 들을 때는 이미 준비된 음성을 재사용하므로 다시 변환하지 않습니다.
 화면에서는 답변을 큰 글자 카드로 나누고, 왼쪽은 이전 대화, 오른쪽은 이어지는
 답변과 새 대화 순서로 이동합니다. Gemini TTS 요청이 실패하거나 API 키가 없으면
 브라우저 TTS로 자동 전환합니다.

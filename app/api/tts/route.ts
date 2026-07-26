@@ -9,9 +9,9 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "읽을 문장을 입력해 주세요." }, { status: 400 });
     }
     const text = body.text.trim();
-    if (text.length > 6000) {
+    if (text.length > 800) {
       return NextResponse.json(
-        { error: "읽을 답변은 6,000자 이하로 입력해 주세요." },
+        { error: "한 번에 읽을 문장은 800자 이하로 입력해 주세요." },
         { status: 400 },
       );
     }

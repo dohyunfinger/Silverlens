@@ -4,11 +4,8 @@ export function getGeminiConfig() {
     throw new Error("GEMINI_API_KEY가 설정되지 않았습니다.");
   }
 
-  const configuredTextModel = process.env.GEMINI_TEXT_MODEL?.trim();
   const textModel =
-    !configuredTextModel || configuredTextModel === "gemini-2.5-flash"
-      ? "gemini-3.6-flash"
-      : configuredTextModel;
+    process.env.GEMINI_TEXT_MODEL?.trim() || "gemini-3.6-flash";
 
   return {
     apiKey,
