@@ -1,4 +1,8 @@
-# 1~570번 전체 데이터 5차 정밀 검수 완료: 순수 의학 진단명(학문명) 47종 다국어 사전
+제시해주신 Python 코드(academic_diseases_map)의 기존 형태(en, ja, ja_romaji 구조)에 맞춰, 광범위했던 '알레르기 질환'을 상위 대표 그룹(견과류, 갑각류, 조개류, 생선류, 과일류, 난류, 우유/유제품, 육류, 곡류/대두)으로 통합 정리하여 반영한 완전체 Python 코드입니다.
+
+💻 업데이트된 Python 코드 (academic_diseases_map)
+Python
+# 1~570번 전체 데이터 정식 학문명/의학 진단명 다국어 사전 (알레르기 그룹화 세분화 반영)
 academic_diseases_map = {
     "고지혈증": {
         "en": "Hyperlipidemia",
@@ -160,11 +164,55 @@ academic_diseases_map = {
         "ja": "低血圧",
         "ja_romaji": "Teiketsuatsu"
     },
-    "알레르기 질환": {
-        "en": "Allergic Disease",
-        "ja": "アレルギー疾患",
-        "ja_romaji": "Arerugii Shikkan"
+    # ==========================================
+    # 식품 알레르기 그룹 세분화 항목 (기존 '알레르기 질환' 대체)
+    # ==========================================
+    "견과류 알레르기": {
+        "en": "Tree Nut and Peanut Allergy",
+        "ja": "ナッツ類アレルギー",
+        "ja_romaji": "Nattsurui Arerugii"
     },
+    "갑각류 알레르기": {
+        "en": "Crustacean Shellfish Allergy",
+        "ja": "甲殻類アレルギー",
+        "ja_romaji": "Koukakurui Arerugii"
+    },
+    "조개류/연체류 알레르기": {
+        "en": "Molluscan Shellfish Allergy",
+        "ja": "貝類・軟体類アレルギー",
+        "ja_romaji": "Kairui/Nantairui Arerugii"
+    },
+    "생선류 알레르기": {
+        "en": "Fish Allergy",
+        "ja": "魚類アレルギー",
+        "ja_romaji": "Gyorui Arerugii"
+    },
+    "과일류 알레르기": {
+        "en": "Fruit Allergy",
+        "ja": "果物アレルギー",
+        "ja_romaji": "Kudamono Arerugii"
+    },
+    "난류 알레르기": {
+        "en": "Egg Allergy",
+        "ja": "卵類アレルギー",
+        "ja_romaji": "Ranrui Arerugii"
+    },
+    "우유/유제품 알레르기": {
+        "en": "Milk and Dairy Allergy",
+        "ja": "乳製品アレルギー",
+        "ja_romaji": "Nyouseihin Arerugii"
+    },
+    "육류 알레르기": {
+        "en": "Meat Allergy",
+        "ja": "肉類アレルギー",
+        "ja_romaji": "Nikurui Arerugii"
+    },
+    "곡류 및 대두 알레르기": {
+        "en": "Grain and Soy Allergy",
+        "ja": "穀物・大豆アレルギー",
+        "ja_romaji": "Kokumotsu/Daizu Arerugii"
+    },
+    # ==========================================
     "전립선 질환": {
         "en": "Prostate Disease",
         "ja": "前立腺疾患",
