@@ -8124,7 +8124,7 @@ food_data = [
         "good_compatibility": "치즈, 피자, 고기",
         "bad_compatibility": "없음"
     }
-  },
+  }
   
 
   
