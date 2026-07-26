@@ -1,4 +1,8 @@
-# 1~570번 전체 데이터 5차 정밀 검수 완료: 순수 의학 진단명(학문명) 47종 다국어 사전
+제시해주신 Python 코드(academic_diseases_map)의 기존 형태(en, ja, ja_romaji 구조)에 맞춰, 광범위했던 '알레르기 질환'을 상위 대표 그룹(견과류, 갑각류, 조개류, 생선류, 과일류, 난류, 우유/유제품, 육류, 곡류/대두)으로 통합 정리하여 반영한 완전체 Python 코드입니다.
+
+💻 업데이트된 Python 코드 (academic_diseases_map)
+Python
+# 1~570번 전체 데이터 정식 학문명/의학 진단명 다국어 사전 (알레르기 그룹화 세분화 반영)
 academic_diseases_map = {
     "고지혈증": {
         "en": "Hyperlipidemia",
@@ -160,92 +164,55 @@ academic_diseases_map = {
         "ja": "低血圧",
         "ja_romaji": "Teiketsuatsu"
     },
+    # ==========================================
+    # 식품 알레르기 그룹 세분화 항목 (기존 '알레르기 질환' 대체)
+    # ==========================================
     "견과류 알레르기": {
         "en": "Tree Nut and Peanut Allergy",
         "ja": "ナッツ類アレルギー",
-        "ja_romaji": "Nattsurui Arerugii",
-        "included_items": ["땅콩", "호두", "잣", "아몬드", "캐슈넛", "피칸", "피스타치오", "헤이즐넛"]
+        "ja_romaji": "Nattsurui Arerugii"
     },
-
-    # ==========================================
-    # 2. 갑각류 알레르기 (새우, 게, 랍스터, 킹크랩 등 통합)
-    # ==========================================
     "갑각류 알레르기": {
         "en": "Crustacean Shellfish Allergy",
         "ja": "甲殻類アレルギー",
-        "ja_romaji": "Koukakurui Arerugii",
-        "included_items": ["새우", "게", "랍스터", "대하", "쏙"]
+        "ja_romaji": "Koukakurui Arerugii"
     },
-
-    # ==========================================
-    # 3. 조개류/연체류 알레르기 (굴, 전복, 바지락, 오징어, 문어 등 통합)
-    # ==========================================
     "조개류/연체류 알레르기": {
         "en": "Molluscan Shellfish Allergy",
         "ja": "貝類・軟体類アレルギー",
-        "ja_romaji": "Kairui/Nantairui Arerugii",
-        "included_items": ["굴", "전복", "꼬막", "바지락", "홍합", "오징어", "문어", "낙지"]
+        "ja_romaji": "Kairui/Nantairui Arerugii"
     },
-
-    # ==========================================
-    # 4. 생선류 알레르기 (고등어, 연어, 조기, 돌돔 등 수산 어류 통합)
-    # ==========================================
     "생선류 알레르기": {
         "en": "Fish Allergy",
         "ja": "魚類アレルギー",
-        "ja_romaji": "Gyorui Arerugii",
-        "included_items": ["고등어", "삼치", "연어", "조기", "갈치", "돌돔", "광어"]
+        "ja_romaji": "Gyorui Arerugii"
     },
-
-    # ==========================================
-    # 5. 과일류 알레르기 / 구강 알레르기 증후군 (사과, 복숭아, 키위, 토마토 등)
-    # ==========================================
     "과일류 알레르기": {
-        "en": "Fruit Allergy / Oral Allergy Syndrome",
+        "en": "Fruit Allergy",
         "ja": "果物アレルギー",
-        "ja_romaji": "Kudamono Arerugii",
-        "included_items": ["사과", "복숭아", "키위", "토마토", "바나나", "딸기", "자두", "살구"]
+        "ja_romaji": "Kudamono Arerugii"
     },
-
-    # ==========================================
-    # 6. 난류(계란) 알레르기 (달걀, 메추리알 등)
-    # ==========================================
     "난류 알레르기": {
         "en": "Egg Allergy",
         "ja": "卵類アレルギー",
-        "ja_romaji": "Ranrui Arerugii",
-        "included_items": ["달걀", "계란", "메추리알", "오리알"]
+        "ja_romaji": "Ranrui Arerugii"
     },
-
-    # ==========================================
-    # 7. 유제품/우유 알레르기 (우유, 치즈, 버터, 분유 등)
-    # ==========================================
     "우유/유제품 알레르기": {
         "en": "Milk and Dairy Allergy",
         "ja": "乳製品アレルギー",
-        "ja_romaji": "Nyouseihin Arerugii",
-        "included_items": ["우유", "치즈", "버터", "요거트", "분유"]
+        "ja_romaji": "Nyouseihin Arerugii"
     },
-
-    # ==========================================
-    # 8. 육류 알레르기 (돼지고기, 쇠고기, 닭고기, 오리고기 등)
-    # ==========================================
     "육류 알레르기": {
         "en": "Meat Allergy",
         "ja": "肉類アレルギー",
-        "ja_romaji": "Nikurui Arerugii",
-        "included_items": ["돼지고기", "쇠고기", "닭고기", "오리고기"]
+        "ja_romaji": "Nikurui Arerugii"
     },
-
-    # ==========================================
-    # 9. 곡류/글루텐 알레르기 (밀, 메mult/메밀, 대두/콩, 참깨 등)
-    # ==========================================
     "곡류 및 대두 알레르기": {
         "en": "Grain and Soy Allergy",
         "ja": "穀物・大豆アレルギー",
-        "ja_romaji": "Kokumotsu/Daizu Arerugii",
-        "included_items": ["밀", "대두(콩)", "메밀", "참깨", "보리"]
+        "ja_romaji": "Kokumotsu/Daizu Arerugii"
     },
+    # ==========================================
     "전립선 질환": {
         "en": "Prostate Disease",
         "ja": "前立腺疾患",
