@@ -165,6 +165,66 @@ function blobToInlineData(blob: Blob): Promise<{ data: string; mimeType: string 
   });
 }
 
+function writeAscii(view: DataView, offset: number, value: string) {
+  for (let index = 0; index < value.length; index += 1) {
+    view.setUint8(offset + index, value.charCodeAt(index));
+  }
+}
+
+function audioBufferToWav(buffer: AudioBuffer) {
+  const sampleRate = buffer.sampleRate;
+  const samples = buffer.length;
+  const bytesPerSample = 2;
+  const wav = new ArrayBuffer(44 + samples * bytesPerSample);
+  const view = new DataView(wav);
+
+  writeAscii(view, 0, "RIFF");
+  view.setUint32(4, 36 + samples * bytesPerSample, true);
+  writeAscii(view, 8, "WAVE");
+  writeAscii(view, 12, "fmt ");
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, 1, true);
+  view.setUint32(24, sampleRate, true);
+  view.setUint32(28, sampleRate * bytesPerSample, true);
+  view.setUint16(32, bytesPerSample, true);
+  view.setUint16(34, 16, true);
+  writeAscii(view, 36, "data");
+  view.setUint32(40, samples * bytesPerSample, true);
+
+  const channels = Array.from(
+    { length: buffer.numberOfChannels },
+    (_, index) => buffer.getChannelData(index),
+  );
+  let offset = 44;
+  for (let sampleIndex = 0; sampleIndex < samples; sampleIndex += 1) {
+    const mixed =
+      channels.reduce((sum, channel) => sum + channel[sampleIndex], 0) /
+      channels.length;
+    const clamped = Math.max(-1, Math.min(1, mixed));
+    view.setInt16(
+      offset,
+      clamped < 0 ? clamped * 0x8000 : clamped * 0x7fff,
+      true,
+    );
+    offset += bytesPerSample;
+  }
+
+  return wav;
+}
+
+async function convertRecordingToWav(blob: Blob) {
+  const context = new AudioContext();
+  try {
+    const decoded = await context.decodeAudioData(await blob.arrayBuffer());
+    return new Blob([audioBufferToWav(decoded)], { type: "audio/wav" });
+  } catch {
+    throw new Error("음성을 전송 가능한 형식으로 바꾸지 못했습니다. 다시 녹음해 주세요.");
+  } finally {
+    await context.close();
+  }
+}
+
 const languages: Array<{
   id: Language;
   flag: string;
@@ -553,6 +613,7 @@ export default function SilverLensApp() {
 
     try {
       stopNarration();
+      if (context === "chat") setTranscript("");
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
       chunksRef.current = [];
@@ -709,7 +770,9 @@ export default function SilverLensApp() {
     setIsLoadingAnswer(true);
     try {
       const [audio, image] = await Promise.all([
-        pendingAudio ? blobToInlineData(pendingAudio.blob) : null,
+        pendingAudio
+          ? convertRecordingToWav(pendingAudio.blob).then(blobToInlineData)
+          : null,
         pendingImage ? blobToInlineData(pendingImage.file) : null,
       ]);
       const attachmentLabels = [
