@@ -15,16 +15,6 @@ type Language = "ko-KR" | "en-US" | "ja-JP";
 type Gender = "male" | "female";
 type SetupStep = "language" | "gender" | "age" | "complete";
 type PageScreen = "setup" | "chat" | "about" | "team";
-type RiskLevel = "danger" | "caution" | "good";
-type FoodCard = {
-  level: RiskLevel;
-  status: string;
-  ingredient: string;
-  emoji: string;
-  headline: string;
-  body: string;
-  detail: string;
-};
 type ChatTurn = {
   id: string;
   question: string;
@@ -150,147 +140,6 @@ const languages: Array<{
 
 const ageBands = Array.from({ length: 12 }, (_, index) => (index + 1) * 10);
 
-const generalFoodCards: FoodCard[] = [
-  {
-    level: "good",
-    status: "추천해요",
-    ingredient: "여러 색의 채소",
-    emoji: "🥦",
-    headline: "채소를 식사에 넉넉히 더해 보세요",
-    body: "브로콜리, 배추, 당근처럼 여러 색의 채소를 골고루 드세요.",
-    detail: "기름과 소금은 적게 쓰고, 씹기 편하게 익혀 드세요.",
-  },
-  {
-    level: "good",
-    status: "추천해요",
-    ingredient: "통곡물",
-    emoji: "🌾",
-    headline: "정제된 곡물 대신 통곡물을 골라 보세요",
-    body: "현미, 보리, 귀리 같은 통곡물을 식사에 조금씩 활용해 보세요.",
-    detail: "평소 소화 상태와 씹는 힘에 맞게 충분히 부드럽게 조리하세요.",
-  },
-  {
-    level: "good",
-    status: "추천해요",
-    ingredient: "단백질 식품",
-    emoji: "🍽️",
-    headline: "매 끼니 단백질 식품을 챙겨 보세요",
-    body: "콩, 두부, 달걀, 생선, 살코기 중 먹을 수 있는 식품을 고르세요.",
-    detail: "등록한 알레르기가 있는 식품은 반드시 제외해야 해요.",
-  },
-];
-
-const hypertensionCards: FoodCard[] = [
-  {
-    level: "good",
-    status: "추천해요",
-    ingredient: "싱겁게 조리한 채소",
-    emoji: "🥬",
-    headline: "채소는 싱겁게 조리해 드세요",
-    body: "국물, 소금, 간장 사용을 줄이고 채소를 다양하게 드세요.",
-    detail: "절임·가공식품보다 신선하거나 냉동한 채소가 나트륨을 줄이기 쉬워요.",
-  },
-  {
-    level: "good",
-    status: "추천해요",
-    ingredient: "통곡물",
-    emoji: "🌾",
-    headline: "흰 곡물 대신 통곡물을 활용해 보세요",
-    body: "현미, 보리, 귀리처럼 덜 정제된 곡물을 부드럽게 조리해 보세요.",
-    detail: "양은 평소 식사량과 의료진의 안내에 맞추세요.",
-  },
-];
-
-const diabetesCards: FoodCard[] = [
-  {
-    level: "good",
-    status: "추천해요",
-    ingredient: "전분이 적은 채소",
-    emoji: "🥗",
-    headline: "접시의 절반은 채소로 채워 보세요",
-    body: "브로콜리, 시금치, 배추 같은 전분이 적은 채소를 활용해 보세요.",
-    detail: "단맛이 강한 소스와 설탕은 적게 쓰는 편이 좋아요.",
-  },
-  {
-    level: "good",
-    status: "추천해요",
-    ingredient: "통곡물과 단백질",
-    emoji: "🍚",
-    headline: "곡물과 단백질은 나누어 담아 보세요",
-    body: "통곡물과 먹을 수 있는 단백질 식품을 한쪽씩 적당히 담으세요.",
-    detail: "식사량과 혈당 관리 방법은 담당 의료진의 안내를 우선하세요.",
-  },
-];
-
-const kidneySafetyCards: FoodCard[] = [
-  {
-    level: "caution",
-    status: "먼저 확인해요",
-    ingredient: "개인 맞춤 식단",
-    emoji: "🩺",
-    headline: "신장 질환은 검사 결과에 따라 식단이 달라져요",
-    body: "칼륨, 인, 단백질, 수분 제한 여부를 이 화면에서 임의로 정할 수 없어요.",
-    detail: "담당 의료진이나 임상영양사가 정한 식단을 먼저 확인해 주세요.",
-  },
-  {
-    level: "good",
-    status: "도와드릴게요",
-    ingredient: "식사 기록",
-    emoji: "📝",
-    headline: "평소 드시는 음식을 기록해 두세요",
-    body: "음식 이름과 양을 적어 두면 의료진에게 더 정확히 설명할 수 있어요.",
-    detail: "사진을 찍어 식사 기록으로 남기는 방법도 좋아요.",
-  },
-];
-
-const normalize = (value: string) => value.trim().toLocaleLowerCase();
-
-function includesAny(values: string[], keywords: string[]) {
-  return values.some((value) => {
-    const normalized = normalize(value);
-    return keywords.some((keyword) => normalized.includes(keyword));
-  });
-}
-
-function conflictsWithAllergy(card: FoodCard, allergies: string[]) {
-  const cardText = normalize(`${card.ingredient} ${card.headline} ${card.body} ${card.detail}`);
-  return allergies.some((allergy) => {
-    const normalized = normalize(allergy);
-    return normalized.length > 0 && cardText.includes(normalized);
-  });
-}
-
-function buildRecommendationCards(allergies: string[], conditions: string[]): FoodCard[] {
-  if (includesAny(conditions, ["신장", "콩팥", "투석"])) {
-    return kidneySafetyCards;
-  }
-
-  const candidates: FoodCard[] = [];
-  if (includesAny(conditions, ["고혈압", "혈압"])) candidates.push(...hypertensionCards);
-  if (includesAny(conditions, ["당뇨", "혈당"])) candidates.push(...diabetesCards);
-  candidates.push(...generalFoodCards);
-
-  const unique = candidates.filter(
-    (card, index, items) =>
-      items.findIndex((item) => item.ingredient === card.ingredient) === index,
-  );
-  const safeCards = unique.filter((card) => !conflictsWithAllergy(card, allergies));
-
-  if (safeCards.length > 0) return safeCards.slice(0, 5);
-
-  return [
-    {
-      level: "caution",
-      status: "확인이 필요해요",
-      ingredient: "알레르기 대체 식품",
-      emoji: "🛡️",
-      headline: "등록한 알레르기와 겹치지 않는 식품을 골라야 해요",
-      body: "현재 추천 후보가 등록한 알레르기 정보와 겹쳐 자동으로 제외했어요.",
-      detail: "의료진이나 임상영양사에게 안전한 대체 식품을 확인해 주세요.",
-    },
-  ];
-}
-
 const promptCopy: Record<Language, Record<SetupStep, string>> = {
   "ko-KR": {
     language: "사용할 언어를 선택해 주세요.",
@@ -377,7 +226,6 @@ export default function SilverLensApp() {
   const [conditions, setConditions] = useState<string[]>([]);
   const [showAllergyInput, setShowAllergyInput] = useState(false);
   const [showConditionInput, setShowConditionInput] = useState(false);
-  const [cardIndex, setCardIndex] = useState(0);
   const [recordingContext, setRecordingContext] = useState<"setup" | "chat" | null>(null);
   const [recordedUrl, setRecordedUrl] = useState<string | null>(null);
   const [recordingError, setRecordingError] = useState("");
@@ -393,11 +241,11 @@ export default function SilverLensApp() {
   const narrationAudioRef = useRef<HTMLAudioElement | null>(null);
   const narrationUrlRef = useRef<string | null>(null);
   const narrationRequestRef = useRef<AbortController | null>(null);
+  const narrationFinishRef = useRef<(() => void) | null>(null);
   const narrationSequenceRef = useRef(0);
   const announceTimerRef = useRef<number | null>(null);
   const chunksRef = useRef<Blob[]>([]);
   const initialTtsPlayed = useRef(false);
-  const touchStartX = useRef<number | null>(null);
   const answerTouchStartX = useRef<number | null>(null);
 
   const nextStep = getNextStep(language, gender, ageConfirmed);
@@ -421,6 +269,8 @@ export default function SilverLensApp() {
       audio.currentTime = 0;
       narrationAudioRef.current = null;
     }
+    narrationFinishRef.current?.();
+    narrationFinishRef.current = null;
 
     if (narrationUrlRef.current) {
       URL.revokeObjectURL(narrationUrlRef.current);
@@ -475,57 +325,73 @@ export default function SilverLensApp() {
 
       stopNarration();
       const sequence = narrationSequenceRef.current;
-      const controller = new AbortController();
-      narrationRequestRef.current = controller;
+      const chunks = splitNarrationText(text, 320);
+      if (chunks.length === 0) return;
       setIsNarrating(true);
 
       try {
-        const response = await fetch("/api/tts", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ text }),
-          signal: controller.signal,
-        });
-        if (!response.ok) throw new Error("Gemini TTS를 사용할 수 없습니다.");
+        for (const chunk of chunks) {
+          if (sequence !== narrationSequenceRef.current) return;
 
-        const blob = await response.blob();
-        if (sequence !== narrationSequenceRef.current) return;
+          const controller = new AbortController();
+          narrationRequestRef.current = controller;
+          const response = await fetch("/api/tts", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({ text: chunk, language: lang }),
+            signal: controller.signal,
+          });
+          if (!response.ok) throw new Error("Gemini TTS를 사용할 수 없습니다.");
 
-        const url = URL.createObjectURL(blob);
-        const audio = new Audio(url);
-        narrationUrlRef.current = url;
-        narrationAudioRef.current = audio;
-        narrationRequestRef.current = null;
+          const blob = await response.blob();
+          if (sequence !== narrationSequenceRef.current) return;
 
-        audio.addEventListener(
-          "ended",
-          () => {
-            if (narrationAudioRef.current === audio) {
-              narrationAudioRef.current = null;
-            }
-            if (narrationUrlRef.current === url) {
-              URL.revokeObjectURL(url);
-              narrationUrlRef.current = null;
-            }
-            setIsNarrating(false);
-          },
-          { once: true },
-        );
-        audio.addEventListener(
-          "error",
-          () => {
-            if (narrationAudioRef.current === audio) narrationAudioRef.current = null;
-            if (narrationUrlRef.current === url) {
-              URL.revokeObjectURL(url);
-              narrationUrlRef.current = null;
-            }
-            setIsNarrating(false);
-          },
-          { once: true },
-        );
-        await audio.play();
+          const url = URL.createObjectURL(blob);
+          const audio = new Audio(url);
+          narrationUrlRef.current = url;
+          narrationAudioRef.current = audio;
+          narrationRequestRef.current = null;
+
+          await new Promise<void>((resolve, reject) => {
+            let settled = false;
+            const finish = (error?: Error) => {
+              if (settled) return;
+              settled = true;
+              if (narrationAudioRef.current === audio) {
+                narrationAudioRef.current = null;
+              }
+              if (narrationUrlRef.current === url) {
+                URL.revokeObjectURL(url);
+                narrationUrlRef.current = null;
+              }
+              if (narrationFinishRef.current === finish) {
+                narrationFinishRef.current = null;
+              }
+              if (error) reject(error);
+              else resolve();
+            };
+            narrationFinishRef.current = () => finish();
+            audio.addEventListener("ended", () => finish(), { once: true });
+            audio.addEventListener(
+              "error",
+              () => finish(new Error("Gemini 음성을 재생하지 못했습니다.")),
+              { once: true },
+            );
+            audio.play().catch((error: unknown) =>
+              finish(
+                error instanceof Error
+                  ? error
+                  : new Error("Gemini 음성을 재생하지 못했습니다."),
+              ),
+            );
+          });
+        }
+
+        if (sequence === narrationSequenceRef.current) {
+          setIsNarrating(false);
+        }
       } catch {
-        if (controller.signal.aborted || sequence !== narrationSequenceRef.current) return;
+        if (sequence !== narrationSequenceRef.current) return;
         narrationRequestRef.current = null;
         speakWithBrowser(text, lang);
       }
@@ -632,6 +498,7 @@ export default function SilverLensApp() {
     }
 
     try {
+      stopNarration();
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
       chunksRef.current = [];
@@ -648,7 +515,6 @@ export default function SilverLensApp() {
         streamRef.current = null;
         mediaRecorderRef.current = null;
         setRecordingContext(null);
-        speakWithBrowser("녹음이 저장되었습니다.", "ko-KR");
         const sttUrl = process.env.NEXT_PUBLIC_STT_API_URL;
         if (sttUrl) {
           try {
@@ -677,60 +543,13 @@ export default function SilverLensApp() {
     }
   };
 
-  const cards = useMemo(
-    () => buildRecommendationCards(allergies, conditions),
-    [allergies, conditions],
-  );
-  const visibleCardIndex = Math.min(cardIndex, cards.length - 1);
-  const card = cards[visibleCardIndex];
-
-  const cardTts = useMemo(
-    () => `${card.status}. ${card.ingredient}. ${card.headline}. ${card.body} ${card.detail}`,
-    [card],
-  );
-
-  const moveCard = useCallback(
-    (direction: -1 | 1) => {
-      const next = (visibleCardIndex + direction + cards.length) % cards.length;
-      setCardIndex(next);
-      const nextCard = cards[next];
-      speakWithBrowser(
-        `${nextCard.status}. ${nextCard.ingredient}. ${nextCard.headline}. ${nextCard.body} ${nextCard.detail}`,
-        "ko-KR",
-      );
-    },
-    [cards, speakWithBrowser, visibleCardIndex],
-  );
-
-  const handleTouchStart = (event: TouchEvent) => {
-    touchStartX.current = event.touches[0]?.clientX ?? null;
-  };
-
-  const handleTouchEnd = (event: TouchEvent) => {
-    if (touchStartX.current === null) return;
-    const endX = event.changedTouches[0]?.clientX ?? touchStartX.current;
-    const distance = endX - touchStartX.current;
-    touchStartX.current = null;
-    if (Math.abs(distance) < 45) return;
-    moveCard(distance < 0 ? 1 : -1);
-  };
-
   const beginChat = () => {
     if (nextStep !== "complete") {
       announceNext();
       return;
     }
-    setCardIndex(0);
+    stopNarration();
     setScreen("chat");
-    const firstCard = cards[0];
-    window.setTimeout(
-      () =>
-        speakWithBrowser(
-          `${firstCard.status}. ${firstCard.ingredient}. ${firstCard.headline}. ${firstCard.body} ${firstCard.detail}`,
-          "ko-KR",
-        ),
-      180,
-    );
   };
 
   const answerCards = useMemo<AnswerCard[]>(
@@ -850,71 +669,6 @@ export default function SilverLensApp() {
 
           <h1>오늘은 무엇을 도와드릴까요?</h1>
 
-          <div className="recommendation-stage">
-            <div className="recommendation-summary">
-              <span className="waiting-chip">식재료 정보 대기 중</span>
-              <div>
-                <h2>먼저 드시기 좋은 선택을 알려드릴게요</h2>
-                <p>
-                  {conditions.length > 0
-                    ? `등록한 질병 정보(${conditions.join(", ")})와 알레르기를 반영한 일반 식생활 안내예요.`
-                    : "등록한 알레르기를 제외하고, 균형 잡힌 식사에 도움이 되는 일반 식품을 보여드려요."}
-                </p>
-              </div>
-            </div>
-
-            <div
-              className={`risk-carousel ${card.level}`}
-              onTouchStart={handleTouchStart}
-              onTouchEnd={handleTouchEnd}
-            >
-              <button className="carousel-arrow left" onClick={() => moveCard(-1)} aria-label="이전 정보">
-                ‹
-              </button>
-              <article className="risk-card" aria-live="polite">
-                <div className={`status-chip ${card.level}`}>{card.status}</div>
-                <div className="ingredient-row">
-                  <span className="ingredient-emoji" aria-hidden="true">{card.emoji}</span>
-                  <div>
-                    <span className="eyebrow">추천 안내</span>
-                    <strong>{card.ingredient}</strong>
-                  </div>
-                </div>
-                <h2>{card.headline}</h2>
-                <p>{card.body}</p>
-                <p className="detail">{card.detail}</p>
-              </article>
-              <button className="carousel-arrow right" onClick={() => moveCard(1)} aria-label="다음 정보">
-                ›
-              </button>
-              <div className="carousel-footer">
-                <div className="dots" aria-label={`${visibleCardIndex + 1}번째 정보`}>
-                  {cards.map((item, index) => (
-                    <button
-                      key={`${item.status}-${item.ingredient}`}
-                      className={index === visibleCardIndex ? "dot active" : "dot"}
-                      onClick={() => {
-                        setCardIndex(index);
-                        const selected = cards[index];
-                        speakWithBrowser(
-                          `${selected.status}. ${selected.ingredient}. ${selected.headline}. ${selected.body}`,
-                          "ko-KR",
-                        );
-                      }}
-                      aria-label={`${index + 1}번째 카드`}
-                    />
-                  ))}
-                </div>
-                <span>옆으로 밀어 다음 정보 보기</span>
-              </div>
-            </div>
-          </div>
-
-          <div className="answer-audio">
-            <button onClick={() => speakWithBrowser(cardTts, "ko-KR")}>🔊 추천 다시 듣기</button>
-            <span>추천 안내는 브라우저 음성으로 한 번씩 차례대로 재생돼요.</span>
-          </div>
-
           <section className="text-chat-panel">
             <label htmlFor="chat-question">글자로 질문하기</label>
             <div>
@@ -930,29 +684,33 @@ export default function SilverLensApp() {
               </button>
             </div>
             {chatError && <p className="error-message" role="alert">{chatError}</p>}
-            {activeAnswerCard && (
-              <section className="answer-history" aria-live="polite">
-                <div className="answer-history-heading">
-                  <h2>AI 답변</h2>
-                  <span>
-                    대화 {activeAnswerCard.turnIndex + 1} · 답변{" "}
-                    {activeAnswerCard.pageIndex + 1}/{activeAnswerCard.pageCount}
-                  </span>
-                </div>
-                <div
-                  className="answer-carousel"
-                  onTouchStart={handleAnswerTouchStart}
-                  onTouchEnd={handleAnswerTouchEnd}
+            <section className="answer-history" aria-live="polite">
+              <div className="answer-history-heading">
+                <h2>AI 답변</h2>
+                <span>
+                  {activeAnswerCard
+                    ? `대화 ${activeAnswerCard.turnIndex + 1} · 답변 ${
+                        activeAnswerCard.pageIndex + 1
+                      }/${activeAnswerCard.pageCount}`
+                    : "답변 대기 중"}
+                </span>
+              </div>
+              <div
+                className="answer-carousel"
+                onTouchStart={handleAnswerTouchStart}
+                onTouchEnd={handleAnswerTouchEnd}
+              >
+                <button
+                  className="answer-arrow"
+                  onClick={() => moveAnswerCard(-1)}
+                  disabled={!activeAnswerCard || visibleAnswerCardIndex === 0}
+                  aria-label="이전 대화 또는 이전 답변"
                 >
-                  <button
-                    className="answer-arrow"
-                    onClick={() => moveAnswerCard(-1)}
-                    disabled={visibleAnswerCardIndex === 0}
-                    aria-label="이전 대화 또는 이전 답변"
-                  >
-                    ‹
-                  </button>
-                  <article className="ai-answer-card">
+                  ‹
+                </button>
+                <article className="ai-answer-card">
+                  {activeAnswerCard ? (
+                    <>
                     <p className="answer-question">
                       <span>질문</span>
                       {activeAnswerCard.question}
@@ -960,35 +718,47 @@ export default function SilverLensApp() {
                     <div className="answer-markdown">
                       <ReactMarkdown>{activeAnswerCard.content}</ReactMarkdown>
                     </div>
-                  </article>
-                  <button
-                    className="answer-arrow"
-                    onClick={() => moveAnswerCard(1)}
-                    disabled={visibleAnswerCardIndex === answerCards.length - 1}
-                    aria-label="다음 답변 또는 새 대화"
-                  >
-                    ›
-                  </button>
+                    </>
+                  ) : (
+                    <div className="answer-placeholder">
+                      <strong>질문을 보내면 답변을 큰 글자로 보여드려요.</strong>
+                      <p>
+                        답변이 길면 오른쪽 카드로 이어지고, 왼쪽으로 넘기면
+                        이전 대화를 다시 볼 수 있어요.
+                      </p>
+                    </div>
+                  )}
+                </article>
+                <button
+                  className="answer-arrow"
+                  onClick={() => moveAnswerCard(1)}
+                  disabled={
+                    !activeAnswerCard ||
+                    visibleAnswerCardIndex === answerCards.length - 1
+                  }
+                  aria-label="다음 답변 또는 새 대화"
+                >
+                  ›
+                </button>
+              </div>
+              <div className="answer-history-footer">
+                <span>← 이전 대화</span>
+                <div className="answer-dots" aria-label="답변 카드 선택">
+                  {answerCards.map((item, index) => (
+                    <button
+                      key={item.id}
+                      className={index === visibleAnswerCardIndex ? "active" : ""}
+                      onClick={() => {
+                        stopNarration();
+                        setAnswerCardIndex(index);
+                      }}
+                      aria-label={`${item.turnIndex + 1}번째 대화 ${item.pageIndex + 1}번째 답변`}
+                    />
+                  ))}
                 </div>
-                <div className="answer-history-footer">
-                  <span>← 이전 대화</span>
-                  <div className="answer-dots" aria-label="답변 카드 선택">
-                    {answerCards.map((item, index) => (
-                      <button
-                        key={item.id}
-                        className={index === visibleAnswerCardIndex ? "active" : ""}
-                        onClick={() => {
-                          stopNarration();
-                          setAnswerCardIndex(index);
-                        }}
-                        aria-label={`${item.turnIndex + 1}번째 대화 ${item.pageIndex + 1}번째 답변`}
-                      />
-                    ))}
-                  </div>
-                  <span>새 답변 →</span>
-                </div>
-              </section>
-            )}
+                <span>이어지는 답변 →</span>
+              </div>
+            </section>
           </section>
 
           <div className="chat-actions">
