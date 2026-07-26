@@ -1,5 +1,11 @@
 import { getGeminiConfig } from "../config/env";
 import { getDialectDictionaryForPrompt } from "../data/loadData";
+import {
+  getHealthCatalogForPrompt,
+  isHealthTermId,
+  toHealthLanguage,
+  type HealthKind,
+} from "../data/healthTerms";
 import type { InlineMedia } from "./geminiService";
 
 type GeminiResponse = {
@@ -21,13 +27,11 @@ export type TranscriptionResult = {
   conditions: string[];
 };
 
-function cleanItems(value: unknown) {
+function cleanItems(value: unknown, kind: HealthKind) {
   if (!Array.isArray(value)) return [];
   return [...new Set(
     value
-      .filter((item): item is string => typeof item === "string")
-      .map((item) => item.trim())
-      .filter((item) => item.length > 0 && item.length <= 40),
+      .filter((item): item is string => isHealthTermId(kind, item)),
   )];
 }
 
@@ -55,17 +59,20 @@ function parseStructuredResult(text: string): TranscriptionResult {
 
   return {
     transcript,
-    allergies: cleanItems(parsed.allergies),
-    conditions: cleanItems(parsed.conditions),
+    allergies: cleanItems(parsed.allergies, "allergy"),
+    conditions: cleanItems(parsed.conditions, "condition"),
   };
 }
 
 export async function transcribeAudio(
   audio: InlineMedia,
   purpose: TranscriptionPurpose = "chat",
+  language = "ko-KR",
 ) {
   const { apiKey, textModel } = getGeminiConfig();
   const dialectDictionary = getDialectDictionaryForPrompt();
+  const healthCatalog = getHealthCatalogForPrompt();
+  const selectedLanguage = toHealthLanguage(language);
   const response = await fetch(
     `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(textModel)}:generateContent`,
     {
@@ -87,12 +94,15 @@ export async function transcribeAudio(
                   "알레르기에는 사용자가 알레르기라고 명시한 음식·물질만 넣으세요.",
                   "질병에는 사용자가 진단·치료·보유 중이라고 말한 질병이나 질환만 넣으세요.",
                   "질병 이름을 알레르기에 넣거나, 알레르기 음식을 질병에 넣지 마세요.",
-                  '예: "복숭아 알레르기가 있고 알츠하이머가 있어요" → allergies ["복숭아"], conditions ["알츠하이머"].',
+                  '예: "복숭아 알레르기가 있고 알츠하이머가 있어요" → allergies ["allergy_peach"], conditions ["condition_alzheimers"].',
                   "말하지 않은 건강정보를 추측해서 추가하지 마세요.",
+                  "카탈로그에 없는 항목은 배열에 임의로 추가하지 마세요.",
                   `현재 입력 화면: ${purpose}`,
+                  `화면 표시 언어: ${selectedLanguage}`,
+                  `건강정보 다국어 카탈로그: ${JSON.stringify(healthCatalog)}`,
                   `방언 참고 사전: ${JSON.stringify(dialectDictionary)}`,
                   "반드시 다음 JSON 객체만 반환하세요.",
-                  '{"transcript":"받아쓴 전체 문장","allergies":["알레르기 음식"],"conditions":["질병명"]}',
+                  '{"transcript":"받아쓴 전체 문장","allergies":["카탈로그 allergy ID"],"conditions":["카탈로그 condition ID"]}',
                 ].join("\n"),
               },
               {

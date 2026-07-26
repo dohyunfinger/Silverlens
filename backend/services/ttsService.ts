@@ -38,7 +38,22 @@ function pcmToWav(pcm: Uint8Array, sampleRate = 24000) {
   return wav;
 }
 
-async function generateNarrationPcm(text: string, apiKey: string, ttsModel: string) {
+function narrationInstruction(language: string) {
+  if (language === "en-US") {
+    return "Read the following text exactly as written, clearly, warmly, and at a comfortable pace for an older listener:";
+  }
+  if (language === "zh-CN") {
+    return "请用清晰、温和、适合老年人聆听的语速，按照原文朗读以下内容：";
+  }
+  return "어르신께 또박또박하고 따뜻하게 다음 문장을 그대로 읽어주세요:";
+}
+
+async function generateNarrationPcm(
+  text: string,
+  apiKey: string,
+  ttsModel: string,
+  language: string,
+) {
   let lastError = "Gemini TTS 호출에 실패했습니다.";
 
   for (let attempt = 0; attempt < 2; attempt += 1) {
@@ -55,7 +70,7 @@ async function generateNarrationPcm(text: string, apiKey: string, ttsModel: stri
             {
               parts: [
                 {
-                  text: `어르신께 또박또박하고 따뜻하게 다음 문장을 그대로 읽어주세요:\n${text}`,
+                  text: `${narrationInstruction(language)}\n${text}`,
                 },
               ],
             },
@@ -114,9 +129,11 @@ async function generateNarrationPcm(text: string, apiKey: string, ttsModel: stri
   throw new Error(lastError);
 }
 
-export async function generateNarration(text: string) {
+export async function generateNarration(text: string, language = "ko-KR") {
   const { apiKey, ttsModel } = getGeminiConfig();
   const normalized = text.replace(/\s+/g, " ").trim();
   if (!normalized) throw new Error("읽을 답변이 비어 있습니다.");
-  return pcmToWav(await generateNarrationPcm(normalized, apiKey, ttsModel));
+  return pcmToWav(
+    await generateNarrationPcm(normalized, apiKey, ttsModel, language),
+  );
 }

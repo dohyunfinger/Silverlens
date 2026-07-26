@@ -26,6 +26,7 @@ export async function POST(request: Request) {
     const body = (await request.json()) as {
       audio?: unknown;
       purpose?: unknown;
+      language?: unknown;
     };
     if (!isInlineAudio(body.audio)) {
       return NextResponse.json(
@@ -44,7 +45,8 @@ export async function POST(request: Request) {
     )
       ? (body.purpose as TranscriptionPurpose)
       : "chat";
-    const result = await transcribeAudio(body.audio, purpose);
+    const language = typeof body.language === "string" ? body.language : "ko-KR";
+    const result = await transcribeAudio(body.audio, purpose, language);
     return NextResponse.json({
       text: result.transcript,
       allergies: result.allergies,

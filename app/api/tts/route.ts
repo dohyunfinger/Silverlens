@@ -4,7 +4,10 @@ import { generateNarration } from "../../../backend/services/ttsService";
 
 export async function POST(request: Request) {
   try {
-    const body = (await request.json()) as { text?: unknown };
+    const body = (await request.json()) as {
+      text?: unknown;
+      language?: unknown;
+    };
     if (!isMeaningfulText(body.text)) {
       return NextResponse.json({ error: "읽을 문장을 입력해 주세요." }, { status: 400 });
     }
@@ -15,7 +18,8 @@ export async function POST(request: Request) {
         { status: 400 },
       );
     }
-    const wav = await generateNarration(text);
+    const language = typeof body.language === "string" ? body.language : "ko-KR";
+    const wav = await generateNarration(text, language);
     return new Response(wav, {
       headers: {
         "Content-Type": "audio/wav",

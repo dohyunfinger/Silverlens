@@ -11,8 +11,14 @@ import {
   useState,
 } from "react";
 import ReactMarkdown from "react-markdown";
+import {
+  getHealthLabel,
+  getHealthOptions,
+  makeStoredHealthId,
+  type HealthKind,
+} from "../backend/data/healthTerms";
 
-type Language = "ko-KR" | "en-US" | "ja-JP";
+type Language = "ko-KR" | "en-US" | "zh-CN";
 type Gender = "male" | "female";
 type SetupStep = "language" | "gender" | "age" | "complete";
 type PageScreen = "setup" | "chat" | "about" | "team";
@@ -21,8 +27,11 @@ type NarrationStatus = "preparing" | "ready" | "error";
 type ChatTurn = {
   id: string;
   question: string;
+  answer: string;
   pages: string[];
   attachmentLabels: string[];
+  riskLevel: "danger" | "caution" | "safe";
+  warningMessage: string;
 };
 type AnswerCard = {
   id: string;
@@ -33,6 +42,8 @@ type AnswerCard = {
   turnIndex: number;
   pageIndex: number;
   pageCount: number;
+  riskLevel: "danger" | "caution" | "safe";
+  warningMessage: string;
 };
 type PendingAudio = {
   blob: Blob;
@@ -149,6 +160,13 @@ function uniqueItems(items: string[]) {
   return [...new Set(items.map((item) => item.trim()).filter(Boolean))];
 }
 
+function narrationPagesForTurn(turn: ChatTurn) {
+  if (!turn.warningMessage || turn.pages.length === 0) return turn.pages;
+  return turn.pages.map((page, index) =>
+    index === 0 ? `${turn.warningMessage}\n\n${page}` : page,
+  );
+}
+
 function formatDuration(totalSeconds: number) {
   const minutes = Math.floor(totalSeconds / 60);
   const seconds = totalSeconds % 60;
@@ -243,7 +261,7 @@ const languages: Array<{
 }> = [
   { id: "ko-KR", flag: "🇰🇷", label: "한국어", tts: "한국어" },
   { id: "en-US", flag: "🇺🇸", label: "English", tts: "English" },
-  { id: "ja-JP", flag: "🇯🇵", label: "日本語", tts: "日本語" },
+  { id: "zh-CN", flag: "🇨🇳", label: "中文", tts: "中文" },
 ];
 
 const ageBands = Array.from({ length: 12 }, (_, index) => (index + 1) * 10);
@@ -261,11 +279,29 @@ const promptCopy: Record<Language, Record<SetupStep, string>> = {
     age: "Scroll up or down to choose your age group.",
     complete: "Basic setup is complete. You may add allergy and health information.",
   },
-  "ja-JP": {
-    language: "使用する言語を選んでください。",
-    gender: "性別を選んでください。",
-    age: "上下に動かして年代を選んでください。",
-    complete: "基本設定が完了しました。アレルギーと病気の情報を追加できます。",
+  "zh-CN": {
+    language: "请选择使用语言。",
+    gender: "请选择性别。",
+    age: "请上下滑动选择年龄段。",
+    complete: "基本设置已完成。您可以添加过敏和疾病信息。",
+  },
+};
+
+const automaticNoticeCopy: Record<
+  Language,
+  { audioAttached: string; photoAttached: string }
+> = {
+  "ko-KR": {
+    audioAttached: "음성이 첨부되었습니다. 사진이나 글을 더한 뒤 질문 보내기 버튼을 눌러 주세요.",
+    photoAttached: "사진이 첨부되었습니다. 음성이나 글을 더한 뒤 질문 보내기 버튼을 눌러 주세요.",
+  },
+  "en-US": {
+    audioAttached: "Your recording is attached. Add a photo or text if needed, then press Send question.",
+    photoAttached: "Your photo is attached. Add a recording or text if needed, then press Send question.",
+  },
+  "zh-CN": {
+    audioAttached: "语音已添加。您可以继续添加照片或文字，然后点击发送问题。",
+    photoAttached: "照片已添加。您可以继续添加语音或文字，然后点击发送问题。",
   },
 };
 
@@ -330,8 +366,10 @@ export default function SilverLensApp() {
   const [gender, setGender] = useState<Gender | null>(null);
   const [ageBand, setAgeBand] = useState(70);
   const [ageConfirmed, setAgeConfirmed] = useState(false);
-  const [allergies, setAllergies] = useState<string[]>([]);
-  const [conditions, setConditions] = useState<string[]>([]);
+  const [allergyIds, setAllergyIds] = useState<string[]>([]);
+  const [conditionIds, setConditionIds] = useState<string[]>([]);
+  const [autoVoiceGuide, setAutoVoiceGuide] = useState(true);
+  const [voicePreferenceReady, setVoicePreferenceReady] = useState(false);
   const [showAllergyInput, setShowAllergyInput] = useState(false);
   const [showConditionInput, setShowConditionInput] = useState(false);
   const [recordingContext, setRecordingContext] = useState<RecordingContext | null>(null);
@@ -368,6 +406,22 @@ export default function SilverLensApp() {
 
   const nextStep = getNextStep(language, gender, ageConfirmed);
   const activeLanguage = language ?? "ko-KR";
+  const allergyOptions = useMemo(
+    () => getHealthOptions("allergy", activeLanguage),
+    [activeLanguage],
+  );
+  const conditionOptions = useMemo(
+    () => getHealthOptions("condition", activeLanguage),
+    [activeLanguage],
+  );
+  const localizedAllergies = useMemo(
+    () => allergyIds.map((id) => getHealthLabel(id, activeLanguage)),
+    [activeLanguage, allergyIds],
+  );
+  const localizedConditions = useMemo(
+    () => conditionIds.map((id) => getHealthLabel(id, activeLanguage)),
+    [activeLanguage, conditionIds],
+  );
 
   const stopNarration = useCallback(() => {
     narrationSequenceRef.current += 1;
@@ -648,11 +702,30 @@ export default function SilverLensApp() {
     [speakWithBrowser, stopNarration],
   );
 
+  const queueAutomaticNarration = useCallback(
+    (text: string, lang: Language, delay: number) => {
+      if (!autoVoiceGuide) return;
+      queueBrowserNarration(text, lang, delay);
+    },
+    [autoVoiceGuide, queueBrowserNarration],
+  );
+
   useEffect(() => {
-    if (initialTtsPlayed.current) return;
+    const timer = window.setTimeout(() => {
+      const stored = window.localStorage.getItem("silverlens:auto-voice-guide");
+      const enabled = stored !== "off";
+      setAutoVoiceGuide(enabled);
+      if (!enabled) initialTtsPlayed.current = true;
+      setVoicePreferenceReady(true);
+    }, 0);
+    return () => window.clearTimeout(timer);
+  }, []);
+
+  useEffect(() => {
+    if (!voicePreferenceReady || !autoVoiceGuide || initialTtsPlayed.current) return;
     initialTtsPlayed.current = true;
     queueBrowserNarration(promptCopy["ko-KR"].language, "ko-KR", 450);
-  }, [queueBrowserNarration]);
+  }, [autoVoiceGuide, queueBrowserNarration, voicePreferenceReady]);
 
   useEffect(() => {
     const narrationControllers = narrationControllersRef.current;
@@ -690,10 +763,30 @@ export default function SilverLensApp() {
     ) => {
       const step = getNextStep(nextLanguage, nextGender, nextAgeConfirmed);
       const lang = nextLanguage ?? "ko-KR";
-      queueBrowserNarration(promptCopy[lang][step], lang, 80);
+      queueAutomaticNarration(promptCopy[lang][step], lang, 80);
     },
-    [ageConfirmed, gender, language, queueBrowserNarration],
+    [ageConfirmed, gender, language, queueAutomaticNarration],
   );
+
+  const toggleAutoVoiceGuide = () => {
+    const next = !autoVoiceGuide;
+    setAutoVoiceGuide(next);
+    window.localStorage.setItem(
+      "silverlens:auto-voice-guide",
+      next ? "on" : "off",
+    );
+    if (!next) {
+      stopNarration();
+      return;
+    }
+    const step = getNextStep(language, gender, ageConfirmed);
+    queueBrowserNarration(promptCopy[activeLanguage][step], activeLanguage, 80);
+  };
+
+  const replayCurrentGuide = () => {
+    const step = getNextStep(language, gender, ageConfirmed);
+    queueBrowserNarration(promptCopy[activeLanguage][step], activeLanguage, 20);
+  };
 
   const toggleLanguage = (id: Language) => {
     const next = language === id ? null : id;
@@ -722,15 +815,17 @@ export default function SilverLensApp() {
     announceNext(language, gender, next);
   };
 
-  const addTag = (
+  const addHealthTag = (
     event: KeyboardEvent<HTMLInputElement>,
+    kind: HealthKind,
     setter: React.Dispatch<React.SetStateAction<string[]>>,
   ) => {
     if (event.key !== "Enter") return;
     const value = event.currentTarget.value.trim();
     if (!value) return;
     event.preventDefault();
-    setter((items) => (items.includes(value) ? items : [...items, value]));
+    const storedId = makeStoredHealthId(kind, value);
+    setter((items) => (items.includes(storedId) ? items : [...items, storedId]));
     event.currentTarget.value = "";
   };
 
@@ -778,7 +873,7 @@ export default function SilverLensApp() {
     const response = await fetch("/api/transcribe", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ audio, purpose }),
+      body: JSON.stringify({ audio, purpose, language: activeLanguage }),
     });
     const payload = (await response.json()) as {
       text?: string;
@@ -794,7 +889,7 @@ export default function SilverLensApp() {
       allergies: uniqueItems(payload.allergies ?? []),
       conditions: uniqueItems(payload.conditions ?? []),
     };
-  }, []);
+  }, [activeLanguage]);
 
   const toggleRecording = async (context: RecordingContext) => {
     setRecordingError("");
@@ -834,8 +929,8 @@ export default function SilverLensApp() {
         );
         if (context === "chat") {
           setPendingAudio({ blob, duration, url });
-          queueBrowserNarration(
-            "음성이 첨부되었습니다. 사진이나 글을 더한 뒤 질문 보내기 버튼을 눌러 주세요.",
+          queueAutomaticNarration(
+            automaticNoticeCopy[activeLanguage].audioAttached,
             activeLanguage,
             80,
           );
@@ -861,10 +956,10 @@ export default function SilverLensApp() {
             if (context === "chat") {
               setChatInput(text);
             } else {
-              setAllergies((current) =>
+              setAllergyIds((current) =>
                 uniqueItems([...current, ...analysis.allergies]),
               );
-              setConditions((current) =>
+              setConditionIds((current) =>
                 uniqueItems([...current, ...analysis.conditions]),
               );
               setShowAllergyInput(false);
@@ -922,6 +1017,8 @@ export default function SilverLensApp() {
           turnIndex,
           pageIndex,
           pageCount: turn.pages.length,
+          riskLevel: turn.riskLevel,
+          warningMessage: turn.warningMessage,
         })),
       ),
     [chatTurns],
@@ -970,8 +1067,8 @@ export default function SilverLensApp() {
     }
     setChatError("");
     setPendingImage({ file, url: URL.createObjectURL(file) });
-    queueBrowserNarration(
-      "사진이 첨부되었습니다. 음성이나 글을 더한 뒤 질문 보내기 버튼을 눌러 주세요.",
+    queueAutomaticNarration(
+      automaticNoticeCopy[activeLanguage].photoAttached,
       activeLanguage,
       80,
     );
@@ -1021,33 +1118,55 @@ export default function SilverLensApp() {
           message: cleaned,
           audio,
           image,
-          profile: { language: activeLanguage, ageBand, allergies, conditions },
+          profile: {
+            language: activeLanguage,
+            ageBand,
+            allergies: localizedAllergies,
+            conditions: localizedConditions,
+            allergyIds,
+            conditionIds,
+          },
+          history: chatTurns.slice(-6).map((turn) => ({
+            question: turn.question,
+            answer: turn.answer,
+          })),
         }),
       });
-      const payload = (await response.json()) as { answer?: string; error?: string };
+      const payload = (await response.json()) as {
+        answer?: string;
+        riskLevel?: "danger" | "caution" | "safe";
+        warningMessage?: string;
+        error?: string;
+      };
       if (!response.ok || !payload.answer) {
         throw new Error(payload.error || "답변을 불러오지 못했습니다.");
       }
       const nextTurn: ChatTurn = {
         id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
         question: questionLabel,
+        answer: payload.answer,
         pages: splitAnswerIntoPages(payload.answer),
         attachmentLabels,
+        riskLevel: payload.riskLevel ?? "safe",
+        warningMessage: payload.warningMessage?.trim() ?? "",
       };
+      const narrationPages = narrationPagesForTurn(nextTurn);
       setAnswerCardIndex(answerCards.length);
       setChatTurns((turns) => [...turns, nextTurn]);
       setChatInput("");
       setPendingAudio(null);
       setPendingImage(null);
       setTranscript("");
-      prepareGeminiAnswer(nextTurn.id, nextTurn.pages, activeLanguage);
-      void speakGeminiAnswer(
-        nextTurn.id,
-        nextTurn.pages,
-        0,
-        answerCards.length,
-        activeLanguage,
-      );
+      prepareGeminiAnswer(nextTurn.id, narrationPages, activeLanguage);
+      if (autoVoiceGuide) {
+        void speakGeminiAnswer(
+          nextTurn.id,
+          narrationPages,
+          0,
+          answerCards.length,
+          activeLanguage,
+        );
+      }
     } catch (error) {
       setChatError(error instanceof Error ? error.message : "답변을 불러오지 못했습니다.");
     } finally {
@@ -1055,14 +1174,108 @@ export default function SilverLensApp() {
     }
   };
 
-  if (screen === "about" || screen === "team") {
+  if (screen === "about") {
+    return (
+      <main className="app-shell about-shell">
+        <Sidebar active="about" onNavigate={setScreen} />
+        <section className="about-page">
+          <header className="about-topbar">
+            <button className="about-back" onClick={() => setScreen("setup")}>
+              ← 서비스로 돌아가기
+            </button>
+            <span>SILVERLENS · SENIOR FOOD COMPANION</span>
+          </header>
+
+          <section className="about-hero">
+            <div className="about-hero-copy">
+              <p className="about-index">01 — OUR PURPOSE</p>
+              <h1>
+                말 한마디가
+                <br />
+                <em>안전한 한 끼</em>로
+                <br />
+                이어지도록.
+              </h1>
+              <p className="about-hero-lead">
+                실버렌즈는 음성, 사진, 생활 속 표현을 이해하고 사용자의
+                알레르기와 질병 정보를 함께 살펴 쉬운 식생활 답변을 전합니다.
+              </p>
+            </div>
+            <div className="about-hero-art" aria-label="따뜻한 햇살과 밭의 선을 표현한 추상 그래픽">
+              <span className="about-sun" />
+              <span className="about-field field-one" />
+              <span className="about-field field-two" />
+              <span className="about-field field-three" />
+              <strong>VOICE · CONTEXT · CARE</strong>
+            </div>
+          </section>
+
+          <section className="about-manifesto">
+            <p>02 — WHY SILVERLENS</p>
+            <blockquote>
+              익숙한 말투 그대로 질문해도,
+              <br />
+              앞의 이야기를 잊지 않는 식품 도우미.
+            </blockquote>
+            <div>
+              <p>
+                사투리 표현은 표준어 뜻과 연결하고, 등록한 건강정보는
+                선택한 언어로 보여줍니다.
+              </p>
+              <p>
+                위험하거나 권장하기 어려운 음식은 답변 속에 숨기지 않고
+                카드 상단에 먼저 경고합니다.
+              </p>
+            </div>
+          </section>
+
+          <section className="about-pillars">
+            <article>
+              <span>01</span>
+              <h2>말로 묻는 편안함</h2>
+              <p>녹음한 질문을 받아쓰고 방언 참고 DATA와 함께 뜻을 이해합니다.</p>
+            </article>
+            <article>
+              <span>02</span>
+              <h2>이어지는 대화</h2>
+              <p>직전 질문과 답변을 함께 전달해 “레시피 알려줘” 같은 후속 질문을 이어갑니다.</p>
+            </article>
+            <article>
+              <span>03</span>
+              <h2>먼저 보이는 주의</h2>
+              <p>등록 알레르기와 직접 충돌하면 빨간 경고를 표시하고 해당 재료를 권하지 않습니다.</p>
+            </article>
+          </section>
+
+          <section className="about-flow">
+            <div>
+              <p>03 — HOW IT WORKS</p>
+              <h2>질문에서 답변까지</h2>
+            </div>
+            <ol>
+              <li><span>1</span><strong>말하고 찍기</strong><small>글 · 음성 · 사진</small></li>
+              <li><span>2</span><strong>맥락과 DATA 확인</strong><small>대화 · 방언 · 건강정보</small></li>
+              <li><span>3</span><strong>쉬운 답변과 음성</strong><small>경고 · 카드 · TTS</small></li>
+            </ol>
+          </section>
+
+          <footer className="about-footer">
+            <strong>SilverLens</strong>
+            <p>어르신의 말과 식탁 사이, 더 안전한 이해를 만듭니다.</p>
+          </footer>
+        </section>
+      </main>
+    );
+  }
+
+  if (screen === "team") {
     return (
       <main className="app-shell">
         <Sidebar active={screen} onNavigate={setScreen} />
         <section className="content-page placeholder-page">
           <button className="back-button" onClick={() => setScreen("setup")}>← 서비스로 돌아가기</button>
           <div>
-            <h1>{screen === "about" ? "서비스 소개" : "팀원 소개"}</h1>
+            <h1>팀원 소개</h1>
             <p>구성중</p>
           </div>
         </section>
@@ -1122,6 +1335,30 @@ export default function SilverLensApp() {
                       <span>내 질문</span>
                       <strong>{activeAnswerCard.question}</strong>
                     </div>
+                    {activeAnswerCard.warningMessage && (
+                      <div
+                        className={`answer-warning ${activeAnswerCard.riskLevel}`}
+                        role="alert"
+                      >
+                        <span aria-hidden="true">!</span>
+                        <div>
+                          <strong>
+                            {activeLanguage === "en-US"
+                              ? activeAnswerCard.riskLevel === "danger"
+                                ? "Food warning"
+                                : "Check before eating"
+                              : activeLanguage === "zh-CN"
+                                ? activeAnswerCard.riskLevel === "danger"
+                                  ? "食用警告"
+                                  : "食用前确认"
+                                : activeAnswerCard.riskLevel === "danger"
+                                  ? "섭취 경고"
+                                  : "섭취 전 확인"}
+                          </strong>
+                          <p>{activeAnswerCard.warningMessage}</p>
+                        </div>
+                      </div>
+                    )}
                     {activeAnswerCard.attachmentLabels.length > 0 && (
                       <div className="answer-attachments" aria-label="함께 보낸 첨부">
                         {activeAnswerCard.attachmentLabels.map((label) => (
@@ -1187,9 +1424,10 @@ export default function SilverLensApp() {
                   const firstCardIndex =
                     visibleAnswerCardIndex - activeAnswerCard.pageIndex;
                   if (!turn) return;
+                  const narrationPages = narrationPagesForTurn(turn);
                   if (narrationStatus[activeAnswerCard.turnId] === "error") {
                     speakAnswerPagesWithBrowser(
-                      turn.pages,
+                      narrationPages,
                       activeAnswerCard.pageIndex,
                       firstCardIndex,
                       activeLanguage,
@@ -1198,7 +1436,7 @@ export default function SilverLensApp() {
                   }
                   void speakGeminiAnswer(
                     activeAnswerCard.turnId,
-                    turn.pages,
+                    narrationPages,
                     activeAnswerCard.pageIndex,
                     firstCardIndex,
                     activeLanguage,
@@ -1325,7 +1563,18 @@ export default function SilverLensApp() {
           </span>
         </div>
 
-        <div className="auto-tts">🔊 <strong>자동 음성 안내 켜짐</strong></div>
+        <button
+          className={autoVoiceGuide ? "auto-tts enabled" : "auto-tts disabled"}
+          onClick={toggleAutoVoiceGuide}
+          aria-pressed={autoVoiceGuide}
+        >
+          <span aria-hidden="true">{autoVoiceGuide ? "🔊" : "🔇"}</span>
+          <span>
+            <strong>자동 음성 안내 {autoVoiceGuide ? "켜짐" : "꺼짐"}</strong>
+            <small>누르면 {autoVoiceGuide ? "자동 재생을 끕니다" : "자동 재생을 켭니다"}</small>
+          </span>
+          <em aria-hidden="true">{autoVoiceGuide ? "ON" : "OFF"}</em>
+        </button>
 
         <fieldset className="form-section">
           <legend>언어</legend>
@@ -1416,14 +1665,22 @@ export default function SilverLensApp() {
               <input
                 autoFocus
                 placeholder="입력 후 엔터"
-                onKeyDown={(event) => addTag(event, setAllergies)}
+                list="allergy-health-options"
+                onKeyDown={(event) =>
+                  addHealthTag(event, "allergy", setAllergyIds)
+                }
                 aria-label="알레르기 음식 입력"
               />
             )}
+            <datalist id="allergy-health-options">
+              {allergyOptions.map((item) => (
+                <option key={item.id} value={item.label} />
+              ))}
+            </datalist>
             <div className="tag-list">
-              {allergies.map((item) => (
-                <button key={item} onClick={() => setAllergies((items) => items.filter((value) => value !== item))}>
-                  {item} ×
+              {allergyIds.map((id) => (
+                <button key={id} onClick={() => setAllergyIds((items) => items.filter((value) => value !== id))}>
+                  {getHealthLabel(id, activeLanguage)} ×
                 </button>
               ))}
             </div>
@@ -1449,19 +1706,30 @@ export default function SilverLensApp() {
               <input
                 autoFocus
                 placeholder="입력 후 엔터"
-                onKeyDown={(event) => addTag(event, setConditions)}
+                list="condition-health-options"
+                onKeyDown={(event) =>
+                  addHealthTag(event, "condition", setConditionIds)
+                }
                 aria-label="질병 정보 입력"
               />
             )}
+            <datalist id="condition-health-options">
+              {conditionOptions.map((item) => (
+                <option key={item.id} value={item.label} />
+              ))}
+            </datalist>
             <div className="tag-list">
-              {conditions.map((item) => (
-                <button key={item} onClick={() => setConditions((items) => items.filter((value) => value !== item))}>
-                  {item} ×
+              {conditionIds.map((id) => (
+                <button key={id} onClick={() => setConditionIds((items) => items.filter((value) => value !== id))}>
+                  {getHealthLabel(id, activeLanguage)} ×
                 </button>
               ))}
             </div>
           </section>
         </div>
+        <p className="health-language-note">
+          DATA에 등록된 건강정보는 선택한 언어에 맞춰 표시됩니다.
+        </p>
 
         <div className="voice-row">
           <button
@@ -1474,7 +1742,7 @@ export default function SilverLensApp() {
               <small>{setupRecording ? "다시 누르면 자동 입력" : "알레르기와 질병을 함께 말해요"}</small>
             </div>
           </button>
-          <button className="replay-control" onClick={() => announceNext()}>
+          <button className="replay-control" onClick={replayCurrentGuide}>
             <span>🔊</span>
             <div>
               <strong>안내 다시 듣기</strong>

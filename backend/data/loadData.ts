@@ -85,8 +85,6 @@ function recordText(record: RecipeRecord | SeniorFoodRecord) {
     "ingredients" in record && Array.isArray(record.ingredients)
       ? record.ingredients
       : [];
-  const diseaseInfo =
-    "disease_info" in record ? record.disease_info : undefined;
 
   return normalized(
     [
@@ -94,9 +92,6 @@ function recordText(record: RecipeRecord | SeniorFoodRecord) {
       record.category ?? "",
       ...dialects,
       ...recipeIngredients,
-      ...(diseaseInfo?.caution_diseases ?? []),
-      diseaseInfo?.good_compatibility ?? "",
-      diseaseInfo?.bad_compatibility ?? "",
     ].join(" "),
   );
 }
@@ -141,19 +136,13 @@ function rankedMatches<T extends RecipeRecord | SeniorFoodRecord>(
 
 export function findRelevantKnowledge(
   question: string,
-  profile: { allergies?: string[]; conditions?: string[] } = {},
 ) {
   const knowledge = loadKnowledgeData();
-  const searchQuery = [
-    question,
-    ...(profile.allergies ?? []),
-    ...(profile.conditions ?? []),
-  ].join(" ");
 
   return {
     dialectHints: dictionaryMatches(question, knowledge.dialectDictionary),
-    recipes: rankedMatches(knowledge.foodIngredients, searchQuery, 4),
-    foods: rankedMatches(knowledge.seniorFoodKnowledge, searchQuery, 4),
+    recipes: rankedMatches(knowledge.foodIngredients, question, 4),
+    foods: rankedMatches(knowledge.seniorFoodKnowledge, question, 4),
     foodAliases: knowledge.foodAliases,
     legacyDialectTerms: knowledge.dialectTerms,
     safetyRules: knowledge.safetyRules,

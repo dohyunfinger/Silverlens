@@ -39,6 +39,7 @@ SilverLens/
 ├── backend/
 │   ├── config/env.ts           # 환경변수 검사
 │   ├── data/loadData.ts        # JSON 자료 메모리 캐시
+│   ├── data/healthTerms.ts      # 다국어 건강정보 ID·표시명 연결
 │   ├── services/
 │   │   ├── geminiService.ts
 │   │   ├── transcriptionService.ts
@@ -55,7 +56,8 @@ SilverLens/
 │   ├── dialect_dictionary.json
 │   ├── dialect_terms.json
 │   ├── food_aliases.json
-│   └── safety_rules.json
+│   ├── safety_rules.json
+│   └── health_terms.json       # 한국어·영어·중국어 알레르기·질병명
 ├── scripts/
 │   └── prepare_knowledge_data.py
 ├── package.json
@@ -69,8 +71,13 @@ SilverLens/
 npm run prepare:data
 ```
 
-`backend/data/loadData.ts`는 질문·알레르기·질병과 관련된 항목만 찾아 Gemini
-답변 프롬프트에 넣습니다. 전체 자료를 매 요청마다 그대로 전송하지 않습니다.
+`backend/data/loadData.ts`는 현재 질문과 최근 대화에 실제로 언급된 식품명·별칭·
+재료를 기준으로 관련 항목만 찾아 Gemini 답변 프롬프트에 넣습니다. 질병명만
+일치한다는 이유로 장어 같은 무관한 식품 자료를 끌어오지 않습니다.
+
+`data/health_terms.json`의 각 항목은 하나의 고정 ID와 한국어·영어·중국어
+표시명을 가집니다. 음성 분류 결과는 표시 문구가 아니라 이 ID로 저장되므로
+화면 언어를 바꾸면 같은 건강정보가 해당 언어로 다시 표시됩니다.
 
 ## VS Code 실행
 
@@ -142,4 +149,17 @@ AI 답변 음성은 짧은 문장 묶음으로 동시에 준비하고 브라우�
 브라우저 TTS로 전환하며, 이 경우에도 카드가 자동 이동합니다.
 
 건강정보 음성은 AI가 음성 전체를 확인한 뒤 알레르기와 질병을 분리합니다.
-명시하지 않은 건강정보는 자동으로 추측해 넣지 않도록 프롬프트를 제한합니다.
+AI가 반환한 항목은 `health_terms.json`에 실제로 등록된 ID인지 서버에서 다시
+검사합니다. 명시하지 않은 정보나 카탈로그에 없는 임의 값은 자동 입력하지 않습니다.
+
+대화 API는 최근 6개의 질문과 답변을 다음 요청에 함께 전달합니다. “레시피
+알려줘”처럼 주어가 생략된 후속 질문은 가장 최근 음식 주제를 이어서 해석하도록
+프롬프트를 제한합니다.
+
+답변은 `answer`, `riskLevel`, `warningMessage` 구조로 반환됩니다. 등록된
+알레르기 식품이 현재 질문 또는 이어지는 대화 주제에 직접 포함되면 코드가
+`danger`를 우선 적용해 답변 카드 상단에 빨간 경고를 표시합니다.
+
+자동 음성 안내 버튼은 켜짐·꺼짐 상태를 브라우저에 저장합니다. 꺼짐일 때는
+단계 안내와 새 답변이 자동 재생되지 않지만 `안내 다시 듣기`와
+`답변 다시 듣기`는 계속 사용할 수 있습니다.
