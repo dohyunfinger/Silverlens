@@ -8,12 +8,26 @@ export type UserProfile = {
   conditions?: string[];
 };
 
+export type InlineMedia = {
+  data: string;
+  mimeType: string;
+};
+
 type GeminiResponse = {
   candidates?: Array<{
     content?: { parts?: Array<{ text?: string }> };
     finishReason?: string;
   }>;
   error?: { message?: string };
+};
+
+type GeminiPart =
+  | { text: string }
+  | { inline_data: { data: string; mime_type: string } };
+
+type GeminiContent = {
+  role: "user" | "model";
+  parts: GeminiPart[];
 };
 
 export function isMeaningfulText(value: unknown): value is string {
@@ -27,6 +41,7 @@ export function isMeaningfulText(value: unknown): value is string {
 export async function generateSeniorFriendlyAnswer(
   message: string,
   profile: UserProfile = {},
+  media: { audio?: InlineMedia | null; image?: InlineMedia | null } = {},
 ) {
   const { apiKey, textModel } = getGeminiConfig();
   const knowledge = loadKnowledgeData();
@@ -36,17 +51,35 @@ export async function generateSeniorFriendlyAnswer(
     "등록된 알레르기 식품을 추천하지 마세요.",
     "답변은 짧은 문장과 짧은 문단을 사용한 한국어 Markdown으로 작성하세요.",
     "핵심 내용을 빠뜨리지 말고, 마지막 문장을 끝까지 완결해서 작성하세요.",
+    "첨부된 글, 음성, 사진이 있으면 각각 따로 답하지 말고 하나의 질문으로 함께 이해하세요.",
+    "사진이 있으면 사진 속 식재료를 확인하고, 음성이 있으면 말한 질문의 뜻을 반영하세요.",
     `사용자 나이대: ${profile.ageBand ?? "미입력"}대`,
     `알레르기: ${(profile.allergies ?? []).join(", ") || "미입력"}`,
     `질병 정보: ${(profile.conditions ?? []).join(", ") || "미입력"}`,
     `사투리 참고: ${JSON.stringify(knowledge.dialectTerms)}`,
     `식재료 별칭 참고: ${JSON.stringify(knowledge.foodAliases)}`,
     `안전 원칙: ${JSON.stringify(knowledge.safetyRules)}`,
-    `사용자 질문: ${message}`,
+    `사용자 글 질문: ${message || "없음. 첨부된 음성이나 사진을 중심으로 답변할 것"}`,
   ].join("\n");
 
-  const firstQuestion = { role: "user", parts: [{ text: prompt }] };
-  let contents = [firstQuestion];
+  const firstQuestion: GeminiContent = { role: "user", parts: [{ text: prompt }] };
+  if (media.image) {
+    firstQuestion.parts.push({
+      inline_data: {
+        data: media.image.data,
+        mime_type: media.image.mimeType,
+      },
+    });
+  }
+  if (media.audio) {
+    firstQuestion.parts.push({
+      inline_data: {
+        data: media.audio.data,
+        mime_type: media.audio.mimeType,
+      },
+    });
+  }
+  let contents: GeminiContent[] = [firstQuestion];
   let completeAnswer = "";
 
   for (let attempt = 0; attempt < 3; attempt += 1) {

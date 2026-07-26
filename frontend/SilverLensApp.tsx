@@ -1,6 +1,7 @@
 "use client";
 
 import {
+  ChangeEvent,
   KeyboardEvent,
   TouchEvent,
   useCallback,
@@ -20,15 +21,26 @@ type ChatTurn = {
   question: string;
   answer: string;
   pages: string[];
+  attachmentLabels: string[];
 };
 type AnswerCard = {
   id: string;
   question: string;
   answer: string;
   content: string;
+  attachmentLabels: string[];
   turnIndex: number;
   pageIndex: number;
   pageCount: number;
+};
+type PendingAudio = {
+  blob: Blob;
+  duration: number;
+  url: string;
+};
+type PendingImage = {
+  file: File;
+  url: string;
 };
 
 function plainTextFromMarkdown(markdown: string) {
@@ -125,6 +137,32 @@ function splitAnswerIntoPages(markdown: string, maxChars = 300) {
 
   if (current) pages.push(current);
   return pages.length > 0 ? pages : [markdown.trim()];
+}
+
+function formatDuration(totalSeconds: number) {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
+
+function blobToInlineData(blob: Blob): Promise<{ data: string; mimeType: string }> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.addEventListener("load", () => {
+      const value = typeof reader.result === "string" ? reader.result : "";
+      const commaIndex = value.indexOf(",");
+      if (commaIndex < 0) {
+        reject(new Error("첨부 파일을 읽지 못했습니다."));
+        return;
+      }
+      resolve({
+        data: value.slice(commaIndex + 1),
+        mimeType: blob.type || "application/octet-stream",
+      });
+    });
+    reader.addEventListener("error", () => reject(new Error("첨부 파일을 읽지 못했습니다.")));
+    reader.readAsDataURL(blob);
+  });
 }
 
 const languages: Array<{
@@ -228,6 +266,8 @@ export default function SilverLensApp() {
   const [showConditionInput, setShowConditionInput] = useState(false);
   const [recordingContext, setRecordingContext] = useState<"setup" | "chat" | null>(null);
   const [recordedUrl, setRecordedUrl] = useState<string | null>(null);
+  const [pendingAudio, setPendingAudio] = useState<PendingAudio | null>(null);
+  const [pendingImage, setPendingImage] = useState<PendingImage | null>(null);
   const [recordingError, setRecordingError] = useState("");
   const [chatInput, setChatInput] = useState("");
   const [chatTurns, setChatTurns] = useState<ChatTurn[]>([]);
@@ -245,8 +285,10 @@ export default function SilverLensApp() {
   const narrationSequenceRef = useRef(0);
   const announceTimerRef = useRef<number | null>(null);
   const chunksRef = useRef<Blob[]>([]);
+  const recordingStartedAtRef = useRef<number | null>(null);
   const initialTtsPlayed = useRef(false);
   const answerTouchStartX = useRef<number | null>(null);
+  const photoInputRef = useRef<HTMLInputElement | null>(null);
 
   const nextStep = getNextStep(language, gender, ageConfirmed);
   const activeLanguage = language ?? "ko-KR";
@@ -424,6 +466,18 @@ export default function SilverLensApp() {
     };
   }, [recordedUrl, stopNarration]);
 
+  useEffect(() => {
+    return () => {
+      if (pendingAudio) URL.revokeObjectURL(pendingAudio.url);
+    };
+  }, [pendingAudio]);
+
+  useEffect(() => {
+    return () => {
+      if (pendingImage) URL.revokeObjectURL(pendingImage.url);
+    };
+  }, [pendingImage]);
+
   const announceNext = useCallback(
     (
       nextLanguage: Language | null = language,
@@ -502,6 +556,7 @@ export default function SilverLensApp() {
       const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
       streamRef.current = stream;
       chunksRef.current = [];
+      recordingStartedAtRef.current = Date.now();
       const recorder = new MediaRecorder(stream);
       mediaRecorderRef.current = recorder;
       recorder.addEventListener("dataavailable", (event) => {
@@ -509,11 +564,25 @@ export default function SilverLensApp() {
       });
       recorder.addEventListener("stop", async () => {
         const blob = new Blob(chunksRef.current, { type: recorder.mimeType || "audio/webm" });
-        if (recordedUrl) URL.revokeObjectURL(recordedUrl);
-        setRecordedUrl(URL.createObjectURL(blob));
+        const url = URL.createObjectURL(blob);
+        const duration = Math.max(
+          1,
+          Math.round((Date.now() - (recordingStartedAtRef.current ?? Date.now())) / 1000),
+        );
+        if (context === "chat") {
+          setPendingAudio({ blob, duration, url });
+          queueBrowserNarration(
+            "음성이 첨부되었습니다. 사진이나 글을 더한 뒤 질문 보내기 버튼을 눌러 주세요.",
+            activeLanguage,
+            80,
+          );
+        } else {
+          setRecordedUrl(url);
+        }
         stream.getTracks().forEach((track) => track.stop());
         streamRef.current = null;
         mediaRecorderRef.current = null;
+        recordingStartedAtRef.current = null;
         setRecordingContext(null);
         const sttUrl = process.env.NEXT_PUBLIC_STT_API_URL;
         if (sttUrl) {
@@ -531,7 +600,7 @@ export default function SilverLensApp() {
             if (context === "chat") setChatInput(text);
           } catch {
             setRecordingError(
-              "녹음은 저장됐지만 로컬 음성인식 서버에 연결하지 못했습니다.",
+              "음성은 첨부됐지만 글자로 미리보는 기능에 연결하지 못했습니다. 그대로 함께 보낼 수 있어요.",
             );
           }
         }
@@ -560,6 +629,7 @@ export default function SilverLensApp() {
           question: turn.question,
           answer: turn.answer,
           content,
+          attachmentLabels: turn.attachmentLabels,
           turnIndex,
           pageIndex,
           pageCount: turn.pages.length,
@@ -597,21 +667,69 @@ export default function SilverLensApp() {
     moveAnswerCard(distance < 0 ? 1 : -1);
   };
 
+  const handlePhoto = (event: ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    event.target.value = "";
+    if (!file) return;
+    if (!file.type.startsWith("image/")) {
+      setChatError("사진 파일만 첨부할 수 있어요.");
+      return;
+    }
+    if (file.size > 8 * 1024 * 1024) {
+      setChatError("사진은 8MB 이하로 선택해 주세요.");
+      return;
+    }
+    setChatError("");
+    setPendingImage({ file, url: URL.createObjectURL(file) });
+    queueBrowserNarration(
+      "사진이 첨부되었습니다. 음성이나 글을 더한 뒤 질문 보내기 버튼을 눌러 주세요.",
+      activeLanguage,
+      80,
+    );
+  };
+
+  const clearPendingAudio = () => {
+    setPendingAudio(null);
+    setTranscript("");
+  };
+
+  const clearPendingImage = () => {
+    setPendingImage(null);
+  };
+
   const askGemini = async () => {
     const cleaned = chatInput.trim();
-    if (!cleaned || !/[\p{L}\p{N}]/u.test(cleaned)) {
-      setChatError("질문 내용을 한 글자 이상 입력해 주세요.");
+    const hasMeaningfulText = Boolean(cleaned && /[\p{L}\p{N}]/u.test(cleaned));
+    if (!hasMeaningfulText && !pendingAudio && !pendingImage) {
+      setChatError("글, 음성, 사진 중 하나 이상을 준비해 주세요.");
       return;
     }
 
     setChatError("");
     setIsLoadingAnswer(true);
     try {
+      const [audio, image] = await Promise.all([
+        pendingAudio ? blobToInlineData(pendingAudio.blob) : null,
+        pendingImage ? blobToInlineData(pendingImage.file) : null,
+      ]);
+      const attachmentLabels = [
+        ...(pendingAudio ? [`🎙 음성 ${formatDuration(pendingAudio.duration)}`] : []),
+        ...(pendingImage ? ["🖼 사진 1장"] : []),
+      ];
+      const questionLabel =
+        cleaned ||
+        (pendingAudio && pendingImage
+          ? "음성과 사진으로 질문"
+          : pendingAudio
+            ? "음성으로 질문"
+            : "사진으로 질문");
       const response = await fetch("/api/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: cleaned,
+          audio,
+          image,
           profile: { language: activeLanguage, ageBand, allergies, conditions },
         }),
       });
@@ -621,13 +739,17 @@ export default function SilverLensApp() {
       }
       const nextTurn: ChatTurn = {
         id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-        question: cleaned,
+        question: questionLabel,
         answer: payload.answer,
         pages: splitAnswerIntoPages(payload.answer),
+        attachmentLabels,
       };
       setAnswerCardIndex(answerCards.length);
       setChatTurns((turns) => [...turns, nextTurn]);
       setChatInput("");
+      setPendingAudio(null);
+      setPendingImage(null);
+      setTranscript("");
       void speakGeminiAnswer(plainTextFromMarkdown(payload.answer), activeLanguage);
     } catch (error) {
       setChatError(error instanceof Error ? error.message : "답변을 불러오지 못했습니다.");
@@ -669,114 +791,94 @@ export default function SilverLensApp() {
 
           <h1>오늘은 무엇을 도와드릴까요?</h1>
 
-          <section className="text-chat-panel">
-            <label htmlFor="chat-question">글자로 질문하기</label>
-            <div>
-              <textarea
-                id="chat-question"
-                value={chatInput}
-                onChange={(event) => setChatInput(event.target.value)}
-                placeholder="예: 정구지를 많이 먹어도 괜찮나요?"
-                maxLength={1000}
-              />
-              <button onClick={askGemini} disabled={isLoadingAnswer}>
-                {isLoadingAnswer ? "답변 준비 중…" : "질문 보내기"}
-              </button>
-            </div>
-            {chatError && <p className="error-message" role="alert">{chatError}</p>}
-            <section className="answer-history" aria-live="polite">
-              <div className="answer-history-heading">
-                <h2>AI 답변</h2>
-                <span>
-                  {activeAnswerCard
+          <section className="answer-section" aria-live="polite">
+            <div className="answer-heading">
+              <span className="answer-label">AI 답변</span>
+              <span className={isLoadingAnswer ? "answer-state waiting" : "answer-state"}>
+                {isLoadingAnswer
+                  ? "답변 만드는 중"
+                  : activeAnswerCard
                     ? `대화 ${activeAnswerCard.turnIndex + 1} · 답변 ${
                         activeAnswerCard.pageIndex + 1
                       }/${activeAnswerCard.pageCount}`
                     : "답변 대기 중"}
-                </span>
-              </div>
-              <div
-                className="answer-carousel"
-                onTouchStart={handleAnswerTouchStart}
-                onTouchEnd={handleAnswerTouchEnd}
+              </span>
+            </div>
+
+            <div
+              className="answer-carousel"
+              onTouchStart={handleAnswerTouchStart}
+              onTouchEnd={handleAnswerTouchEnd}
+            >
+              <button
+                className="answer-arrow"
+                onClick={() => moveAnswerCard(-1)}
+                disabled={!activeAnswerCard || visibleAnswerCardIndex === 0}
+                aria-label="이전 대화 또는 이전 답변"
               >
-                <button
-                  className="answer-arrow"
-                  onClick={() => moveAnswerCard(-1)}
-                  disabled={!activeAnswerCard || visibleAnswerCardIndex === 0}
-                  aria-label="이전 대화 또는 이전 답변"
-                >
-                  ‹
-                </button>
-                <article className="ai-answer-card">
-                  {activeAnswerCard ? (
-                    <>
-                    <p className="answer-question">
-                      <span>질문</span>
-                      {activeAnswerCard.question}
-                    </p>
+                ‹
+              </button>
+              <article className="answer-card">
+                {activeAnswerCard ? (
+                  <>
+                    <div className="answer-question">
+                      <span>내 질문</span>
+                      <strong>{activeAnswerCard.question}</strong>
+                    </div>
+                    {activeAnswerCard.attachmentLabels.length > 0 && (
+                      <div className="answer-attachments" aria-label="함께 보낸 첨부">
+                        {activeAnswerCard.attachmentLabels.map((label) => (
+                          <span key={label}>{label}</span>
+                        ))}
+                      </div>
+                    )}
                     <div className="answer-markdown">
                       <ReactMarkdown>{activeAnswerCard.content}</ReactMarkdown>
                     </div>
-                    </>
-                  ) : (
-                    <div className="answer-placeholder">
-                      <strong>질문을 보내면 답변을 큰 글자로 보여드려요.</strong>
-                      <p>
-                        답변이 길면 오른쪽 카드로 이어지고, 왼쪽으로 넘기면
-                        이전 대화를 다시 볼 수 있어요.
-                      </p>
-                    </div>
-                  )}
-                </article>
-                <button
-                  className="answer-arrow"
-                  onClick={() => moveAnswerCard(1)}
-                  disabled={
-                    !activeAnswerCard ||
-                    visibleAnswerCardIndex === answerCards.length - 1
-                  }
-                  aria-label="다음 답변 또는 새 대화"
-                >
-                  ›
-                </button>
-              </div>
-              <div className="answer-history-footer">
-                <span>← 이전 대화</span>
-                <div className="answer-dots" aria-label="답변 카드 선택">
-                  {answerCards.map((item, index) => (
-                    <button
-                      key={item.id}
-                      className={index === visibleAnswerCardIndex ? "active" : ""}
-                      onClick={() => {
-                        stopNarration();
-                        setAnswerCardIndex(index);
-                      }}
-                      aria-label={`${item.turnIndex + 1}번째 대화 ${item.pageIndex + 1}번째 답변`}
-                    />
-                  ))}
-                </div>
-                <span>이어지는 답변 →</span>
-              </div>
-            </section>
-          </section>
+                  </>
+                ) : (
+                  <div className="answer-placeholder">
+                    <strong>질문을 보내면 답변을 큰 글자로 보여드려요.</strong>
+                    <p>
+                      답변이 길면 오른쪽 카드로 이어지고, 왼쪽으로 넘기면
+                      이전 대화를 다시 볼 수 있어요.
+                    </p>
+                  </div>
+                )}
+              </article>
+              <button
+                className="answer-arrow"
+                onClick={() => moveAnswerCard(1)}
+                disabled={
+                  !activeAnswerCard ||
+                  visibleAnswerCardIndex === answerCards.length - 1
+                }
+                aria-label="다음 답변 또는 새 대화"
+              >
+                ›
+              </button>
+            </div>
 
-          <div className="chat-actions">
+            <div className="answer-history-footer">
+              <span>← 이전 대화</span>
+              <div className="answer-dots" aria-label="답변 카드 선택">
+                {answerCards.map((item, index) => (
+                  <button
+                    key={item.id}
+                    className={index === visibleAnswerCardIndex ? "active" : ""}
+                    onClick={() => {
+                      stopNarration();
+                      setAnswerCardIndex(index);
+                    }}
+                    aria-label={`${item.turnIndex + 1}번째 대화 ${item.pageIndex + 1}번째 답변`}
+                  />
+                ))}
+              </div>
+              <span>이어지는 답변 →</span>
+            </div>
+
             <button
-              className={isRecording ? "action-button recording" : "action-button voice"}
-              onClick={() => toggleRecording("chat")}
-            >
-              <span>{isRecording ? "●" : "🎙️"}</span>
-              <strong>{isRecording ? "녹음 중" : "음성으로 말하기"}</strong>
-              <small>{isRecording ? "다시 누르면 저장" : "누르면 녹음 시작"}</small>
-            </button>
-            <button className="action-button camera">
-              <span>📷</span>
-              <strong>사진 찍기</strong>
-              <small>식재료를 보여주세요</small>
-            </button>
-            <button
-              className="action-button replay"
+              className="answer-replay"
               disabled={!activeAnswerCard}
               onClick={() => {
                 if (isNarrating) {
@@ -791,25 +893,90 @@ export default function SilverLensApp() {
                 }
               }}
             >
-              <span>{isNarrating ? "■" : "🔊"}</span>
-              <strong>{isNarrating ? "답변 재생 멈추기" : "답변 다시 듣기"}</strong>
-              <small>
-                {activeAnswerCard
-                  ? `${activeAnswerCard.turnIndex + 1}번째 대화 전체 답변`
-                  : "AI 답변이 생성되면 들을 수 있어요"}
-              </small>
+              {isNarrating ? "■ 답변 재생 멈추기" : "🔊 현재 답변 다시 듣기"}
             </button>
-          </div>
+          </section>
 
-          {recordedUrl && (
-            <div className="saved-recording">
-              <span>✓ 음성이 저장되었습니다.</span>
-              <audio controls src={recordedUrl}>
-                <track kind="captions" />
-              </audio>
+          <section className="question-composer" aria-label="질문 작성">
+            <label htmlFor="chat-question">글자로 질문하기</label>
+            <textarea
+              id="chat-question"
+              value={chatInput}
+              onChange={(event) => setChatInput(event.target.value)}
+              placeholder="예: 정구지를 많이 먹어도 괜찮나요?"
+              maxLength={1000}
+              rows={3}
+            />
+
+            {(pendingAudio || pendingImage) && (
+              <div className="pending-attachments" aria-label="전송 대기 중인 첨부">
+                <strong>함께 보낼 내용</strong>
+                <div className="attachment-list">
+                  {pendingAudio && (
+                    <div className="attachment-chip">
+                      <span className="attachment-icon">🎙️</span>
+                      <span>
+                        <strong>음성 첨부됨</strong>
+                        <small>{formatDuration(pendingAudio.duration)} · 보내기 전</small>
+                      </span>
+                      <button onClick={clearPendingAudio} aria-label="첨부한 음성 삭제">×</button>
+                    </div>
+                  )}
+                  {pendingImage && (
+                    <div className="attachment-chip">
+                      <span className="attachment-icon">🖼️</span>
+                      <span>
+                        <strong>사진 첨부됨</strong>
+                        <small>{pendingImage.file.name}</small>
+                      </span>
+                      <button onClick={clearPendingImage} aria-label="첨부한 사진 삭제">×</button>
+                    </div>
+                  )}
+                </div>
+                {transcript && <p>음성 인식: {transcript}</p>}
+                <p>아직 전송되지 않았어요. 질문 보내기를 누르면 한꺼번에 올라가요.</p>
+              </div>
+            )}
+
+            <div className="composer-actions">
+              <button
+                className={isRecording ? "composer-tool recording" : "composer-tool"}
+                onClick={() => toggleRecording("chat")}
+              >
+                <span>{isRecording ? "●" : "🎙️"}</span>
+                <strong>{isRecording ? "녹음 중" : "음성 녹음"}</strong>
+                <small>{isRecording ? "다시 누르면 첨부" : "녹음만으로 전송되지 않아요"}</small>
+              </button>
+              <button className="composer-tool" onClick={() => photoInputRef.current?.click()}>
+                <span>📷</span>
+                <strong>사진 올리기</strong>
+                <small>음성과 함께 보낼 수 있어요</small>
+              </button>
+              <input
+                ref={photoInputRef}
+                className="visually-hidden"
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/heic,image/heif"
+                capture="environment"
+                onChange={handlePhoto}
+                aria-label="사진 파일 선택"
+              />
+              <button
+                className="send-question"
+                onClick={askGemini}
+                disabled={
+                  isLoadingAnswer ||
+                  (!chatInput.trim() && !pendingAudio && !pendingImage)
+                }
+              >
+                <span>➤</span>
+                <strong>{isLoadingAnswer ? "한꺼번에 보내는 중" : "질문 보내기"}</strong>
+                <small>글·음성·사진을 함께 전송</small>
+              </button>
             </div>
-          )}
-          {transcript && <p className="transcript-box">음성 인식 결과: {transcript}</p>}
+          </section>
+
+          {chatError && <p className="error-message" role="alert">{chatError}</p>}
           {recordingError && <p className="error-message" role="alert">{recordingError}</p>}
           <p className="medical-note">
             🛡 이 내용은 일반 식생활 참고용이며 진단·치료를 대신하지 않아요. 처방받은 식단이 있으면 그 안내를 우선하세요.
