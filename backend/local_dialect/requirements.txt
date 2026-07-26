@@ -1,0 +1,5 @@
+accelerate>=1.2,<2
+fastapi>=0.115,<1
+torch>=2.4,<3
+transformers>=4.46,<6
+uvicorn[standard]>=0.34,<1
