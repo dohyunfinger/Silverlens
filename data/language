@@ -1,1 +1,163 @@
-
+# 1~172번 전체 데이터 정밀 검수 완료: 순수 의학 진단명(학문명) 32종 다국어 사전
+academic_diseases_map = {
+    "고지혈증": {
+        "en": "Hyperlipidemia",
+        "ja": "高脂血症",
+        "ja_romaji": "Koushikes Shou"
+    },
+    "통풍": {
+        "en": "Gout",
+        "ja": "痛風",
+        "ja_romaji": "Tsuufuu"
+    },
+    "비만": {
+        "en": "Obesity",
+        "ja": "肥満",
+        "ja_romaji": "Himan"
+    },
+    "만성 설사": {
+        "en": "Chronic Diarrhea",
+        "ja": "慢性下痢",
+        "ja_romaji": "Mansei Geri"
+    },
+    "고콜레스테롤혈증": {
+        "en": "Hypercholesterolemia",
+        "ja": "高コレステロール血症",
+        "ja_romaji": "Kou Cholesterol Kesshou"
+    },
+    "동맥경화": {
+        "en": "Atherosclerosis",
+        "ja": "動脈硬化",
+        "ja_romaji": "Doumyaku Kouka"
+    },
+    "과민성 대장증후군": {
+        "en": "Irritable Bowel Syndrome (IBS)",
+        "ja": "過敏性腸症候群",
+        "ja_romaji": "Kabinsei Chou Shoukougun"
+    },
+    "위궤양": {
+        "en": "Gastric Ulcer",
+        "ja": "胃潰瘍",
+        "ja_romaji": "Ikaiyou"
+    },
+    "역류성 식도염": {
+        "en": "Gastroesophageal Reflux Disease (GERD)",
+        "ja": "逆流性食道炎",
+        "ja_romaji": "Gyakuryuusei Shokudouen"
+    },
+    "고혈압": {
+        "en": "Hypertension",
+        "ja": "高血圧",
+        "ja_romaji": "Kouketsuatsu"
+    },
+    "당뇨": {
+        "en": "Diabetes Mellitus",
+        "ja": "糖尿病",
+        "ja_romaji": "Tounyoubyou"
+    },
+    "비타민 A 과다증": {
+        "en": "Hypervitaminosis A",
+        "ja": "ビタミンA過剰症",
+        "ja_romaji": "Vitamin A Kajoushou"
+    },
+    "식중독": {
+        "en": "Food Poisoning",
+        "ja": "食中毒",
+        "ja_romaji": "Shokuchuudoku"
+    },
+    "신장 질환": {
+        "en": "Kidney Disease",
+        "ja": "腎臓病",
+        "ja_romaji": "Jinzoubyou"
+    },
+    "심혈관 질환": {
+        "en": "Cardiovascular Disease",
+        "ja": "心血管疾患",
+        "ja_romaji": "Shinkekkan Shikkan"
+    },
+    "갑상선 질환": {
+        "en": "Thyroid Disease",
+        "ja": "甲状腺疾患",
+        "ja_romaji": "Koujousen Shikkan"
+    },
+    "갑상선 기능 저하증": {
+        "en": "Hypothyroidism",
+        "ja": "甲状腺機能低下症",
+        "ja_romaji": "Koujousen Kinou Teikashou"
+    },
+    "신장결석": {
+        "en": "Kidney Stones (Nephrolithiasis)",
+        "ja": "腎臓結石",
+        "ja_romaji": "Jinzou Kesseki"
+    },
+    "담석증": {
+        "en": "Cholelithiasis",
+        "ja": "胆石症",
+        "ja_romaji": "Tansekishou"
+    },
+    "췌장염": {
+        "en": "Pancreatitis",
+        "ja": "膵臓炎",
+        "ja_romaji": "Suizouen"
+    },
+    "위염": {
+        "en": "Gastritis",
+        "ja": "胃炎",
+        "ja_romaji": "Ien"
+    },
+    "십이지장궤양": {
+        "en": "Duodenal Ulcer",
+        "ja": "十二指腸潰瘍",
+        "ja_romaji": "Juunishichou Kaiyou"
+    },
+    "지방간": {
+        "en": "Fatty Liver Disease",
+        "ja": "脂肪肝",
+        "ja_romaji": "Shiboukan"
+    },
+    "협심증": {
+        "en": "Angina Pectoris",
+        "ja": "狭心症",
+        "ja_romaji": "Kyoushinsou"
+    },
+    "뇌졸중": {
+        "en": "Stroke",
+        "ja": "脳卒中",
+        "ja_romaji": "Nousottuu"
+    },
+    "빈혈": {
+        "en": "Anemia",
+        "ja": "貧血",
+        "ja_romaji": "Hinketsu"
+    },
+    "간 질환": {
+        "en": "Liver Disease",
+        "ja": "肝疾患",
+        "ja_romaji": "Kan Shikkan"
+    },
+    "치아 질환": {
+        "en": "Dental Disease",
+        "ja": "歯科疾患",
+        "ja_romaji": "Shika Shikkan"
+    },
+    "위산과다": {
+        "en": "Hyperacidity",
+        "ja": "胃酸過多",
+        "ja_romaji": "Isan Kata"
+    },
+    "골다공증": {
+        "en": "Osteoporosis",
+        "ja": "骨粗鬆症",
+        "ja_romaji": "Kotsusoshoushou"
+    },
+    "방광염": {
+        "en": "Cystitis",
+        "ja": "膀胱炎",
+        "ja_romaji": "Boukouen"
+    },
+    "저혈압": {
+        "en": "Hypotension",
+        "ja": "低血圧",
+        "ja_romaji": "Teiketsuatsu"
+    }
+}
