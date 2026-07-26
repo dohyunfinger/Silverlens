@@ -1,5 +1,6 @@
 "use client";
 
+import Image from "next/image";
 import {
   ChangeEvent,
   KeyboardEvent,
@@ -357,6 +358,334 @@ function Sidebar({
         <span>말하고, 찍고, 편하게 물어보세요.</span>
       </div>
     </aside>
+  );
+}
+
+function ProjectSheet({
+  src,
+  alt,
+  width,
+  height,
+  index,
+  title,
+  className = "",
+  priority = false,
+}: {
+  src: string;
+  alt: string;
+  width: number;
+  height: number;
+  index: string;
+  title: string;
+  className?: string;
+  priority?: boolean;
+}) {
+  return (
+    <figure className={`case-sheet ${className}`.trim()}>
+      <Image
+        src={src}
+        alt={alt}
+        width={width}
+        height={height}
+        priority={priority}
+        sizes="(max-width: 760px) 92vw, 46vw"
+      />
+      <figcaption>
+        <span>{index}</span>
+        {title}
+      </figcaption>
+    </figure>
+  );
+}
+
+function ServiceIntroduction({ onBack }: { onBack: () => void }) {
+  useEffect(() => {
+    window.scrollTo({ top: 0, behavior: "auto" });
+  }, []);
+
+  return (
+    <main className="case-page">
+      <nav className="case-nav" aria-label="소개 페이지 메뉴">
+        <button className="case-wordmark" onClick={onBack} aria-label="SilverLens 서비스로 돌아가기">
+          <span>SL</span>
+          <strong>SILVERLENS</strong>
+        </button>
+        <span className="case-nav-label">AI FOOD GUIDE FOR SENIORS · 2026</span>
+        <button className="case-exit" onClick={onBack}>
+          서비스로 돌아가기 <span aria-hidden="true">↗</span>
+        </button>
+      </nav>
+
+      <header className="case-hero">
+        <div className="case-hero-meta">
+          <span>01 — SERVICE STORY</span>
+          <span>VOICE · CONTEXT · SAFETY</span>
+        </div>
+        <h1>
+          <span>말은 편하게,</span>
+          <em>식사는 더 안전하게.</em>
+        </h1>
+        <div className="case-hero-bottom">
+          <p>
+            SilverLens는 시니어가 익숙한 말로 음식과 식재료를 물어볼 수 있도록 돕는
+            AI 식품 안내 서비스입니다.
+          </p>
+          <a href="#case-story">
+            프로젝트 보기 <span aria-hidden="true">↓</span>
+          </a>
+        </div>
+      </header>
+
+      <section className="case-cover" id="case-story">
+        <div className="case-cover-label">
+          <span>THE BEGINNING</span>
+          <strong>NAVER OGQ<br />AI COMPETITION</strong>
+          <small>Project archive / 01</small>
+        </div>
+        <ProjectSheet
+          src="/intro/11-KakaoTalk_20260719_233408809-1-.jpg"
+          alt="제4회 NAVER OGQ마켓 AI Competition 기획안 표지"
+          width={1344}
+          height={1907}
+          index="00"
+          title="Competition Proposal"
+          className="case-cover-sheet"
+          priority
+        />
+        <div className="case-cover-copy">
+          <span className="case-section-number">01</span>
+          <h2>기술보다 먼저,<br />사람의 말에 귀 기울였습니다.</h2>
+          <p>
+            타이핑이 어렵거나 익숙한 표현으로 질문하는 사용자도 음식 정보를 편하게
+            확인할 수 있도록, 질문부터 답변까지의 흐름을 단순하게 설계했습니다.
+          </p>
+          <ul>
+            <li><span>01</span> 말로 묻는 간편한 질문</li>
+            <li><span>02</span> 방언과 시장 표현의 문맥 이해</li>
+            <li><span>03</span> 건강정보를 고려한 식품 안내</li>
+          </ul>
+        </div>
+      </section>
+
+      <section className="case-manifesto">
+        <span className="case-vertical-label">SILVERLENS / BRAND PHILOSOPHY</span>
+        <div>
+          <p className="case-kicker">OUR POINT OF VIEW</p>
+          <h2>
+            익숙한 한마디가<br />
+            <em>안심할 수 있는 한 끼</em>로<br />
+            이어지도록.
+          </h2>
+        </div>
+        <p className="case-manifesto-copy">
+          SilverLens는 복잡한 기능보다 큰 글씨, 분명한 선택, 음성 안내와 짧은 답변을
+          우선합니다. 사용자의 질문 맥락과 등록한 건강정보를 함께 보고, 필요한 경우
+          주의 메시지를 먼저 보여주는 방향으로 설계했습니다.
+        </p>
+      </section>
+
+      <section className="case-doc-grid case-doc-grid--opening" aria-label="프로젝트 기획 자료">
+        <ProjectSheet
+          src="/intro/10-KakaoTalk_20260719_233408809_01-1-.jpg"
+          alt="대회 기획안 Executive Summary"
+          width={1379}
+          height={1483}
+          index="01"
+          title="Executive Summary"
+        />
+        <ProjectSheet
+          src="/intro/01-KakaoTalk_20260719_233408809_02-1-.jpg"
+          alt="대회 기획안 비전 및 목적"
+          width={1262}
+          height={1477}
+          index="02"
+          title="Vision & Purpose"
+          className="case-sheet--lower"
+        />
+      </section>
+
+      <section className="case-word-band" aria-label="SilverLens 핵심 가치">
+        <span>VOICE FIRST</span>
+        <span>CONTEXT AWARE</span>
+        <span>SAFETY VISIBLE</span>
+      </section>
+
+      <section className="case-feature-doc">
+        <div className="case-feature-copy">
+          <span className="case-section-number">02</span>
+          <p className="case-kicker">THE FRAMEWORK</p>
+          <h2>문제를 이해하고,<br />실행 가능한 흐름으로.</h2>
+          <p>
+            공모전의 배경과 운영 구조를 바탕으로, SilverLens는 실제 사용 화면과
+            음성 중심 경험을 구현하는 프로젝트로 구체화했습니다.
+          </p>
+        </div>
+        <ProjectSheet
+          src="/intro/09-KakaoTalk_20260719_233408809_03-1-.jpg"
+          alt="제4회 NAVER OGQ마켓 AI Competition 대회 개요"
+          width={1272}
+          height={1119}
+          index="03"
+          title="Competition Overview"
+          className="case-sheet--wide"
+        />
+      </section>
+
+      <section className="case-color-block">
+        <div>
+          <span>01</span>
+          <strong>말하기</strong>
+          <small>Voice Input</small>
+        </div>
+        <div>
+          <span>02</span>
+          <strong>이해하기</strong>
+          <small>Dialect &amp; Context</small>
+        </div>
+        <div>
+          <span>03</span>
+          <strong>안내하기</strong>
+          <small>Food Guidance</small>
+        </div>
+      </section>
+
+      <section className="case-doc-grid case-doc-grid--balanced">
+        <ProjectSheet
+          src="/intro/02-KakaoTalk_20260719_233408809_04-1-.jpg"
+          alt="대회 주제 세부 트랙 예시"
+          width={1155}
+          height={1378}
+          index="04"
+          title="Project Track"
+        />
+        <ProjectSheet
+          src="/intro/08-KakaoTalk_20260719_233408809_05-1-.jpg"
+          alt="대회 선발 프로세스"
+          width={1250}
+          height={1719}
+          index="05"
+          title="Selection Process"
+        />
+      </section>
+
+      <section className="case-quote">
+        <span aria-hidden="true">“</span>
+        <blockquote>
+          복잡한 기술을 보여주는 대신,<br />
+          누구나 <em>한 번에 이해할 수 있는 경험</em>을 만듭니다.
+        </blockquote>
+        <p>SILVERLENS DESIGN PRINCIPLE</p>
+      </section>
+
+      <section className="case-doc-grid case-doc-grid--editorial">
+        <ProjectSheet
+          src="/intro/13-KakaoTalk_20260719_233408809_06-1-.jpg"
+          alt="대회 제출 항목과 1차 선발 안내"
+          width={1251}
+          height={1773}
+          index="06"
+          title="Submission Guide"
+          className="case-sheet--warm"
+        />
+        <ProjectSheet
+          src="/intro/12-KakaoTalk_20260719_233408809_07-1-.jpg"
+          alt="대회 코칭 및 본선 안내"
+          width={1200}
+          height={955}
+          index="07"
+          title="Coaching & Final"
+          className="case-sheet--float"
+        />
+      </section>
+
+      <section className="case-dark-section">
+        <div className="case-dark-heading">
+          <p className="case-kicker">QUALITY &amp; RESPONSIBILITY</p>
+          <h2>완성도와 안전,<br />두 가지를 함께 봅니다.</h2>
+          <p>
+            실제 작동 여부와 사용성뿐 아니라 개인정보, 저작권, AI 생성물 표기와
+            미성년자 안전까지 함께 확인하는 기준을 프로젝트 설계에 반영합니다.
+          </p>
+        </div>
+        <div className="case-dark-docs">
+          <ProjectSheet
+            src="/intro/04-KakaoTalk_20260719_233408809_08-1-.jpg"
+            alt="대회 심사 기준"
+            width={1212}
+            height={1063}
+            index="08"
+            title="Evaluation Criteria"
+          />
+          <ProjectSheet
+            src="/intro/07-KakaoTalk_20260719_233408809_09-1-.jpg"
+            alt="대회 시상 및 후속 지원"
+            width={1227}
+            height={1162}
+            index="09"
+            title="Awards & Support"
+          />
+        </div>
+      </section>
+
+      <section className="case-doc-grid case-doc-grid--closing">
+        <ProjectSheet
+          src="/intro/03-KakaoTalk_20260719_233408809_10-1-.jpg"
+          alt="대회 홍보 및 모집 전략"
+          width={1230}
+          height={967}
+          index="10"
+          title="Promotion Strategy"
+        />
+        <ProjectSheet
+          src="/intro/06-KakaoTalk_20260719_233408809_11-1-.jpg"
+          alt="대회 조직 운영 체계와 리스크 관리"
+          width={1210}
+          height={1365}
+          index="11"
+          title="Operation & Risk"
+          className="case-sheet--lower"
+        />
+      </section>
+
+      <section className="case-timeline">
+        <div className="case-timeline-copy">
+          <span className="case-section-number">03</span>
+          <p className="case-kicker">FROM IDEA TO SERVICE</p>
+          <h2>기획에서 구현까지,<br />하나의 경험으로 연결합니다.</h2>
+          <p>
+            프로젝트의 일정과 목표를 한눈에 확인하고, 사용자에게 필요한 기능을
+            단계별로 구현합니다.
+          </p>
+        </div>
+        <ProjectSheet
+          src="/intro/05-KakaoTalk_20260719_233408809_12-1-.jpg"
+          alt="대회 전체 타임라인"
+          width={1260}
+          height={1191}
+          index="12"
+          title="Project Timeline"
+          className="case-sheet--timeline"
+        />
+      </section>
+
+      <section className="case-final">
+        <p>THE SENIOR-FRIENDLY AI FOOD ASSISTANT</p>
+        <h2>SilverLens</h2>
+        <p className="case-final-message">
+          음식이 궁금한 순간,<br />
+          가장 편한 말로 물어보세요.
+        </p>
+        <button onClick={onBack}>
+          SilverLens 시작하기 <span aria-hidden="true">→</span>
+        </button>
+      </section>
+
+      <footer className="case-footer">
+        <strong>SILVERLENS</strong>
+        <span>VOICE-FIRST FOOD GUIDANCE</span>
+        <span>PROJECT ARCHIVE · 2026</span>
+      </footer>
+    </main>
   );
 }
 
@@ -1175,97 +1504,7 @@ export default function SilverLensApp() {
   };
 
   if (screen === "about") {
-    return (
-      <main className="app-shell about-shell">
-        <Sidebar active="about" onNavigate={setScreen} />
-        <section className="about-page">
-          <header className="about-topbar">
-            <button className="about-back" onClick={() => setScreen("setup")}>
-              ← 서비스로 돌아가기
-            </button>
-            <span>SILVERLENS · SENIOR FOOD COMPANION</span>
-          </header>
-
-          <section className="about-hero">
-            <div className="about-hero-copy">
-              <p className="about-index">01 — OUR PURPOSE</p>
-              <h1>
-                말 한마디가
-                <br />
-                <em>안전한 한 끼</em>로
-                <br />
-                이어지도록.
-              </h1>
-              <p className="about-hero-lead">
-                실버렌즈는 음성, 사진, 생활 속 표현을 이해하고 사용자의
-                알레르기와 질병 정보를 함께 살펴 쉬운 식생활 답변을 전합니다.
-              </p>
-            </div>
-            <div className="about-hero-art" aria-label="따뜻한 햇살과 밭의 선을 표현한 추상 그래픽">
-              <span className="about-sun" />
-              <span className="about-field field-one" />
-              <span className="about-field field-two" />
-              <span className="about-field field-three" />
-              <strong>VOICE · CONTEXT · CARE</strong>
-            </div>
-          </section>
-
-          <section className="about-manifesto">
-            <p>02 — WHY SILVERLENS</p>
-            <blockquote>
-              익숙한 말투 그대로 질문해도,
-              <br />
-              앞의 이야기를 잊지 않는 식품 도우미.
-            </blockquote>
-            <div>
-              <p>
-                사투리 표현은 표준어 뜻과 연결하고, 등록한 건강정보는
-                선택한 언어로 보여줍니다.
-              </p>
-              <p>
-                위험하거나 권장하기 어려운 음식은 답변 속에 숨기지 않고
-                카드 상단에 먼저 경고합니다.
-              </p>
-            </div>
-          </section>
-
-          <section className="about-pillars">
-            <article>
-              <span>01</span>
-              <h2>말로 묻는 편안함</h2>
-              <p>녹음한 질문을 받아쓰고 방언 참고 DATA와 함께 뜻을 이해합니다.</p>
-            </article>
-            <article>
-              <span>02</span>
-              <h2>이어지는 대화</h2>
-              <p>직전 질문과 답변을 함께 전달해 “레시피 알려줘” 같은 후속 질문을 이어갑니다.</p>
-            </article>
-            <article>
-              <span>03</span>
-              <h2>먼저 보이는 주의</h2>
-              <p>등록 알레르기와 직접 충돌하면 빨간 경고를 표시하고 해당 재료를 권하지 않습니다.</p>
-            </article>
-          </section>
-
-          <section className="about-flow">
-            <div>
-              <p>03 — HOW IT WORKS</p>
-              <h2>질문에서 답변까지</h2>
-            </div>
-            <ol>
-              <li><span>1</span><strong>말하고 찍기</strong><small>글 · 음성 · 사진</small></li>
-              <li><span>2</span><strong>맥락과 DATA 확인</strong><small>대화 · 방언 · 건강정보</small></li>
-              <li><span>3</span><strong>쉬운 답변과 음성</strong><small>경고 · 카드 · TTS</small></li>
-            </ol>
-          </section>
-
-          <footer className="about-footer">
-            <strong>SilverLens</strong>
-            <p>어르신의 말과 식탁 사이, 더 안전한 이해를 만듭니다.</p>
-          </footer>
-        </section>
-      </main>
-    );
+    return <ServiceIntroduction onBack={() => setScreen("setup")} />;
   }
 
   if (screen === "team") {
