@@ -198,8 +198,3 @@ def get_academic_disease(name: str, lang: str = "en") -> str:
     if disease:
         return disease.get(lang, name)
     return name
-
-# 실행 테스트
-print("1. 요로결석 (영어):", get_academic_disease("요로결석", "en"))
-print("2. 대장염 (일본어):", get_academic_disease("대장염", "ja"))
-print("3. 신부전증 (영어):", get_academic_disease("신부전증", "en"))
