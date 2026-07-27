@@ -5,9 +5,17 @@
     "labels": {
       "ko-KR": "복숭아",
       "en-US": "Peach",
-      "zh-CN": "桃"
+      "ja-JP": "桃"
     },
-    "aliases": ["복숭아 알레르기", "peach allergy", "桃子", "桃过敏"]
+    "aliases": [
+      "桃アレルギー",
+      "桃",
+      "peach allergy",
+      "peach",
+      "ももアレルギー",
+      "桃",
+      "もも"
+    ]
   },
   {
     "id": "allergy_peanut",
@@ -15,9 +23,17 @@
     "labels": {
       "ko-KR": "땅콩",
       "en-US": "Peanut",
-      "zh-CN": "花生"
+      "ja-JP": "ピーナッツ"
     },
-    "aliases": ["땅콩 알레르기", "peanut allergy", "花生过敏"]
+    "aliases": [
+      "ピーナッツアレルギー",
+      "ピーナッツ",
+      "peanut allergy",
+      "peanut",
+      "ピーナッツアレルギー",
+      "ピーナッツ",
+      "落花生"
+    ]
   },
   {
     "id": "allergy_tree_nuts",
@@ -25,9 +41,16 @@
     "labels": {
       "ko-KR": "견과류",
       "en-US": "Tree nuts",
-      "zh-CN": "坚果"
+      "ja-JP": "木の実"
     },
-    "aliases": ["견과 알레르기", "tree nut allergy", "坚果过敏"]
+    "aliases": [
+      "木の実アレルギー",
+      "木の実",
+      "tree nut allergy",
+      "tree nuts",
+      "ナッツアレルギー",
+      "木の実"
+    ]
   },
   {
     "id": "allergy_milk",
@@ -35,9 +58,16 @@
     "labels": {
       "ko-KR": "우유",
       "en-US": "Milk",
-      "zh-CN": "牛奶"
+      "ja-JP": "牛乳"
     },
-    "aliases": ["우유 알레르기", "milk allergy", "牛奶过敏"]
+    "aliases": [
+      "牛乳アレルギー",
+      "牛乳",
+      "milk allergy",
+      "milk",
+      "ミルクアレルギー",
+      "ミルク"
+    ]
   },
   {
     "id": "allergy_egg",
@@ -45,9 +75,17 @@
     "labels": {
       "ko-KR": "달걀",
       "en-US": "Egg",
-      "zh-CN": "鸡蛋"
+      "ja-JP": "卵"
     },
-    "aliases": ["계란", "달걀 알레르기", "egg allergy", "鸡蛋过敏"]
+    "aliases": [
+      "卵アレルギー",
+      "卵",
+      "egg allergy",
+      "egg",
+      "たまごアレルギー",
+      "卵",
+      "たまご"
+    ]
   },
   {
     "id": "allergy_wheat",
@@ -55,9 +93,16 @@
     "labels": {
       "ko-KR": "밀",
       "en-US": "Wheat",
-      "zh-CN": "小麦"
+      "ja-JP": "小麦"
     },
-    "aliases": ["밀 알레르기", "wheat allergy", "小麦过敏"]
+    "aliases": [
+      "小麦アレルギー",
+      "小麦",
+      "wheat allergy",
+      "wheat",
+      "小麦アレルギー",
+      "小麦"
+    ]
   },
   {
     "id": "allergy_soy",
@@ -65,9 +110,17 @@
     "labels": {
       "ko-KR": "대두",
       "en-US": "Soy",
-      "zh-CN": "大豆"
+      "ja-JP": "大豆"
     },
-    "aliases": ["콩 알레르기", "대두 알레르기", "soy allergy", "大豆过敏"]
+    "aliases": [
+      "大豆アレルギー",
+      "大豆",
+      "豆アレルギー",
+      "豆",
+      "soy allergy",
+      "soy",
+      "大豆アレルギー"
+    ]
   },
   {
     "id": "allergy_fish",
@@ -75,9 +128,16 @@
     "labels": {
       "ko-KR": "생선",
       "en-US": "Fish",
-      "zh-CN": "鱼类"
+      "ja-JP": "魚"
     },
-    "aliases": ["생선 알레르기", "fish allergy", "鱼类过敏"]
+    "aliases": [
+      "魚アレルギー",
+      "魚",
+      "fish allergy",
+      "fish",
+      "魚アレルギー",
+      "さかな"
+    ]
   },
   {
     "id": "allergy_shellfish",
@@ -85,9 +145,18 @@
     "labels": {
       "ko-KR": "갑각류",
       "en-US": "Shellfish",
-      "zh-CN": "甲壳类"
+      "ja-JP": "甲殻類"
     },
-    "aliases": ["새우 알레르기", "게 알레르기", "shellfish allergy", "甲壳类过敏"]
+    "aliases": [
+      "甲殻類アレルギー",
+      "甲殻類",
+      "海鮮アレルギー",
+      "貝アレルギー",
+      "shellfish allergy",
+      "shellfish",
+      "甲殻類アレルギー",
+      "海鮮"
+    ]
   },
   {
     "id": "allergy_sesame",
@@ -95,9 +164,17 @@
     "labels": {
       "ko-KR": "참깨",
       "en-US": "Sesame",
-      "zh-CN": "芝麻"
+      "ja-JP": "ごま"
     },
-    "aliases": ["깨 알레르기", "참깨 알레르기", "sesame allergy", "芝麻过敏"]
+    "aliases": [
+      "ごまアレルギー",
+      "ごま",
+      "胡麻アレルギー",
+      "胡麻",
+      "sesame allergy",
+      "sesame",
+      "ごまアレルギー"
+    ]
   },
   {
     "id": "condition_dementia",
@@ -105,9 +182,13 @@
     "labels": {
       "ko-KR": "치매",
       "en-US": "Dementia",
-      "zh-CN": "痴呆症"
+      "ja-JP": "認知症"
     },
-    "aliases": ["dementia", "老年痴呆症", "노인성 치매"]
+    "aliases": [
+      "認知症",
+      "dementia",
+      "認知症"
+    ]
   },
   {
     "id": "condition_alzheimers",
@@ -115,9 +196,18 @@
     "labels": {
       "ko-KR": "알츠하이머병",
       "en-US": "Alzheimer's disease",
-      "zh-CN": "阿尔茨海默病"
+      "ja-JP": "アルツハイマー病"
     },
-    "aliases": ["알츠하이머", "alzheimer", "alzheimer's", "阿尔茨海默症"]
+    "aliases": [
+      "アルツハイマー",
+      "アルツハイマー病",
+      "alzheimer",
+      "alzheimer's",
+      "Alzheimer disease",
+      "アルツハイマー病",
+      "アルツハイマー病",
+      "アルツハイマー型認知症"
+    ]
   },
   {
     "id": "condition_diabetes",
@@ -125,9 +215,14 @@
     "labels": {
       "ko-KR": "당뇨병",
       "en-US": "Diabetes",
-      "zh-CN": "糖尿病"
+      "ja-JP": "糖尿病"
     },
-    "aliases": ["당뇨", "diabetes mellitus", "糖尿病"]
+    "aliases": [
+      "糖尿病",
+      "糖尿病",
+      "diabetes",
+      "diabetes mellitus"
+    ]
   },
   {
     "id": "condition_hypertension",
@@ -135,9 +230,13 @@
     "labels": {
       "ko-KR": "고혈압",
       "en-US": "Hypertension",
-      "zh-CN": "高血压"
+      "ja-JP": "高血圧"
     },
-    "aliases": ["high blood pressure", "高血压"]
+    "aliases": [
+      "高血圧",
+      "high blood pressure",
+      "hypertension"
+    ]
   },
   {
     "id": "condition_kidney_disease",
@@ -145,9 +244,14 @@
     "labels": {
       "ko-KR": "신장질환",
       "en-US": "Kidney disease",
-      "zh-CN": "肾脏疾病"
+      "ja-JP": "腎臓病"
     },
-    "aliases": ["콩팥병", "신장병", "renal disease", "肾病"]
+    "aliases": [
+      "腎臓病",
+      "腎臓病",
+      "renal disease",
+      "kidney disease"
+    ]
   },
   {
     "id": "condition_heart_disease",
@@ -155,9 +259,14 @@
     "labels": {
       "ko-KR": "심장질환",
       "en-US": "Heart disease",
-      "zh-CN": "心脏病"
+      "ja-JP": "心臓病"
     },
-    "aliases": ["심장병", "cardiovascular disease", "心脏疾病"]
+    "aliases": [
+      "心臓病",
+      "心臓病",
+      "cardiovascular disease",
+      "heart disease"
+    ]
   },
   {
     "id": "condition_gout",
@@ -165,9 +274,12 @@
     "labels": {
       "ko-KR": "통풍",
       "en-US": "Gout",
-      "zh-CN": "痛风"
+      "ja-JP": "痛風"
     },
-    "aliases": ["gout", "痛风"]
+    "aliases": [
+      "痛風",
+      "gout"
+    ]
   },
   {
     "id": "condition_gastric_ulcer",
@@ -175,9 +287,13 @@
     "labels": {
       "ko-KR": "위궤양",
       "en-US": "Stomach ulcer",
-      "zh-CN": "胃溃疡"
+      "ja-JP": "胃潰瘍"
     },
-    "aliases": ["gastric ulcer", "peptic ulcer", "胃溃疡"]
+    "aliases": [
+      "胃潰瘍",
+      "gastric ulcer",
+      "peptic ulcer"
+    ]
   },
   {
     "id": "condition_gerd",
@@ -185,9 +301,15 @@
     "labels": {
       "ko-KR": "위식도 역류질환",
       "en-US": "Gastroesophageal reflux disease",
-      "zh-CN": "胃食管反流病"
+      "ja-JP": "逆流性食道炎"
     },
-    "aliases": ["역류성 식도염", "GERD", "acid reflux", "胃食管反流"]
+    "aliases": [
+      "逆流性食道炎",
+      "胃食道逆流症",
+      "GERD",
+      "acid reflux",
+      "逆流性食道炎"
+    ]
   },
   {
     "id": "condition_liver_disease",
@@ -195,8 +317,12 @@
     "labels": {
       "ko-KR": "간질환",
       "en-US": "Liver disease",
-      "zh-CN": "肝病"
+      "ja-JP": "肝疾患"
     },
-    "aliases": ["간질환", "hepatic disease", "肝脏疾病"]
+    "aliases": [
+      "肝疾患",
+      "hepatic disease",
+      "liver disease"
+    ]
   }
 ]

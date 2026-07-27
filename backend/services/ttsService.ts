@@ -42,8 +42,8 @@ function narrationInstruction(language: string) {
   if (language === "en-US") {
     return "Read the following text exactly as written, clearly, warmly, and at a comfortable pace for an older listener:";
   }
-  if (language === "zh-CN") {
-    return "请用清晰、温和、适合老年人聆听的语速，按照原文朗读以下内容：";
+  if (language === "ja-JP") {
+    return "次の文章を、年配の方が聞き取りやすいように、はっきり、やさしく、落ち着いた速さでそのまま読んでください：";
   }
   return "어르신께 또박또박하고 따뜻하게 다음 문장을 그대로 읽어주세요:";
 }

@@ -106,8 +106,8 @@ function answerLanguageInstruction(language?: string) {
   if (language === "en-US") {
     return "Write the entire answer and warning message in English.";
   }
-  if (language === "zh-CN") {
-    return "请使用简体中文写出完整回答和警告信息。";
+  if (language === "ja-JP") {
+    return "回答と警告文をすべて日本語で書いてください。";
   }
   return "답변과 경고 문구 전체를 한국어로 작성하세요.";
 }
@@ -117,8 +117,8 @@ function localizedAllergyWarning(language: string | undefined, labels: string[])
   if (language === "en-US") {
     return `Warning: ${joined} matches the user's registered allergy information. Do not use or consume it.`;
   }
-  if (language === "zh-CN") {
-    return `警告：${joined}与已登记的过敏信息相符，请勿使用或食用。`;
+  if (language === "ja-JP") {
+    return `警告：${joined}は登録されたアレルギー情報と一致します。使用したり食べたりしないでください。`;
   }
   return `경고: ${joined}은(는) 등록된 알레르기 식품과 일치하므로 사용하거나 섭취하지 마세요.`;
 }
@@ -127,10 +127,53 @@ function localizedGeneralWarning(language?: string) {
   if (language === "en-US") {
     return "Caution: This food may not be recommended for the user's current profile. Check the explanation before eating it.";
   }
-  if (language === "zh-CN") {
-    return "注意：根据当前健康信息，可能不建议食用此食物。食用前请先查看说明。";
+  if (language === "ja-JP") {
+    return "注意：現在の健康情報を基準にすると、この食品はおすすめできない可能性があります。食べる前に説明を確認してください。";
   }
   return "주의: 현재 건강정보를 기준으로 권장하지 않거나 확인이 필요한 음식입니다. 섭취 전 설명을 확인하세요.";
+}
+
+function localizedOffTopicAnswer(language?: string) {
+  if (language === "en-US") {
+    return "I'm an AI that only helps with senior-friendly food, nutrition, and health information. I can't answer that question, but feel free to ask me about a food, ingredient, recipe, or health concern instead.";
+  }
+  if (language === "ja-JP") {
+    return "私は高齢者向けの食品・栄養・健康情報をお手伝いするAIです。その質問には答えにくいです。代わりに、食品、材料、レシピ、健康に関する内容を聞いてください。";
+  }
+  return "저는 시니어 식품·영양·건강 정보를 도와드리는 AI입니다. 그 질문에는 답변드리기 어려워요. 대신 궁금하신 음식, 재료, 요리법, 건강 관련 내용을 물어봐 주세요.";
+}
+
+/**
+ * 실제 Gemini 호출 전에 값싸게(=토큰 소모 없이) 걸러내는 1차 주제 확인 로직.
+ * 음성/사진 첨부가 있으면 항상 식품·건강 관련 질문으로 간주해 통과시키고,
+ * 텍스트만 있는 경우에만 아래 신호로 시니어 식품/건강 서비스 주제인지 판단합니다.
+ */
+const ON_TOPIC_KEYWORDS = [
+  // 음식/식재료/조리
+  "음식", "식사", "먹", "드시", "드셔", "반찬", "국", "찌개", "나물", "채소",
+  "야채", "과일", "고기", "생선", "해산물", "쌀", "밥", "죽", "간식", "음료",
+  "물", "수분", "요리", "조리", "레시피", "재료", "곡물", "김치", "국물",
+  "양념", "간", "짜", "달", "매워", "매운",
+  // 영양/건강
+  "영양", "칼로리", "혈압", "당뇨", "고혈압", "콜레스테롤", "알레르기", "알러지",
+  "질병", "증상", "약", "복용", "소화", "비타민", "미네랄", "단백질", "지방",
+  "탄수화물", "저염", "저당", "다이어트", "체중", "영양제", "건강", "식단",
+  "섭취", "치아", "잇몸", "씹",
+  // 사투리/방언
+  "사투리", "방언", "표준어", "정구지", "무시",
+  // 서비스 사용 관련
+  "실버렌즈", "서비스", "사용법", "이용", "가입", "로그인", "프로필",
+  "언어 설정", "설정", "도움말", "사용방법",
+  // 인사/일상 대화(가벼운 스몰토크는 허용)
+  "안녕", "고마워", "감사", "반가워", "수고",
+];
+
+function isLikelyOnTopic(topicContext: string, knowledge: ReturnType<typeof findRelevantKnowledge>) {
+  if (knowledge.dialectHints.length > 0 || knowledge.recipes.length > 0 || knowledge.foods.length > 0) {
+    return true;
+  }
+  const normalized = topicContext.normalize("NFKC");
+  return ON_TOPIC_KEYWORDS.some((keyword) => normalized.includes(keyword));
 }
 
 function normalizedRiskText(value: string) {
@@ -170,6 +213,18 @@ export async function generateSeniorFriendlyAnswer(
     .join("\n");
   const knowledge = findRelevantKnowledge(topicContext);
   const selectedLanguage = toHealthLanguage(profile.language);
+
+  // 첨부 파일이 없고 글로만 질문했는데 시니어 식품·건강 서비스와 무관한 주제이면
+  // Gemini API를 호출하지 않고 바로 안내 답변을 돌려줘 토큰 낭비를 막습니다.
+  const hasMedia = Boolean(media.audio || media.image);
+  if (!hasMedia && isMeaningfulText(message) && !isLikelyOnTopic(topicContext, knowledge)) {
+    return {
+      answer: localizedOffTopicAnswer(selectedLanguage),
+      riskLevel: "safe",
+      warningMessage: "",
+    };
+  }
+
   const profileAllergies =
     profile.allergies ??
     (profile.allergyIds ?? []).map((id) => getHealthLabel(id, selectedLanguage));
@@ -194,6 +249,7 @@ export async function generateSeniorFriendlyAnswer(
 
   const prompt = [
     "당신은 시니어에게 식재료와 조리 정보를 쉬운 말로 설명하는 보조 AI입니다.",
+    "음식·영양·건강·사투리·서비스 이용과 무관한 질문(예: 스포츠 선수, 연예인, 시사, 일반 상식)이면 관련 지식으로 답하지 말고, 시니어 식품·영양 정보를 돕는 AI임을 밝히고 음식이나 건강 관련 질문을 다시 안내하세요.",
     answerLanguageInstruction(selectedLanguage),
     "의학적 진단이나 치료 지시를 하지 말고, 위험 가능성이 있으면 의료진 또는 약사 확인을 권하세요.",
     "등록된 알레르기 식품을 추천하거나 레시피 재료로 넣지 마세요.",

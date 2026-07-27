@@ -17,7 +17,7 @@ MODEL_ID = os.getenv(
     "DIALECT_MODEL_ID",
     "sjbaek/gemma2-2b-it-korean-dialect",
 )
-DATA_PATH = Path(__file__).resolve().parents[2] / "data" / "dialect_dictionary.txt"
+DATA_PATH = Path(__file__).resolve().parents[2] / "data" / "dialect_dictionary_source.csv"
 
 app = FastAPI(title="SilverLens Local Dialect Normalizer")
 app.add_middleware(

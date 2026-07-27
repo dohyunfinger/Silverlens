@@ -1,6 +1,6 @@
 import healthTermsJson from "../../data/health_terms.json";
 
-export type HealthLanguage = "ko-KR" | "en-US" | "zh-CN";
+export type HealthLanguage = "ko-KR" | "en-US" | "ja-JP";
 export type HealthKind = "allergy" | "condition";
 
 export type HealthTerm = {
@@ -11,7 +11,7 @@ export type HealthTerm = {
 };
 
 const healthTerms = healthTermsJson as HealthTerm[];
-const supportedLanguages: HealthLanguage[] = ["ko-KR", "en-US", "zh-CN"];
+const supportedLanguages: HealthLanguage[] = ["ko-KR", "en-US", "ja-JP"];
 
 function normalize(value: string) {
   return value

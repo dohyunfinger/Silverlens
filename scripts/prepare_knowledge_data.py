@@ -75,12 +75,12 @@ def write_json(path: Path, value: object) -> None:
 
 
 def main() -> None:
-    knowledge_source = (DATA_DIR / "Knowledge.txt").read_text(encoding="utf-8")
+    knowledge_source = (DATA_DIR / "senior_food_knowledge_source.txt").read_text(encoding="utf-8")
     senior_food_knowledge = extract_python_list(knowledge_source, "food_data")
     food_ingredients = json.loads(
-        (DATA_DIR / "food_ingredient.txt").read_text(encoding="utf-8")
+        (DATA_DIR / "food_ingredient_source.txt").read_text(encoding="utf-8")
     )
-    dialect_dictionary = load_dialect_dictionary(DATA_DIR / "dialect_dictionary.txt")
+    dialect_dictionary = load_dialect_dictionary(DATA_DIR / "dialect_dictionary_source.csv")
 
     write_json(DATA_DIR / "senior_food_knowledge.json", senior_food_knowledge)
     write_json(DATA_DIR / "food_ingredient.json", food_ingredients)
