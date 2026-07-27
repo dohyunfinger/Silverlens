@@ -1,9 +1,3 @@
-
-제시해주신 Python 코드(academic_diseases_map)의 기존 형태(en, ja, ja_romaji 구조)에 맞춰, 광범위했던 '알레르기 질환'을 상위 대표 그룹(견과류, 갑각류, 조개류, 생선류, 과일류, 난류, 우유/유제품, 육류, 곡류/대두)으로 통합 정리하여 반영한 완전체 Python 코드입니다.
-
-💻 업데이트된 Python 코드 (academic_diseases_map)
-Python
-# 1~570번 전체 데이터 정식 학문명/의학 진단명 다국어 사전 (알레르기 그룹화 세분화 반영)
 academic_diseases_map = {
     "고지혈증": {
         "en": "Hyperlipidemia",
@@ -28,7 +22,7 @@ academic_diseases_map = {
     "고콜레스테롤혈증": {
         "en": "Hypercholesterolemia",
         "ja": "高コレステロール血症",
-        "ja_romaji": "Kou Cholesterol Kesshou"
+        "ja_romaji": "Kou Koresuteroru Kesshou"
     },
     "동맥경화": {
         "en": "Atherosclerosis",
@@ -123,7 +117,7 @@ academic_diseases_map = {
     "협심증": {
         "en": "Angina Pectoris",
         "ja": "狭心症",
-        "ja_romaji": "Kyoushinsou"
+        "ja_romaji": "Kyoushins Hou"
     },
     "뇌졸중": {
         "en": "Stroke",
@@ -288,8 +282,2001 @@ academic_diseases_map = {
         "en": "Dyspepsia",
         "ja": "消化不良",
         "ja_romaji": "Shouka Furyou"
+    },
+    "루푸스": {
+        "en": "Systemic Lupus Erythematosus",
+        "ja": "全身性エリテマトーデス",
+        "ja_romaji": "Zenshinsei Eritematodesu"
+    },
+    "류마티스 관절염": {
+        "en": "Rheumatoid Arthritis",
+        "ja": "関節リウマチ",
+        "ja_romaji": "Kansetsu Riumachi"
+    },
+    "강직성 척추염": {
+        "en": "Ankylosing Spondylitis",
+        "ja": "強直性脊椎炎",
+        "ja_romaji": "Kyochokusei Sekitsuien"
+    },
+    "쇼그렌 증후군": {
+        "en": "Sjogren's Syndrome",
+        "ja": "シェーグレン症候群",
+        "ja_romaji": "Sheguren Shokogun"
+    },
+    "파킨슨병": {
+        "en": "Parkinson's Disease",
+        "ja": "パーキンソン病",
+        "ja_romaji": "Pakinson Byo"
+    },
+    "알츠하이머병": {
+        "en": "Alzheimer's Disease",
+        "ja": "アルツハイマー病",
+        "ja_romaji": "Arutsuhaima Byo"
+    },
+    "다발성 경화증": {
+        "en": "Multiple Sclerosis",
+        "ja": "多発性硬化症",
+        "ja_romaji": "Tahatsusei Kokasho"
+    },
+    "근위축성 측삭경화증": {
+        "en": "Amyotrophic Lateral Sclerosis",
+        "ja": "筋萎縮性側索硬化症",
+        "ja_romaji": "Kinishokusei Sokusaku Kokasho"
+    },
+    "중증 근무력증": {
+        "en": "Myasthenia Gravis",
+        "ja": "重症筋無力症",
+        "ja_romaji": "Jusho Kinmuryokusho"
+    },
+    "간질": {
+        "en": "Epilepsy",
+        "ja": "てんかん",
+        "ja_romaji": "Tenkan"
+    },
+    "말초신경병증": {
+        "en": "Peripheral Neuropathy",
+        "ja": "末梢神経障害",
+        "ja_romaji": "Massho Shinkei Shogai"
+    },
+    "뇌동맥류": {
+        "en": "Cerebral Aneurysm",
+        "ja": "脳動脈瘤",
+        "ja_romaji": "Nodomyakuryu"
+    },
+    "결핵": {
+        "en": "Tuberculosis",
+        "ja": "結核",
+        "ja_romaji": "Kekkaku"
+    },
+    "말라리아": {
+        "en": "Malaria",
+        "ja": "マラリア",
+        "ja_romaji": "Mararia"
+    },
+    "폐렴": {
+        "en": "Pneumonia",
+        "ja": "肺炎",
+        "ja_romaji": "Haien"
+    },
+    "수막염": {
+        "en": "Meningitis",
+        "ja": "髄膜炎",
+        "ja_romaji": "Zuimakuen"
+    },
+    "패혈증": {
+        "en": "Sepsis",
+        "ja": "敗血症",
+        "ja_romaji": "Haiketsusho"
+    },
+    "매독": {
+        "en": "Syphilis",
+        "ja": "梅毒",
+        "ja_romaji": "Baidoku"
+    },
+    "임질": {
+        "en": "Gonorrhea",
+        "ja": "淋病",
+        "ja_romaji": "Rinbyo"
+    },
+    "백일해": {
+        "en": "Pertussis",
+        "ja": "百日咳",
+        "ja_romaji": "Hyakunitchiseki"
+    },
+    "파상풍": {
+        "en": "Tetanus",
+        "ja": "破傷風",
+        "ja_romaji": "Hashofu"
+    },
+    "C형 간염": {
+        "en": "Hepatitis C",
+        "ja": "C型肝炎",
+        "ja_romaji": "C-gata Kanen"
+    },
+    "헌팅턴병": {
+        "en": "Huntington's Disease",
+        "ja": "ハンチントン病",
+        "ja_romaji": "Hanchinton Byou"
+    },
+    "낭성 섬유증": {
+        "en": "Cystic Fibrosis",
+        "ja": "嚢胞性繊維症",
+        "ja_romaji": "Nohosei Senisho"
+    },
+    "혈우병": {
+        "en": "Hemophilia",
+        "ja": "血友病",
+        "ja_romaji": "Ketsuyubyo"
+    },
+    "크루이츠펠트-야콥병": {
+        "en": "Creutzfeldt-Jakob Disease",
+        "ja": "クロイツフェルト・ヤコブ病",
+        "ja_romaji": "Kuroitsuferuto Yakobu Byo"
+    },
+    "만성 폐쇄성 폐질환": {
+        "en": "Chronic Obstructive Pulmonary Disease",
+        "ja": "慢性閉塞性肺疾患",
+        "ja_romaji": "Mansei Heisokusei Haishikkan"
+    },
+    "특발성 폐섬유증": {
+        "en": "Idiopathic Pulmonary Fibrosis",
+        "ja": "特発性肺線維症",
+        "ja_romaji": "Tokuhatsusei Haisenisho"
+    },
+    "기흉": {
+        "en": "Pneumothorax",
+        "ja": "気胸",
+        "ja_romaji": "Kikyo"
+    },
+    "기관지확장증": {
+        "en": "Bronchiectasis",
+        "ja": "気管支拡張症",
+        "ja_romaji": "Kikanshi Kakuchosho"
+    },
+    "백내장": {
+        "en": "Cataract",
+        "ja": "白内障",
+        "ja_romaji": "Hakunaisho"
+    },
+    "녹내장": {
+        "en": "Glaucoma",
+        "ja": "緑内障",
+        "ja_romaji": "Ryokunaisho"
+    },
+    "황반변성": {
+        "en": "Macular Degeneration",
+        "ja": "加齢黄斑変性",
+        "ja_romaji": "Karei Ohan Hensei"
+    },
+    "망막박리": {
+        "en": "Retinal Detachment",
+        "ja": "網膜剥離",
+        "ja_romaji": "Momaku Hakuri"
+    },
+    "포도막염": {
+        "en": "Uveitis",
+        "ja": "ぶどう膜炎",
+        "ja_romaji": "Budomakuen"
+    },
+    "아토피 피부염": {
+        "en": "Atopic Dermatitis",
+        "ja": "アトピー性皮膚炎",
+        "ja_romaji": "Atopi-sei Hifuen"
+    },
+    "건선": {
+        "en": "Psoriasis",
+        "ja": "乾癬",
+        "ja_romaji": "Kansen"
+    },
+    "백반증": {
+        "en": "Vitiligo",
+        "ja": "尋常性白斑",
+        "ja_romaji": "Jinjosei Hakuhan"
+    },
+    "천포창": {
+        "en": "Pemphigus",
+        "ja": "天疱瘡",
+        "ja_romaji": "Tenposo"
+    },
+    "원형 탈모증": {
+        "en": "Alopecia Areata",
+        "ja": "円形脱毛症",
+        "ja_romaji": "Enkei Datsumosho"
+    },
+    "조현병": {
+        "en": "Schizophrenia",
+        "ja": "統合失調症",
+        "ja_romaji": "Togo Shitchosho"
+    },
+    "양극성 장애": {
+        "en": "Bipolar Disorder",
+        "ja": "双極性障害",
+        "ja_romaji": "Sokokusei Shogai"
+    },
+    "주요 우울 장애": {
+        "en": "Major Depressive Disorder",
+        "ja": "大うつ病性障害",
+        "ja_romaji": "Dai-utsu-byo-sei Shogai"
+    },
+    "공황 장애": {
+        "en": "Panic Disorder",
+        "ja": "パニック障害",
+        "ja_romaji": "Panikku Shogai"
+    },
+    "강박 장애": {
+        "en": "Obsessive-Compulsive Disorder",
+        "ja": "強迫性障害",
+        "ja_romaji": "Kyohakusei Shogai"
+    },
+    "외상 후 스트레스 장애": {
+        "en": "Post-Traumatic Stress Disorder",
+        "ja": "外傷後ストレス障害",
+        "ja_romaji": "Gaishougo Sutoresu Shougai"
+    },
+    "횡문근융해증": {
+        "en": "Rhabdomyolysis",
+        "ja": "横紋筋融解症",
+        "ja_romaji": "Obonkin Yukaisho"
+    },
+    "골관절염": {
+        "en": "Osteoarthritis",
+        "ja": "変形性関節症",
+        "ja_romaji": "Henkeisei Kansetsusho"
+    },
+    "골수염": {
+        "en": "Osteomyelitis",
+        "ja": "骨髄炎",
+        "ja_romaji": "Kotsuzuien"
+    },
+    "재생불량성 빈혈": {
+        "en": "Aplastic Anemia",
+        "ja": "再生不良性貧血",
+        "ja_romaji": "Saiseifuryosei Hinketsu"
+    },
+    "다발성 골수종": {
+        "en": "Multiple Myeloma",
+        "ja": "多発性骨髄腫",
+        "ja_romaji": "Tahatsusei Kotsuzuishu"
+    },
+    "골수형성이상증후군": {
+        "en": "Myelodysplastic Syndrome",
+        "ja": "骨髄異形成症候群",
+        "ja_romaji": "Kotsuzui Ikeiseishokogun"
+    },
+    "특발성 적혈구증가증": {
+        "en": "Polycythemia Vera",
+        "ja": "真性多血症",
+        "ja_romaji": "Shinsei Taketsusho"
+    },
+    "갑상선 기능 항진증": {
+        "en": "Hyperthyroidism",
+        "ja": "甲状腺機能亢進症",
+        "ja_romaji": "Kojosen Kino Koshinsho"
+    },
+    "쿠싱 증후군": {
+        "en": "Cushing's Syndrome",
+        "ja": "クッシング症候群",
+        "ja_romaji": "Kusshingu Shokogun"
+    },
+    "아디슨병": {
+        "en": "Addison's Disease",
+        "ja": "アジソン病",
+        "ja_romaji": "Ajison Byo"
+    },
+    "말단비대증": {
+        "en": "Acromegaly",
+        "ja": "先端巨大症",
+        "ja_romaji": "Sentan Kyodaisho"
+    },
+    "요붕증": {
+        "en": "Diabetes Insipidus",
+        "ja": "尿崩症",
+        "ja_romaji": "Nyohosho"
+    },
+    "위암": {
+        "en": "Stomach Cancer",
+        "ja": "胃がん",
+        "ja_romaji": "Igan"
+    },
+    "대장암": {
+        "en": "Colorectal Cancer",
+        "ja": "大腸がん",
+        "ja_romaji": "Daichogan"
+    },
+    "간암": {
+        "en": "Liver Cancer",
+        "ja": "肝臓がん",
+        "ja_romaji": "Kanzogan"
+    },
+    "췌장암": {
+        "en": "Pancreatic Cancer",
+        "ja": "膵臓がん",
+        "ja_romaji": "Suizogan"
+    },
+    "폐암": {
+        "en": "Lung Cancer",
+        "ja": "肺がん",
+        "ja_romaji": "Haigan"
+    },
+    "자궁경부암": {
+        "en": "Cervical Cancer",
+        "ja": "子宮頸がん",
+        "ja_romaji": "Shikyu Keigan"
+    },
+    "전립선암": {
+        "en": "Prostate Cancer",
+        "ja": "前立腺がん",
+        "ja_romaji": "Zenritsusengan"
+    },
+    "급성 백혈병": {
+        "en": "Acute Leukemia",
+        "ja": "急性白血病",
+        "ja_romaji": "Kyusei Hakketsubyo"
+    },
+    "악성 림프종": {
+        "en": "Malignant Lymphoma",
+        "ja": "悪性リンパ腫",
+        "ja_romaji": "Akusei Rinpashu"
+    },
+    "선천성 심장병": {
+        "en": "Congenital Heart Disease",
+        "ja": "先天性心疾患",
+        "ja_romaji": "Sentensei Shinshikkan"
+    },
+    "소아 뇌성마비": {
+        "en": "Cerebral Palsy",
+        "ja": "脳性麻痺",
+        "ja_romaji": "Nosei Mahi"
+    },
+    "가와사키병": {
+        "en": "Kawasaki Disease",
+        "ja": "川崎病",
+        "ja_romaji": "Kawasaki Byo"
+    },
+    "영아 산통": {
+        "en": "Infantile Colic",
+        "ja": "乳児疝痛",
+        "ja_romaji": "Nyuji Sentsu"
+    },
+    "신생아 황달": {
+        "en": "Neonatal Jaundice",
+        "ja": "新生児黄疸",
+        "ja_romaji": "Shinseiji Odan"
+    },
+    "혈관성 치매": {
+        "en": "Vascular Dementia",
+        "ja": "血管性認知症",
+        "ja_romaji": "Kekkansei Nintisho"
+    },
+    "노인성 노쇠": {
+        "en": "Frailty Syndrome",
+        "ja": "フレイル",
+        "ja_romaji": "Fureru"
+    },
+    "낙상 후 유발 골절": {
+        "en": "Fragility Fracture",
+        "ja": "脆弱性骨折",
+        "ja_romaji": "Zeijakusei Kossetsu"
+    },
+    "크론병": {
+        "en": "Crohn's Disease",
+        "ja": "クローン病",
+        "ja_romaji": "Kuron Byo"
+    },
+    "궤양성 대장염": {
+        "en": "Ulcerative Colitis",
+        "ja": "潰瘍性大腸炎",
+        "ja_romaji": "Kaiyosei Daichoyen"
+    },
+    "간경변증": {
+        "en": "Cirrhosis",
+        "ja": "肝硬変",
+        "ja_romaji": "Kankohen"
+    },
+    "심근경색증": {
+        "en": "Myocardial Infarction",
+        "ja": "心筋梗塞",
+        "ja_romaji": "Shinkin Koseku"
+    },
+    "심부전": {
+        "en": "Heart Failure",
+        "ja": "心不全",
+        "ja_romaji": "Shinfuzen"
+    },
+    "심방세동": {
+        "en": "Atrial Fibrillation",
+        "ja": "心房細動",
+        "ja_romaji": "Shinbo Saido"
+    },
+    "심근증": {
+        "en": "Cardiomyopathy",
+        "ja": "心筋症",
+        "ja_romaji": "Shinkinsho"
+    },
+    "대동맥류": {
+        "en": "Aortic Aneurysm",
+        "ja": "大動脈瘤",
+        "ja_romaji": "Daidomyakuryu"
+    },
+    "사구체신염": {
+        "en": "Glomerulonephritis",
+        "ja": "糸球体腎炎",
+        "ja_romaji": "Shikyutai Jinen"
+    },
+    "전립선 비대증": {
+        "en": "Benign Prostatic Hyperplasia",
+        "ja": "前立腺肥大症",
+        "ja_romaji": "Zenritsusen Hidaisho"
+    },
+    "자궁내막증": {
+        "en": "Endometriosis",
+        "ja": "子宮内膜症",
+        "ja_romaji": "Shikyu Naimakusho"
+    },
+    "다낭성 난소 증후군": {
+        "en": "Polycystic Ovary Syndrome",
+        "ja": "多嚢胞性卵巣症候群",
+        "ja_romaji": "Tanohosei Ranso Shokogun"
+    },
+    "이명": {
+        "en": "Tinnitus",
+        "ja": "耳鳴り",
+        "ja_romaji": "Miminari"
+    },
+    "메니에르병": {
+        "en": "Meniere's Disease",
+        "ja": "メニエール病",
+        "ja_romaji": "Menieru Byo"
+    },
+    "돌발성 난청": {
+        "en": "Sudden Sensorineural Hearing Loss",
+        "ja": "突発性難聴",
+        "ja_romaji": "Toppatsusei Nancho"
+    },
+    "삼차신경통": {
+        "en": "Trigeminal Neuralgia",
+        "ja": "三叉神経痛",
+        "ja_romaji": "Sansashinkeitsu"
+    },
+    "안면신경마비": {
+        "en": "Facial Palsy",
+        "ja": "顔面神経麻痺",
+        "ja_romaji": "Ganmenshinkei Mahi"
+    },
+    "비후성 심근증": {
+        "en": "Hypertrophic Cardiomyopathy",
+        "ja": "肥大型心筋症",
+        "ja_romaji": "Hidatai Shinkinsho"
+    },
+    "급성 방광염": {
+        "en": "Acute Cystitis",
+        "ja": "急性膀胱炎",
+        "ja_romaji": "Kyusei Bikoen"
+    },
+    "폐혈전색전증": {
+        "en": "Pulmonary Embolism",
+        "ja": "肺塞栓症",
+        "ja_romaji": "Haisokusensho"
+    },
+    "심입구협착증": {
+        "en": "Mitral Stenosis",
+        "ja": "僧帽弁狭窄症",
+        "ja_romaji": "Soboben Kyosakusho"
+    },
+    "특발성 혈소판 감소성 자반증": {
+        "en": "Immune Thrombocytopenia",
+        "ja": "特発性血小板減少性紫斑病",
+        "ja_romaji": "Tokuhatsusei Kesshoban Gensosei Shihanbyo"
+    },
+    "베체트병": {
+        "en": "Behcet's Disease",
+        "ja": "ベーチェット病",
+        "ja_romaji": "Bechetto Byo"
+    },
+    "경피증": {
+        "en": "Systemic Sclerosis",
+        "ja": "強皮症",
+        "ja_romaji": "Kyohisho"
+    },
+    "하지불안 증후군": {
+        "en": "Restless Legs Syndrome",
+        "ja": "むずむず脚症候群",
+        "ja_romaji": "Muzumuzu Ashi Shokogun"
+    },
+    "A형 간염": {
+        "en": "Hepatitis A",
+        "ja": "A型肝炎",
+        "ja_romaji": "A-gata Kanen"
+    },
+    "B형 간염": {
+        "en": "Hepatitis B",
+        "ja": "B型肝炎",
+        "ja_romaji": "B-gata Kanen"
+    },
+    "급성 충수염": {
+        "en": "Acute Appendicitis",
+        "ja": "急性虫垂炎",
+        "ja_romaji": "Kyusei Chusien"
+    },
+    "대상포진": {
+        "en": "Herpes Zoster",
+        "ja": "帯状疱疹",
+        "ja_romaji": "Taijo Hoshin"
+    },
+    "수두": {
+        "en": "Chickenpox",
+        "ja": "水痘",
+        "ja_romaji": "Suito"
+    },
+    "홍역": {
+        "en": "Measles",
+        "ja": "麻疹",
+        "ja_romaji": "Hashika"
+    },
+    "유행성이하선염": {
+        "en": "Mumps",
+        "ja": "流行性耳下腺炎",
+        "ja_romaji": "Ryukosei Jikasenen"
+    },
+    "풍진": {
+        "en": "Rubella",
+        "ja": "風疹",
+        "ja_romaji": "Fushin"
+    },
+    "성홍열": {
+        "en": "Scarlet Fever",
+        "ja": "猩紅熱",
+        "ja_romaji": "Shokonetsu"
+    },
+    "수족구병": {
+        "en": "Hand, Foot, and Mouth Disease",
+        "ja": "手足口病",
+        "ja_romaji": "Teashikuchibyo"
+    },
+    "쯔쯔가무시증": {
+        "en": "Scrub Typhus",
+        "ja": "つつが虫病",
+        "ja_romaji": "Tsutsugamushibyo"
+    },
+    "중증 열성 혈소판 감소 증후군": {
+        "en": "Severe Fever with Thrombocytopenia Syndrome",
+        "ja": "重症熱性血小板減少症候群",
+        "ja_romaji": "Jusho Nettei Kesshoban Genso Shokogun"
+    },
+    "레기오넬라증": {
+        "en": "Legionellosis",
+        "ja": "レジオネラ症",
+        "ja_romaji": "Rejionera Sho"
+    },
+    "한타바이러스 폐증후군": {
+        "en": "Hantavirus Pulmonary Syndrome",
+        "ja": "ハンタウイルス肺症候群",
+        "ja_romaji": "Hantawirusu Hai Shokogun"
+    },
+    "구강암": {
+        "en": "Oral Cancer",
+        "ja": "口腔がん",
+        "ja_romaji": "Kokogan"
+    },
+    "식도암": {
+        "en": "Esophageal Cancer",
+        "ja": "食道がん",
+        "ja_romaji": "Shokudogan"
+    },
+    "담도암": {
+        "en": "Cholangiocarcinoma",
+        "ja": "胆道がん",
+        "ja_romaji": "Tandogan"
+    },
+    "담낭암": {
+        "en": "Gallbladder Cancer",
+        "ja": "胆嚢がん",
+        "ja_romaji": "Tannogan"
+    },
+    "난소암": {
+        "en": "Ovarian Cancer",
+        "ja": "卵巣がん",
+        "ja_romaji": "Ransogan"
+    },
+    "자궁내막암": {
+        "en": "Endometrial Cancer",
+        "ja": "子宮体がん",
+        "ja_romaji": "Shikyuutaigan"
+    },
+    "방광암": {
+        "en": "Bladder Cancer",
+        "ja": "膀胱がん",
+        "ja_romaji": "Bokogan"
+    },
+    "신장암": {
+        "en": "Renal Cell Carcinoma",
+        "ja": "腎臓がん",
+        "ja_romaji": "Jinzogan"
+    },
+    "갑상선암": {
+        "en": "Thyroid Cancer",
+        "ja": "甲状腺がん",
+        "ja_romaji": "Kojosengan"
+    },
+    "뇌종양": {
+        "en": "Brain Tumor",
+        "ja": "脳腫瘍",
+        "ja_romaji": "Noshuyo"
+    },
+    "골육종": {
+        "en": "Osteosarcoma",
+        "ja": "骨肉腫",
+        "ja_romaji": "Kotsunikushu"
+    },
+    "기저세포암": {
+        "en": "Basal Cell Carcinoma",
+        "ja": "基底細胞がん",
+        "ja_romaji": "Kitei Saibogan"
+    },
+    "편평세포암": {
+        "en": "Squamous Cell Carcinoma",
+        "ja": "有棘細胞がん",
+        "ja_romaji": "Yukaku Saibogan"
+    },
+    "흑색종": {
+        "en": "Melanoma",
+        "ja": "悪性黒色腫",
+        "ja_romaji": "Akusei Kokushokushu"
+    },
+    "만성 백혈병": {
+        "en": "Chronic Leukemia",
+        "ja": "慢性白血病",
+        "ja_romaji": "Mansei Hakketsubyo"
+    },
+    "심낭염": {
+        "en": "Pericarditis",
+        "ja": "心膜炎",
+        "ja_romaji": "Shinmakuen"
+    },
+    "심근염": {
+        "en": "Myocarditis",
+        "ja": "心筋炎",
+        "ja_romaji": "Shinkinen"
+    },
+    "감염성 심내막염": {
+        "en": "Infective Endocarditis",
+        "ja": "感染性心内膜炎",
+        "ja_romaji": "Kansensei Shinnaimakuen"
+    },
+    "대동맥 박리": {
+        "en": "Aortic Dissection",
+        "ja": "大動脈解離",
+        "ja_romaji": "Daidomyaku Kairi"
+    },
+    "폐고혈압": {
+        "en": "Pulmonary Hypertension",
+        "ja": "肺高血圧症",
+        "ja_romaji": "Hai Koketsuatsusho"
+    },
+    "늑막염": {
+        "en": "Pleurisy",
+        "ja": "肋膜炎",
+        "ja_romaji": "Rokumakuen"
+    },
+    "진폐증": {
+        "en": "Pneumoconiosis",
+        "ja": "じん肺症",
+        "ja_romaji": "Jinpaisho"
+    },
+    "폐농양": {
+        "en": "Lung Abscess",
+        "ja": "肺膿瘍",
+        "ja_romaji": "Hainoyo"
+    },
+    "급성 호흡곤란 증후군": {
+        "en": "Acute Respiratory Distress Syndrome",
+        "ja": "急性呼吸窮迫症候群",
+        "ja_romaji": "Kyusei Kokyu Kyuhaku Shokogun"
+    },
+    "수면무호흡증": {
+        "en": "Sleep Apnea",
+        "ja": "睡眠時無呼吸症候群",
+        "ja_romaji": "Suiminji Mukokyu Shokogun"
+    },
+    "식도 이완불능증": {
+        "en": "Achalasia",
+        "ja": "アカラシア",
+        "ja_romaji": "Akarashia"
+    },
+    "식도 정맥류": {
+        "en": "Esophageal Varices",
+        "ja": "食道静脈瘤",
+        "ja_romaji": "Shokudo Jomyakuryu"
+    },
+    "장폐색": {
+        "en": "Intestinal Obstruction",
+        "ja": "腸閉塞",
+        "ja_romaji": "Choheisoku"
+    },
+    "장중첩증": {
+        "en": "Intussusception",
+        "ja": "腸重積症",
+        "ja_romaji": "Chojusekisho"
+    },
+    "복막염": {
+        "en": "Peritonitis",
+        "ja": "腹膜炎",
+        "ja_romaji": "Fukumakuen"
+    },
+    "허혈성 대장염": {
+        "en": "Ischemic Colitis",
+        "ja": "虚血性大腸炎",
+        "ja_romaji": "Kyoketsusei Daichoyen"
+    },
+    "급성 간부전": {
+        "en": "Acute Liver Failure",
+        "ja": "急性肝不全",
+        "ja_romaji": "Kyusei Kanfuzen"
+    },
+    "신증후군": {
+        "en": "Nephrotic Syndrome",
+        "ja": "ネフローゼ症候群",
+        "ja_romaji": "Nefuroze Shokogun"
+    },
+    "급성 신우신염": {
+        "en": "Acute Pyelonephritis",
+        "ja": "急性腎盂腎炎",
+        "ja_romaji": "Kyusei Jinu Jinen"
+    },
+    "다낭성 신장 질환": {
+        "en": "Polycystic Kidney Disease",
+        "ja": "多嚢胞性腎疾患",
+        "ja_romaji": "Tanohosei Jinshikkan"
+    },
+    "수신증": {
+        "en": "Hydronephrosis",
+        "ja": "水腎症",
+        "ja_romaji": "Suijinsho"
+    },
+    "요실금": {
+        "en": "Urinary Incontinence",
+        "ja": "尿失禁",
+        "ja_romaji": "Nyoshikkin"
+    },
+    "하시모토 갑상선염": {
+        "en": "Hashimoto's Thyroiditis",
+        "ja": "橋本病",
+        "ja_romaji": "Hashimoto Byo"
+    },
+    "그레이브스병": {
+        "en": "Graves' Disease",
+        "ja": "バセドウ病",
+        "ja_romaji": "Basedou Byo"
+    },
+    "부갑상선 기능 항진증": {
+        "en": "Hyperparathyroidism",
+        "ja": "副甲状腺機能亢進症",
+        "ja_romaji": "Fukukojosen Kino Koshinsho"
+    },
+    "부갑상선 기능 저하증": {
+        "en": "Hypoparathyroidism",
+        "ja": "副甲状腺機能低下症",
+        "ja_romaji": "Fukukojosen Kino Teikasho"
+    },
+    "갈색세포종": {
+        "en": "Pheochromocytoma",
+        "ja": "褐色細胞腫",
+        "ja_romaji": "Kasshoku Saiboshu"
+    },
+    "뇌하수체 기능 저하증": {
+        "en": "Hypopituitarism",
+        "ja": "下垂体機能低下症",
+        "ja_romaji": "Kasuitai Kino Teikasho"
+    },
+    "뇌수두증": {
+        "en": "Hydrocephalus",
+        "ja": "水頭症",
+        "ja_romaji": "Suitosho"
+    },
+    "기면증": {
+        "en": "Narcolepsy",
+        "ja": "ナルコレプシー",
+        "ja_romaji": "Narukorepushi"
+    },
+    "길랭-바레 증후군": {
+        "en": "Guillain-Barre Syndrome",
+        "ja": "ギラン・バレー症候群",
+        "ja_romaji": "Giran Bare Shokogun"
+    },
+    "척수수막류": {
+        "en": "Myelomeningocele",
+        "ja": "脊髄髄膜瘤",
+        "ja_romaji": "Sekizui Zuimakuryu"
+    },
+    "척수동굴증": {
+        "en": "Syringomyelia",
+        "ja": "脊髄空洞症",
+        "ja_romaji": "Sekizui Kodosho"
+    },
+    "자폐스펙트럼장애": {
+        "en": "Autism Spectrum Disorder",
+        "ja": "自閉スペクトラム症",
+        "ja_romaji": "Jihei Supekuramu Sho"
+    },
+    "주의력결핍 과잉행동장애": {
+        "en": "Attention Deficit Hyperactivity Disorder",
+        "ja": "注意欠陥多動性障害",
+        "ja_romaji": "Chuui Kekkan Tadousei Shougai"
+    },
+    "신경성 식욕부진증": {
+        "en": "Anorexia Nervosa",
+        "ja": "神経性食欲不振症",
+        "ja_romaji": "Shinkeisei Shokuyoku Fushinsho"
+    },
+    "신경성 폭식증": {
+        "en": "Bulimia Nervosa",
+        "ja": "神経性過食症",
+        "ja_romaji": "Shinkeisei Kashokusho"
+    },
+    "알코올 의존증": {
+        "en": "Alcohol Dependence",
+        "ja": "アルコール依存症",
+        "ja_romaji": "Arukoru Izonsho"
+    },
+    "치주염": {
+        "en": "Periodontitis",
+        "ja": "歯周炎",
+        "ja_romaji": "Shishuen"
+    },
+    "구내염": {
+        "en": "Stomatitis",
+        "ja": "口内炎",
+        "ja_romaji": "Konaien"
+    },
+    "타석증": {
+        "en": "Sialolithiasis",
+        "ja": "唾石症",
+        "ja_romaji": "Tasekisho"
+    },
+    "각막염": {
+        "en": "Keratitis",
+        "ja": "角膜炎",
+        "ja_romaji": "Kakumakuen"
+    },
+    "결막염": {
+        "en": "Conjunctivitis",
+        "ja": "結膜炎",
+        "ja_romaji": "Ketsumakuen"
+    },
+    "사시": {
+        "en": "Strabismus",
+        "ja": "斜視",
+        "ja_romaji": "Shashi"
+    },
+    "약시": {
+        "en": "Amblyopia",
+        "ja": "弱視",
+        "ja_romaji": "Jakushi"
+    },
+    "외이도염": {
+        "en": "Otitis Externa",
+        "ja": "外耳炎",
+        "ja_romaji": "Gaijien"
+    },
+    "중이염": {
+        "en": "Otitis Media",
+        "ja": "中耳炎",
+        "ja_romaji": "Chujien"
+    },
+    "비염": {
+        "en": "Rhinitis",
+        "ja": "鼻炎",
+        "ja_romaji": "Bien"
+    },
+    "부비동염": {
+        "en": "Sinusitis",
+        "ja": "副鼻腔炎",
+        "ja_romaji": "Fukubikuen"
+    },
+    "편도염": {
+        "en": "Tonsillitis",
+        "ja": "扁桃炎",
+        "ja_romaji": "Hentoen"
+    },
+    "후두염": {
+        "en": "Laryngitis",
+        "ja": "喉頭炎",
+        "ja_romaji": "Kotoen"
+    },
+    "지루성 피부염": {
+        "en": "Seborrheic Dermatitis",
+        "ja": "脂漏性皮膚炎",
+        "ja_romaji": "Shirosei Hifuen"
+    },
+    "접촉성 피부염": {
+        "en": "Contact Dermatitis",
+        "ja": "接触皮膚炎",
+        "ja_romaji": "Sesshoku Hifuen"
+    },
+    "두드러기": {
+        "en": "Urticaria",
+        "ja": "蕁麻疹",
+        "ja_romaji": "Jinmashin"
+    },
+    "장미색 단경진": {
+        "en": "Pityriasis Rosea",
+        "ja": "バラ色ひこう疹",
+        "ja_romaji": "Barairo Hikoshin"
+    },
+    "무좀": {
+        "en": "Tinea Pedis",
+        "ja": "水虫",
+        "ja_romaji": "Mizumushi"
+    },
+    "옴": {
+        "en": "Scabies",
+        "ja": "疥癬",
+        "ja_romaji": "Kaisen"
+    },
+    "티눈": {
+        "en": "Corn",
+        "ja": "鶏眼",
+        "ja_romaji": "Keigan"
+    },
+    "욕창": {
+        "en": "Pressure Ulcer",
+        "ja": "褥瘡",
+        "ja_romaji": "Jokusou"
+    },
+    "십자인대 파열": {
+        "en": "Cruciate Ligament Tear",
+        "ja": "十字靭帯断裂",
+        "ja_romaji": "Juji Jintai Danretsu"
+    },
+    "반월상 연골 손상": {
+        "en": "Meniscal Tear",
+        "ja": "半月板損傷",
+        "ja_romaji": "Hangetsuban Sonsho"
+    },
+    "회전근개 파열": {
+        "en": "Rotator Cuff Tear",
+        "ja": "腱板断裂",
+        "ja_romaji": "Kenban Danretsu"
+    },
+    "족저근막염": {
+        "en": "Plantar Fasciitis",
+        "ja": "足底腱膜炎",
+        "ja_romaji": "Sokutei Kenmakuen"
+    },
+    "용혈성 빈혈": {
+        "en": "Hemolytic Anemia",
+        "ja": "溶血性貧血",
+        "ja_romaji": "Yoketsusei Hinketsu"
+    },
+    "혈소판증가증": {
+        "en": "Thrombocythemia",
+        "ja": "血小板血症",
+        "ja_romaji": "Kesshoban Kessho"
+    },
+    "혈관염": {
+        "en": "Vasculitis",
+        "ja": "血管炎",
+        "ja_romaji": "Kekkanen"
+    },
+    "터너 증후군": {
+        "en": "Turner Syndrome",
+        "ja": "ターナー症候群",
+        "ja_romaji": "Tana Shokogun"
+    },
+    "클라인펠터 증후군": {
+        "en": "Klinefelter Syndrome",
+        "ja": "クラインフェルター症候群",
+        "ja_romaji": "Kurainferuta Shokogun"
+    },
+    "다운 증후군": {
+        "en": "Down Syndrome",
+        "ja": "ダウン症候群",
+        "ja_romaji": "Daun Shokogun"
+    },
+    "에드워드 증후군": {
+        "en": "Edwards Syndrome",
+        "ja": "エドワーズ症候群",
+        "ja_romaji": "Edowazu Shokogun"
+    },
+    "디프테리아": {
+        "en": "Diphtheria",
+        "ja": "ジフテリア",
+        "ja_romaji": "Jifuteria"
+    },
+    "콜레라": {
+        "en": "Cholera",
+        "ja": "コレラ",
+        "ja_romaji": "Korera"
+    },
+    "장티푸스": {
+        "en": "Typhoid Fever",
+        "ja": "腸チフス",
+        "ja_romaji": "Cho Chifusu"
+    },
+    "세균성 이질": {
+        "en": "Bacillary Dysentery",
+        "ja": "細菌性赤痢",
+        "ja_romaji": "Saikinsei Sekiri"
+    },
+    "탄저병": {
+        "en": "Anthrax",
+        "ja": "炭疽菌感染症",
+        "ja_romaji": "Tanso Kin Kansensho"
+    },
+    "광견병": {
+        "en": "Rabies",
+        "ja": "狂犬病",
+        "ja_romaji": "Kyokenbyo"
+    },
+    "에볼라 바이러스 병": {
+        "en": "Ebola Virus Disease",
+        "ja": "エボラ出血熱",
+        "ja_romaji": "Ebora Shukketsunetsu"
+    },
+    "지카 바이러스 감염증": {
+        "en": "Zika Virus Infection",
+        "ja": "ジカウイルス感染症",
+        "ja_romaji": "Jika Wirusu Kansensho"
+    },
+    "뎅기열": {
+        "en": "Dengue Fever",
+        "ja": "デング熱",
+        "ja_romaji": "Dengu Netsu"
+    },
+    "황열": {
+        "en": "Yellow Fever",
+        "ja": "黄熱",
+        "ja_romaji": "Onetsu"
+    },
+    "페스트": {
+        "en": "Plague",
+        "ja": "ペスト",
+        "ja_romaji": "Pesuto"
+    },
+    "브루셀라증": {
+        "en": "Brucellosis",
+        "ja": "ブルセラ症",
+        "ja_romaji": "Burusera Sho"
+    },
+    "렙토스피라증": {
+        "en": "Leptospirosis",
+        "ja": "レプトスピラ症",
+        "ja_romaji": "Reputosupira Sho"
+    },
+    "크립토코쿠스증": {
+        "en": "Cryptococcosis",
+        "ja": "クリプトコックス症",
+        "ja_romaji": "Kuriputokokku Su Sho"
+    },
+    "톡소플라즈마증": {
+        "en": "Toxoplasmosis",
+        "ja": "トキソプラズマ症",
+        "ja_romaji": "Tokisopurazuma Sho"
+    },
+    "페닐케톤뇨증": {
+        "en": "Phenylketonuria",
+        "ja": "フェニルケトン尿症",
+        "ja_romaji": "Feniruketon Nyosho"
+    },
+    "단풍당뇨증": {
+        "en": "Maple Syrup Urine Disease",
+        "ja": "楓糖尿症",
+        "ja_romaji": "Kaede Tounyosho"
+    },
+    "윌슨병": {
+        "en": "Wilson's Disease",
+        "ja": "ウィルソン病",
+        "ja_romaji": "Wiruson Byo"
+    },
+    "고샤병": {
+        "en": "Gaucher Disease",
+        "ja": "ゴーシェ病",
+        "ja_romaji": "Goshe Byo"
+    },
+    "파브리병": {
+        "en": "Fabry Disease",
+        "ja": "ファブリー病",
+        "ja_romaji": "Faburi Byo"
+    },
+    "폼페병": {
+        "en": "Pompe Disease",
+        "ja": "ポンペ病",
+        "ja_romaji": "Ponpe Byo"
+    },
+    "폰 히펠-린다우 증후군": {
+        "en": "Von Hippel-Lindau Syndrome",
+        "ja": "フォン・ヒッペル・リンドウ病",
+        "ja_romaji": "Fon Hipperu Rindou Byo"
+    },
+    "신경섬유종증": {
+        "en": "Neurofibromatosis",
+        "ja": "神経線維腫症",
+        "ja_romaji": "Shinkei Sen'ishusho"
+    },
+    "마판 증후군": {
+        "en": "Marfan Syndrome",
+        "ja": "マルファン症候群",
+        "ja_romaji": "Marufan Shokogun"
+    },
+    "엘러스-단로스 증후군": {
+        "en": "Ehlers-Danlos Syndrome",
+        "ja": "エーラス・ダンロス症候群",
+        "ja_romaji": "Erasu Danrosu Shokogun"
+    },
+    "프라더-빌리 증후군": {
+        "en": "Prader-Willi Syndrome",
+        "ja": "プローダー・ヴィリ症候群",
+        "ja_romaji": "Puroda Wiri Shokogun"
+    },
+    "엔젤만 증후군": {
+        "en": "Angelman Syndrome",
+        "ja": "アンジェルマン症候群",
+        "ja_romaji": "Anjeruman Shokogun"
+    },
+    "레트 증후군": {
+        "en": "Rett Syndrome",
+        "ja": "レット症候群",
+        "ja_romaji": "Retto Shokogun"
+    },
+    "윌리엄스 증후군": {
+        "en": "Williams Syndrome",
+        "ja": "ウィリアムズ症候群",
+        "ja_romaji": "Wiriamuzu Shokogun"
+    },
+    "척수성 근위축증": {
+        "en": "Spinal Muscular Atrophy",
+        "ja": "脊髄性筋萎縮症",
+        "ja_romaji": "Sekizuisei Kin'ishokusho"
+    },
+    "뒤센 근디스트로피": {
+        "en": "Duchenne Muscular Dystrophy",
+        "ja": "デュシェンヌ型筋ジストロフィー",
+        "ja_romaji": "Dyushennu-gata Kinjisutorofi"
+    },
+    "원시": {
+        "en": "Hyperopia",
+        "ja": "遠視",
+        "ja_romaji": "Enshi"
+    },
+    "근시": {
+        "en": "Myopia",
+        "ja": "近視",
+        "ja_romaji": "Kinshi"
+    },
+    "난시": {
+        "en": "Astigmatism",
+        "ja": "乱視",
+        "ja_romaji": "Ranshi"
+    },
+    "안구건조증": {
+        "en": "Dry Eye Syndrome",
+        "ja": "ドライアイ症候群",
+        "ja_romaji": "Dorai Ai Shokogun"
+    },
+    "군날개": {
+        "en": "Pterygium",
+        "ja": "翼状片",
+        "ja_romaji": "Yokujohen"
+    },
+    "원뿔각막": {
+        "en": "Keratoconus",
+        "ja": "円錐角膜",
+        "ja_romaji": "Ensui Kakumaku"
+    },
+    "후두연화증": {
+        "en": "Laryngomalacia",
+        "ja": "喉頭軟化症",
+        "ja_romaji": "Koto Nankasho"
+    },
+    "여드름": {
+        "en": "Acne Vulgaris",
+        "ja": "尋常性ざ瘡",
+        "ja_romaji": "Jinjousei Zasou"
+    },
+    "주사": {
+        "en": "Rosacea",
+        "ja": "酒さ",
+        "ja_romaji": "Shusa"
+    },
+    "수포성 표피박리증": {
+        "en": "Epidermolysis Bullosa",
+        "ja": "表皮水疱症",
+        "ja_romaji": "Hyohi Suihosho"
+    },
+    "광선각화증": {
+        "en": "Actinic Keratosis",
+        "ja": "日光角化症",
+        "ja_romaji": "Nikko Kakasho"
+    },
+    "한포진": {
+        "en": "Dyshidrotic Eczema",
+        "ja": "汗疱",
+        "ja_romaji": "Kanpo"
+    },
+    "화폐상 습진": {
+        "en": "Nummular Eczema",
+        "ja": "貨幣状湿疹",
+        "ja_romaji": "Kaheijo Shisshin"
+    },
+    "결절성 양진": {
+        "en": "Prurigo Nodularis",
+        "ja": "結節性痒疹",
+        "ja_romaji": "Kessetsusei Yoshin"
+    },
+    "어루러기": {
+        "en": "Tinea Versicolor",
+        "ja": "癜風",
+        "ja_romaji": "Denfu"
+    },
+    "대동맥판막 협착증": {
+        "en": "Aortic Stenosis",
+        "ja": "大動脈弁狭窄症",
+        "ja_romaji": "Daidomyakuben Kyosakusho"
+    },
+    "폐동맥판막 협착증": {
+        "en": "Pulmonary Stenosis",
+        "ja": "肺動脈弁狭窄症",
+        "ja_romaji": "Haidomyakuben Kyosakusho"
+    },
+    "심실중격결손증": {
+        "en": "Ventricular Septal Defect",
+        "ja": "心室中隔欠損症",
+        "ja_romaji": "Shinshitsu Chukaku Kessonsho"
+    },
+    "심방중격결손증": {
+        "en": "Atrial Septal Defect",
+        "ja": "心房中隔欠損症",
+        "ja_romaji": "Shinbo Chukaku Kessonsho"
+    },
+    "팔로 4징증": {
+        "en": "Tetralogy of Fallot",
+        "ja": "ファロー四徴症",
+        "ja_romaji": "Faro Shichosho"
+    },
+    "동전기능부전증후군": {
+        "en": "Sick Sinus Syndrome",
+        "ja": "洞不全症候群",
+        "ja_romaji": "Do Fuzen Shokogun"
+    },
+    "방실블록": {
+        "en": "Atrioventricular Block",
+        "ja": "房室ブロック",
+        "ja_romaji": "Boshitsu Burokku"
+    },
+    "버거씨병": {
+        "en": "Thromboangiitis Obliterans",
+        "ja": "バージャー病",
+        "ja_romaji": "Baja Byo"
+    },
+    "레이노 증후군": {
+        "en": "Raynaud's Phenomenon",
+        "ja": "レイノー症候群",
+        "ja_romaji": "Reino Shokogun"
+    },
+    "미세변화 신증후군": {
+        "en": "Minimal Change Disease",
+        "ja": "微小変化型ネフローゼ症候群",
+        "ja_romaji": "Bisho Henkagata Nefuroze Shokogun"
+    },
+    "단장 증후군": {
+        "en": "Short Bowel Syndrome",
+        "ja": "短腸症候群",
+        "ja_romaji": "Tancho Shokogun"
+    },
+    "메켈 게실": {
+        "en": "Meckel's Diverticulum",
+        "ja": "メッケル憩室",
+        "ja_romaji": "Mekkeru Keishitsu"
+    },
+    "대장 게실염": {
+        "en": "Diverticulitis",
+        "ja": "大腸憩室炎",
+        "ja_romaji": "Daicho Keishitsuen"
+    },
+    "직장탈출증": {
+        "en": "Rectal Prolapse",
+        "ja": "直腸脱",
+        "ja_romaji": "Chokuchosho"
+    },
+    "항문열구": {
+        "en": "Anal Fissure",
+        "ja": "裂肛",
+        "ja_romaji": "Rekkou"
+    },
+    "치루": {
+        "en": "Anal Fistula",
+        "ja": "痔瘻",
+        "ja_romaji": "Jirou"
+    },
+    "원발성 담즙성 간경변증": {
+        "en": "Primary Biliary Cholangitis",
+        "ja": "原発性胆汁性胆管炎",
+        "ja_romaji": "Gempatsusei Tanjusei Tankanen"
+    },
+    "자가면역성 간염": {
+        "en": "Autoimmune Hepatitis",
+        "ja": "自己免疫性肝炎",
+        "ja_romaji": "Jiko Men'ekisei Kanen"
+    },
+    "유착성 관절낭염": {
+        "en": "Adhesive Capsulitis",
+        "ja": "肩関節周囲炎",
+        "ja_romaji": "Kankansetsu Shuien"
+    },
+    "추간판 탈출증": {
+        "en": "Herniated Intervertebral Disc",
+        "ja": "椎間板ヘルニア",
+        "ja_romaji": "Tsuikanban Herunia"
+    },
+    "척추관 협착증": {
+        "en": "Spinal Stenosis",
+        "ja": "脊柱管狭窄症",
+        "ja_romaji": "Sekichukan Kyosakusho"
+    },
+    "척추전방전위증": {
+        "en": "Spondylolisthesis",
+        "ja": "腰椎すべり症",
+        "ja_romaji": "Yotsui Suberisho"
+    },
+    "척추측만증": {
+        "en": "Scoliosis",
+        "ja": "脊柱側弯症",
+        "ja_romaji": "Sekichu Sokuwansho"
+    },
+    "외측상과염": {
+        "en": "Lateral Epicondylitis",
+        "ja": "外側上顆炎",
+        "ja_romaji": "Gaisoku Jokaen"
+    },
+    "골연화증": {
+        "en": "Osteomalacia",
+        "ja": "骨軟化症",
+        "ja_romaji": "Kotsunankasho"
+    },
+    "구루병": {
+        "en": "Rickets",
+        "ja": "くる病",
+        "ja_romaji": "Kurubyo"
+    },
+    "음낭수종": {
+        "en": "Hydrocele",
+        "ja": "陰嚢水腫",
+        "ja_romaji": "Inno Suishu"
+    },
+    "정계정맥류": {
+        "en": "Varicocele",
+        "ja": "精索静脈瘤",
+        "ja_romaji": "Seisaku Jomyakuryu"
+    },
+    "잠복정소": {
+        "en": "Cryptorchidism",
+        "ja": "停留精巣",
+        "ja_romaji": "Teiryu Seiso"
+    },
+    "요도염": {
+        "en": "Urethritis",
+        "ja": "尿道炎",
+        "ja_romaji": "Nyodoen"
+    },
+    "귀두포피염": {
+        "en": "Balanoposthitis",
+        "ja": "亀頭包皮炎",
+        "ja_romaji": "Kitou Hohien"
+    },
+    "난소낭종": {
+        "en": "Ovarian Cyst",
+        "ja": "卵巣嚢胞",
+        "ja_romaji": "Ranso Noho"
+    },
+    "골반염": {
+        "en": "Pelvic Inflammatory Disease",
+        "ja": "骨盤内炎症性疾患",
+        "ja_romaji": "Kotsubannai Enshosei Shikkan"
+    },
+    "자궁경부이형성증": {
+        "en": "Cervical Dysplasia",
+        "ja": "子宮頸部異形成",
+        "ja_romaji": "Shikyu Keibu Ikeisei"
+    },
+    "포도상기태": {
+        "en": "Hydatidiform Mole",
+        "ja": "胞状奇胎",
+        "ja_romaji": "Hojo Kitai"
+    },
+    "자궁외 임신": {
+        "en": "Ectopic Pregnancy",
+        "ja": "異位妊娠",
+        "ja_romaji": "Ii Ninshin"
+    },
+    "후두암": {
+        "en": "Laryngeal Cancer",
+        "ja": "喉頭がん",
+        "ja_romaji": "Kotogan"
+    },
+    "인두암": {
+        "en": "Pharyngeal Cancer",
+        "ja": "咽頭がん",
+        "ja_romaji": "Intogan"
+    },
+    "비인두암": {
+        "en": "Nasopharyngeal Carcinoma",
+        "ja": "上咽頭がん",
+        "ja_romaji": "Jouintougan"
+    },
+    "흉선암": {
+        "en": "Thymic Carcinoma",
+        "ja": "胸腺がん",
+        "ja_romaji": "Kyosengan"
+    },
+    "신경모세포종": {
+        "en": "Neuroblastoma",
+        "ja": "神経芽細胞腫",
+        "ja_romaji": "Shinkei Gasaiboshu"
+    },
+    "윌름스 종양": {
+        "en": "Wilms' Tumor",
+        "ja": "ウィルムス腫瘍",
+        "ja_romaji": "Wirumusu Shuyo"
+    },
+    "망막모세포종": {
+        "en": "Retinoblastoma",
+        "ja": "網膜芽細胞腫",
+        "ja_romaji": "Momaku Gasaiboshu"
+    },
+    "위장관 기질 종양": {
+        "en": "Gastrointestinal Stromal Tumor",
+        "ja": "消化管間質腫瘍",
+        "ja_romaji": "Shokakan Kanshitsu Shuyo"
+    },
+    "다발성 신경내분비종양": {
+        "en": "Multiple Endocrine Neoplasia",
+        "ja": "多発性内分泌腫瘍症",
+        "ja_romaji": "Tahatsusei Naibunpitsu Shuyosho"
+    },
+    "선상지방종": {
+        "en": "Lipoma",
+        "ja": "脂肪腫",
+        "ja_romaji": "Shiboshu"
+    },
+    "횡단성 척수염": {
+        "en": "Transverse Myelitis",
+        "ja": "横断性脊髄炎",
+        "ja_romaji": "Odansei Sekizuien"
+    },
+    "청신경초종": {
+        "en": "Acoustic Neuroma",
+        "ja": "聴神経腫瘍",
+        "ja_romaji": "Choshinkei Shuyo"
+    },
+    "뇌수막종": {
+        "en": "Meningioma",
+        "ja": "髄膜腫",
+        "ja_romaji": "Zuimakushu"
+    },
+    "모세혈관확장증": {
+        "en": "Telangiectasia",
+        "ja": "毛細血管拡張症",
+        "ja_romaji": "Mosaikekkan Kakuchosho"
+    },
+    "임파선염": {
+        "en": "Lymphadenitis",
+        "ja": "リンパ節炎",
+        "ja_romaji": "Rinpasetsuen"
+    },
+    "만성 신부전": {
+        "en": "Chronic Kidney Disease",
+        "ja": "慢性腎臓病",
+        "ja_romaji": "Mansei Jinzobyo"
+    },
+    "골수섬유증": {
+        "en": "Myelofibrosis",
+        "ja": "骨髄繊維症",
+        "ja_romaji": "Kotsuzui Senisho"
+    },
+    "특발성 현기증": {
+        "en": "Benign Paroxysmal Positional Vertigo",
+        "ja": "良性発作性頭位めまい症",
+        "ja_romaji": "Ryosei Hossasei Toi Memaisho"
+    },
+
+    "라임병": {
+        "en": "Lyme Disease",
+        "ja": "ライム病",
+        "ja_romaji": "Raimu Byo"
+    },
+    "샤가스병": {
+        "en": "Chagas Disease",
+        "ja": "シャーガス病",
+        "ja_romaji": "Shagasu Byo"
+    },
+    "리슈만 편형충증": {
+        "en": "Leishmaniasis",
+        "ja": "リーシュマニア症",
+        "ja_romaji": "Rishumania Sho"
+    },
+    "두창": {
+        "en": "Smallpox",
+        "ja": "天然痘",
+        "ja_romaji": "Tennento"
+    },
+    "폴리오": {
+        "en": "Poliomyelitis",
+        "ja": "ポリオ",
+        "ja_romaji": "Porio"
+    },
+    "연성하간": {
+        "en": "Chancroid",
+        "ja": "軟性下疳",
+        "ja_romaji": "Nansei Kakan"
+    },
+    "성기 헤르페스": {
+        "en": "Genital Herpes",
+        "ja": "性器ヘルペス",
+        "ja_romaji": "Seiki Herupesu"
+    },
+    "리스테리아증": {
+        "en": "Listeriosis",
+        "ja": "リステリア症",
+        "ja_romaji": "Risuteria Sho"
+    },
+    "노로바이러스 감염증": {
+        "en": "Norovirus Infection",
+        "ja": "ノロウイルス感染症",
+        "ja_romaji": "Norowirusu Kansensho"
+    },
+    "로타바이러스 감염증": {
+        "en": "Rotavirus Infection",
+        "ja": "ロタウイルス感染症",
+        "ja_romaji": "Rotawirusu Kansensho"
+    },
+    "아메바성 이질": {
+        "en": "Amebic Dysentery",
+        "ja": "アメーバ赤痢",
+        "ja_romaji": "Ameba Sekiri"
+    },
+    "알렉산더병": {
+        "en": "Alexander Disease",
+        "ja": "アレキサンダー病",
+        "ja_romaji": "Arekisanda Byo"
+    },
+    "크라베병": {
+        "en": "Krabbe Disease",
+        "ja": "クラッベ病",
+        "ja_romaji": "Kurabbe Byo"
+    },
+    "니만-피크병": {
+        "en": "Niemann-Pick Disease",
+        "ja": "ニーマン・ピック病",
+        "ja_romaji": "Niman Pikku Byo"
+    },
+    "테이-삭스병": {
+        "en": "Tay-Sachs Disease",
+        "ja": "テイ・サックス病",
+        "ja_romaji": "Tei Sakkusu Byo"
+    },
+    "스티프-퍼슨 증후군": {
+        "en": "Stiff-Person Syndrome",
+        "ja": "スティッフパーソン症候群",
+        "ja_romaji": "Sutiffupason Shokogun"
+    },
+    "아스퍼거 증후군": {
+        "en": "Asperger Syndrome",
+        "ja": "アスペルガー症候群",
+        "ja_romaji": "Asuperuga Shokogun"
+    },
+    "신체증상장애": {
+        "en": "Somatic Symptom Disorder",
+        "ja": "身体症状症",
+        "ja_romaji": "Shintai Shojosho"
+    },
+    "전환장애": {
+        "en": "Conversion Disorder",
+        "ja": "変換性障害",
+        "ja_romaji": "Henkansei Shogai"
+    },
+    "해리성 정체성 장애": {
+        "en": "Dissociative Identity Disorder",
+        "ja": "解離性同一性障害",
+        "ja_romaji": "Kairisei Doitfusei Shogai"
+    },
+    "폭식장애": {
+        "en": "Binge Eating Disorder",
+        "ja": "過食性障害",
+        "ja_romaji": "Kashokusei Shogai"
+    },
+    "신체변형장애": {
+        "en": "Body Dysmorphic Disorder",
+        "ja": "身体過敏症",
+        "ja_romaji": "Shintai Kabinsho"
+    },
+    "급성 스트레스 장애": {
+        "en": "Acute Stress Disorder",
+        "ja": "急性ストレス障害",
+        "ja_romaji": "Kyusei Sutoresu Shogai"
+    },
+    "적응장애": {
+        "en": "Adjustment Disorder",
+        "ja": "適応障害",
+        "ja_romaji": "Tekio Shogai"
+    },
+    "품행장애": {
+        "en": "Conduct Disorder",
+        "ja": "素行障害",
+        "ja_romaji": "Soko Shogai"
+    },
+    "반항성 장애": {
+        "en": "Oppositional Defiant Disorder",
+        "ja": "反抗挑戦性障害",
+        "ja_romaji": "Hanko Chosensei Shogai"
+    },
+    "섬유근육통": {
+        "en": "Fibromyalgia",
+        "ja": "線維筋痛症",
+        "ja_romaji": "Sen'i Kintsusho"
+    },
+    "다발성 근염": {
+        "en": "Polymyositis",
+        "ja": "多発性筋炎",
+        "ja_romaji": "Tahatsusei Kinen"
+    },
+    "피부근염": {
+        "en": "Dermatomyositis",
+        "ja": "皮膚筋炎",
+        "ja_romaji": "Hifu Kinen"
+    },
+    "다발성 풍류마티스": {
+        "en": "Polymyalgia Rheumatica",
+        "ja": "リウマチ性多発筋痛症",
+        "ja_romaji": "Riumachisei Tahatsu Kintsusho"
+    },
+    "거대세포 동맥염": {
+        "en": "Giant Cell Arteritis",
+        "ja": "巨細胞性動脈炎",
+        "ja_romaji": "Kyosaibosei Domyakuen"
+    },
+    "대퇴두부 무혈성 괴사": {
+        "en": "Avascular Necrosis of Femoral Head",
+        "ja": "大腿骨頭壊死症",
+        "ja_romaji": "Daitaikotto Eshisho"
+    },
+    "오스굿-슐라터병": {
+        "en": "Osgood-Schlatter Disease",
+        "ja": "オスグッド・シュラッター病",
+        "ja_romaji": "Osuguddo Shuratta Byo"
+    },
+    "내측상과염": {
+        "en": "Medial Epicondylitis",
+        "ja": "内側上顆炎",
+        "ja_romaji": "Naisoku Jokaen"
+    },
+    "위통풍": {
+        "en": "Pseudogout",
+        "ja": "偽痛風",
+        "ja_romaji": "Gitsuufuu"
+    },
+    "건초염": {
+        "en": "Tenosynovitis",
+        "ja": "腱鞘炎",
+        "ja_romaji": "Kenshoen"
+    },
+    "오목가슴": {
+        "en": "Pectus Excavatum",
+        "ja": "漏斗胸",
+        "ja_romaji": "Routokyou"
+    },
+    "새가슴": {
+        "en": "Pectus Carinatum",
+        "ja": "鳩胸",
+        "ja_romaji": "Hatomune"
+    },
+    "노안": {
+        "en": "Presbyopia",
+        "ja": "老眼",
+        "ja_romaji": "Rogan"
+    },
+    "색맹": {
+        "en": "Color Blindness",
+        "ja": "色覚異常",
+        "ja_romaji": "Shikikaku Ijo"
+    },
+    "각막궤양": {
+        "en": "Corneal Ulcer",
+        "ja": "角膜潰瘍",
+        "ja_romaji": "Kakumaku Kaiyo"
+    },
+    "각막디스트로피": {
+        "en": "Corneal Dystrophy",
+        "ja": "角膜ジストロフィー",
+        "ja_romaji": "Kakumaku Jisutorofi"
+    },
+    "시신경염": {
+        "en": "Optic Neuritis",
+        "ja": "視神経炎",
+        "ja_romaji": "Shishinkeien"
+    },
+    "시신경위축": {
+        "en": "Optic Atrophy",
+        "ja": "視神経萎縮",
+        "ja_romaji": "Shishinkei Ishoku"
+    },
+    "전정신경염": {
+        "en": "Vestibular Neuritis",
+        "ja": "前庭神経炎",
+        "ja_romaji": "Zentei Shishinkeien"
+    },
+    "진주종": {
+        "en": "Cholesteatoma",
+        "ja": "真珠腫",
+        "ja_romaji": "Shinjushu"
+    },
+    "이경화증": {
+        "en": "Otosclerosis",
+        "ja": "耳硬化症",
+        "ja_romaji": "Jikokasho"
+    },
+    "삼출성 중이염": {
+        "en": "Otitis Media with Effusion",
+        "ja": "滲出性中耳炎",
+        "ja_romaji": "Shinshutsu-sei Chujien"
+    },
+    "비중격 만곡증": {
+        "en": "Nasal Septal Deviation",
+        "ja": "鼻中隔湾曲症",
+        "ja_romaji": "Bichukaku Wankyukusho"
+    },
+    "비후성 비염": {
+        "en": "Hypertrophic Rhinitis",
+        "ja": "肥厚性鼻炎",
+        "ja_romaji": "Hikosei Bien"
+    },
+    "대동맥판막 폐쇄부전증": {
+        "en": "Aortic Regurgitation",
+        "ja": "大動脈弁閉鎖不全症",
+        "ja_romaji": "Daidomyakuben Heisa Fuzensho"
+    },
+    "승모판 폐쇄부전증": {
+        "en": "Mitral Regurgitation",
+        "ja": "僧帽弁閉鎖不全症",
+        "ja_romaji": "Soboben Heisa Fuzensho"
+    },
+    "심실빈맥": {
+        "en": "Ventricular Tachycardia",
+        "ja": "心室頻拍",
+        "ja_romaji": "Shinshitsu Hinpaku"
+    },
+    "발작성 상심실성 빈맥": {
+        "en": "Paroxysmal Supraventricular Tachycardia",
+        "ja": "発作性上室性頻拍",
+        "ja_romaji": "Hossasei Joshitsusei Hinpaku"
+    },
+    "심실세동": {
+        "en": "Ventricular Fibrillation",
+        "ja": "心室細動",
+        "ja_romaji": "Shinshitsu Saido"
+    },
+    "확장성 심근증": {
+        "en": "Dilated Cardiomyopathy",
+        "ja": "拡張型心筋症",
+        "ja_romaji": "Kakuchogata Shinkinsho"
+    },
+    "제한성 심근증": {
+        "en": "Restrictive Cardiomyopathy",
+        "ja": "拘束型心筋症",
+        "ja_romaji": "Kosokugata Shinkinsho"
+    },
+    "만성 정맥 부전": {
+        "en": "Chronic Venous Insufficiency",
+        "ja": "慢性静脈不全",
+        "ja_romaji": "Mansei Jomyaku Fuzen"
+    },
+    "심층정맥 혈전증": {
+        "en": "Deep Vein Thrombosis",
+        "ja": "深部静脈血栓症",
+        "ja_romaji": "Shinbu Jomyaku Kessensho"
+    },
+    "림프부종": {
+        "en": "Lymphedema",
+        "ja": "リンパ浮腫",
+        "ja_romaji": "Rinpa Fushu"
+    },
+    "철결핍성 빈혈": {
+        "en": "Iron Deficiency Anemia",
+        "ja": "鉄欠乏性貧血",
+        "ja_romaji": "Tetsu Ketsubosei Hinketsu"
+    },
+    "거대적아구성 빈혈": {
+        "en": "Megaloblastic Anemia",
+        "ja": "巨赤芽球性貧血",
+        "ja_romaji": "Kyosekigakyusei Hinketsu"
+    },
+    "악성 빈혈": {
+        "en": "Pernicious Anemia",
+        "ja": "悪性貧血",
+        "ja_romaji": "Akusei Hinketsu"
+    },
+    "폰 빌레브란트병": {
+        "en": "Von Willebrand Disease",
+        "ja": "フォン・ヴィレブラント病",
+        "ja_romaji": "Fon Wireburanto Byo"
+    },
+    "발작성 야간 혈색소뇨증": {
+        "en": "Paroxysmal Nocturnal Hemoglobinuria",
+        "ja": "発作性夜間ヘモグロビン尿症",
+        "ja_romaji": "Hossasei Yakan Hemogurobin Nyosho"
+    },
+    "식도 게실": {
+        "en": "Esophageal Diverticulum",
+        "ja": "食道憩室",
+        "ja_romaji": "Shokudo Keishitsu"
+    },
+    "바렛 식도": {
+        "en": "Barrett's Esophagus",
+        "ja": "バレット食道",
+        "ja_romaji": "Baretto Shokudo"
+    },
+    "만성 췌장염": {
+        "en": "Chronic Pancreatitis",
+        "ja": "慢性膵炎",
+        "ja_romaji": "Mansei Suien"
+    },
+    "간농양": {
+        "en": "Liver Abscess",
+        "ja": "肝膿瘍",
+        "ja_romaji": "Kannoyo"
+    },
+    "비알코올성 지방간염": {
+        "en": "Nonalcoholic Steatohepatitis",
+        "ja": "非アルコール性脂肪肝炎",
+        "ja_romaji": "Hi-arukorusei Shibokanen"
+    },
+    "혈색소증": {
+        "en": "Hemochromatosis",
+        "ja": "ヘモクロマトーシス",
+        "ja_romaji": "Hemokuromatoshisu"
+    },
+    "위용종": {
+        "en": "Gastric Polyps",
+        "ja": "胃ポリープ",
+        "ja_romaji": "I Poripu"
+    },
+    "대장 용종": {
+        "en": "Colonic Polyps",
+        "ja": "大腸ポリープ",
+        "ja_romaji": "Daicho Poripu"
+    },
+    "허혈성 장질환": {
+        "en": "Ischemic Bowel Disease",
+        "ja": "虚血性腸疾患",
+        "ja_romaji": "Kyoketsusei Choshikkan"
+    },
+    "캘로이드": {
+        "en": "Keloid",
+        "ja": "ケロイド",
+        "ja_romaji": "Keroido"
+    },
+    "화농성 한선염": {
+        "en": "Hidradenitis Suppurativa",
+        "ja": "化膿性汗腺炎",
+        "ja_romaji": "Kanosei Kansenen"
+    },
+    "다형홍반": {
+        "en": "Erythema Multiforme",
+        "ja": "多形紅斑",
+        "ja_romaji": "Takei Kohan"
+    },
+    "스티븐스-존슨 증후군": {
+        "en": "Stevens-Johnson Syndrome",
+        "ja": "スティーヴンス・ジョンソン症候群",
+        "ja_romaji": "Sutivunsu Jonson Shokogun"
+    },
+    "독성 표피 괴사용해": {
+        "en": "Toxic Epidermal Necrolysis",
+        "ja": "中毒性表皮壊死症",
+        "ja_romaji": "Chudokusei Hyohi Eshisho"
+    },
+    "결절성 홍반": {
+        "en": "Erythema Nodosum",
+        "ja": "結節性紅斑",
+        "ja_romaji": "Kessetsusei Kohan"
+    },
+    "표피낭종": {
+        "en": "Epidermoid Cyst",
+        "ja": "表皮嚢胞",
+        "ja_romaji": "Hyohi Noho"
+    },
+    "연성 용종": {
+        "en": "Acrochordon",
+        "ja": "軟骨腫",
+        "ja_romaji": "Nankotsushu"
+    },
+    "다발성 피지낭종": {
+        "en": "Steatocystoma Multiplex",
+        "ja": "多発性皮脂嚢腫",
+        "ja_romaji": "Tahatsusei Hishi Noshu"
+    },
+    "원발성 알도스테론증": {
+        "en": "Primary Aldosteronism",
+        "ja": "原発性アルドステロン症",
+        "ja_romaji": "Gempatsusei Arudosuteron Sho"
+    },
+    "항이뇨호르몬 부적절 분비 증후군": {
+        "en": "Syndrome of Inappropriate Antidiuretic Hormone Secretion",
+        "ja": "抗利尿ホルモン不適切分泌症候群",
+        "ja_romaji": "Korinyo Horumon Futekisetsu Bunpitsu Shokogun"
+    },
+    "난소 염전": {
+        "en": "Ovarian Torsion",
+        "ja": "卵巣茎捻転",
+        "ja_romaji": "Ranso Keinenten"
+    },
+    "방광류": {
+        "en": "Cystocele",
+        "ja": "膀胱瘤",
+        "ja_romaji": "Bokoryu"
+    },
+    "직장류": {
+        "en": "Rectocele",
+        "ja": "直腸瘤",
+        "ja_romaji": "Chokuchoryu"
+    },
+    "간질성 방광염": {
+        "en": "Interstitial Cystitis",
+        "ja": "間質性膀胱炎",
+        "ja_romaji": "Kanshitsusei Bokoen"
+    },
+    "무정자증": {
+        "en": "Azoospermia",
+        "ja": "無精子症",
+        "ja_romaji": "Museishisho"
+    },
+    "페이로니병": {
+        "en": "Peyronie's Disease",
+        "ja": "ペイロニー病",
+        "ja_romaji": "Peironi Byo"
+    },
+    "고환암": {
+        "en": "Testicular Cancer",
+        "ja": "精巣がん",
+        "ja_romaji": "Seisogan"
+    },
+    "묘성 증후군": {
+        "en": "Cri du Chat Syndrome",
+        "ja": "猫鳴き症候群",
+        "ja_romaji": "Nekomaki Shokogun"
+    },
+    "디조지 증후군": {
+        "en": "DiGeorge Syndrome",
+        "ja": "ディジョージ症候群",
+        "ja_romaji": "Dijoji Shokogun"
+    },
+    "파타우 증후군": {
+        "en": "Patau Syndrome",
+        "ja": "パトー症候群",
+        "ja_romaji": "Pato Shokogun"
+    },
+    "누난 증후군": {
+        "en": "Noonan Syndrome",
+        "ja": "ヌーナン症候群",
+        "ja_romaji": "Nunan Shokogun"
+    },
+    "소아 특발성 관절염": {
+        "en": "Juvenile Idiopathic Arthritis",
+        "ja": "若年性特発性関節炎",
+        "ja_romaji": "Jakunensei Tokuhatsusei Kansetsuen"
+    },
+    "신생아 호흡곤란 증후군": {
+        "en": "Infant Respiratory Distress Syndrome",
+        "ja": "新生児呼吸窮迫症候群",
+        "ja_romaji": "Shinseiji Kokyu Kyuhaku Shokogun"
+    },
+    "태변 흡입 증후군": {
+        "en": "Meconium Aspiration Syndrome",
+        "ja": "胎便吸引症候群",
+        "ja_romaji": "Taiben Kyuin Shokogun"
     }
+    
 }
+    
 
 # 변환 함수 예시
 def get_academic_disease(name: str, lang: str = "en") -> str:
