@@ -52,9 +52,20 @@ type GeminiContent = {
 
 type StructuredAnswer = {
   answer?: unknown;
+  in_scope?: unknown;
   risk_level?: unknown;
   warning_message?: unknown;
 };
+
+type ParsedSeniorAnswer = SeniorAnswerResult & {
+  inScope: boolean;
+};
+
+const FOOD_SCOPE_PATTERN =
+  /(?:음식|식품|식재료|재료|요리|조리|레시피|먹|마시|섭취|보관|손질|알레르기|영양|칼로리|식사|반찬|과일|채소|고기|생선|해산물|음료|주스|커피|차|우유|술|간식|food|ingredient|cook|recipe|eat|drink|allerg|nutrition|calorie|meal|fruit|vegetable|meat|fish|beverage|食品|食材|料理|烹饪|食谱|吃|喝|过敏|营养|热量|水果|蔬菜|饮料)/iu;
+
+const CLEARLY_OFF_TOPIC_PATTERN =
+  /(?:레이싱|레이서|선수|경기 결과|우승|축구|야구|농구|배구|골프|테니스|포뮬러\s*원|formula\s*1|\bf1\b|racing|driver|athlete|football|soccer|baseball|basketball|대통령|국회의원|선거|정당|주가|환율|코인|비트코인|영화|드라마|배우|가수|아이돌|날씨|코딩|프로그래밍|president|election|stock price|exchange rate|bitcoin|movie|actor|singer|weather|programming|总统|选举|股票|汇率|电影|演员|歌手|天气|编程)/iu;
 
 export function isMeaningfulText(value: unknown): value is string {
   return (
@@ -71,7 +82,7 @@ function stripJsonFence(text: string) {
     .trim();
 }
 
-function parseStructuredAnswer(text: string): SeniorAnswerResult {
+function parseStructuredAnswer(text: string): ParsedSeniorAnswer {
   const cleaned = stripJsonFence(text);
   const objectStart = cleaned.indexOf("{");
   const objectEnd = cleaned.lastIndexOf("}");
@@ -94,6 +105,7 @@ function parseStructuredAnswer(text: string): SeniorAnswerResult {
       : "caution";
   return {
     answer: parsed.answer.trim(),
+    inScope: parsed.in_scope !== false,
     riskLevel,
     warningMessage:
       riskLevel !== "safe" && typeof parsed.warning_message === "string"
@@ -133,6 +145,38 @@ function localizedGeneralWarning(language?: string) {
   return "주의: 현재 건강정보를 기준으로 권장하지 않거나 확인이 필요한 음식입니다. 섭취 전 설명을 확인하세요.";
 }
 
+export function localizedScopeRedirect(language?: string): SeniorAnswerResult {
+  if (language === "en-US") {
+    return {
+      answer:
+        "I am an AI assistant for senior food information. Please ask me about ingredients, cooking, food storage, nutrition, or food allergies. For example, you can ask, “I have a peach allergy. Is this safe to eat?”",
+      riskLevel: "safe",
+      warningMessage: "",
+    };
+  }
+  if (language === "zh-CN") {
+    return {
+      answer:
+        "我是面向老年人的食品信息AI助手。请询问食材、烹饪、食品保存、营养或食物过敏等问题。例如，您可以问：“我对桃子过敏，这个可以吃吗？”",
+      riskLevel: "safe",
+      warningMessage: "",
+    };
+  }
+  return {
+    answer:
+      "저는 시니어 식품 관련 정보 AI입니다. 식재료, 조리법, 음식 보관, 영양, 식품 알레르기와 관련된 질문을 해주세요. 예를 들어 “복숭아 알레르기가 있는데 먹어도 되나요?”라고 물어보실 수 있어요.",
+    riskLevel: "safe",
+    warningMessage: "",
+  };
+}
+
+export function isClearlyOffTopic(message: string) {
+  const normalized = message.normalize("NFKC").trim();
+  if (!isMeaningfulText(normalized)) return false;
+  if (FOOD_SCOPE_PATTERN.test(normalized)) return false;
+  return CLEARLY_OFF_TOPIC_PATTERN.test(normalized);
+}
+
 function normalizedRiskText(value: string) {
   return value
     .normalize("NFKC")
@@ -160,6 +204,11 @@ export async function generateSeniorFriendlyAnswer(
   media: { audio?: InlineMedia | null; image?: InlineMedia | null } = {},
   history: ConversationTurn[] = [],
 ): Promise<SeniorAnswerResult> {
+  const selectedLanguage = toHealthLanguage(profile.language);
+  if (!media.audio && !media.image && isClearlyOffTopic(message)) {
+    return localizedScopeRedirect(selectedLanguage);
+  }
+
   const { apiKey, textModel } = getGeminiConfig();
   const conversationHistory = sanitizeHistory(history);
   const topicContext = [
@@ -169,7 +218,6 @@ export async function generateSeniorFriendlyAnswer(
     .filter(Boolean)
     .join("\n");
   const knowledge = findRelevantKnowledge(topicContext);
-  const selectedLanguage = toHealthLanguage(profile.language);
   const profileAllergies =
     profile.allergies ??
     (profile.allergyIds ?? []).map((id) => getHealthLabel(id, selectedLanguage));
@@ -195,6 +243,12 @@ export async function generateSeniorFriendlyAnswer(
   const prompt = [
     "당신은 시니어에게 식재료와 조리 정보를 쉬운 말로 설명하는 보조 AI입니다.",
     answerLanguageInstruction(selectedLanguage),
+    "답변 가능 범위는 식품, 식재료, 음식, 조리법, 레시피, 식품 보관·손질·안전, 영양, 식품 알레르기, 음식과 직접 관련된 건강 정보입니다.",
+    "스포츠, 선수, 레이싱, 정치, 금융, 연예, 날씨, 일반 기술처럼 식품과 직접 관련 없는 새 질문에는 답하지 마세요.",
+    "예를 들어 레드불 음료의 카페인이나 섭취 주의사항은 식품 질문이지만, 레드불 레이싱 선수 질문은 범위 밖입니다.",
+    "현재 질문이 이전 음식 대화와 관계없는 새 주제로 명확히 바뀌었다면 이전 대화를 근거로 식품 질문이라고 판단하지 마세요.",
+    "현재 질문이 답변 가능 범위이면 in_scope를 true로, 범위 밖이면 false로 표시하세요.",
+    "in_scope가 false이면 해당 주제의 사실이나 정답을 answer에 포함하지 마세요.",
     "의학적 진단이나 치료 지시를 하지 말고, 위험 가능성이 있으면 의료진 또는 약사 확인을 권하세요.",
     "등록된 알레르기 식품을 추천하거나 레시피 재료로 넣지 마세요.",
     "첫 문장에서 결론을 말하고, 꼭 필요한 내용만 보통 6~9개의 짧은 문장으로 설명하세요.",
@@ -225,7 +279,7 @@ export async function generateSeniorFriendlyAnswer(
     `안전 원칙: ${JSON.stringify(knowledge.safetyRules)}`,
     `현재 사용자 글 질문: ${message || "없음. 첨부된 음성이나 사진을 중심으로 답변할 것"}`,
     "반드시 다음 JSON 객체 하나만 반환하세요.",
-    '{"answer":"마크다운을 사용할 수 있는 완결된 답변","risk_level":"danger|caution|safe","warning_message":"위험·비권장일 때만 한 문장, 아니면 빈 문자열"}',
+    '{"in_scope":true|false,"answer":"마크다운을 사용할 수 있는 완결된 답변","risk_level":"danger|caution|safe","warning_message":"위험·비권장일 때만 한 문장, 아니면 빈 문자열"}',
   ].join("\n");
 
   const requestContent: GeminiContent = {
@@ -279,9 +333,12 @@ export async function generateSeniorFriendlyAnswer(
   if (!generated) throw new Error("Gemini가 빈 답변을 반환했습니다.");
 
   const result = parseStructuredAnswer(generated);
+  if (!result.inScope) {
+    return localizedScopeRedirect(selectedLanguage);
+  }
   if (allergyConflictLabels.length > 0) {
     return {
-      ...result,
+      answer: result.answer,
       riskLevel: "danger",
       warningMessage: localizedAllergyWarning(
         selectedLanguage,
@@ -294,9 +351,14 @@ export async function generateSeniorFriendlyAnswer(
     !result.warningMessage
   ) {
     return {
-      ...result,
+      answer: result.answer,
+      riskLevel: result.riskLevel,
       warningMessage: localizedGeneralWarning(selectedLanguage),
     };
   }
-  return result;
+  return {
+    answer: result.answer,
+    riskLevel: result.riskLevel,
+    warningMessage: result.warningMessage,
+  };
 }
