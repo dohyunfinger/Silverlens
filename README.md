@@ -39,6 +39,8 @@ SilverLens는 모든 것이 눈부시게 빨라지는 세상 속에서 소외된
 GEMINI_API_KEY=Google_AI_Studio에서_발급한_키
 GEMINI_TEXT_MODEL=gemini-3.6-flash
 GEMINI_TTS_MODEL=gemini-2.5-flash-preview-tts
+GEMINI_TEXT_FALLBACK_MODELS=gemini-3.5-flash-lite,gemini-3.1-flash-lite,gemini-2.5-flash
+GEMINI_TTS_FALLBACK_MODELS=gemini-3.1-flash-tts-preview,gemini-2.5-flash-preview-tts
 NEXT_PUBLIC_DIALECT_API_URL=http://127.0.0.1:8001
 DIALECT_MODEL_ID=sjbaek/gemma2-2b-it-korean-dialect
 ```
@@ -47,6 +49,33 @@ DIALECT_MODEL_ID=sjbaek/gemma2-2b-it-korean-dialect
 - 전체 경로: `SilverLens/.env.local`
 - 키 변수명: `GEMINI_API_KEY`
 - `.env.local`은 `.gitignore`에 포함되어 GitHub에 업로드되지 않습니다.
+- `GEMINI_*_FALLBACK_MODELS`는 생략할 수 있습니다. 비워 두면 위 값이 기본으로 쓰입니다.
+
+## 무료 한도(429) 대응
+
+Gemini 무료 티어는 모델마다 분당·하루 요청 수가 정해져 있어 시연 중에도 쉽게
+막힙니다. `backend/services/geminiClient.ts`가 다음 순서로 버텁니다.
+
+1. 기본 모델이 429를 내면 기다리지 않고 `GEMINI_TEXT_FALLBACK_MODELS` 순서대로
+   다음 모델을 시도합니다. TTS도 같은 방식입니다.
+2. 429를 낸 모델은 응답에 담긴 재시도 시간(최대 5분)만큼 건너뜁니다. 막힌 모델을
+   매번 먼저 부르지 않아 응답이 느려지지 않습니다.
+3. 404·400(모델 없음·제공 종료)도 2분간 건너뛰고 다음 모델로 넘어갑니다.
+   401·403(키·권한 문제)은 모델을 바꿔도 같으므로 즉시 알립니다.
+4. 모든 모델이 막히면 `/api/chat`·`/api/transcribe`·`/api/tts`가 429와
+   `Retry-After` 헤더를 돌려주고, 화면에는 "몇 초 뒤에 다시 질문해 주세요"가 뜹니다.
+
+호출 자체를 줄이는 장치도 함께 있습니다.
+
+- 같은 질문·같은 프로필이면 15분 동안 보관해 둔 답변을 다시 씁니다(최대 60건).
+- 음식·건강과 무관한 질문은 Gemini를 부르지 않고 바로 안내 문구를 돌려줍니다.
+- 답변 음성은 페이지 단위로 필요할 때 만듭니다. 첫 장만 미리 준비하고, 뒷장은
+  어르신이 실제로 넘겨 들을 때 요청합니다.
+- 설정 안내 음성은 문장이 고정이라 메모리와 Cache API에 저장해 재사용합니다.
+
+이 장치들로도 부족하면 하루 한도 자체를 늘려야 합니다. Google AI Studio에서
+결제 정보를 연결해 Tier 1으로 올리는 것이 가장 확실하고 즉시 적용됩니다.
+현재 상태는 `/log` 화면의 "한도에 걸려 잠시 쉬는 모델" 항목에서 확인할 수 있습니다.
 
 ## 전체 구조
 
@@ -58,55 +87,102 @@ SilverLens/
 ├── app/                        # Next.js 진입점과 서버 API
 │   ├── api/
 │   │   ├── chat/route.ts       # Gemini 대화 API
+│   │   ├── log/route.ts        # 임시 데이터 점검 API (개발 환경 전용)
 │   │   ├── transcribe/route.ts # 휴대폰·배포 환경 Gemini STT
 │   │   └── tts/route.ts        # Gemini 2.5 Flash TTS API
 │   ├── globals.css
 │   ├── layout.tsx
+│   ├── log/page.tsx            # 임시 데이터 점검 화면
 │   └── page.tsx
 ├── frontend/
-│   └── SilverLensApp.tsx       # 설정·대화·서비스·팀원 화면
+│   ├── SilverLensApp.tsx       # 설정·대화·서비스·팀원 화면
+│   └── DataLogView.tsx         # 임시 데이터 점검 화면 본문
 ├── backend/
-│   ├── config/env.ts           # 환경변수 검사
-│   ├── data/loadData.ts        # JSON 자료 메모리 캐시
-│   ├── data/healthTerms.ts      # 다국어 건강정보 ID·표시명 연결
+│   ├── config/env.ts           # 환경변수 검사 · 모델 폴백 목록
+│   ├── data/loadData.ts        # JSON 자료 메모리 캐시·질문 기반 검색
+│   ├── data/healthTerms.ts     # 다국어 건강정보 ID·표시명 연결
+│   ├── data/diseaseI18n.ts     # 질병명 한국어→영어·일본어 변환
 │   ├── services/
-│   │   ├── geminiService.ts
+│   │   ├── geminiClient.ts     # 모델 폴백 · 429 재시도 · 모델 휴식 관리
+│   │   ├── geminiQuota.ts      # 429 전용 오류와 재시도 시간 해석
+│   │   ├── geminiService.ts    # 답변 생성 · 답변 캐시
 │   │   ├── transcriptionService.ts
 │   │   └── ttsService.ts
 │   └── local_dialect/
 │       ├── main.py             # Gemma 2 한국어 방언 변환 서버
 │       └── requirements.txt
 ├── data/
-│   ├── Knowledge.txt
-│   ├── food_ingredient.txt
-│   ├── dialect_dictionary.txt
-│   ├── senior_food_knowledge.json
-│   ├── food_ingredient.json
-│   ├── dialect_dictionary.json
-│   ├── dialect_terms.json
-│   ├── food_aliases.json
-│   ├── safety_rules.json
-│   └── health_terms.json       # 한국어·영어·중국어 알레르기·질병명
+│   ├── sources/                        # 사람이 편집하는 원본
+│   │   ├── dialect_dictionary.csv      # 사투리,표준어,지역,분류
+│   │   ├── disease_i18n.csv            # key,en,ja,ja_romaji
+│   │   ├── korean_dish_names.txt       # 한식 메뉴명 원본 목록
+│   │   ├── recipes.json                # 요리 사전 원본
+│   │   ├── senior_food_knowledge.py    # 식재료 지식 원본
+│   │   └── senior_frequent_conditions.txt
+│   ├── dialect_dictionary.json         # 생성물
+│   ├── disease_i18n.json               # 생성물
+│   ├── korean_dish_names.json          # 생성물
+│   ├── recipes.json                    # 생성물
+│   ├── senior_food_knowledge.json      # 생성물
+│   ├── senior_frequent_conditions.json # 생성물
+│   ├── food_aliases.json       # 손으로 관리: 외래어·별칭
+│   ├── safety_rules.json       # 손으로 관리: 질병별 안전 원칙
+│   ├── health_groups.json      # 손으로 관리: 알레르기·질병 묶음 타이틀
+│   └── health_terms.json       # 손으로 관리: 한국어·영어·일본어 알레르기·질병명
 ├── scripts/
 │   └── prepare_knowledge_data.py
 ├── package.json
 └── tsconfig.json
 ```
 
-`Knowledge.txt`, `food_ingredient.txt`, `dialect_dictionary.txt`가 원본 자료입니다.
-다음 명령은 원본을 검색용 JSON으로 변환합니다.
+`data/sources/` 아래 파일만 직접 편집하고, `data/` 루트의 생성물은 다음 명령으로만
+갱신합니다. `food_aliases.json`, `safety_rules.json`, `health_terms.json`은 생성
+대상이 아니라 손으로 관리하는 파일입니다.
 
 ```bash
 npm run prepare:data
 ```
 
+변환 단계에서 사투리 사전은 검증을 함께 받습니다. 한 글자 사투리, 표준어와
+같은 항목, 중복 항목은 프롬프트에서 오탐만 늘리므로 자동으로 제외되고, 지역과
+분류 값이 정해진 목록에서 벗어나면 변환이 실패합니다.
+
 `backend/data/loadData.ts`는 현재 질문과 최근 대화에 실제로 언급된 식품명·별칭·
 재료를 기준으로 관련 항목만 찾아 Gemini 답변 프롬프트에 넣습니다. 질병명만
-일치한다는 이유로 장어 같은 무관한 식품 자료를 끌어오지 않습니다.
+일치한다는 이유로 장어 같은 무관한 식품 자료를 끌어오지 않습니다. 안전 원칙도
+전체 목록을 그대로 넣지 않고 `applies_to`가 사용자 질병이나 질문과 겹치는
+항목만 골라 보냅니다.
 
-`data/health_terms.json`의 각 항목은 하나의 고정 ID와 한국어·영어·중국어
+`data/health_terms.json`의 각 항목은 하나의 고정 ID와 한국어·영어·일본어
 표시명을 가집니다. 음성 분류 결과는 표시 문구가 아니라 이 ID로 저장되므로
 화면 언어를 바꾸면 같은 건강정보가 해당 언어로 다시 표시됩니다.
+`data/disease_i18n.json`은 여기서 한 걸음 더 나아가, 식재료 지식의
+`caution_diseases`처럼 한국어로만 적힌 질병명을 화면 언어로 바꿔 줍니다.
+
+`data/health_groups.json`은 알레르기 46개와 질병 41개를 성격이 비슷한 묶음으로
+나눕니다. 설정 화면은 기본 상태에서 선택 결과만 보여 주고, `+ 직접 입력`을
+누를 때 글자 입력칸과 묶음 목록을 함께 펼칩니다. 묶음에 빠진 항목이 생기면
+`그 밖의 항목`으로 모이므로 화면에서 사라지지 않습니다.
+
+## 음성으로 남긴 상세 메모
+
+목록으로 고를 수 없는 사정(예: "견과류 중에 특히 호두가 안 맞아요")은 설정
+화면의 `🎙 말해서 입력`으로 받은 문장을 그대로 저장합니다. 메모는 브라우저
+`localStorage`(`silverlens:health-notes-v1`)에 최근 8개만 남고, 대화할 때
+`/api/chat`의 `profile.healthNotes`로 함께 전달되어 답변 프롬프트에 들어갑니다.
+서버에서도 종류·길이·개수를 다시 잘라 내므로 프롬프트가 무한정 늘어나지 않습니다.
+
+## 임시 데이터 점검 화면
+
+`data/` 자료가 백엔드 검색·번역 경로에 실제로 붙었는지 확인하는 개발용
+화면입니다. 서버를 띄운 뒤 `/log`로 들어가면 데이터 건수, 사투리·외래어·메뉴명
+검색 결과, 질병명 번역, 다국어 입력 → ID 변환을 한 화면에서 볼 수 있습니다.
+Gemini를 호출하지 않으므로 API 쿼터를 쓰지 않습니다.
+
+`/api/log`는 기본적으로 개발 환경에서만 열립니다. 배포 환경에서 확인해야 하면
+`SILVERLENS_ENABLE_LOG=true`를 설정하세요. 응답에는 API 키 값이 아니라 설정
+여부만 담기지만, 내부 데이터 구성이 드러나므로 확인이 끝나면 다시 끄는 것을
+권합니다.
 
 ## VS Code 실행
 
@@ -165,7 +241,7 @@ uvicorn backend.local_dialect.main:app --host 127.0.0.1 --port 8001
 - 언어 모델: Gemini 3.6 Flash
 - 음성 인식 및 건강정보 분류: Gemini 오디오 입력
 - 로컬 방언→표준어 변환: `sjbaek/gemma2-2b-it-korean-dialect`
-- 배포 환경 방언 해석: `data/dialect_dictionary.txt` 검색 결과와 Gemini
+- 배포 환경 방언 해석: `data/dialect_dictionary.json` 검색 결과와 Gemini
 - 설정·추천 안내: Web Speech API 기반 브라우저 TTS
 - AI 답변 음성: Gemini 2.5 Flash TTS
 - AI 답변 음성 예비 수단: Web Speech API 기반 브라우저 TTS

@@ -1,5 +1,9 @@
 import { getGeminiConfig } from "../config/env";
-import { getDialectDictionaryForPrompt } from "../data/loadData";
+import { callGeminiGenerateContent } from "./geminiClient";
+import {
+  getDialectDictionaryForPrompt,
+  getFoodAliasesForPrompt,
+} from "../data/loadData";
 import {
   getHealthCatalogForPrompt,
   isHealthTermId,
@@ -69,19 +73,17 @@ export async function transcribeAudio(
   purpose: TranscriptionPurpose = "chat",
   language = "ko-KR",
 ) {
-  const { apiKey, textModel } = getGeminiConfig();
+  const { apiKey, textModelChain } = getGeminiConfig();
   const dialectDictionary = getDialectDictionaryForPrompt();
+  const foodAliases = getFoodAliasesForPrompt();
   const healthCatalog = getHealthCatalogForPrompt();
   const selectedLanguage = toHealthLanguage(language);
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(textModel)}:generateContent`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-goog-api-key": apiKey,
-      },
-      body: JSON.stringify({
+  const { rawBody } = await callGeminiGenerateContent({
+    apiKey,
+    models: textModelChain,
+    language: selectedLanguage,
+    defaultErrorMessage: "Gemini 음성 인식에 실패했습니다.",
+    body: {
         contents: [
           {
             role: "user",
@@ -101,6 +103,8 @@ export async function transcribeAudio(
                   `화면 표시 언어: ${selectedLanguage}`,
                   `건강정보 다국어 카탈로그: ${JSON.stringify(healthCatalog)}`,
                   `방언 참고 사전: ${JSON.stringify(dialectDictionary)}`,
+                  `외래어·별칭 참고 사전: ${JSON.stringify(foodAliases)}`,
+                  "방언이나 외래어로 들리는 식품명은 참고 사전의 표준 이름으로 바꿔 적으세요.",
                   "반드시 다음 JSON 객체만 반환하세요.",
                   '{"transcript":"받아쓴 전체 문장","allergies":["카탈로그 allergy ID"],"conditions":["카탈로그 condition ID"]}',
                 ].join("\n"),
@@ -119,13 +123,9 @@ export async function transcribeAudio(
           maxOutputTokens: 1024,
           responseMimeType: "application/json",
         },
-      }),
     },
-  );
-  const payload = (await response.json()) as GeminiResponse;
-  if (!response.ok) {
-    throw new Error(payload.error?.message || "Gemini 음성 인식에 실패했습니다.");
-  }
+  });
+  const payload = JSON.parse(rawBody) as GeminiResponse;
 
   const generated = payload.candidates?.[0]?.content?.parts
     ?.map((part) => part.text || "")

@@ -1,0 +1,305 @@
+[
+  {
+    "id": "group_allergy_fruit",
+    "kind": "allergy",
+    "icon": "🍑",
+    "labels": {
+      "ko-KR": "과일",
+      "en-US": "Fruits",
+      "ja-JP": "果物"
+    },
+    "members": [
+      "allergy_peach",
+      "allergy_kiwi",
+      "allergy_apple",
+      "allergy_banana",
+      "allergy_strawberry",
+      "allergy_mango",
+      "allergy_pineapple",
+      "allergy_avocado",
+      "allergy_tomato"
+    ]
+  },
+  {
+    "id": "group_allergy_nuts",
+    "kind": "allergy",
+    "icon": "🥜",
+    "labels": {
+      "ko-KR": "견과류 · 씨앗",
+      "en-US": "Nuts and seeds",
+      "ja-JP": "ナッツ・種子"
+    },
+    "members": [
+      "allergy_nuts_and_peanuts",
+      "allergy_walnut",
+      "allergy_almond",
+      "allergy_pine_nut",
+      "allergy_sesame"
+    ]
+  },
+  {
+    "id": "group_allergy_seafood",
+    "kind": "allergy",
+    "icon": "🐟",
+    "labels": {
+      "ko-KR": "생선 · 해산물",
+      "en-US": "Fish and seafood",
+      "ja-JP": "魚・海産物"
+    },
+    "members": [
+      "allergy_fish",
+      "allergy_shellfish",
+      "allergy_shrimp",
+      "allergy_crab",
+      "allergy_squid",
+      "allergy_octopus",
+      "allergy_clam",
+      "allergy_oyster",
+      "allergy_abalone",
+      "allergy_mussel",
+      "allergy_mackerel",
+      "allergy_tuna",
+      "allergy_salmon",
+      "allergy_seaweed"
+    ]
+  },
+  {
+    "id": "group_allergy_grain",
+    "kind": "allergy",
+    "icon": "🌾",
+    "labels": {
+      "ko-KR": "곡류 · 콩류",
+      "en-US": "Grains and beans",
+      "ja-JP": "穀物・豆"
+    },
+    "members": [
+      "allergy_wheat",
+      "allergy_buckwheat",
+      "allergy_soy",
+      "allergy_gluten"
+    ]
+  },
+  {
+    "id": "group_allergy_dairy_egg",
+    "kind": "allergy",
+    "icon": "🥛",
+    "labels": {
+      "ko-KR": "우유 · 달걀",
+      "en-US": "Dairy and eggs",
+      "ja-JP": "乳製品・卵"
+    },
+    "members": [
+      "allergy_milk",
+      "allergy_egg",
+      "allergy_lactose_intolerance"
+    ]
+  },
+  {
+    "id": "group_allergy_meat",
+    "kind": "allergy",
+    "icon": "🍖",
+    "labels": {
+      "ko-KR": "육류",
+      "en-US": "Meats",
+      "ja-JP": "肉類"
+    },
+    "members": [
+      "allergy_beef",
+      "allergy_pork",
+      "allergy_chicken"
+    ]
+  },
+  {
+    "id": "group_allergy_vegetable",
+    "kind": "allergy",
+    "icon": "🥬",
+    "labels": {
+      "ko-KR": "채소 · 버섯",
+      "en-US": "Vegetables and mushrooms",
+      "ja-JP": "野菜・きのこ"
+    },
+    "members": [
+      "allergy_mushroom",
+      "allergy_celery",
+      "allergy_garlic"
+    ]
+  },
+  {
+    "id": "group_allergy_additive",
+    "kind": "allergy",
+    "icon": "🧂",
+    "labels": {
+      "ko-KR": "조미료 · 기호식품 · 약",
+      "en-US": "Additives, drinks and medication",
+      "ja-JP": "調味料・嗜好品・薬"
+    },
+    "members": [
+      "allergy_sulfites",
+      "allergy_msg",
+      "allergy_caffeine",
+      "allergy_alcohol",
+      "allergy_medication"
+    ]
+  },
+  {
+    "id": "group_condition_metabolic",
+    "kind": "condition",
+    "icon": "🩸",
+    "labels": {
+      "ko-KR": "당 · 콜레스테롤 · 호르몬",
+      "en-US": "Blood sugar, cholesterol and hormones",
+      "ja-JP": "血糖・コレステロール・ホルモン"
+    },
+    "members": [
+      "condition_diabetes",
+      "condition_hyperlipidemia",
+      "condition_obesity",
+      "condition_gout",
+      "condition_hypothyroidism",
+      "condition_hyperthyroidism"
+    ]
+  },
+  {
+    "id": "group_condition_circulatory",
+    "kind": "condition",
+    "icon": "❤️",
+    "labels": {
+      "ko-KR": "혈압 · 심장 · 혈관",
+      "en-US": "Blood pressure, heart and vessels",
+      "ja-JP": "血圧・心臓・血管"
+    },
+    "members": [
+      "condition_hypertension",
+      "condition_heart_disease",
+      "condition_heart_failure",
+      "condition_atrial_fibrillation",
+      "condition_stroke",
+      "condition_anticoagulant",
+      "condition_anemia"
+    ]
+  },
+  {
+    "id": "group_condition_kidney",
+    "kind": "condition",
+    "icon": "💧",
+    "labels": {
+      "ko-KR": "신장 · 소변",
+      "en-US": "Kidney and urinary",
+      "ja-JP": "腎臓・尿"
+    },
+    "members": [
+      "condition_kidney_disease",
+      "condition_dialysis",
+      "condition_benign_prostatic_hyperplasia",
+      "condition_incontinence"
+    ]
+  },
+  {
+    "id": "group_condition_digestive",
+    "kind": "condition",
+    "icon": "🍚",
+    "labels": {
+      "ko-KR": "위 · 장 · 간",
+      "en-US": "Stomach, bowel and liver",
+      "ja-JP": "胃・腸・肝臓"
+    },
+    "members": [
+      "condition_gastric_ulcer",
+      "condition_gerd",
+      "condition_constipation",
+      "condition_ibs",
+      "condition_pancreatitis",
+      "condition_gallstone",
+      "condition_liver_disease"
+    ]
+  },
+  {
+    "id": "group_condition_bone",
+    "kind": "condition",
+    "icon": "🦴",
+    "labels": {
+      "ko-KR": "뼈 · 관절 · 근육",
+      "en-US": "Bones, joints and muscles",
+      "ja-JP": "骨・関節・筋肉"
+    },
+    "members": [
+      "condition_osteoporosis",
+      "condition_osteoarthritis",
+      "condition_sarcopenia"
+    ]
+  },
+  {
+    "id": "group_condition_brain",
+    "kind": "condition",
+    "icon": "🧠",
+    "labels": {
+      "ko-KR": "기억력 · 신경 · 마음",
+      "en-US": "Memory, nerves and mood",
+      "ja-JP": "記憶・神経・こころ"
+    },
+    "members": [
+      "condition_dementia_alzheimers",
+      "condition_parkinsons",
+      "condition_depression",
+      "condition_insomnia"
+    ]
+  },
+  {
+    "id": "group_condition_sense",
+    "kind": "condition",
+    "icon": "👀",
+    "labels": {
+      "ko-KR": "눈 · 귀",
+      "en-US": "Eyes and ears",
+      "ja-JP": "目・耳"
+    },
+    "members": [
+      "condition_cataract",
+      "condition_glaucoma",
+      "condition_macular_degeneration",
+      "condition_hearing_loss"
+    ]
+  },
+  {
+    "id": "group_condition_eating",
+    "kind": "condition",
+    "icon": "🦷",
+    "labels": {
+      "ko-KR": "씹기 · 삼키기 · 영양",
+      "en-US": "Chewing, swallowing and nutrition",
+      "ja-JP": "かむ・飲み込む・栄養"
+    },
+    "members": [
+      "condition_dysphagia",
+      "condition_denture",
+      "condition_malnutrition"
+    ]
+  },
+  {
+    "id": "group_condition_respiratory",
+    "kind": "condition",
+    "icon": "🌬️",
+    "labels": {
+      "ko-KR": "숨 · 폐",
+      "en-US": "Breathing and lungs",
+      "ja-JP": "呼吸・肺"
+    },
+    "members": [
+      "condition_asthma",
+      "condition_copd"
+    ]
+  },
+  {
+    "id": "group_condition_cancer",
+    "kind": "condition",
+    "icon": "🎗️",
+    "labels": {
+      "ko-KR": "암 치료",
+      "en-US": "Cancer treatment",
+      "ja-JP": "がん治療"
+    },
+    "members": [
+      "condition_cancer_treatment"
+    ]
+  }
+]

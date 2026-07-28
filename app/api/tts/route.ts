@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { isMeaningfulText } from "../../../backend/services/geminiService";
 import { generateNarration } from "../../../backend/services/ttsService";
+import { isGeminiQuotaError } from "../../../backend/services/geminiQuota";
 
 export async function POST(request: Request) {
   try {
@@ -27,6 +28,12 @@ export async function POST(request: Request) {
       },
     });
   } catch (error) {
+    if (isGeminiQuotaError(error)) {
+      return NextResponse.json(
+        { error: error.message, retryAfterSeconds: error.retryAfterSeconds },
+        { status: 429, headers: { "Retry-After": String(error.retryAfterSeconds) } },
+      );
+    }
     const message =
       error instanceof Error ? error.message : "음성을 만들지 못했습니다.";
     const status = message.includes("GEMINI_API_KEY") ? 503 : 500;

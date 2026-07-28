@@ -1,5 +1,7 @@
 import { getGeminiConfig } from "../config/env";
 import { findRelevantKnowledge } from "../data/loadData";
+import { matchFrequentCondition } from "../data/diseaseI18n";
+import { callGeminiGenerateContent } from "./geminiClient";
 import {
   findAllergyTermConflicts,
   getHealthLabel,
@@ -13,6 +15,12 @@ export type ConversationTurn = {
   answer: string;
 };
 
+/** 설정 화면에서 음성으로 남긴 상세 설명. 목록으로 고를 수 없는 내용을 담는다. */
+export type HealthNote = {
+  kind: "allergy" | "condition" | "setup";
+  text: string;
+};
+
 export type UserProfile = {
   language?: string;
   ageBand?: number;
@@ -20,6 +28,7 @@ export type UserProfile = {
   conditions?: string[];
   allergyIds?: string[];
   conditionIds?: string[];
+  healthNotes?: HealthNote[];
 };
 
 export type InlineMedia = {
@@ -55,6 +64,43 @@ type StructuredAnswer = {
   risk_level?: unknown;
   warning_message?: unknown;
 };
+
+/**
+ * 같은 질문을 다시 물었을 때 Gemini를 또 부르지 않도록 답변을 잠깐 보관한다.
+ * 무료 한도가 하루 수십 건이라 시연 중 반복 질문 한 번을 아끼는 것도 크다.
+ */
+const ANSWER_CACHE_TTL_MS = 15 * 60 * 1000;
+const ANSWER_CACHE_MAX = 60;
+const answerCache = new Map<string, { savedAt: number; result: SeniorAnswerResult }>();
+
+/** base64 전체를 키로 쓰면 메모리가 커지므로 길이와 앞뒤 일부만 지문으로 쓴다. */
+function mediaFingerprint(media?: InlineMedia | null) {
+  if (!media) return "none";
+  const { data, mimeType } = media;
+  return `${mimeType}:${data.length}:${data.slice(0, 48)}:${data.slice(-48)}`;
+}
+
+function readAnswerCache(key: string) {
+  const hit = answerCache.get(key);
+  if (!hit) return null;
+  if (Date.now() - hit.savedAt > ANSWER_CACHE_TTL_MS) {
+    answerCache.delete(key);
+    return null;
+  }
+  // 최근에 쓴 항목을 뒤로 보내 가장 오래된 것부터 지워지게 한다.
+  answerCache.delete(key);
+  answerCache.set(key, hit);
+  return hit.result;
+}
+
+function writeAnswerCache(key: string, result: SeniorAnswerResult) {
+  answerCache.set(key, { savedAt: Date.now(), result });
+  while (answerCache.size > ANSWER_CACHE_MAX) {
+    const oldest = answerCache.keys().next().value;
+    if (oldest === undefined) break;
+    answerCache.delete(oldest);
+  }
+}
 
 export function isMeaningfulText(value: unknown): value is string {
   return (
@@ -169,7 +215,13 @@ const ON_TOPIC_KEYWORDS = [
 ];
 
 function isLikelyOnTopic(topicContext: string, knowledge: ReturnType<typeof findRelevantKnowledge>) {
-  if (knowledge.dialectHints.length > 0 || knowledge.recipes.length > 0 || knowledge.foods.length > 0) {
+  if (
+    knowledge.dialectHints.length > 0 ||
+    knowledge.recipes.length > 0 ||
+    knowledge.foods.length > 0 ||
+    knowledge.dishNameHints.length > 0 ||
+    knowledge.foodAliasHints.length > 0
+  ) {
     return true;
   }
   const normalized = topicContext.normalize("NFKC");
@@ -203,7 +255,7 @@ export async function generateSeniorFriendlyAnswer(
   media: { audio?: InlineMedia | null; image?: InlineMedia | null } = {},
   history: ConversationTurn[] = [],
 ): Promise<SeniorAnswerResult> {
-  const { apiKey, textModel } = getGeminiConfig();
+  const { apiKey, textModelChain } = getGeminiConfig();
   const conversationHistory = sanitizeHistory(history);
   const topicContext = [
     ...conversationHistory.slice(-3).map((turn) => turn.question),
@@ -211,8 +263,26 @@ export async function generateSeniorFriendlyAnswer(
   ]
     .filter(Boolean)
     .join("\n");
-  const knowledge = findRelevantKnowledge(topicContext);
   const selectedLanguage = toHealthLanguage(profile.language);
+
+  const profileAllergies =
+    profile.allergies ??
+    (profile.allergyIds ?? []).map((id) => getHealthLabel(id, selectedLanguage));
+  // 카탈로그에 없는 질병을 직접 입력한 경우 노인 다빈도 상병 표기로 맞춰 준다.
+  const profileConditions = (
+    profile.conditions ??
+    (profile.conditionIds ?? []).map((id) => getHealthLabel(id, selectedLanguage))
+  ).map((label) => matchFrequentCondition(label)?.name ?? label);
+
+  const healthNoteLines = (profile.healthNotes ?? [])
+    .filter((note) => isMeaningfulText(note?.text))
+    .slice(-8)
+    .map((note) => ({ kind: note.kind, text: note.text.trim().slice(0, 400) }));
+
+  const knowledge = findRelevantKnowledge(topicContext, {
+    language: selectedLanguage,
+    conditionLabels: profileConditions,
+  });
 
   // 첨부 파일이 없고 글로만 질문했는데 시니어 식품·건강 서비스와 무관한 주제이면
   // Gemini API를 호출하지 않고 바로 안내 답변을 돌려줘 토큰 낭비를 막습니다.
@@ -225,12 +295,6 @@ export async function generateSeniorFriendlyAnswer(
     };
   }
 
-  const profileAllergies =
-    profile.allergies ??
-    (profile.allergyIds ?? []).map((id) => getHealthLabel(id, selectedLanguage));
-  const profileConditions =
-    profile.conditions ??
-    (profile.conditionIds ?? []).map((id) => getHealthLabel(id, selectedLanguage));
   const allergyConflicts = findAllergyTermConflicts(
     topicContext,
     profile.allergyIds ?? [],
@@ -263,6 +327,12 @@ export async function generateSeniorFriendlyAnswer(
     "이전 질문·답변·현재 질문에 나오지 않은 장어 같은 무관한 식재료를 새 주제로 도입하지 마세요.",
     "아래 DATA는 질문에 실제로 언급된 식재료로 검색된 내부 참고 자료입니다.",
     "DATA의 건강 효능·권장량을 검증된 의학 사실처럼 단정하지 마세요.",
+    "외래어·별칭 참고가 있으면 어르신이 알아듣기 쉬운 우리말 이름을 먼저 말하고 원래 이름을 괄호로 덧붙이세요.",
+    "한식 메뉴명 참고에 걸린 이름은 실제로 존재하는 한식이므로 모르는 음식으로 처리하지 마세요.",
+    "적용할 안전 원칙은 사용자 질병·질문에 맞게 미리 골라 둔 것입니다. 해당 원칙과 어긋나는 조리법이나 식재료를 권하지 마세요.",
+    "음성으로 남긴 상세 메모는 목록으로 고를 수 없는 개인 사정입니다. 목록으로 등록한 알레르기·질병보다 구체적이므로 함께 반영하세요.",
+    "예를 들어 목록에는 견과류만 등록됐지만 메모에 '견과류 중에 특히 호두가 안 맞는다'가 있으면 호두를 특히 강하게 피하도록 안내하세요.",
+    "메모 내용과 목록이 어긋나면 더 조심스러운 쪽을 따르고, 메모를 근거로 새 질병을 진단하지는 마세요.",
     "사용자 알레르기나 질병 정보와 충돌하거나 불확실하면 안전 원칙을 우선하세요.",
     "risk_level은 danger, caution, safe 중 하나만 사용하세요.",
     "등록 알레르기와 직접 충돌하거나 섭취하지 말아야 한다고 답할 때는 danger로 표시하세요.",
@@ -272,13 +342,16 @@ export async function generateSeniorFriendlyAnswer(
     `알레르기: ${profileAllergies.join(", ") || "미입력"}`,
     `질병 정보: ${profileConditions.join(", ") || "미입력"}`,
     `코드가 직접 확인한 알레르기 충돌: ${allergyConflictLabels.join(", ") || "없음"}`,
+    `어르신이 음성으로 남긴 상세 메모: ${
+      healthNoteLines.length > 0 ? JSON.stringify(healthNoteLines) : "없음"
+    }`,
     `이전 대화: ${JSON.stringify(conversationHistory)}`,
     `질문에서 찾은 방언 참고: ${JSON.stringify(knowledge.dialectHints)}`,
-    `기존 방언 참고: ${JSON.stringify(knowledge.legacyDialectTerms)}`,
-    `식재료 별칭 참고: ${JSON.stringify(knowledge.foodAliases)}`,
+    `질문에서 찾은 외래어·별칭 참고: ${JSON.stringify(knowledge.foodAliasHints)}`,
+    `질문에서 찾은 한식 메뉴명 참고: ${JSON.stringify(knowledge.dishNameHints)}`,
     `관련 요리·재료 DATA: ${JSON.stringify(knowledge.recipes)}`,
     `관련 시니어 식품 DATA: ${JSON.stringify(knowledge.foods)}`,
-    `안전 원칙: ${JSON.stringify(knowledge.safetyRules)}`,
+    `적용할 안전 원칙: ${JSON.stringify(knowledge.safetyRules)}`,
     `현재 사용자 글 질문: ${message || "없음. 첨부된 음성이나 사진을 중심으로 답변할 것"}`,
     "반드시 다음 JSON 객체 하나만 반환하세요.",
     '{"answer":"마크다운을 사용할 수 있는 완결된 답변","risk_level":"danger|caution|safe","warning_message":"위험·비권장일 때만 한 문장, 아니면 빈 문자열"}',
@@ -305,28 +378,30 @@ export async function generateSeniorFriendlyAnswer(
     });
   }
 
-  const response = await fetch(
-    `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(textModel)}:generateContent`,
-    {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "x-goog-api-key": apiKey,
-      },
-      body: JSON.stringify({
-        contents: [requestContent],
-        generationConfig: {
-          temperature: 0.15,
-          maxOutputTokens: 4096,
-          responseMimeType: "application/json",
-        },
-      }),
-    },
-  );
-  const payload = (await response.json()) as GeminiResponse;
-  if (!response.ok) {
-    throw new Error(payload.error?.message || "Gemini API 호출에 실패했습니다.");
+  const cacheKey = `${prompt}\n@@image:${mediaFingerprint(media.image)}\n@@audio:${mediaFingerprint(media.audio)}`;
+  const cachedAnswer = readAnswerCache(cacheKey);
+  if (cachedAnswer) {
+    console.info("[SilverLens] 같은 질문이라 보관해 둔 답변을 다시 씁니다.");
+    return cachedAnswer;
   }
+
+  const { rawBody, modelUsed } = await callGeminiGenerateContent({
+    apiKey,
+    models: textModelChain,
+    language: selectedLanguage,
+    body: {
+      contents: [requestContent],
+      generationConfig: {
+        temperature: 0.15,
+        maxOutputTokens: 4096,
+        responseMimeType: "application/json",
+      },
+    },
+  });
+  if (modelUsed !== textModelChain[0]) {
+    console.info(`[SilverLens] 예비 모델로 답변했습니다: ${modelUsed}`);
+  }
+  const payload = JSON.parse(rawBody) as GeminiResponse;
 
   const generated = payload.candidates?.[0]?.content?.parts
     ?.map((part) => part.text || "")
@@ -334,25 +409,22 @@ export async function generateSeniorFriendlyAnswer(
     .trim();
   if (!generated) throw new Error("Gemini가 빈 답변을 반환했습니다.");
 
-  const result = parseStructuredAnswer(generated);
-  if (allergyConflictLabels.length > 0) {
-    return {
-      ...result,
-      riskLevel: "danger",
-      warningMessage: localizedAllergyWarning(
-        selectedLanguage,
-        allergyConflictLabels,
-      ),
-    };
-  }
-  if (
-    (result.riskLevel === "danger" || result.riskLevel === "caution") &&
-    !result.warningMessage
-  ) {
-    return {
-      ...result,
-      warningMessage: localizedGeneralWarning(selectedLanguage),
-    };
-  }
+  const parsed = parseStructuredAnswer(generated);
+  const result: SeniorAnswerResult =
+    allergyConflictLabels.length > 0
+      ? {
+          ...parsed,
+          riskLevel: "danger",
+          warningMessage: localizedAllergyWarning(
+            selectedLanguage,
+            allergyConflictLabels,
+          ),
+        }
+      : (parsed.riskLevel === "danger" || parsed.riskLevel === "caution") &&
+          !parsed.warningMessage
+        ? { ...parsed, warningMessage: localizedGeneralWarning(selectedLanguage) }
+        : parsed;
+
+  writeAnswerCache(cacheKey, result);
   return result;
 }

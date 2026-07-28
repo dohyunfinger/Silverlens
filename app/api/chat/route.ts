@@ -2,10 +2,12 @@ import { NextResponse } from "next/server";
 import {
   generateSeniorFriendlyAnswer,
   type ConversationTurn,
+  type HealthNote,
   type InlineMedia,
   isMeaningfulText,
   type UserProfile,
 } from "../../../backend/services/geminiService";
+import { isGeminiQuotaError } from "../../../backend/services/geminiQuota";
 
 const MAX_INLINE_DATA_LENGTH = 18 * 1024 * 1024;
 
@@ -36,13 +38,41 @@ function cleanHistory(value: unknown): ConversationTurn[] {
     .slice(-6);
 }
 
+const NOTE_KINDS: HealthNote["kind"][] = ["allergy", "condition", "setup"];
+
+/** 음성 메모는 사용자 입력이라 길이·개수·종류를 서버에서 다시 잘라 낸다. */
+function cleanHealthNotes(value: unknown): HealthNote[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter((item): item is Record<string, unknown> =>
+      Boolean(item && typeof item === "object"),
+    )
+    .map((item) => ({
+      kind: NOTE_KINDS.includes(item.kind as HealthNote["kind"])
+        ? (item.kind as HealthNote["kind"])
+        : "setup",
+      text: typeof item.text === "string" ? item.text.trim().slice(0, 400) : "",
+    }))
+    .filter((note) => isMeaningfulText(note.text))
+    .slice(-8);
+}
+
+function cleanProfile(value: unknown): UserProfile {
+  if (!value || typeof value !== "object") return {};
+  const profile = value as UserProfile & { healthNotes?: unknown };
+  return {
+    ...profile,
+    healthNotes: cleanHealthNotes(profile.healthNotes),
+  };
+}
+
 export async function POST(request: Request) {
   try {
     const body = (await request.json()) as {
       message?: unknown;
       audio?: unknown;
       image?: unknown;
-      profile?: UserProfile;
+      profile?: unknown;
       history?: unknown;
     };
     const message = typeof body.message === "string" ? body.message.trim() : "";
@@ -68,7 +98,7 @@ export async function POST(request: Request) {
     }
     const result = await generateSeniorFriendlyAnswer(
       message,
-      body.profile,
+      cleanProfile(body.profile),
       { audio, image },
       cleanHistory(body.history),
     );
@@ -78,6 +108,12 @@ export async function POST(request: Request) {
       warningMessage: result.warningMessage,
     });
   } catch (error) {
+    if (isGeminiQuotaError(error)) {
+      return NextResponse.json(
+        { error: error.message, retryAfterSeconds: error.retryAfterSeconds },
+        { status: 429, headers: { "Retry-After": String(error.retryAfterSeconds) } },
+      );
+    }
     const message =
       error instanceof Error ? error.message : "서버에서 답변을 만들지 못했습니다.";
     const status = message.includes("GEMINI_API_KEY") ? 503 : 500;

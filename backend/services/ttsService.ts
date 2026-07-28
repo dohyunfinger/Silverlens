@@ -1,4 +1,5 @@
 import { getGeminiConfig } from "../config/env";
+import { callGeminiGenerateContent } from "./geminiClient";
 
 type TtsPayload = {
   candidates?: Array<{
@@ -38,6 +39,18 @@ function pcmToWav(pcm: Uint8Array, sampleRate = 24000) {
   return wav;
 }
 
+/**
+ * Gemini는 "audio/L16;codec=pcm;rate=24000" 형태로 샘플레이트를 알려준다.
+ * 헤더에 실제와 다른 값을 쓰면 재생 속도와 음높이가 어긋나므로 응답 값을 그대로 쓴다.
+ */
+function parseSampleRate(mimeType?: string) {
+  const matched = /rate=(\d+)/i.exec(mimeType ?? "");
+  const parsed = matched ? Number(matched[1]) : NaN;
+  return Number.isFinite(parsed) && parsed >= 8000 && parsed <= 48000
+    ? parsed
+    : 24000;
+}
+
 function narrationInstruction(language: string) {
   if (language === "en-US") {
     return "Read the following text exactly as written, clearly, warmly, and at a comfortable pace for an older listener:";
@@ -51,89 +64,67 @@ function narrationInstruction(language: string) {
 async function generateNarrationPcm(
   text: string,
   apiKey: string,
-  ttsModel: string,
+  ttsModels: string[],
   language: string,
 ) {
-  let lastError = "Gemini TTS 호출에 실패했습니다.";
-
-  for (let attempt = 0; attempt < 2; attempt += 1) {
-    const response = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${encodeURIComponent(ttsModel)}:generateContent`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "x-goog-api-key": apiKey,
+  const { rawBody } = await callGeminiGenerateContent({
+    apiKey,
+    models: ttsModels,
+    language,
+    defaultErrorMessage: "Gemini TTS 호출에 실패했습니다.",
+    body: {
+      contents: [
+        {
+          parts: [{ text: `${narrationInstruction(language)}\n${text}` }],
         },
-        body: JSON.stringify({
-          contents: [
-            {
-              parts: [
-                {
-                  text: `${narrationInstruction(language)}\n${text}`,
-                },
-              ],
-            },
-          ],
-          generationConfig: {
-            responseModalities: ["AUDIO"],
-            speechConfig: {
-              voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } },
-            },
-          },
-        }),
+      ],
+      generationConfig: {
+        responseModalities: ["AUDIO"],
+        speechConfig: {
+          voiceConfig: { prebuiltVoiceConfig: { voiceName: "Kore" } },
+        },
       },
-    );
-    const payload = (await response.json()) as TtsPayload;
-    if (!response.ok) {
-      lastError = payload.error?.message || "Gemini TTS 호출에 실패했습니다.";
-      if (
-        attempt === 0 &&
-        (response.status === 429 || response.status >= 500)
-      ) {
-        await new Promise((resolve) => setTimeout(resolve, 450));
-        continue;
-      }
-      throw new Error(lastError);
-    }
+    },
+  });
 
-    const audioParts =
-      payload.candidates?.[0]?.content?.parts
-        ?.map((part) => part.inlineData?.data)
-        .filter((data): data is string => Boolean(data))
-        .map((data) =>
-          Uint8Array.from(atob(data), (value) => value.charCodeAt(0)),
-        ) ?? [];
-    if (audioParts.length === 0) {
-      lastError = "Gemini TTS가 빈 음성을 반환했습니다.";
-      if (attempt === 0) {
-        await new Promise((resolve) => setTimeout(resolve, 450));
-        continue;
-      }
-      throw new Error(lastError);
-    }
-
-    const byteLength = audioParts.reduce(
-      (total, chunk) => total + chunk.byteLength,
-      0,
-    );
-    const combined = new Uint8Array(byteLength);
-    let offset = 0;
-    for (const chunk of audioParts) {
-      combined.set(chunk, offset);
-      offset += chunk.byteLength;
-    }
-    return combined;
+  const payload = JSON.parse(rawBody) as TtsPayload;
+  const inlineParts =
+    payload.candidates?.[0]?.content?.parts
+      ?.map((part) => part.inlineData)
+      .filter(
+        (inlineData): inlineData is { data: string; mimeType?: string } =>
+          Boolean(inlineData?.data),
+      ) ?? [];
+  if (inlineParts.length === 0) {
+    throw new Error("Gemini TTS가 빈 음성을 반환했습니다.");
   }
 
-  throw new Error(lastError);
+  const audioParts = inlineParts.map((inlineData) =>
+    Uint8Array.from(atob(inlineData.data), (value) => value.charCodeAt(0)),
+  );
+  const sampleRate = parseSampleRate(inlineParts[0]?.mimeType);
+  const byteLength = audioParts.reduce(
+    (total, chunk) => total + chunk.byteLength,
+    0,
+  );
+  const combined = new Uint8Array(byteLength);
+  let offset = 0;
+  for (const chunk of audioParts) {
+    combined.set(chunk, offset);
+    offset += chunk.byteLength;
+  }
+  return { pcm: combined, sampleRate };
 }
 
 export async function generateNarration(text: string, language = "ko-KR") {
-  const { apiKey, ttsModel } = getGeminiConfig();
+  const { apiKey, ttsModelChain } = getGeminiConfig();
   const normalized = text.replace(/\s+/g, " ").trim();
   if (!normalized) throw new Error("읽을 답변이 비어 있습니다.");
-  return pcmToWav(
-    await generateNarrationPcm(normalized, apiKey, ttsModel, language),
+  const { pcm, sampleRate } = await generateNarrationPcm(
+    normalized,
+    apiKey,
+    ttsModelChain,
+    language,
   );
+  return pcmToWav(pcm, sampleRate);
 }

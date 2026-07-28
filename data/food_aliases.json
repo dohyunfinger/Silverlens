@@ -1,4 +1,507 @@
 [
-  { "alias": "서양배추", "standard": "양배추" },
-  { "alias": "고수나물", "standard": "고수" }
+  {
+    "alias": "건포도",
+    "standard": "말린 포도",
+    "kind": "별칭"
+  },
+  {
+    "alias": "게맛살",
+    "standard": "어묵 가공식품",
+    "kind": "별칭"
+  },
+  {
+    "alias": "고수나물",
+    "standard": "고수",
+    "kind": "별칭"
+  },
+  {
+    "alias": "그래놀라",
+    "standard": "귀리 가공식품",
+    "kind": "외래어"
+  },
+  {
+    "alias": "그레이프프루트",
+    "standard": "자몽",
+    "kind": "외래어"
+  },
+  {
+    "alias": "그레이프후룻",
+    "standard": "자몽",
+    "kind": "외래어"
+  },
+  {
+    "alias": "그릭요거트",
+    "standard": "그리스식 요구르트",
+    "kind": "외래어"
+  },
+  {
+    "alias": "글루텐프리",
+    "standard": "밀 성분 없음",
+    "kind": "외래어"
+  },
+  {
+    "alias": "꽃양배추",
+    "standard": "콜리플라워",
+    "kind": "별칭"
+  },
+  {
+    "alias": "너겟",
+    "standard": "닭고기 가공식품",
+    "kind": "외래어"
+  },
+  {
+    "alias": "다시다",
+    "standard": "복합 조미료",
+    "kind": "별칭"
+  },
+  {
+    "alias": "뚱뚱이감자",
+    "standard": "돼지감자",
+    "kind": "별칭"
+  },
+  {
+    "alias": "라떼",
+    "standard": "우유 넣은 커피",
+    "kind": "외래어"
+  },
+  {
+    "alias": "라임즙",
+    "standard": "라임",
+    "kind": "외래어"
+  },
+  {
+    "alias": "라즈베리",
+    "standard": "산딸기",
+    "kind": "외래어"
+  },
+  {
+    "alias": "락토프리",
+    "standard": "유당 제거",
+    "kind": "외래어"
+  },
+  {
+    "alias": "런천미트",
+    "standard": "돼지고기 통조림",
+    "kind": "외래어"
+  },
+  {
+    "alias": "레몬즙",
+    "standard": "레몬",
+    "kind": "외래어"
+  },
+  {
+    "alias": "로메인상추",
+    "standard": "로메인",
+    "kind": "외래어"
+  },
+  {
+    "alias": "루꼴라",
+    "standard": "루콜라",
+    "kind": "외래어"
+  },
+  {
+    "alias": "리코타",
+    "standard": "리코타치즈",
+    "kind": "외래어"
+  },
+  {
+    "alias": "마요네즈",
+    "standard": "달걀 노른자 소스",
+    "kind": "외래어"
+  },
+  {
+    "alias": "마카다미아",
+    "standard": "마카다미아 견과",
+    "kind": "외래어"
+  },
+  {
+    "alias": "망고스틴",
+    "standard": "열대 과일",
+    "kind": "외래어"
+  },
+  {
+    "alias": "명란젓",
+    "standard": "명란",
+    "kind": "별칭"
+  },
+  {
+    "alias": "모짜렐라",
+    "standard": "모차렐라치즈",
+    "kind": "외래어"
+  },
+  {
+    "alias": "물엿",
+    "standard": "전분당",
+    "kind": "별칭"
+  },
+  {
+    "alias": "미원",
+    "standard": "글루탐산나트륨 조미료",
+    "kind": "별칭"
+  },
+  {
+    "alias": "믹스커피",
+    "standard": "설탕 크림 커피",
+    "kind": "별칭"
+  },
+  {
+    "alias": "발사믹",
+    "standard": "발사믹식초",
+    "kind": "외래어"
+  },
+  {
+    "alias": "버터밀크",
+    "standard": "발효 우유",
+    "kind": "외래어"
+  },
+  {
+    "alias": "베이비채소",
+    "standard": "어린잎채소",
+    "kind": "외래어"
+  },
+  {
+    "alias": "베이컨",
+    "standard": "돼지고기 가공육",
+    "kind": "외래어"
+  },
+  {
+    "alias": "베이킹파우더",
+    "standard": "팽창제",
+    "kind": "외래어"
+  },
+  {
+    "alias": "부로콜리",
+    "standard": "브로콜리",
+    "kind": "외래어"
+  },
+  {
+    "alias": "브로컬리",
+    "standard": "브로콜리",
+    "kind": "외래어"
+  },
+  {
+    "alias": "블루베리쨈",
+    "standard": "블루베리",
+    "kind": "외래어"
+  },
+  {
+    "alias": "비건",
+    "standard": "동물성 식품 제외",
+    "kind": "외래어"
+  },
+  {
+    "alias": "비트뿌리",
+    "standard": "비트",
+    "kind": "외래어"
+  },
+  {
+    "alias": "사이다",
+    "standard": "탄산음료",
+    "kind": "별칭"
+  },
+  {
+    "alias": "살몬",
+    "standard": "연어",
+    "kind": "외래어"
+  },
+  {
+    "alias": "샐러리",
+    "standard": "셀러리",
+    "kind": "외래어"
+  },
+  {
+    "alias": "서양배추",
+    "standard": "양배추",
+    "kind": "별칭"
+  },
+  {
+    "alias": "쉐이크",
+    "standard": "음료",
+    "kind": "외래어"
+  },
+  {
+    "alias": "쉬림프",
+    "standard": "새우",
+    "kind": "외래어"
+  },
+  {
+    "alias": "슈가파우더",
+    "standard": "분당",
+    "kind": "외래어"
+  },
+  {
+    "alias": "스무디",
+    "standard": "과일 갈아 만든 음료",
+    "kind": "외래어"
+  },
+  {
+    "alias": "스테비아",
+    "standard": "대체 감미료",
+    "kind": "외래어"
+  },
+  {
+    "alias": "스파게티면",
+    "standard": "파스타",
+    "kind": "외래어"
+  },
+  {
+    "alias": "스팸",
+    "standard": "돼지고기 통조림",
+    "kind": "별칭"
+  },
+  {
+    "alias": "시리얼",
+    "standard": "곡물 가공식품",
+    "kind": "외래어"
+  },
+  {
+    "alias": "실란트로",
+    "standard": "고수",
+    "kind": "외래어"
+  },
+  {
+    "alias": "쏘시지",
+    "standard": "소시지",
+    "kind": "외래어"
+  },
+  {
+    "alias": "아메리카노",
+    "standard": "블랙커피",
+    "kind": "외래어"
+  },
+  {
+    "alias": "아몬드브리즈",
+    "standard": "아몬드",
+    "kind": "외래어"
+  },
+  {
+    "alias": "아보가도",
+    "standard": "아보카도",
+    "kind": "외래어"
+  },
+  {
+    "alias": "아스파라가스",
+    "standard": "아스파라거스",
+    "kind": "외래어"
+  },
+  {
+    "alias": "아스파탐",
+    "standard": "대체 감미료",
+    "kind": "외래어"
+  },
+  {
+    "alias": "아티초크",
+    "standard": "서양 엉겅퀴 꽃봉오리",
+    "kind": "외래어"
+  },
+  {
+    "alias": "에이드",
+    "standard": "과일 탄산음료",
+    "kind": "외래어"
+  },
+  {
+    "alias": "오렌지쥬스",
+    "standard": "오렌지",
+    "kind": "외래어"
+  },
+  {
+    "alias": "오트밀",
+    "standard": "귀리",
+    "kind": "외래어"
+  },
+  {
+    "alias": "올리고당",
+    "standard": "감미용 당류",
+    "kind": "별칭"
+  },
+  {
+    "alias": "올리브오일",
+    "standard": "올리브유",
+    "kind": "외래어"
+  },
+  {
+    "alias": "요구르트",
+    "standard": "발효 우유 제품",
+    "kind": "외래어"
+  },
+  {
+    "alias": "요플레",
+    "standard": "요구르트",
+    "kind": "별칭"
+  },
+  {
+    "alias": "월넛",
+    "standard": "호두",
+    "kind": "외래어"
+  },
+  {
+    "alias": "이스트",
+    "standard": "효모",
+    "kind": "외래어"
+  },
+  {
+    "alias": "저염소금",
+    "standard": "염화칼륨 소금",
+    "kind": "별칭"
+  },
+  {
+    "alias": "제로콜라",
+    "standard": "무당 탄산음료",
+    "kind": "외래어"
+  },
+  {
+    "alias": "쥬키니",
+    "standard": "주키니호박",
+    "kind": "외래어"
+  },
+  {
+    "alias": "참치캔",
+    "standard": "참치 통조림",
+    "kind": "별칭"
+  },
+  {
+    "alias": "체리토마토",
+    "standard": "방울토마토",
+    "kind": "외래어"
+  },
+  {
+    "alias": "치아씨드",
+    "standard": "치아씨",
+    "kind": "외래어"
+  },
+  {
+    "alias": "치즈가루",
+    "standard": "치즈",
+    "kind": "외래어"
+  },
+  {
+    "alias": "치킨스톡",
+    "standard": "닭고기 육수 조미료",
+    "kind": "외래어"
+  },
+  {
+    "alias": "카놀라오일",
+    "standard": "카놀라유",
+    "kind": "외래어"
+  },
+  {
+    "alias": "캐비지",
+    "standard": "양배추",
+    "kind": "외래어"
+  },
+  {
+    "alias": "캐슈넛",
+    "standard": "캐슈너트",
+    "kind": "외래어"
+  },
+  {
+    "alias": "컬리플라워",
+    "standard": "콜리플라워",
+    "kind": "외래어"
+  },
+  {
+    "alias": "코리앤더",
+    "standard": "고수",
+    "kind": "외래어"
+  },
+  {
+    "alias": "코코넛오일",
+    "standard": "코코넛유",
+    "kind": "외래어"
+  },
+  {
+    "alias": "퀴노아",
+    "standard": "남미 잡곡",
+    "kind": "외래어"
+  },
+  {
+    "alias": "크래미",
+    "standard": "어묵 가공식품",
+    "kind": "별칭"
+  },
+  {
+    "alias": "크렌베리",
+    "standard": "크랜베리",
+    "kind": "외래어"
+  },
+  {
+    "alias": "키위후르츠",
+    "standard": "키위",
+    "kind": "외래어"
+  },
+  {
+    "alias": "토마토케찹",
+    "standard": "토마토케첩",
+    "kind": "외래어"
+  },
+  {
+    "alias": "파스타면",
+    "standard": "파스타",
+    "kind": "외래어"
+  },
+  {
+    "alias": "파슬리가루",
+    "standard": "파슬리",
+    "kind": "외래어"
+  },
+  {
+    "alias": "파인애플",
+    "standard": "열대 과일 파인애플",
+    "kind": "외래어"
+  },
+  {
+    "alias": "파프리카",
+    "standard": "단고추",
+    "kind": "외래어"
+  },
+  {
+    "alias": "프로틴쉐이크",
+    "standard": "단백질 보충 음료",
+    "kind": "외래어"
+  },
+  {
+    "alias": "프룬",
+    "standard": "말린 자두",
+    "kind": "외래어"
+  },
+  {
+    "alias": "피망",
+    "standard": "청피망",
+    "kind": "외래어"
+  },
+  {
+    "alias": "피스타치오",
+    "standard": "피스타치오 견과",
+    "kind": "외래어"
+  },
+  {
+    "alias": "햄버거패티",
+    "standard": "간 고기 가공육",
+    "kind": "외래어"
+  },
+  {
+    "alias": "허브솔트",
+    "standard": "향신료 소금",
+    "kind": "외래어"
+  },
+  {
+    "alias": "헤이즐넛",
+    "standard": "개암",
+    "kind": "외래어"
+  },
+  {
+    "alias": "훈제연어",
+    "standard": "연어",
+    "kind": "별칭"
+  },
+  {
+    "alias": "휘핑크림",
+    "standard": "생크림",
+    "kind": "외래어"
+  },
+  {
+    "alias": "흑당",
+    "standard": "흑설탕",
+    "kind": "별칭"
+  }
 ]

@@ -30,6 +30,10 @@
 .env.*
 !.env.example
 
+# typescript / build metadata
+*.tsbuildinfo
+tsconfig.tsbuildinfo
+
 # logs and local files
 *.log
 npm-debug.log*

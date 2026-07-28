@@ -22,7 +22,8 @@ DATA_PATH = Path(__file__).resolve().parents[2] / "data" / "dialect_dictionary_s
 app = FastAPI(title="SilverLens Local Dialect Normalizer")
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["http://localhost:3000", "http://127.0.0.1:3000"],
+    # 개발 중에는 vite(5173), vinext(3000) 등 포트가 자주 바뀌므로 로컬 호스트 전체를 허용한다.
+    allow_origin_regex=r"^http://(localhost|127\.0\.0\.1)(:\d+)?$",
     allow_credentials=False,
     allow_methods=["GET", "POST"],
     allow_headers=["Content-Type"],
