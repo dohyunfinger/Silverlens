@@ -16,6 +16,7 @@ import {
   resolveHealthTermId,
 } from "../../../backend/data/healthTerms";
 import { getGeminiModelCooldowns } from "../../../backend/services/geminiClient";
+import { getNarrationCacheStats } from "../../../backend/services/ttsService";
 
 /**
  * 임시 점검용 엔드포인트입니다.
@@ -74,6 +75,7 @@ export async function GET(request: Request) {
       dialectApiUrl: process.env.NEXT_PUBLIC_DIALECT_API_URL ?? "미설정",
     },
     modelCooldowns: getGeminiModelCooldowns(),
+    narrationCache: getNarrationCacheStats(),
     datasets: {
       ...stats.counts,
       diseaseI18n: getDiseaseI18nEntries().length,

@@ -14,6 +14,7 @@ type LogPayload = {
   checkedAt: string;
   environment: Record<string, string>;
   modelCooldowns: Array<{ model: string; secondsLeft: number }>;
+  narrationCache: { entries: number; bytes: number };
   datasets: Record<string, number>;
   dialectByCategory: Record<string, number>;
   safetyRuleIds: string[];
@@ -158,6 +159,11 @@ export default function DataLogView() {
               </tbody>
             </table>
             <p className="log-note">API 키는 값이 아니라 설정 여부만 표시합니다.</p>
+            <h3>답변 음성 캐시</h3>
+            <p className="log-note">
+              {data.narrationCache.entries}개 보관 ·{" "}
+              {(data.narrationCache.bytes / (1024 * 1024)).toFixed(1)}MB
+            </p>
             <h3>한도에 걸려 잠시 쉬는 모델</h3>
             {data.modelCooldowns.length === 0 ? (
               <p className="log-note">없음. 기본 모델을 그대로 쓰고 있습니다.</p>

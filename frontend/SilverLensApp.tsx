@@ -78,6 +78,30 @@ type HealthNote = {
 type NarrationChunkRequest = () => Promise<Blob>;
 type NarrationPageRequests = NarrationChunkRequest[][];
 
+/**
+ * 서버 TTS는 글자 수에 거의 비례해 생성 시간이 늘어난다.
+ * 실측(ko-KR): 19자 약 5초, 59자 약 8초, 178자 약 20초.
+ * 그래서 맨 처음 듣는 조각만 짧게 떼어 첫 소리를 빨리 내보내고,
+ * 나머지는 길게 묶어 요청 수(무료 한도)를 아낀다.
+ */
+const NARRATION_LEAD_IN_CHARS = 70;
+const NARRATION_CHUNK_CHARS = 210;
+/** 현재 조각을 재생하는 동안 미리 만들어 둘 다음 조각 수. */
+const NARRATION_PREFETCH_AHEAD = 2;
+
+function splitNarrationForSpeech(text: string, withLeadIn: boolean) {
+  const chunks = splitNarrationText(text, NARRATION_CHUNK_CHARS);
+  if (!withLeadIn || chunks.length === 0) return chunks;
+
+  const [first, ...rest] = chunks;
+  if (first.length <= NARRATION_LEAD_IN_CHARS) return chunks;
+
+  const leadParts = splitNarrationText(first, NARRATION_LEAD_IN_CHARS);
+  if (leadParts.length <= 1) return chunks;
+  // 앞부분만 잘라내고 남은 조각은 다시 하나로 합쳐 요청 수가 늘어나지 않게 한다.
+  return [leadParts[0], leadParts.slice(1).join(" "), ...rest];
+}
+
 function lazyNarrationChunk(factory: () => Promise<Blob>): NarrationChunkRequest {
   let pending: Promise<Blob> | null = null;
   return () => {
@@ -765,6 +789,18 @@ type AboutCopy = {
   workflowTitleAccent: string;
   workflowDescription: string;
   steps: AboutStep[];
+  /** 실제 서비스 화면 조각을 소개 페이지 안에서 미리 보여 주는 블록. */
+  previewBadge: string;
+  previewTitle: string;
+  previewDescription: string;
+  previewRiskTitle: string;
+  previewRiskSafe: string;
+  previewDialectTitle: string;
+  previewDialectFrom: string;
+  previewDialectTo: string;
+  previewAnswerTitle: string;
+  previewAnswerText: string;
+  previewMic: string;
   footer: string;
 };
 
@@ -843,6 +879,18 @@ const aboutCopy: Record<Language, AboutCopy> = {
         text: "이해한 정보를 바탕으로 일상 식단, 건강 습관, 생활 선택에 바로 적용할 수 있도록 행동 중심의 도움을 제공합니다.",
       },
     ],
+    previewBadge: "Real UI",
+    previewTitle: "서비스 화면은 이렇게 생겼습니다",
+    previewDescription:
+      "소개 화면은 넓게, 서비스 화면은 크게. 같은 딥그린 브랜드색을 쓰면서 어르신이 쓰는 화면만 글자와 버튼을 키우고 테두리를 두껍게 했습니다.",
+    previewRiskTitle: "위험도 3중 표기",
+    previewRiskSafe: "안전",
+    previewDialectTitle: "사투리 표준어 변환",
+    previewDialectFrom: "정구지",
+    previewDialectTo: "부추",
+    previewAnswerTitle: "큰 글자 답변 카드",
+    previewAnswerText: "무를 푹 끓이면 단맛이 살아나요. 설탕은 넣지 않으셔도 됩니다.",
+    previewMic: "🎙 눌러서 말하기",
     footer: "© SilverLens. 사투리를 이해하는 AI로 시니어의 건강 식생활 접근성을 높입니다.",
   },
   "en-US": {
@@ -919,6 +967,18 @@ const aboutCopy: Record<Language, AboutCopy> = {
         text: "The answer turns into action for daily meals, health habits, and everyday choices.",
       },
     ],
+    previewBadge: "Real UI",
+    previewTitle: "This is what the service screen looks like",
+    previewDescription:
+      "The intro screen goes wide, the service screen goes large. Both share the same deep green brand colour, but only the screen older adults use gets bigger type, bigger buttons, and thicker borders.",
+    previewRiskTitle: "Risk shown three ways",
+    previewRiskSafe: "Safe",
+    previewDialectTitle: "Dialect to standard Korean",
+    previewDialectFrom: "Jeong-gu-ji",
+    previewDialectTo: "Chives",
+    previewAnswerTitle: "Large-type answer card",
+    previewAnswerText: "Simmer the radish well and its own sweetness comes out. No sugar needed.",
+    previewMic: "🎙 Press to speak",
     footer:
       "© SilverLens. AI that understands dialects, improving access to healthy eating for older adults.",
   },
@@ -996,6 +1056,18 @@ const aboutCopy: Record<Language, AboutCopy> = {
         text: "理解した情報を毎日の食事、健康習慣、暮らしの選択にすぐ活かせるよう、行動中心で支えます。",
       },
     ],
+    previewBadge: "Real UI",
+    previewTitle: "サービス画面はこんな見た目です",
+    previewDescription:
+      "紹介画面は広く、サービス画面は大きく。同じディープグリーンを使いながら、シニアが使う画面だけ文字とボタンを大きくし、枠線を太くしています。",
+    previewRiskTitle: "危険度の3重表示",
+    previewRiskSafe: "安全",
+    previewDialectTitle: "方言から標準語へ",
+    previewDialectFrom: "チョングジ",
+    previewDialectTo: "ニラ",
+    previewAnswerTitle: "大きな文字の回答カード",
+    previewAnswerText: "大根をよく煮ると甘みが出ます。砂糖は入れなくて大丈夫です。",
+    previewMic: "🎙 押して話す",
     footer: "© SilverLens. 方言を理解するAIで、シニアの健康な食生活へのアクセスを高めます。",
   },
 };
@@ -1134,6 +1206,28 @@ function shouldPreferServerTts(lang: Language) {
   return !isMobileBrowser() && baseLanguageTag(lang) === "ko";
 }
 
+function isDefaultNarrationRate(rate: number) {
+  return Math.abs(rate - narrationRateOptions[DEFAULT_RATE_INDEX].value) < 0.01;
+}
+
+/**
+ * 지금 설정에서 서버 TTS가 꼭 필요한지 판단한다.
+ *
+ * 서버 TTS는 조각마다 생성 시간이 붙는다(실측 ko-KR: 19자 약 5초, 178자 약 20초).
+ * 속도를 손대지 않은 기본 상태에서는 브라우저가 rate를 무시해도 실제 차이가
+ * 5% 미만이라 들리지 않으므로, 지연이 전혀 없는 브라우저 음성을 그대로 쓴다.
+ * 어르신이 속도를 옮긴 순간부터 서버 TTS로 넘어가 슬라이더가 확실히 반영된다.
+ */
+function needsServerNarration(
+  voice: SpeechSynthesisVoice | null,
+  lang: Language,
+  rate: number,
+) {
+  if (isDefaultNarrationRate(rate)) return false;
+  if (shouldPreferServerTts(lang)) return true;
+  return !browserRateIsReliable(voice, lang);
+}
+
 /**
  * rate가 통하지 않는 브라우저에서 쓰는 보조 수단.
  * 문장을 짧게 끊고 사이에 쉬는 시간을 넣어 실제 듣는 속도를 늦춘다.
@@ -1246,7 +1340,6 @@ function HealthPickerCard({
     <section className={open ? "health-card open" : "health-card"}>
       <div className="health-title">
         <h2>{title}</h2>
-        <span className="info-tip" title={help}>i</span>
       </div>
       <p>{help}</p>
       <div className="health-actions">
@@ -1431,6 +1524,9 @@ export default function SilverLensApp() {
   const initialTtsPlayed = useRef(false);
   const answerTouchStartX = useRef<number | null>(null);
   const photoInputRef = useRef<HTMLInputElement | null>(null);
+  const languageSectionRef = useRef<HTMLFieldSetElement | null>(null);
+  const genderSectionRef = useRef<HTMLFieldSetElement | null>(null);
+  const ageSectionRef = useRef<HTMLFieldSetElement | null>(null);
 
   const nextStep = getNextStep(language, gender, ageConfirmed);
   const activeLanguage = language ?? "ko-KR";
@@ -1703,6 +1799,30 @@ export default function SilverLensApp() {
       firstCardIndex: number | null,
       sequence: number,
     ) => {
+      /**
+       * 지금 조각을 재생하는 동안 다음 조각을 미리 만들어 둔다.
+       * 조각 하나 생성이 5~20초 걸리므로, 재생 시간과 겹쳐 두지 않으면
+       * 페이지가 넘어갈 때마다 침묵이 생긴다.
+       */
+      const warmUpAhead = (pageIndex: number, chunkIndex: number) => {
+        let remaining = NARRATION_PREFETCH_AHEAD;
+        let page = pageIndex;
+        let chunk = chunkIndex + 1;
+        while (remaining > 0 && page < pageRequests.length) {
+          const chunks = pageRequests[page];
+          if (chunk >= chunks.length) {
+            page += 1;
+            chunk = 0;
+            continue;
+          }
+          void chunks[chunk]().catch(() => {
+            // 미리 만들다 실패하면 실제 재생 순서에서 다시 시도한다.
+          });
+          chunk += 1;
+          remaining -= 1;
+        }
+      };
+
       for (
         let pageIndex = Math.max(startPage, 0);
         pageIndex < pageRequests.length;
@@ -1711,11 +1831,13 @@ export default function SilverLensApp() {
         if (sequence !== narrationSequenceRef.current) return;
         if (firstCardIndex !== null) setAnswerCardIndex(firstCardIndex + pageIndex);
 
-        for (const chunkRequest of pageRequests[pageIndex]) {
+        const pageChunks = pageRequests[pageIndex];
+        for (let chunkIndex = 0; chunkIndex < pageChunks.length; chunkIndex += 1) {
           if (sequence !== narrationSequenceRef.current) return;
           // 실제로 읽을 순서가 됐을 때 처음 요청한다(듣지 않는 뒷장은 호출하지 않음).
-          const blob = await chunkRequest();
+          const blob = await pageChunks[chunkIndex]();
           if (sequence !== narrationSequenceRef.current) return;
+          warmUpAhead(pageIndex, chunkIndex);
 
           const url = URL.createObjectURL(blob);
           const audio = new Audio();
@@ -1799,9 +1921,9 @@ export default function SilverLensApp() {
     ) => {
       stopNarration();
       const sequence = narrationSequenceRef.current;
-      const pageRequests: NarrationPageRequests = pages.map((page) =>
-        splitNarrationText(plainTextFromMarkdown(page), 210).map((chunk) =>
-          lazyNarrationChunk(() => fetchGuideNarrationChunk(chunk, lang)),
+      const pageRequests: NarrationPageRequests = pages.map((page, pageIndex) =>
+        splitNarrationForSpeech(plainTextFromMarkdown(page), pageIndex === 0).map(
+          (chunk) => lazyNarrationChunk(() => fetchGuideNarrationChunk(chunk, lang)),
         ),
       );
       if (pageRequests.flat().length === 0) return;
@@ -1844,8 +1966,7 @@ export default function SilverLensApp() {
         const rate = narrationRateRef.current;
         const voice = pickSpeechVoice(lang);
         const serverBlocked = Date.now() < serverTtsBlockedUntilRef.current;
-        const needsServer =
-          shouldPreferServerTts(lang) || !browserRateIsReliable(voice, lang);
+        const needsServer = needsServerNarration(voice, lang, rate);
 
         if (!serverBlocked && needsServer) {
           console.info(`[SilverLens] 음성 경로: 서버 TTS (${lang}, rate=${rate})`);
@@ -1869,11 +1990,12 @@ export default function SilverLensApp() {
       const cached = narrationChunksRef.current.get(cacheKey);
       if (cached) return cached;
 
-      const pageRequests: NarrationPageRequests = pages.map((page) =>
-        splitNarrationText(plainTextFromMarkdown(page), 210).map((chunk) =>
-          lazyNarrationChunk(() =>
-            fetchNarrationChunk(chunk, lang, narrationControllersRef.current),
-          ),
+      const pageRequests: NarrationPageRequests = pages.map((page, pageIndex) =>
+        splitNarrationForSpeech(plainTextFromMarkdown(page), pageIndex === 0).map(
+          (chunk) =>
+            lazyNarrationChunk(() =>
+              fetchNarrationChunk(chunk, lang, narrationControllersRef.current),
+            ),
         ),
       );
       if (pageRequests.flat().length === 0) return [];
@@ -1881,9 +2003,14 @@ export default function SilverLensApp() {
       setNarrationStatus((current) => ({ ...current, [turnId]: "preparing" }));
       narrationChunksRef.current.set(cacheKey, pageRequests);
 
-      // 첫 장만 미리 만든다. 둘째 장부터는 어르신이 실제로 넘겨 들을 때 만든다.
-      const firstPageRequests = pageRequests[0] ?? [];
-      void Promise.all(firstPageRequests.map((request) => request())).then(
+      /*
+       * 첫 조각 하나만 기다린다. 첫 장 전체나 뒷장까지 기다리면
+       * "음성 준비 중"이 20초 넘게 이어져 답변을 바로 들을 수 없다.
+       * 나머지는 재생 중에 warmUpAhead 가 이어서 만든다.
+       */
+      const firstChunk = pageRequests[0]?.[0];
+      if (!firstChunk) return pageRequests;
+      void firstChunk().then(
         () => {
           setNarrationStatus((current) => ({ ...current, [turnId]: "ready" }));
         },
@@ -1921,6 +2048,17 @@ export default function SilverLensApp() {
     [activeLanguage, runBrowserNarration],
   );
 
+  /** 미리 만들어 둘지 결정할 때 쓰는 가벼운 판정. 음성 목록 로딩을 기다리지 않는다. */
+  const serverNarrationNeeded = useCallback((lang: Language) => {
+    if (typeof window === "undefined") return false;
+    if (Date.now() < serverTtsBlockedUntilRef.current) return false;
+    return needsServerNarration(
+      pickSpeechVoice(lang),
+      lang,
+      narrationRateRef.current,
+    );
+  }, []);
+
   const speakGeminiAnswer = useCallback(
     async (
       turnId: string,
@@ -1933,6 +2071,26 @@ export default function SilverLensApp() {
 
       stopNarration();
       const sequence = narrationSequenceRef.current;
+
+      /*
+       * 속도를 기본값으로 두었다면 서버 TTS를 부르지 않고 브라우저 음성으로 바로 읽는다.
+       * 서버 TTS는 첫 소리까지 5~20초가 걸려 답변을 곧바로 들을 수 없다.
+       */
+      await ensureSpeechVoicesReady();
+      if (sequence !== narrationSequenceRef.current) return;
+
+      const rate = narrationRateRef.current;
+      const voice = pickSpeechVoice(lang);
+      const serverBlocked = Date.now() < serverTtsBlockedUntilRef.current;
+      if (serverBlocked || !needsServerNarration(voice, lang, rate)) {
+        setVoiceRateMode(
+          browserRateIsReliable(voice, lang) ? "browser" : "browser-limited",
+        );
+        speakAnswerPagesWithBrowser(pages, startPage, firstCardIndex, lang);
+        return;
+      }
+
+      setVoiceRateMode("server");
       const pageRequests = prepareGeminiAnswer(turnId, pages, lang);
       if (pageRequests.length === 0) return;
 
@@ -2187,8 +2345,7 @@ export default function SilverLensApp() {
       const serverBlocked = Date.now() < serverTtsBlockedUntilRef.current;
       if (
         serverBlocked ||
-        (browserRateIsReliable(voice, current.lang) &&
-          !shouldPreferServerTts(current.lang))
+        !needsServerNarration(voice, current.lang, narrationRateRef.current)
       ) {
         restart();
         return;
@@ -2213,6 +2370,42 @@ export default function SilverLensApp() {
     stopNarration();
     speakGuideNarration(activeCopy.answerSpeedSample, activeLanguage);
   };
+
+  /**
+   * 진행 표시의 단계 이름을 누르면 그 항목까지 화면을 움직이고 포커스도 옮긴다.
+   * 화면만 스크롤하면 키보드나 스크린리더 사용자는 위치를 알 수 없다.
+   */
+  const focusSetupSection = (step: "language" | "gender" | "age") => {
+    const target =
+      step === "language"
+        ? languageSectionRef.current
+        : step === "gender"
+          ? genderSectionRef.current
+          : ageSectionRef.current;
+    if (!target) return;
+
+    target.scrollIntoView({ behavior: "smooth", block: "center" });
+    // scrollIntoView 가 이미 움직이고 있어 포커스가 화면을 또 끌어당기지 않게 한다.
+    target.querySelector("button")?.focus({ preventScroll: true });
+  };
+
+  const setupProgressItems = [
+    {
+      step: "language" as const,
+      label: activeCopy.progressLanguage,
+      done: Boolean(language),
+    },
+    {
+      step: "gender" as const,
+      label: activeCopy.progressGender,
+      done: Boolean(gender),
+    },
+    {
+      step: "age" as const,
+      label: activeCopy.progressAge,
+      done: ageConfirmed,
+    },
+  ];
 
   const toggleLanguage = (id: Language) => {
     const next = language === id ? null : id;
@@ -2637,7 +2830,10 @@ export default function SilverLensApp() {
       setPendingAudio(null);
       setPendingImage(null);
       setTranscript("");
-      prepareGeminiAnswer(nextTurn.id, narrationPages, activeLanguage);
+      // 서버 TTS가 필요한 설정일 때만 미리 만들어 둔다(기본 속도에서는 호출하지 않음).
+      if (serverNarrationNeeded(activeLanguage)) {
+        prepareGeminiAnswer(nextTurn.id, narrationPages, activeLanguage);
+      }
       if (autoVoiceGuide) {
         void speakGeminiAnswer(
           nextTurn.id,
@@ -2749,6 +2945,44 @@ export default function SilverLensApp() {
                   </article>
                 ))}
               </div>
+
+              {/*
+                실제 서비스 화면 조각을 소개 페이지 안에 액자처럼 넣어 둔다.
+                두 화면의 톤 차이가 "실수"가 아니라 "의도된 대비"로 읽히게 하는 연결 고리다.
+              */}
+              <aside className="about-preview" aria-label={about.previewTitle}>
+                <div className="about-preview-head">
+                  <p className="about-preview-badge">{about.previewBadge}</p>
+                  <h3>{about.previewTitle}</h3>
+                  <p className="about-preview-note">{about.previewDescription}</p>
+                </div>
+
+                <div className="about-preview-stage" aria-hidden="true">
+                  <div className="about-preview-card">
+                    <span className="about-preview-label">{about.previewRiskTitle}</span>
+                    <div className="about-preview-risks">
+                      <span className="about-chip danger">⛔ {activeCopy.riskDanger}</span>
+                      <span className="about-chip caution">⚠ {activeCopy.riskCaution}</span>
+                      <span className="about-chip safe">✓ {about.previewRiskSafe}</span>
+                    </div>
+                  </div>
+
+                  <div className="about-preview-card">
+                    <span className="about-preview-label">{about.previewDialectTitle}</span>
+                    <p className="about-preview-dialect">
+                      <strong>{about.previewDialectFrom}</strong>
+                      <span className="about-preview-arrow">→</span>
+                      <strong>{about.previewDialectTo}</strong>
+                    </p>
+                  </div>
+
+                  <div className="about-preview-card about-preview-card-wide">
+                    <span className="about-preview-label">{about.previewAnswerTitle}</span>
+                    <p className="about-preview-answer">{about.previewAnswerText}</p>
+                    <span className="about-preview-mic">{about.previewMic}</span>
+                  </div>
+                </div>
+              </aside>
             </div>
           </section>
 
@@ -2784,9 +3018,16 @@ export default function SilverLensApp() {
               <button className="about-btn-primary about-btn-lg" onClick={leaveAbout}>
                 {about.heroSecondaryCta}
               </button>
+            </div>
+          </section>
 
-              <footer className="about-sitefoot">
-                <div className="about-sitefoot-top">
+          {/*
+            착지 구간. 다크 CTA에서 서비스 화면 배경색까지 화면 전체 폭으로 넘어가며
+            상단만 크게 둥글려 "다음 화면이 올라온다"처럼 읽히게 한다.
+          */}
+          <footer className="about-sitefoot">
+            <div className="about-wrap about-sitefoot-inner">
+              <div className="about-sitefoot-top">
                   <a
                     className="about-github"
                     href={GITHUB_URL}
@@ -2812,10 +3053,9 @@ export default function SilverLensApp() {
                   </ul>
                 </div>
 
-                <p className="about-foot">{about.footer}</p>
-              </footer>
+              <p className="about-foot">{about.footer}</p>
             </div>
-          </section>
+          </footer>
         </main>
       </div>
     );
@@ -2932,7 +3172,15 @@ export default function SilverLensApp() {
             </div>
 
             <div className="answer-history-footer">
-              <span>{activeCopy.previousCards}</span>
+              {/* 작은 글자도 눌러서 답변을 넘기고 되돌릴 수 있게 한다. */}
+              <button
+                type="button"
+                className="answer-history-move"
+                onClick={() => moveAnswerCard(-1)}
+                disabled={!activeAnswerCard || visibleAnswerCardIndex === 0}
+              >
+                {activeCopy.previousCards}
+              </button>
               <div className="answer-dots" aria-label={activeCopy.cardSelector}>
                 {answerCards.map((item, index) => (
                   <button
@@ -2946,7 +3194,17 @@ export default function SilverLensApp() {
                   />
                 ))}
               </div>
-              <span>{activeCopy.nextCards}</span>
+              <button
+                type="button"
+                className="answer-history-move"
+                onClick={() => moveAnswerCard(1)}
+                disabled={
+                  !activeAnswerCard ||
+                  visibleAnswerCardIndex === answerCards.length - 1
+                }
+              >
+                {activeCopy.nextCards}
+              </button>
             </div>
 
             <button
@@ -3105,21 +3363,23 @@ export default function SilverLensApp() {
     <main className="app-shell">
       <Sidebar active="setup" onNavigate={setScreen} copy={activeCopy} />
       <section className="setup-screen">
-        <div className="setup-progress" aria-label={promptCopy[activeLanguage][nextStep]}>
-          <span className={language ? "done" : "current"}>{activeCopy.progressLanguage} {language ? "✓" : ""}</span>
-          <span className={gender ? "done" : nextStep === "gender" ? "current" : ""}>{activeCopy.progressGender} {gender ? "✓" : ""}</span>
-          <span className={ageConfirmed ? "done" : nextStep === "age" ? "current" : ""}>
-            {ageConfirmed
-              ? `${activeCopy.progressAge} ✓`
-              : `${activeCopy.next}: ${
-                  nextStep === "language"
-                    ? activeCopy.progressLanguage
-                    : nextStep === "gender"
-                      ? activeCopy.progressGender
-                      : activeCopy.progressAge
-                }`}
-          </span>
-        </div>
+        {/* 세 단계 이름을 그대로 두고, 누르면 해당 항목으로 화면과 포커스를 옮긴다. */}
+        <nav className="setup-progress" aria-label={promptCopy[activeLanguage][nextStep]}>
+          {setupProgressItems.map((item) => (
+            <button
+              key={item.step}
+              type="button"
+              className={item.done ? "done" : nextStep === item.step ? "current" : ""}
+              onClick={() => focusSetupSection(item.step)}
+              aria-current={nextStep === item.step ? "step" : undefined}
+            >
+              {item.label}
+              {item.done && (
+                <span className="setup-progress-check" aria-hidden="true">✓</span>
+              )}
+            </button>
+          ))}
+        </nav>
 
         <button
           className={autoVoiceGuide ? "auto-tts enabled" : "auto-tts disabled"}
@@ -3158,7 +3418,7 @@ export default function SilverLensApp() {
           </small>
         </section>
 
-        <fieldset className="form-section">
+        <fieldset className="form-section" ref={languageSectionRef}>
           <legend>{activeCopy.languageLegend}</legend>
           <div className="language-grid">
             {languages.map((item) => (
@@ -3176,7 +3436,7 @@ export default function SilverLensApp() {
           </div>
         </fieldset>
 
-        <fieldset className="form-section">
+        <fieldset className="form-section" ref={genderSectionRef}>
           <legend>{activeCopy.genderLegend}</legend>
           <div className="gender-grid">
             <button
@@ -3200,7 +3460,7 @@ export default function SilverLensApp() {
           </div>
         </fieldset>
 
-        <fieldset className="form-section age-section">
+        <fieldset className="form-section age-section" ref={ageSectionRef}>
           <legend>{activeCopy.ageLegend}</legend>
           <div className="age-grid" role="group" aria-label={activeCopy.ageLegend}>
             {ageChoices.map((age) => {

@@ -24,7 +24,11 @@ export async function POST(request: Request) {
     return new Response(wav, {
       headers: {
         "Content-Type": "audio/wav",
-        "Cache-Control": "no-store",
+        /*
+         * 같은 문장을 다시 들을 때 서버까지 가지 않도록 브라우저 캐시를 허용한다.
+         * 건강 정보가 담긴 음성이라 공용 캐시(CDN)에는 저장하지 않는다.
+         */
+        "Cache-Control": "private, max-age=1800",
       },
     });
   } catch (error) {

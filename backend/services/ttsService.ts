@@ -12,7 +12,7 @@ type TtsPayload = {
   error?: { message?: string };
 };
 
-function pcmToWav(pcm: Uint8Array, sampleRate = 24000) {
+function pcmToWav(pcm: Uint8Array, sampleRate = 24000): Uint8Array<ArrayBuffer> {
   const header = new ArrayBuffer(44);
   const view = new DataView(header);
   const write = (offset: number, value: string) => {
@@ -116,15 +116,71 @@ async function generateNarrationPcm(
   return { pcm: combined, sampleRate };
 }
 
+/**
+ * 같은 문장을 다시 읽어 달라는 요청이 잦다.
+ * 안내 문구, 답변 다시 듣기, 언어 전환이 대표적이다. 생성에 5~20초가 걸리므로
+ * 만들어 둔 WAV를 잠시 보관해 두면 두 번째부터는 즉시 응답한다.
+ */
+const NARRATION_CACHE_TTL_MS = 30 * 60 * 1000;
+const NARRATION_CACHE_MAX_BYTES = 20 * 1024 * 1024;
+
+/** Response 본문으로 그대로 넘길 수 있도록 ArrayBuffer 기반 뷰로 고정한다. */
+type NarrationWav = Uint8Array<ArrayBuffer>;
+
+const narrationCache = new Map<string, { savedAt: number; wav: NarrationWav }>();
+let narrationCacheBytes = 0;
+
+function readNarrationCache(key: string) {
+  const hit = narrationCache.get(key);
+  if (!hit) return null;
+  if (Date.now() - hit.savedAt > NARRATION_CACHE_TTL_MS) {
+    narrationCache.delete(key);
+    narrationCacheBytes -= hit.wav.byteLength;
+    return null;
+  }
+  // 최근에 쓴 항목을 뒤로 보내 가장 오래된 것부터 지워지게 한다.
+  narrationCache.delete(key);
+  narrationCache.set(key, hit);
+  return hit.wav;
+}
+
+function writeNarrationCache(key: string, wav: NarrationWav) {
+  if (wav.byteLength > NARRATION_CACHE_MAX_BYTES) return;
+  narrationCache.set(key, { savedAt: Date.now(), wav });
+  narrationCacheBytes += wav.byteLength;
+
+  while (narrationCacheBytes > NARRATION_CACHE_MAX_BYTES) {
+    const oldestKey = narrationCache.keys().next().value;
+    if (oldestKey === undefined) break;
+    const oldest = narrationCache.get(oldestKey);
+    narrationCache.delete(oldestKey);
+    narrationCacheBytes -= oldest?.wav.byteLength ?? 0;
+  }
+}
+
+export function getNarrationCacheStats() {
+  return {
+    entries: narrationCache.size,
+    bytes: narrationCacheBytes,
+  };
+}
+
 export async function generateNarration(text: string, language = "ko-KR") {
   const { apiKey, ttsModelChain } = getGeminiConfig();
   const normalized = text.replace(/\s+/g, " ").trim();
   if (!normalized) throw new Error("읽을 답변이 비어 있습니다.");
+
+  const cacheKey = `${language}\u0000${normalized}`;
+  const cached = readNarrationCache(cacheKey);
+  if (cached) return cached;
+
   const { pcm, sampleRate } = await generateNarrationPcm(
     normalized,
     apiKey,
     ttsModelChain,
     language,
   );
-  return pcmToWav(pcm, sampleRate);
+  const wav = pcmToWav(pcm, sampleRate);
+  writeNarrationCache(cacheKey, wav);
+  return wav;
 }
