@@ -329,14 +329,217 @@ async function convertRecordingToWav(blob: Blob) {
 
 const languages: Array<{
   id: Language;
-  flag: string;
   label: string;
   tts: string;
 }> = [
-  { id: "ko-KR", flag: "🇰🇷", label: "한국어", tts: "한국어" },
-  { id: "en-US", flag: "🇺🇸", label: "English", tts: "English" },
-  { id: "ja-JP", flag: "🇯🇵", label: "日本語", tts: "日本語" },
+  { id: "ko-KR", label: "한국어", tts: "한국어" },
+  { id: "en-US", label: "English", tts: "English" },
+  { id: "ja-JP", label: "日本語", tts: "日本語" },
 ];
+
+/*
+ * 국기 아이콘.
+ *
+ * 국기 이모지(🇰🇷)는 Windows 데스크톱에서 국기 그림이 아니라 "KR" 같은
+ * 지역 문자 두 개로 보인다. 폰트가 국기 조합을 지원하지 않기 때문이고
+ * 웹에서 고칠 수 없다. 그래서 SVG 로 직접 그린다.
+ *
+ * 국기는 규격이 정해져 있으므로 눈대중으로 그리지 않고 비율을 그대로 옮겼다.
+ * 모두 가로:세로 = 3:2 이고 좌표계는 36 x 24 를 쓴다.
+ */
+
+/** 깃면 좌표계. 세 국기 모두 3:2 라서 같은 값을 쓴다. */
+const FLAG_WIDTH = 36;
+const FLAG_HEIGHT = 24;
+
+/**
+ * 태극기 네 괘.
+ *
+ * 괘는 깃면의 두 대각선 위에 놓이고, 막대는 그 대각선과 직각을 이룬다.
+ * 대각선 기울기가 atan(24/36) ≈ 33.69° 이므로 막대 회전각은 그것의 직각인
+ * 56.31° 다. 배치는 왼쪽 위 건(☰), 오른쪽 위 감(☵), 왼쪽 아래 리(☲),
+ * 오른쪽 아래 곤(☷) 이다. bars 의 true 는 이어진 막대, false 는 끊긴 막대다.
+ */
+/**
+ * 태극 축이 깃면 대각선과 나란해지도록 돌리는 각도.
+ * 대각선 기울기가 atan(24/36) ≈ 33.69° 이므로, 세로로 그린 태극을
+ * 그 직각인 56.31° 만큼 돌리면 대각선과 나란해진다.
+ */
+const TAEGEUK_AXIS = 90 - 33.69;
+/** 괘 하나의 길이는 태극 지름(12)의 1/2 이다. */
+const TRIGRAM_BAR_LENGTH = 6;
+/** 막대 두께는 길이의 1/6, 막대 사이 간격은 그 절반이다. */
+const TRIGRAM_BAR_THICKNESS = 1;
+const TRIGRAM_BAR_GAP = 0.5;
+/**
+ * 끊긴 막대의 가운데 빈칸.
+ * 규격 비율은 막대 길이의 1/12(=0.5)인데, 24px 아이콘에서는 0.3px 이 되어
+ * 건(이어짐)과 곤(끊김)이 구별되지 않는다. 그래서 0.9 로만 살짝 넓혔다.
+ */
+const TRIGRAM_BREAK_GAP = 0.9;
+/** 깃면 중심에서 괘 중심까지의 거리. 참고 도안의 22 를 이 좌표계로 옮긴 값. */
+const TRIGRAM_DISTANCE = 11;
+
+const trigrams = (["heaven", "water", "fire", "earth"] as const).map((name) => {
+  // 각 괘가 어느 모서리로 가는지(가로·세로 방향)와 막대 구성.
+  const layout = {
+    heaven: { dx: -1, dy: -1, bars: [true, true, true] },
+    water: { dx: 1, dy: -1, bars: [false, true, false] },
+    fire: { dx: -1, dy: 1, bars: [true, false, true] },
+    earth: { dx: 1, dy: 1, bars: [false, false, false] },
+  }[name];
+  const diagonal = Math.hypot(FLAG_WIDTH / 2, FLAG_HEIGHT / 2);
+  return {
+    name,
+    bars: layout.bars,
+    x: FLAG_WIDTH / 2 + (layout.dx * (FLAG_WIDTH / 2) * TRIGRAM_DISTANCE) / diagonal,
+    y: FLAG_HEIGHT / 2 + (layout.dy * (FLAG_HEIGHT / 2) * TRIGRAM_DISTANCE) / diagonal,
+    // 같은 대각선에 있는 두 괘는 같은 각도를 쓴다. 막대는 대각선과 직각이다.
+    angle: layout.dx * layout.dy > 0 ? -TAEGEUK_AXIS : TAEGEUK_AXIS,
+  };
+});
+
+function LanguageFlag({ id }: { id: Language }) {
+  // 흰 바탕 국기가 흰 배경에 묻히지 않도록 아주 옅은 테두리를 두른다.
+  const frame = (
+    <rect
+      x=".5"
+      y=".5"
+      width={FLAG_WIDTH - 1}
+      height={FLAG_HEIGHT - 1}
+      rx="2"
+      fill="none"
+      stroke="rgba(0, 0, 0, .22)"
+    />
+  );
+  const svgProps = {
+    className: "flag-icon",
+    viewBox: `0 0 ${FLAG_WIDTH} ${FLAG_HEIGHT}`,
+    "aria-hidden": true,
+    focusable: "false" as const,
+  };
+
+  if (id === "en-US") {
+    /*
+     * 성조기: 붉은 줄과 흰 줄 13개(맨 위와 맨 아래가 붉은 줄),
+     * 남색 칸은 가로의 2/5 · 세로의 7/13, 별 50개는 6개·5개 줄이 번갈아 9줄.
+     */
+    const stripe = FLAG_HEIGHT / 13;
+    const cantonWidth = (FLAG_WIDTH * 2) / 5;
+    const cantonHeight = stripe * 7;
+    const stars: Array<{ cx: number; cy: number }> = [];
+    for (let row = 1; row <= 9; row += 1) {
+      const isLongRow = row % 2 === 1;
+      const columns = isLongRow ? [1, 3, 5, 7, 9, 11] : [2, 4, 6, 8, 10];
+      for (const column of columns) {
+        stars.push({
+          cx: (cantonWidth * column) / 12,
+          cy: (cantonHeight * row) / 10,
+        });
+      }
+    }
+    return (
+      <svg {...svgProps}>
+        <rect width={FLAG_WIDTH} height={FLAG_HEIGHT} rx="2" fill="#fff" />
+        <g fill="#b22234">
+          {[0, 2, 4, 6, 8, 10, 12].map((row) => (
+            <rect key={row} y={row * stripe} width={FLAG_WIDTH} height={stripe} />
+          ))}
+        </g>
+        <rect width={cantonWidth} height={cantonHeight} fill="#3c3b6e" />
+        <g fill="#fff">
+          {stars.map((star) => (
+            <circle key={`${star.cx}-${star.cy}`} cx={star.cx} cy={star.cy} r=".42" />
+          ))}
+        </g>
+        {frame}
+      </svg>
+    );
+  }
+
+  if (id === "ja-JP") {
+    // 일장기: 붉은 원의 지름은 세로의 3/5 이고 정중앙에 놓인다.
+    return (
+      <svg {...svgProps}>
+        <rect width={FLAG_WIDTH} height={FLAG_HEIGHT} rx="2" fill="#fff" />
+        <circle
+          cx={FLAG_WIDTH / 2}
+          cy={FLAG_HEIGHT / 2}
+          r={(FLAG_HEIGHT * 3) / 10}
+          fill="#bc002d"
+        />
+        {frame}
+      </svg>
+    );
+  }
+
+  /*
+   * 태극기.
+   *
+   * 태극의 지름은 세로의 1/2(=12)이고 작은 두 반원은 그 절반이다.
+   * 태극의 축은 건(왼쪽 위)과 곤(오른쪽 아래)을 잇는 대각선과 나란하고,
+   * 붉은 쪽 머리가 건 쪽, 푸른 쪽 머리가 곤 쪽을 향한다.
+   *
+   * 아래 세 도형의 구성은 flag-icons 프로젝트(MIT)의 kr.svg 도안을 참고해
+   * 이 좌표계(36x24)로 옮긴 것이다. 손으로 어림잡으면 태극 문양이 틀어진다.
+   */
+  return (
+    <svg {...svgProps}>
+      <rect width={FLAG_WIDTH} height={FLAG_HEIGHT} rx="2" fill="#fff" />
+      <g transform={`rotate(${-TAEGEUK_AXIS} 18 12)`}>
+        {/* 붉은 쪽: 축을 기준으로 한쪽 반원 */}
+        <path d="M18 6A6 6 0 0 1 18 18Z" fill="#cd2e3a" />
+        {/* 푸른 쪽: 반대쪽 반원에, 아래에서 붉은 쪽을 파고드는 반원을 더한 것 */}
+        <path d="M18 6A6 6 0 0 0 18 18A3 3 0 0 0 18 12Z" fill="#0047a0" />
+        {/* 붉은 쪽이 위에서 푸른 쪽을 파고드는 반원 */}
+        <circle cx="18" cy="9" r="3" fill="#cd2e3a" />
+      </g>
+      <g fill="#0f1419">
+        {trigrams.map((trigram) => (
+          <g
+            key={trigram.name}
+            transform={`translate(${trigram.x} ${trigram.y}) rotate(${trigram.angle})`}
+          >
+            {trigram.bars.map((solid, barIndex) => {
+              const y =
+                (barIndex - 1) * (TRIGRAM_BAR_THICKNESS + TRIGRAM_BAR_GAP) -
+                TRIGRAM_BAR_THICKNESS / 2;
+              if (solid) {
+                return (
+                  <rect
+                    key={barIndex}
+                    x={-TRIGRAM_BAR_LENGTH / 2}
+                    y={y}
+                    width={TRIGRAM_BAR_LENGTH}
+                    height={TRIGRAM_BAR_THICKNESS}
+                  />
+                );
+              }
+              const half = (TRIGRAM_BAR_LENGTH - TRIGRAM_BREAK_GAP) / 2;
+              return (
+                <g key={barIndex}>
+                  <rect
+                    x={-TRIGRAM_BAR_LENGTH / 2}
+                    y={y}
+                    width={half}
+                    height={TRIGRAM_BAR_THICKNESS}
+                  />
+                  <rect
+                    x={TRIGRAM_BREAK_GAP / 2}
+                    y={y}
+                    width={half}
+                    height={TRIGRAM_BAR_THICKNESS}
+                  />
+                </g>
+              );
+            })}
+          </g>
+        ))}
+      </g>
+      {frame}
+    </svg>
+  );
+}
 
 /** 시니어 서비스라 실제로 쓰이는 구간만 큰 버튼으로 노출한다. (앞뒤는 이하·이상으로 묶음) */
 const ageChoices = [40, 50, 60, 70, 80, 90];
@@ -798,8 +1001,13 @@ const uiCopy = {
     openProfile: "내 정보 입력하기",
     openProfileHelp: "알레르기·질병을 알려주면 더 정확해요",
     profileDone: "입력 완료, 대화로 돌아가기",
-    profileOptional: "이 정보는 넣지 않아도 대화할 수 있어요. 알려주시면 더 정확하게 안내합니다.",
     waitTranscribing: "건강정보를 입력하고 있어요. 잠시만 기다려 주세요.",
+    quickProfileTitle: "먼저 알려주시면 더 정확해요",
+    quickProfileHelp: "말씀하시거나 아래 버튼을 눌러 주세요. 넘어가도 대화는 됩니다.",
+    quickProfileSpeak: "내 정보 말하기",
+    quickProfileSpeakHelp: "예: 나이는 일흔이고 복숭아 알레르기가 있어요",
+    quickProfileMore: "알레르기 · 질병까지 자세히 입력하기",
+    quickProfileDone: "알려주신 정보로 답변합니다",
     backupTitle: "내 정보 저장",
     backupHelp: "이 기기에만 저장됩니다. 로그인은 필요하지 않아요.",
     backupSavedAt: "{time}에 저장했어요.",
@@ -972,9 +1180,13 @@ const uiCopy = {
     openProfile: "My information",
     openProfileHelp: "Allergies and conditions make answers more precise",
     profileDone: "Done, back to the conversation",
-    profileOptional:
-      "You can chat without filling this in. Sharing it makes the guidance more precise.",
     waitTranscribing: "I'm saving your health information. One moment please.",
+    quickProfileTitle: "Tell me a little and answers get sharper",
+    quickProfileHelp: "Speak it or tap the buttons below. You can skip this and still chat.",
+    quickProfileSpeak: "Say my details",
+    quickProfileSpeakHelp: "Example: I'm in my seventies and allergic to peaches",
+    quickProfileMore: "Add allergies and conditions in detail",
+    quickProfileDone: "I'll answer using what you shared",
     backupTitle: "Saved on this device",
     backupHelp: "Everything stays on this device. No sign-in needed.",
     backupSavedAt: "Saved at {time}.",
@@ -1147,9 +1359,13 @@ const uiCopy = {
     openProfile: "私の情報を入力",
     openProfileHelp: "アレルギーや病気を教えるとより正確です",
     profileDone: "入力完了、会話に戻る",
-    profileOptional:
-      "この情報がなくても会話できます。教えていただくとより正確に案内します。",
     waitTranscribing: "健康情報を保存しています。少しお待ちください。",
+    quickProfileTitle: "先に教えていただくとより正確です",
+    quickProfileHelp: "お話しになるか、下のボタンを押してください。飛ばしても会話できます。",
+    quickProfileSpeak: "自分の情報を話す",
+    quickProfileSpeakHelp: "例：年齢は七十で、桃のアレルギーがあります",
+    quickProfileMore: "アレルギー・病気まで詳しく入力する",
+    quickProfileDone: "教えていただいた情報でお答えします",
     backupTitle: "この端末に保存",
     backupHelp: "この端末だけに保存されます。ログインは不要です。",
     backupSavedAt: "{time}に保存しました。",
@@ -1263,6 +1479,10 @@ type AboutGuideStep = {
   mockTitle: string;
   mockItems: string[];
   mockNote: string;
+  /** 어두운 화면 아래에 흰 글씨로 얹는 한 문장 설명. */
+  mockCaption: string;
+  /** 손가락으로 가리켜 강조할 mockItems 번호. 강조가 없으면 -1. */
+  mockHighlight: number;
 };
 const GITHUB_URL = "https://github.com/dohyunfinger/-OGQ-";
 
@@ -1420,13 +1640,17 @@ const aboutCopy: Record<Language, AboutCopy> = {
         title: "언어와 성별, 나이를 고릅니다",
         text: "화면 위쪽 '내 정보 입력하기' 버튼을 누르면 나옵니다. 성별과 나이는 하루 권장 섭취량이 달라지는 부분에만 쓰이고, 넣지 않으셔도 대화는 그대로 됩니다.",
         tips: [
-          "나이는 '49세 이하'부터 '90세 이상'까지 버튼으로 고릅니다.",
+          "첫 화면의 '내 정보 말하기'를 누르고 말씀하시면 성별과 나이가 한 번에 채워집니다.",
+          "첫 화면에 있는 성별·나이 버튼을 바로 눌러 고르셔도 됩니다.",
           "잘못 눌렀으면 같은 버튼을 한 번 더 눌러 취소합니다.",
           "언어를 바꾸면 등록해 둔 건강 정보 표기도 함께 바뀝니다.",
         ],
         mockTitle: "언어 · 성별 · 나이",
-        mockItems: ["🇰🇷 한국어", "여자", "70대"],
-        mockNote: "넣지 않아도 대화할 수 있어요",
+        // 국기 이모지는 Windows 에서 "KR" 같은 글자로 보여 목업에서는 쓰지 않는다.
+        mockItems: ["한국어", "여자", "70대"],
+        mockNote: "첫 화면에서 말하거나 눌러도 됩니다",
+        mockCaption: "언어, 성별, 나이를 고르면 더 정확한 안내를 받으실 수 있습니다.",
+        mockHighlight: 1,
       },
       {
         step: "2단계",
@@ -1438,8 +1662,10 @@ const aboutCopy: Record<Language, AboutCopy> = {
           "'말해서 입력'을 누르고 말씀하시면 그대로 메모로 남아 답변에 함께 반영됩니다.",
         ],
         mockTitle: "알레르기 · 질병",
-        mockItems: ["우유", "견과류", "당뇨"],
-        mockNote: "🎙 말해서 입력도 됩니다",
+        mockItems: ["우유", "견과류", "🎙 말해서 입력"],
+        mockNote: "목록에서 골라도, 말로 해도 됩니다",
+        mockCaption: "알레르기와 질병을 넣어 두시면 더 안전하게 안내합니다.",
+        mockHighlight: 2,
       },
       {
         step: "3단계",
@@ -1453,6 +1679,8 @@ const aboutCopy: Record<Language, AboutCopy> = {
         mockTitle: "물어보는 방법",
         mockItems: ["🎙 음성으로 말하기", "📷 사진 올리기", "⌨ 글로 쓰기"],
         mockNote: "자주 묻는 질문 버튼을 눌러도 됩니다",
+        mockCaption: "말하거나, 사진을 올리거나, 직접 적으시면 됩니다.",
+        mockHighlight: 1,
       },
       {
         step: "4단계",
@@ -1463,9 +1691,11 @@ const aboutCopy: Record<Language, AboutCopy> = {
           "마지막 장에는 '여기까지입니다'라고 적혀 있습니다.",
           "'답변 다시 듣기'를 누르면 소리로 읽어 드립니다.",
         ],
-        mockTitle: "3장 중 1장",
+        mockTitle: "대화 1 · 답변 1/3",
         mockItems: ["무를 푹 끓이면 단맛이 살아나요. 설탕은 넣지 않으셔도 됩니다."],
         mockNote: "다음 장 보기 →",
+        mockCaption: "큰 글씨 카드로 보여주고, 길면 다음 카드로 이어집니다.",
+        mockHighlight: -1,
       },
     ],
     guideCta: "바로 시작해 보기",
@@ -1570,13 +1800,16 @@ const aboutCopy: Record<Language, AboutCopy> = {
         title: "Pick language, gender, and age",
         text: "Press the button at the top of the screen. Gender and age are used only where daily intake guidance differs, and you can keep chatting without entering them.",
         tips: [
-          "Age is chosen with buttons, from 49 or younger to 90 or older.",
+          "Press Say my details on the first screen and speak, and gender and age fill in at once.",
+          "You can also tap the gender and age buttons right on the first screen.",
           "Pressed the wrong one? Press the same button again to clear it.",
           "Changing the language also changes how saved health details are shown.",
         ],
         mockTitle: "Language · Gender · Age",
-        mockItems: ["🇬🇧 English", "Female", "70s"],
-        mockNote: "You can chat without filling this in",
+        mockItems: ["English", "Female", "70s"],
+        mockNote: "Speak it or tap it on the first screen",
+        mockCaption: "Choosing language, gender, and age makes the guidance more precise.",
+        mockHighlight: 1,
       },
       {
         step: "Step 2",
@@ -1588,8 +1821,10 @@ const aboutCopy: Record<Language, AboutCopy> = {
           "Press Speak to enter and your own words are kept as a note the AI reads too.",
         ],
         mockTitle: "Allergies · Conditions",
-        mockItems: ["Milk", "Tree nuts", "Diabetes"],
-        mockNote: "🎙 Speaking it in works too",
+        mockItems: ["Milk", "Tree nuts", "🎙 Speak to enter"],
+        mockNote: "Pick from the list or just say it",
+        mockCaption: "Adding allergies and conditions lets us guide you more safely.",
+        mockHighlight: 2,
       },
       {
         step: "Step 3",
@@ -1603,6 +1838,8 @@ const aboutCopy: Record<Language, AboutCopy> = {
         mockTitle: "Ways to ask",
         mockItems: ["🎙 Speak", "📷 Upload a photo", "⌨ Type it"],
         mockNote: "The common question buttons work too",
+        mockCaption: "Speak it, snap a photo, or type it out.",
+        mockHighlight: 1,
       },
       {
         step: "Step 4",
@@ -1613,9 +1850,11 @@ const aboutCopy: Record<Language, AboutCopy> = {
           "The last card says the answer ends there.",
           "Press Read the answer again to hear it out loud.",
         ],
-        mockTitle: "1 of 3",
+        mockTitle: "Conversation 1 · Answer 1/3",
         mockItems: ["Simmer the radish well and its own sweetness comes out. No sugar needed."],
         mockNote: "See the next card →",
+        mockCaption: "Answers come as large-type cards and continue onto the next card.",
+        mockHighlight: -1,
       },
     ],
     guideCta: "Try it now",
@@ -1721,13 +1960,16 @@ const aboutCopy: Record<Language, AboutCopy> = {
         title: "言語・性別・年齢を選びます",
         text: "画面上の「自分の情報を入力」ボタンから開きます。性別と年齢は一日の推奨摂取量が変わる部分にだけ使い、入力しなくても会話はできます。",
         tips: [
-          "年齢は「49歳以下」から「90歳以上」までボタンで選びます。",
+          "最初の画面で「自分の情報を話す」を押して話すと、性別と年齢が一度に入ります。",
+          "最初の画面にある性別・年齢のボタンを直接押して選ぶこともできます。",
           "押し間違えたら同じボタンをもう一度押して取り消せます。",
           "言語を変えると、登録した健康情報の表記も一緒に変わります。",
         ],
         mockTitle: "言語 · 性別 · 年齢",
-        mockItems: ["🇯🇵 日本語", "女性", "70代"],
-        mockNote: "入力しなくても会話できます",
+        mockItems: ["日本語", "女性", "70代"],
+        mockNote: "最初の画面で話すか押すだけでも大丈夫です",
+        mockCaption: "言語・性別・年齢を選ぶと、より正確な案内を受けられます。",
+        mockHighlight: 1,
       },
       {
         step: "手順 2",
@@ -1739,8 +1981,10 @@ const aboutCopy: Record<Language, AboutCopy> = {
           "「話して入力」を押して話すと、その言葉がメモとして残り回答にも反映されます。",
         ],
         mockTitle: "アレルギー · 疾患",
-        mockItems: ["牛乳", "ナッツ類", "糖尿病"],
-        mockNote: "🎙 話して入力もできます",
+        mockItems: ["牛乳", "ナッツ類", "🎙 話して入力"],
+        mockNote: "一覧から選んでも、話してもいいです",
+        mockCaption: "アレルギーと疾患を入れておくと、より安全に案内します。",
+        mockHighlight: 2,
       },
       {
         step: "手順 3",
@@ -1754,6 +1998,8 @@ const aboutCopy: Record<Language, AboutCopy> = {
         mockTitle: "質問の方法",
         mockItems: ["🎙 音声で話す", "📷 写真を送る", "⌨ 文字で書く"],
         mockNote: "よくある質問ボタンからでも大丈夫です",
+        mockCaption: "話すか、写真を送るか、直接書けば大丈夫です。",
+        mockHighlight: 1,
       },
       {
         step: "手順 4",
@@ -1764,9 +2010,11 @@ const aboutCopy: Record<Language, AboutCopy> = {
           "最後の枚には、ここまでという案内が入ります。",
           "「回答をもう一度聞く」を押すと声で読み上げます。",
         ],
-        mockTitle: "3枚中1枚",
+        mockTitle: "会話 1 · 回答 1/3",
         mockItems: ["大根をよく煮ると甘みが出ます。砂糖は入れなくて大丈夫です。"],
         mockNote: "次の枚を見る →",
+        mockCaption: "大きな文字のカードで見せ、長ければ次のカードへ続きます。",
+        mockHighlight: -1,
       },
     ],
     guideCta: "すぐに始めてみる",
@@ -1857,44 +2105,62 @@ const aboutGuideIcons = [
 ];
 
 /**
- * 실제 화면을 흉내 낸 작은 목업. 스크린샷 대신 CSS로 그려서
- * 서비스 화면을 고쳐도 이 그림이 낡지 않고 용량도 늘지 않는다.
+ * 실제 화면을 흉내 낸 작은 목업.
+ *
+ * 서비스 화면을 어둡게 띄우고 눌러야 할 곳만 밝게 남긴 뒤, 아래에 흰 글씨로
+ * 한 문장을 얹는다. 어르신용 사용 안내에서 흔히 쓰는 방식이라 어디를 누르면
+ * 되는지 한눈에 들어온다. 스크린샷 대신 CSS로 그려서 서비스 화면을 고쳐도
+ * 그림이 낡지 않고 용량도 늘지 않는다.
+ *
  * 장식이라 스크린 리더에서는 숨기고, 설명은 옆의 글과 팁 목록이 담당한다.
  */
 function AboutGuideMock({ index, step }: { index: number; step: AboutGuideStep }) {
-  return (
-    <div className="about-guide-mock" aria-hidden="true">
-      <span className="about-guide-mock-title">{step.mockTitle}</span>
+  const itemClass = (itemIndex: number, base: string) =>
+    itemIndex === step.mockHighlight ? `${base} highlight` : base;
 
-      {index === 3 ? (
-        <>
-          <p className="about-guide-mock-answer">{step.mockItems[0]}</p>
-          <span className="about-guide-mock-next">{step.mockNote}</span>
-        </>
-      ) : index === 2 ? (
-        <>
-          <div className="about-guide-mock-stack">
-            {step.mockItems.map((item) => (
-              <span className="about-guide-mock-button" key={item}>
-                {item}
-              </span>
-            ))}
-          </div>
-          <span className="about-guide-mock-note">{step.mockNote}</span>
-        </>
-      ) : (
-        <>
-          <div className="about-guide-mock-chips">
-            {step.mockItems.map((item) => (
-              <span className="about-guide-mock-chip" key={item}>
-                {item}
-              </span>
-            ))}
-          </div>
-          <span className="about-guide-mock-note">{step.mockNote}</span>
-        </>
-      )}
-    </div>
+  return (
+    <figure className="about-guide-mock" aria-hidden="true">
+      <div className="about-guide-mock-screen">
+        <span className="about-guide-mock-title">{step.mockTitle}</span>
+
+        {index === 3 ? (
+          <>
+            <p className="about-guide-mock-answer">{step.mockItems[0]}</p>
+            <span className="about-guide-mock-next">{step.mockNote}</span>
+          </>
+        ) : index === 2 ? (
+          <>
+            <div className="about-guide-mock-stack">
+              {step.mockItems.map((item, itemIndex) => (
+                <span className={itemClass(itemIndex, "about-guide-mock-button")} key={item}>
+                  {item}
+                  {itemIndex === step.mockHighlight && (
+                    <span className="about-guide-mock-hand">👆</span>
+                  )}
+                </span>
+              ))}
+            </div>
+            <span className="about-guide-mock-note">{step.mockNote}</span>
+          </>
+        ) : (
+          <>
+            <div className="about-guide-mock-chips">
+              {step.mockItems.map((item, itemIndex) => (
+                <span className={itemClass(itemIndex, "about-guide-mock-chip")} key={item}>
+                  {item}
+                  {itemIndex === step.mockHighlight && (
+                    <span className="about-guide-mock-hand">👆</span>
+                  )}
+                </span>
+              ))}
+            </div>
+            <span className="about-guide-mock-note">{step.mockNote}</span>
+          </>
+        )}
+      </div>
+
+      <figcaption className="about-guide-mock-caption">{step.mockCaption}</figcaption>
+    </figure>
   );
 }
 
@@ -2340,6 +2606,8 @@ export default function SilverLensApp() {
   const [photoPurpose, setPhotoPurpose] = useState<PhotoPurpose | null>(null);
   const [isPreparingPhoto, setIsPreparingPhoto] = useState(false);
   const [isPhotoZoomOpen, setIsPhotoZoomOpen] = useState(false);
+  /** 대화 화면 헤더의 언어 알약이 펼쳐져 있는지. */
+  const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const [recordingError, setRecordingError] = useState("");
   const [chatInput, setChatInput] = useState("");
   const [chatTurns, setChatTurns] = useState<ChatTurn[]>([]);
@@ -3988,7 +4256,7 @@ export default function SilverLensApp() {
                     onClick={() => setLanguage(item.id)}
                     aria-pressed={activeLanguage === item.id}
                   >
-                    <span aria-hidden="true">{item.flag}</span>
+                    <LanguageFlag id={item.id} />
                     <span className="about-lang-text">{item.label}</span>
                   </button>
                 ))}
@@ -4275,7 +4543,46 @@ export default function SilverLensApp() {
               {!hasProfileInfo && <small>{activeCopy.openProfileHelp}</small>}
             </button>
             <div className="profile-pills">
-              <span>🌐 {languages.find((item) => item.id === activeLanguage)?.label}</span>
+              {/*
+                평소에는 현재 언어 하나만 알약으로 보이고, 누르면 옆으로 늘어나
+                세 언어가 나온다. 세 개를 늘 펼쳐 두면 헤더가 넘쳐 폰에서 잘렸다.
+                버튼 셋을 항상 그려 두고 CSS 로 접기 때문에 늘어나는 움직임이 부드럽다.
+              */}
+              <div
+                className={isLanguageOpen ? "profile-lang open" : "profile-lang"}
+                role="group"
+                aria-label={activeCopy.languageLegend}
+              >
+                {languages.map((item) => {
+                  const isCurrent = activeLanguage === item.id;
+                  const hidden = !isLanguageOpen && !isCurrent;
+                  return (
+                    <button
+                      key={item.id}
+                      type="button"
+                      className={isCurrent ? "profile-lang-item active" : "profile-lang-item"}
+                      onClick={() => {
+                        if (!isLanguageOpen) {
+                          setIsLanguageOpen(true);
+                          return;
+                        }
+                        setLanguage(item.id);
+                        setIsLanguageOpen(false);
+                      }}
+                      aria-pressed={isCurrent}
+                      aria-expanded={isCurrent ? isLanguageOpen : undefined}
+                      // 접혀 있는 동안에는 탭 이동에서 빼 둔다.
+                      tabIndex={hidden ? -1 : 0}
+                    >
+                      <LanguageFlag id={item.id} />
+                      <span>{item.label}</span>
+                      <span className="profile-lang-caret" aria-hidden="true">
+                        ▾
+                      </span>
+                    </button>
+                  );
+                })}
+              </div>
               {ageConfirmed && <span>● {ageBand}{activeCopy.profileAge}</span>}
               {allergyIds.length + conditionIds.length > 0 && (
                 <span>
@@ -4302,6 +4609,95 @@ export default function SilverLensApp() {
           )}
 
           <section className="answer-section" aria-live="polite">
+            {/*
+              첫 화면에서 설정 화면으로 넘어가지 않고도 기본 정보를 넣을 수 있게 한다.
+              말로 한 번에 말하거나, 성별·나이 버튼을 바로 눌러도 된다.
+              답변이 하나라도 생기면 감춰서 답변 볼 자리를 넓힌다.
+            */}
+            {answerCards.length === 0 && (
+              <div className="chat-quick-profile">
+                <div className="chat-quick-profile-head">
+                  <strong>{activeCopy.quickProfileTitle}</strong>
+                  <small>
+                    {hasProfileInfo
+                      ? activeCopy.quickProfileDone
+                      : activeCopy.quickProfileHelp}
+                  </small>
+                </div>
+
+                <button
+                  type="button"
+                  className={
+                    recordingContext === "setup"
+                      ? "chat-quick-speak recording"
+                      : "chat-quick-speak"
+                  }
+                  onClick={() => toggleRecording("setup")}
+                  disabled={isTranscribingVoice}
+                  aria-pressed={recordingContext === "setup"}
+                >
+                  <span aria-hidden="true">
+                    {recordingContext === "setup" ? "●" : "🎙️"}
+                  </span>
+                  <span>
+                    <strong>
+                      {recordingContext === "setup"
+                        ? activeCopy.recording
+                        : activeCopy.quickProfileSpeak}
+                    </strong>
+                    <small>
+                      {recordingContext === "setup"
+                        ? activeCopy.recordingHelp
+                        : activeCopy.quickProfileSpeakHelp}
+                    </small>
+                  </span>
+                </button>
+
+                <div className="chat-quick-row" role="group" aria-label={activeCopy.genderLegend}>
+                  <span className="chat-quick-legend">{activeCopy.genderLegend}</span>
+                  <div className="chat-quick-choices">
+                    {(["male", "female"] as Gender[]).map((id) => (
+                      <button
+                        key={id}
+                        type="button"
+                        className={gender === id ? "chat-quick-chip selected" : "chat-quick-chip"}
+                        onClick={() => toggleGender(id)}
+                        aria-pressed={gender === id}
+                      >
+                        {id === "male" ? activeCopy.male : activeCopy.female}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <div className="chat-quick-row" role="group" aria-label={activeCopy.ageLegend}>
+                  <span className="chat-quick-legend">{activeCopy.ageLegend}</span>
+                  <div className="chat-quick-choices">
+                    {ageChoices.map((age) => (
+                      <button
+                        key={age}
+                        type="button"
+                        className={
+                          ageConfirmed && ageBand === age
+                            ? "chat-quick-chip selected"
+                            : "chat-quick-chip"
+                        }
+                        onClick={() => selectAge(age)}
+                        aria-pressed={ageConfirmed && ageBand === age}
+                      >
+                        {age}
+                        {activeCopy.years}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+
+                <button type="button" className="chat-quick-more" onClick={openProfileSetup}>
+                  {activeCopy.quickProfileMore}
+                </button>
+              </div>
+            )}
+
             <div className="answer-heading">
               <span className="answer-label">{activeCopy.answerLabel}</span>
               <span className={isLoadingAnswer ? "answer-state waiting" : "answer-state"}>
@@ -4335,13 +4731,11 @@ export default function SilverLensApp() {
                       <span>{activeCopy.questionBadge}</span>
                       <strong>{activeAnswerCard.question}</strong>
                     </div>
-                    {activeAnswerCard.pageCount > 1 && (
-                      <p className="answer-page-badge">
-                        {activeCopy.pageBadge
-                          .replace("{current}", String(activeAnswerCard.pageIndex + 1))
-                          .replace("{total}", String(activeAnswerCard.pageCount))}
-                      </p>
-                    )}
+                    {/*
+                      카드 안 "2장 중 1장" 배지는 없앴다.
+                      헤더의 "대화 1 · 답변 1/2" 와 같은 말이라 자리만 차지했다.
+                      다음 장 안내는 카드 아래 버튼이 맡는다.
+                    */}
                     {activeAnswerCard.warningMessage && (
                       <div
                         className={`answer-warning ${activeAnswerCard.riskLevel}`}
@@ -4757,8 +5151,6 @@ export default function SilverLensApp() {
     <main className="app-shell">
       <Sidebar active="setup" onNavigate={setScreen} copy={activeCopy} />
       <section className="setup-screen">
-        <p className="setup-optional-note">{activeCopy.profileOptional}</p>
-
         {/* 세 단계 이름을 그대로 두고, 누르면 해당 항목으로 화면과 포커스를 옮긴다. */}
         <nav className="setup-progress" aria-label={promptCopy[activeLanguage][nextStep]}>
           {setupProgressItems.map((item) => (
@@ -4824,7 +5216,7 @@ export default function SilverLensApp() {
                 onClick={() => toggleLanguage(item.id)}
                 aria-pressed={language === item.id}
               >
-                <span className="flag" aria-hidden="true">{item.flag}</span>
+                <LanguageFlag id={item.id} />
                 <span>{item.label}</span>
                 {language === item.id && <span className="selection-check">✓</span>}
               </button>

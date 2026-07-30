@@ -563,6 +563,11 @@ textarea:focus-visible {
 .health-grid {
   display: grid;
   grid-template-columns: repeat(2, minmax(0, 1fr));
+  /*
+   * start 가 없으면 한쪽에서 목록을 펼쳤을 때 반대쪽 카드가 같은 높이로 늘어나고,
+   * 남는 높이가 카드 안쪽 행에 배분되어 버튼이 세로로 길어진다.
+   */
+  align-items: start;
   gap: 12px;
   margin: 10px 0;
 }
@@ -581,6 +586,8 @@ textarea:focus-visible {
   display: grid;
   /* minmax(0,…) 이 없으면 긴 항목 이름이 열을 밀어내 카드가 잘린다. */
   grid-template-columns: minmax(0, 1fr) auto;
+  /* 카드가 어떤 이유로 늘어나도 안쪽 줄 간격이 벌어지지 않게 위로 모은다. */
+  align-content: start;
   gap: 3px 12px;
   min-width: 0;
   min-height: 92px;
@@ -613,6 +620,8 @@ textarea:focus-visible {
   grid-column: 2;
   grid-row: 1 / span 2;
   display: grid;
+  /* 두 버튼은 늘 제 높이만 쓰고, 남는 세로 공간을 나눠 갖지 않는다. */
+  align-content: start;
   min-width: 0;
   width: 154px;
   gap: 7px;
@@ -697,6 +706,8 @@ textarea:focus-visible {
 .health-picker {
   grid-column: 1 / -1;
   display: grid;
+  /* min-width 를 풀어 두지 않으면 안쪽 내용이 카드를 밀어내 오른쪽이 잘린다. */
+  min-width: 0;
   gap: 8px;
   max-height: 460px;
   margin-top: 8px;
@@ -709,18 +720,23 @@ textarea:focus-visible {
 
 .health-picker-head {
   display: flex;
+  /* 안내 문구와 "선택 모두 지우기" 가 한 줄에 안 들어가면 아래로 내린다. */
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
-  gap: 10px;
+  gap: 8px 10px;
 }
 
 .health-picker-head small {
+  min-width: 0;
   color: var(--muted);
   font-size: 13px;
   font-weight: 800;
+  overflow-wrap: anywhere;
 }
 
 .health-clear {
+  flex: 0 0 auto;
   min-height: 36px;
   padding: 0 12px;
   border: 2px solid #b9a98c;
@@ -1123,13 +1139,17 @@ textarea:focus-visible {
 
 .chat-header {
   display: flex;
+  /* 좁은 화면에서 두 덩어리가 서로를 눌러 글자가 한 자씩 쌓이는 것을 막는다. */
+  flex-wrap: wrap;
   align-items: center;
   justify-content: space-between;
+  gap: 10px;
 }
 
 .back-button {
   display: grid;
   gap: 2px;
+  min-width: 0;
   min-height: 48px;
   padding: 6px 14px;
   border: 2px solid var(--green-800);
@@ -1311,20 +1331,6 @@ textarea:focus-visible {
   }
 }
 
-/* 설정 화면 맨 위: 이 정보가 필수가 아니라는 것을 분명히 알린다. */
-.setup-optional-note {
-  margin: 0 0 14px;
-  padding: 12px 16px;
-  border: 2px dashed var(--green-800);
-  border-radius: var(--r-sm);
-  color: var(--green-900);
-  background: #f3fbf6;
-  font-size: 16px;
-  font-weight: 800;
-  line-height: 1.5;
-  word-break: keep-all;
-}
-
 @media (max-width: 620px) {
   .chat-welcome {
     flex-direction: column;
@@ -1338,7 +1344,88 @@ textarea:focus-visible {
 
 .profile-pills {
   display: flex;
+  flex-wrap: wrap;
+  align-items: center;
   gap: 10px;
+}
+
+/*
+ * 대화 화면에서 설정으로 들어가지 않고 바로 언어를 바꾸는 알약.
+ * 접혀 있으면 현재 언어만 보이고, 누르면 옆으로 늘어나 세 언어가 나온다.
+ * 버튼 셋을 늘 그려 두고 max-width 를 0 으로 접어 움직임을 부드럽게 한다.
+ */
+.profile-lang {
+  display: flex;
+  max-width: 100%;
+  gap: 4px;
+  overflow: hidden;
+  padding: 4px;
+  border: 2px solid var(--green-800);
+  border-radius: 999px;
+  background: white;
+}
+
+.profile-lang-item {
+  display: flex;
+  min-height: 40px;
+  max-width: 15em;
+  align-items: center;
+  gap: 7px;
+  padding: 0 14px;
+  overflow: hidden;
+  border: 0;
+  border-radius: 999px;
+  color: var(--green-900);
+  background: transparent;
+  font-size: 15px;
+  font-weight: 900;
+  white-space: nowrap;
+  cursor: pointer;
+  transition: max-width .25s ease, padding .25s ease, opacity .2s ease,
+    background .15s ease, color .15s ease;
+}
+
+.profile-lang-item:hover:not(.active) {
+  background: var(--green-100);
+}
+
+.profile-lang-item.active {
+  color: white;
+  background: var(--green-800);
+}
+
+/* 접힌 상태: 현재 언어가 아닌 버튼은 폭을 0 으로 줄여 감춘다. */
+.profile-lang:not(.open) .profile-lang-item:not(.active) {
+  max-width: 0;
+  padding-inline: 0;
+  opacity: 0;
+  pointer-events: none;
+}
+
+/* 접혀 있을 때만 "누르면 펼쳐진다"는 표시를 붙인다. */
+.profile-lang-caret {
+  display: none;
+  margin-left: 1px;
+  font-size: 12px;
+}
+
+.profile-lang:not(.open) .profile-lang-item.active .profile-lang-caret {
+  display: inline;
+}
+
+/* 국기 아이콘. 이모지 대신 SVG 라서 어느 기기에서나 같은 그림이 나온다. */
+.flag-icon {
+  width: 24px;
+  height: 16px;
+  flex: 0 0 auto;
+  border-radius: 3px;
+}
+
+.language-button .flag-icon {
+  /* 3:2 비율을 지켜야 태극과 괘가 찌그러지지 않는다. */
+  width: 36px;
+  height: 24px;
+  border-radius: 4px;
 }
 
 .profile-pills span {
@@ -1642,39 +1729,11 @@ textarea:focus-visible {
   font-weight: 900;
 }
 
-.answer-carousel {
-  display: grid;
-  grid-template-columns: 56px minmax(0, 1fr) 56px;
-  align-items: stretch;
-  gap: 8px;
-}
-
-.answer-arrow {
-  align-self: center;
-  min-height: 76px;
-  border: 2px solid var(--line);
-  border-radius: 16px;
-  color: var(--green-900);
-  background: white;
-  font-size: 42px;
-  font-weight: 900;
-}
-
-.answer-arrow:disabled {
-  color: #b9bdb9;
-  background: #f5f5f2;
-}
-
-.ai-answer-card {
-  display: flex;
-  min-height: 430px;
-  flex-direction: column;
-  padding: 25px 30px 30px;
-  border: 4px solid var(--green-800);
-  border-radius: 20px;
-  background: white;
-  box-shadow: 0 15px 32px rgba(0, 84, 58, .12);
-}
+/*
+ * .answer-carousel / .answer-arrow 의 옛 3열 정의와 쓰이지 않는 .ai-answer-card 는
+ * 지웠다. 뒤쪽의 오버레이 정의보다 앞에 있어서 min-height 76px 와 3열 그리드가
+ * 그대로 살아남아 화살표가 카드 옆으로 되돌아가 있었다.
+ */
 
 /*
  * 자주 묻는 질문 버튼.
@@ -1795,21 +1854,9 @@ textarea:focus-visible {
 
 /*
  * 여러 장으로 나뉜 답변 안내.
- * 어르신이 첫 장만 보고 끝내지 않도록 현재 위치와 다음 장 버튼을 카드 안에 크게 둔다.
+ * 어르신이 첫 장만 보고 끝내지 않도록 다음 장 버튼을 카드 안에 크게 둔다.
+ * 카드 상단의 "2장 중 1장" 배지는 헤더 표시와 겹쳐 없앴다.
  */
-.answer-page-badge {
-  display: inline-flex;
-  align-items: center;
-  margin: 0 0 14px;
-  padding: 7px 15px;
-  border-radius: var(--r-pill);
-  color: var(--green-950);
-  background: var(--cream);
-  font-size: 16px;
-  font-weight: 900;
-  letter-spacing: .01em;
-}
-
 .answer-next-page {
   display: flex;
   width: 100%;
@@ -2204,23 +2251,14 @@ textarea:focus-visible {
     grid-template-columns: 1fr;
   }
 
-  .answer-carousel {
-    grid-template-columns: 42px minmax(0, 1fr) 42px;
-    gap: 5px;
-  }
-
   .answer-arrow {
-    min-height: 64px;
-    font-size: 34px;
+    width: 36px;
+    height: 64px;
+    font-size: 28px;
   }
 
-  .ai-answer-card {
-    min-height: 410px;
-    padding: 18px;
-  }
-
-  .answer-markdown {
-    font-size: 24px;
+  .answer-card {
+    padding: 18px 42px 32px;
   }
 
   .answer-history-footer {
@@ -2235,6 +2273,13 @@ textarea:focus-visible {
 
   .start-button {
     font-size: 22px;
+  }
+
+  .profile-lang-item {
+    min-height: 36px;
+    gap: 4px;
+    padding: 0 9px;
+    font-size: 13px;
   }
 
   .profile-pills span {
@@ -2273,6 +2318,154 @@ textarea:focus-visible {
   box-shadow: 0 12px 28px rgba(0, 63, 44, 0.08);
 }
 
+/*
+ * 첫 화면에서 설정 화면으로 넘어가지 않고 기본 정보를 넣는 블록.
+ * 말로 한 번에 말하는 큰 버튼을 위에 두고, 못 알아들었을 때 대비해
+ * 성별·나이는 바로 누를 수 있는 칩으로 함께 둔다.
+ */
+.chat-quick-profile {
+  display: grid;
+  gap: 10px;
+  margin-bottom: 14px;
+  padding: 14px 16px;
+  border: 2px dashed var(--green-800);
+  border-radius: 16px;
+  background: #f4fbf7;
+}
+
+.chat-quick-profile-head {
+  display: grid;
+  gap: 3px;
+}
+
+.chat-quick-profile-head strong {
+  color: var(--green-950);
+  font-size: 19px;
+}
+
+.chat-quick-profile-head small {
+  color: var(--green-900);
+  font-size: 14px;
+  font-weight: 800;
+  line-height: 1.45;
+  word-break: keep-all;
+}
+
+.chat-quick-speak {
+  display: grid;
+  grid-template-columns: auto minmax(0, 1fr);
+  align-items: center;
+  gap: 12px;
+  min-height: 64px;
+  padding: 10px 16px;
+  border: 3px solid var(--green-800);
+  border-radius: 14px;
+  color: var(--green-950);
+  background: white;
+  text-align: left;
+  cursor: pointer;
+}
+
+.chat-quick-speak > span:first-child {
+  font-size: 26px;
+}
+
+.chat-quick-speak > span:last-child {
+  display: grid;
+  min-width: 0;
+  gap: 2px;
+}
+
+.chat-quick-speak strong {
+  font-size: 19px;
+}
+
+.chat-quick-speak small {
+  color: #4f5a53;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.4;
+  word-break: keep-all;
+}
+
+.chat-quick-speak.recording {
+  color: white;
+  border-color: var(--red);
+  background: var(--red);
+  animation: recordingPulse 1.25s infinite;
+}
+
+.chat-quick-speak.recording small {
+  color: white;
+}
+
+.chat-quick-speak:disabled {
+  opacity: .55;
+  cursor: default;
+}
+
+.chat-quick-row {
+  display: grid;
+  grid-template-columns: 46px minmax(0, 1fr);
+  align-items: center;
+  gap: 10px;
+}
+
+.chat-quick-legend {
+  color: var(--green-900);
+  font-size: 14px;
+  font-weight: 900;
+}
+
+.chat-quick-choices {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+}
+
+.chat-quick-chip {
+  min-height: 46px;
+  padding: 0 15px;
+  border: 2px solid var(--green-800);
+  border-radius: 999px;
+  color: var(--green-900);
+  background: white;
+  font-size: 16px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.chat-quick-chip.selected {
+  color: white;
+  background: var(--green-800);
+}
+
+.chat-quick-more {
+  min-height: 46px;
+  border: 0;
+  border-radius: 12px;
+  color: var(--green-900);
+  background: transparent;
+  font-size: 15px;
+  font-weight: 900;
+  text-decoration: underline;
+  cursor: pointer;
+}
+
+@media (max-width: 520px) {
+  /* 좁은 화면에서는 이름표를 위로 올려 칩이 한 줄을 다 쓰게 한다. */
+  .chat-quick-row {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 5px;
+  }
+
+  .chat-quick-chip {
+    min-height: 44px;
+    padding: 0 12px;
+    font-size: 15px;
+  }
+}
+
 .answer-heading {
   display: flex;
   align-items: center;
@@ -2307,30 +2500,53 @@ textarea:focus-visible {
   50% { opacity: 0.55; }
 }
 
+/*
+ * 답변 카드가 가로 폭을 다 쓰게 하고, 좌우 넘김 화살표는 카드 위에 반투명하게 얹는다.
+ * 화살표를 좌우 열로 두면 폭을 140px 정도 빼앗겨 글이 잘게 줄바꿈되고
+ * 그만큼 카드가 위아래로 길어졌다.
+ */
 .answer-carousel {
+  position: relative;
   display: grid;
-  grid-template-columns: 58px minmax(0, 1fr) 58px;
-  align-items: center;
-  gap: 12px;
 }
 
 .answer-arrow {
+  position: absolute;
+  top: 50%;
+  z-index: 3;
   display: grid;
-  width: 56px;
-  height: 92px;
+  width: 54px;
+  height: 86px;
   place-items: center;
-  border: 2px solid #d9d5c9;
-  border-radius: 20px;
+  transform: translateY(-50%);
+  border: 2px solid rgba(49, 116, 99, 0.4);
+  border-radius: 18px;
   color: var(--green-900);
-  background: white;
-  font-size: 46px;
+  /* 카드 글자가 뒤에 있어도 읽히도록 반투명 + 흐림 처리 */
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(4px);
+  font-size: 42px;
   font-weight: 900;
-  box-shadow: 0 6px 16px rgba(31, 40, 35, 0.08);
+  box-shadow: 0 6px 16px rgba(31, 40, 35, 0.12);
+  transition: background .15s ease, opacity .15s ease;
+}
+
+.answer-carousel > .answer-arrow:first-child {
+  left: 8px;
+}
+
+.answer-carousel > .answer-arrow:last-child {
+  right: 8px;
+}
+
+.answer-arrow:hover:not(:disabled) {
+  background: white;
 }
 
 .answer-arrow:disabled {
-  color: #c9ccc9;
-  background: #faf9f5;
+  color: #9aa39c;
+  border-color: rgba(49, 116, 99, 0.16);
+  background: rgba(255, 255, 255, 0.4);
   box-shadow: none;
 }
 
@@ -2340,7 +2556,8 @@ textarea:focus-visible {
   min-height: 300px;
   flex-direction: column;
   justify-content: center;
-  padding: 26px 34px;
+  /* 좌우 여백은 얹은 화살표를 피할 만큼만 둔다. */
+  padding: 26px 74px;
   overflow: hidden;
   border: 5px solid var(--green-800);
   border-radius: 28px;
@@ -2995,26 +3212,30 @@ textarea:focus-visible {
     border-radius: 16px;
   }
 
-  .answer-carousel {
-    grid-template-columns: 42px minmax(0, 1fr) 42px;
-    gap: 6px;
-  }
-
   .answer-arrow {
     width: 40px;
-    height: 74px;
+    height: 70px;
     border-radius: 12px;
-    font-size: 36px;
+    font-size: 32px;
   }
 
+  .answer-carousel > .answer-arrow:first-child {
+    left: 4px;
+  }
+
+  .answer-carousel > .answer-arrow:last-child {
+    right: 4px;
+  }
+
+  /* 폰에서는 흰 칸을 더 크게 잡고 좌우 여백은 화살표 폭만큼만 둔다. */
   .answer-card {
-    min-height: 275px;
-    padding: 22px 20px 38px;
+    min-height: clamp(340px, 58vh, 560px);
+    padding: 20px 48px 34px;
     border-width: 4px;
   }
 
   .answer-markdown {
-    font-size: clamp(19px, 5.6vw, 24px);
+    font-size: clamp(20px, 5.4vw, 26px);
   }
 
   .answer-navigation {
@@ -4079,20 +4300,35 @@ textarea:focus-visible {
   font-weight: 900;
 }
 
-/* 목업 안쪽은 서비스 화면 문법(크림 배경, 두꺼운 테두리, 큰 글자)을 그대로 쓴다. */
+/*
+ * 목업은 "서비스 화면을 어둡게 띄우고 누를 곳만 밝게" 하는 방식으로 그린다.
+ * 어르신용 사용 안내에서 흔히 쓰는 형태라 어디를 누르는지 바로 보인다.
+ */
 .about-guide-mock {
+  display: grid;
+  gap: 0;
+  align-content: start;
+  margin: 0;
+  overflow: hidden;
+  border-radius: var(--about-radius-md);
+  background: #16211c;
+  box-shadow: 0 16px 34px rgba(10, 28, 21, .3);
+}
+
+.about-guide-mock-screen {
   display: grid;
   gap: 12px;
   align-content: start;
   padding: 20px;
-  border: 2px solid rgba(31, 122, 98, .3);
-  border-radius: var(--about-radius-md);
-  background: var(--about-wash);
+  /* 어둡게 덮인 실제 화면처럼 보이게 아주 옅은 초록을 섞는다. */
+  background:
+    radial-gradient(circle at 50% 0%, rgba(120, 200, 170, .1), transparent 62%),
+    #1d2a24;
 }
 
 .about-guide-mock-title {
-  color: var(--about-primary);
-  font-size: 15px;
+  color: rgba(255, 255, 255, .6);
+  font-size: 14px;
   font-weight: 900;
   letter-spacing: .02em;
 }
@@ -4105,10 +4341,10 @@ textarea:focus-visible {
 
 .about-guide-mock-chip {
   padding: 10px 14px;
-  border: 2px solid var(--about-secondary);
+  border: 2px solid rgba(255, 255, 255, .22);
   border-radius: 999px;
-  color: var(--about-primary);
-  background: #fff;
+  color: rgba(255, 255, 255, .55);
+  background: rgba(255, 255, 255, .06);
   font-size: 16px;
   font-weight: 800;
 }
@@ -4120,21 +4356,36 @@ textarea:focus-visible {
 
 .about-guide-mock-button {
   padding: 14px 16px;
-  border: 2px solid var(--about-secondary);
+  border: 2px solid rgba(255, 255, 255, .22);
   border-radius: 14px;
-  color: var(--about-primary);
-  background: #fff;
+  color: rgba(255, 255, 255, .55);
+  background: rgba(255, 255, 255, .06);
   font-size: 17px;
   font-weight: 800;
+}
+
+/* 눌러야 할 곳만 밝게 남기고 손가락으로 가리킨다. */
+.about-guide-mock-chip.highlight,
+.about-guide-mock-button.highlight {
+  position: relative;
+  color: var(--about-primary);
+  border-color: #fff;
+  background: #fff;
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, .16);
+}
+
+.about-guide-mock-hand {
+  margin-left: 8px;
+  font-size: 17px;
 }
 
 .about-guide-mock-answer {
   margin: 0;
   padding: 16px;
-  border: 2px solid var(--about-secondary);
+  border: 2px solid rgba(255, 255, 255, .3);
   border-radius: 14px;
-  color: var(--about-primary);
-  background: #fff;
+  color: #fff;
+  background: rgba(255, 255, 255, .08);
   font-size: 18px;
   font-weight: 700;
   line-height: 1.6;
@@ -4144,18 +4395,32 @@ textarea:focus-visible {
 .about-guide-mock-next {
   padding: 13px 16px;
   border-radius: 14px;
-  color: #fff;
-  background: var(--about-secondary);
+  color: var(--about-primary);
+  background: #fff;
   font-size: 17px;
   font-weight: 900;
   text-align: center;
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, .16);
 }
 
 .about-guide-mock-note {
-  color: var(--about-muted);
+  color: rgba(255, 255, 255, .5);
   font-size: 14px;
   font-weight: 700;
   line-height: 1.55;
+  word-break: keep-all;
+}
+
+/* 어두운 화면 아래에 흰 글씨로 얹는 한 문장. */
+.about-guide-mock-caption {
+  margin: 0;
+  padding: 16px 20px 18px;
+  border-top: 1px solid rgba(255, 255, 255, .12);
+  color: #fff;
+  font-size: 17px;
+  font-weight: 800;
+  line-height: 1.55;
+  text-align: center;
   word-break: keep-all;
 }
 
@@ -4603,5 +4868,74 @@ textarea:focus-visible {
 @media (max-width: 680px) {
   .log-form {
     grid-template-columns: 1fr;
+  }
+}
+
+/*
+ * 아주 좁은 폰(390px 안팎).
+ * 답변 카드는 좌우 여백이 화살표 폭만큼 필요해서, 그 폭을 더 줄여 글이 들어갈
+ * 자리를 확보한다. 뷰포트 메타를 넣기 전에는 이 구간 자체가 발동하지 않았다.
+ */
+@media (max-width: 480px) {
+  .setup-screen,
+  .chat-screen {
+    padding: 14px;
+  }
+
+  .answer-section,
+  .question-composer {
+    padding: 12px 10px;
+  }
+
+  .answer-arrow {
+    width: 32px;
+    height: 58px;
+    border-radius: 10px;
+    font-size: 24px;
+  }
+
+  .answer-carousel > .answer-arrow:first-child {
+    left: 2px;
+  }
+
+  .answer-carousel > .answer-arrow:last-child {
+    right: 2px;
+  }
+
+  .answer-card {
+    padding: 16px 38px 28px;
+  }
+
+  .answer-label {
+    padding: 8px 14px;
+    font-size: 18px;
+  }
+
+  .answer-state {
+    padding: 7px 11px;
+    font-size: 13px;
+  }
+
+  /* 헤더는 정보 버튼과 언어 알약을 위아래로 쌓는다. */
+  .chat-header {
+    align-items: stretch;
+  }
+
+  .back-button {
+    width: 100%;
+  }
+
+  .profile-pills {
+    width: 100%;
+  }
+
+  .health-picker {
+    padding: 8px;
+  }
+
+  .health-group summary {
+    min-height: 48px;
+    padding: 0 10px;
+    font-size: 16px;
   }
 }

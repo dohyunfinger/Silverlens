@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -22,6 +22,18 @@ export const metadata: Metadata = {
     icon: "/favicon.svg",
     shortcut: "/favicon.svg",
   },
+};
+
+/**
+ * 이 선언이 없으면 폰이 980px 가상 화면으로 그린 뒤 축소해서 보여 준다.
+ * 그러면 모바일용 규칙(@media 900px 이하)이 하나도 발동하지 않아
+ * 사이드바가 세로로 눌리고 오른쪽이 잘린다.
+ *
+ * maximumScale 은 두지 않는다. 어르신이 손가락으로 확대할 수 있어야 한다.
+ */
+export const viewport: Viewport = {
+  width: "device-width",
+  initialScale: 1,
 };
 
 export default function RootLayout({
