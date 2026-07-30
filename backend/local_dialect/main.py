@@ -17,7 +17,12 @@ MODEL_ID = os.getenv(
     "DIALECT_MODEL_ID",
     "sjbaek/gemma2-2b-it-korean-dialect",
 )
-DATA_PATH = Path(__file__).resolve().parents[2] / "data" / "dialect_dictionary_source.csv"
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+# 사전 원본은 data/sources/ 로 옮겼다. 예전 경로도 함께 두어 구버전 체크아웃에서도 뜬다.
+DATA_PATH_CANDIDATES = (
+    PROJECT_ROOT / "data" / "sources" / "dialect_dictionary.csv",
+    PROJECT_ROOT / "data" / "dialect_dictionary_source.csv",
+)
 
 app = FastAPI(title="SilverLens Local Dialect Normalizer")
 app.add_middleware(
@@ -45,12 +50,25 @@ _pipeline: Any | None = None
 _model_lock = Lock()
 
 
+def resolve_dictionary_path() -> Path | None:
+    for candidate in DATA_PATH_CANDIDATES:
+        if candidate.exists():
+            return candidate
+    return None
+
+
 def load_dictionary() -> list[dict[str, str]]:
     entries: list[dict[str, str]] = []
-    if not DATA_PATH.exists():
+    path = resolve_dictionary_path()
+    if path is None:
+        print(
+            "[SilverLens] 사투리 사전을 찾지 못했습니다. 찾아본 경로: "
+            + ", ".join(str(candidate) for candidate in DATA_PATH_CANDIDATES)
+        )
         return entries
 
-    with DATA_PATH.open(encoding="utf-8-sig", newline="") as source:
+    # 사전 CSV는 사투리,표준어,지역,분류 네 칸이다. 분류는 서버에서 쓰지 않는다.
+    with path.open(encoding="utf-8-sig", newline="") as source:
         rows = csv.reader(
             line
             for line in source
@@ -62,17 +80,22 @@ def load_dictionary() -> list[dict[str, str]]:
             dialect = row[0].strip()
             standard = row[1].strip()
             region = row[2].strip() if len(row) >= 3 else "미상"
-            if dialect and standard:
-                entries.append(
-                    {
-                        "dialect": dialect,
-                        "standard": standard,
-                        "region": region,
-                    }
-                )
+            # 한 글자 사투리는 오탐이 심해 프롬프트에서 제외한다(빌드 스크립트와 같은 기준).
+            if len(dialect) < 2 or not standard or dialect == standard:
+                continue
+            entries.append(
+                {
+                    "dialect": dialect,
+                    "standard": standard,
+                    "region": region,
+                }
+            )
+
+    print(f"[SilverLens] 사투리 사전 {len(entries)}개를 {path.name} 에서 읽었습니다.")
     return entries
 
 
+DICTIONARY_PATH = resolve_dictionary_path()
 DIALECT_DICTIONARY = load_dictionary()
 
 
@@ -134,6 +157,7 @@ def health() -> dict[str, object]:
         "model": MODEL_ID,
         "model_loaded": _pipeline is not None,
         "dictionary_entries": len(DIALECT_DICTIONARY),
+        "dictionary_path": str(DICTIONARY_PATH) if DICTIONARY_PATH else None,
     }
 
 

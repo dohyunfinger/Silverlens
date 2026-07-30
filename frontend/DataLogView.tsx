@@ -27,6 +27,11 @@ type LogPayload = {
     question: string;
     language: string;
     conditionLabels: string[];
+    riskFloorHits: Array<{
+      ruleId: string;
+      floor: string;
+      matchedFoods: string[];
+    }>;
     dialectHints: Array<{
       dialect: string;
       standard: string;
@@ -272,6 +277,15 @@ export default function DataLogView() {
               {data.search.safetyRules.map((id) => (
                 <li key={id}>{id}</li>
               ))}
+            </ul>
+            <h3>위험도 하한선 {data.search.riskFloorHits.length}건</h3>
+            <ul>
+              {data.search.riskFloorHits.map((hit) => (
+                <li key={hit.ruleId}>
+                  {hit.floor} ← {hit.ruleId} <em>{hit.matchedFoods.join(", ")}</em>
+                </li>
+              ))}
+              {data.search.riskFloorHits.length === 0 && <li>없음</li>}
             </ul>
           </section>
 

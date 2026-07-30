@@ -1,6 +1,7 @@
 import { getGeminiConfig } from "../config/env";
 import { findRelevantKnowledge } from "../data/loadData";
 import { matchFrequentCondition } from "../data/diseaseI18n";
+import { higherRisk, type RiskFloorHit } from "../data/loadData";
 import { callGeminiGenerateContent } from "./geminiClient";
 import {
   findAllergyTermConflicts,
@@ -21,8 +22,11 @@ export type HealthNote = {
   text: string;
 };
 
+export type UserGender = "male" | "female";
+
 export type UserProfile = {
   language?: string;
+  gender?: UserGender;
   ageBand?: number;
   allergies?: string[];
   conditions?: string[];
@@ -35,6 +39,47 @@ export type InlineMedia = {
   data: string;
   mimeType: string;
 };
+
+/**
+ * 어르신이 사진을 찍기 전에 고른 촬영 목적.
+ * 같은 사진이라도 성분표를 읽어야 할 때와 음식을 알아봐야 할 때 볼 곳이 다르므로
+ * 목적을 받아 Vision 지시를 나눈다.
+ */
+export type ImagePurpose = "label" | "food" | "medicine";
+
+export const IMAGE_PURPOSES: readonly ImagePurpose[] = ["label", "food", "medicine"];
+
+/** 촬영 목적별 Vision 지시. 목적이 없으면 기존처럼 사진 전체를 보고 판단한다. */
+function imagePurposeInstructions(purpose?: ImagePurpose | null): string[] {
+  if (purpose === "label") {
+    return [
+      "첨부된 사진은 어르신이 '성분표·식품 라벨을 읽어 달라'는 목적으로 찍은 것입니다.",
+      "사진에서 제품명, 원재료명, 알레르기 유발물질 표시, 영양성분표(나트륨·당류·포화지방·단백질·열량), 유통기한을 우선 읽으세요.",
+      "글자가 잘려서 안 보이는 항목은 추측하지 말고 어떤 부분이 안 보이는지 알려 주고 그 부분을 다시 찍도록 안내하세요.",
+      "등록된 알레르기 유발물질이 원재료나 '이 제품은 ○○를 사용한 제품과 같은 시설에서 제조' 문구에 있으면 반드시 먼저 알리세요.",
+      "1회 제공량과 총 내용량을 구분해서, 한 번에 얼마나 먹으면 되는지 쉬운 말로 알려 주세요.",
+    ];
+  }
+  if (purpose === "food") {
+    return [
+      "첨부된 사진은 어르신이 '이 음식이나 식재료가 무엇인지, 먹어도 되는지' 물어보려고 찍은 것입니다.",
+      "사진 속 음식이나 식재료의 이름을 먼저 말하고, 확실하지 않으면 단정하지 말고 비슷한 후보를 말하며 확인을 부탁하세요.",
+      "겉모습으로 상함·곰팡이·싹·변색이 보이면 먹지 말라고 분명히 말하세요. 보이지 않으면 겉모습만으로 상태를 단정하지 마세요.",
+      "등록된 질병과 알레르기 기준으로 먹어도 되는지, 얼마나 먹으면 되는지, 어떻게 조리하면 더 안전한지 알려 주세요.",
+      "사진만으로 나트륨·당류 같은 수치를 숫자로 단정하지 말고 대략적인 정도로만 설명하세요.",
+    ];
+  }
+  if (purpose === "medicine") {
+    return [
+      "첨부된 사진은 어르신이 '약 봉투나 약 이름을 보고 함께 먹으면 안 되는 음식'을 물어보려고 찍은 것입니다.",
+      "사진에서 약 이름과 복용법(하루 몇 번, 식전·식후)만 읽어 주고, 약효나 진단을 새로 설명하지 마세요.",
+      "약 이름이 흐릿하거나 일부만 보이면 절대 비슷한 약으로 추측하지 말고, 약 이름이 잘 보이게 다시 찍거나 약사에게 확인하도록 안내하세요.",
+      "읽은 약과 관련해 피해야 할 음식(예: 항응고제와 비타민K 많은 채소, 일부 약과 자몽)이 내부 참고 자료에 있으면 그 범위에서만 알려 주세요.",
+      "복용량 조절, 복용 중단, 다른 약으로 바꾸기는 절대 안내하지 말고 의사·약사 확인을 권하세요.",
+    ];
+  }
+  return [];
+}
 
 export type SeniorAnswerResult = {
   answer: string;
@@ -169,6 +214,39 @@ function localizedAllergyWarning(language: string | undefined, labels: string[])
   return `경고: ${joined}은(는) 등록된 알레르기 식품과 일치하므로 사용하거나 섭취하지 마세요.`;
 }
 
+/**
+ * 안전 규칙이 걸렸을 때 쓰는 경고 문구.
+ * 모델이 위험도를 낮게 매겨도 이 문구로 이유를 분명히 알려 준다.
+ */
+/**
+ * 성별은 권장 섭취량 기준이 달라지는 항목에만 쓴다.
+ * 답변 언어에 맞춰 표기해야 모델이 엉뚱한 언어로 되받지 않는다.
+ */
+function localizedGenderLabel(gender: UserGender | undefined, language: string) {
+  if (!gender) {
+    if (language === "en-US") return "not provided";
+    if (language === "ja-JP") return "未入力";
+    return "미입력";
+  }
+  if (language === "en-US") return gender === "male" ? "male" : "female";
+  if (language === "ja-JP") return gender === "male" ? "男性" : "女性";
+  return gender === "male" ? "남성" : "여성";
+}
+
+function localizedRuleWarning(
+  language: string | undefined,
+  hits: RiskFloorHit[],
+) {
+  const foods = [...new Set(hits.flatMap((hit) => hit.matchedFoods))].join(", ");
+  if (language === "en-US") {
+    return `Caution: ${foods} conflicts with a safety rule for your registered conditions. Please check with your doctor or pharmacist first.`;
+  }
+  if (language === "ja-JP") {
+    return `注意：${foods}は登録された病気の安全基準に触れます。先に医師または薬剤師に確認してください。`;
+  }
+  return `주의: ${foods}은(는) 등록된 질병의 안전 기준에 걸립니다. 드시기 전에 의사나 약사에게 확인해 주세요.`;
+}
+
 function localizedGeneralWarning(language?: string) {
   if (language === "en-US") {
     return "Caution: This food may not be recommended for the user's current profile. Check the explanation before eating it.";
@@ -252,7 +330,11 @@ function sanitizeHistory(history: ConversationTurn[]) {
 export async function generateSeniorFriendlyAnswer(
   message: string,
   profile: UserProfile = {},
-  media: { audio?: InlineMedia | null; image?: InlineMedia | null } = {},
+  media: {
+    audio?: InlineMedia | null;
+    image?: InlineMedia | null;
+    imagePurpose?: ImagePurpose | null;
+  } = {},
   history: ConversationTurn[] = [],
 ): Promise<SeniorAnswerResult> {
   const { apiKey, textModelChain } = getGeminiConfig();
@@ -282,6 +364,7 @@ export async function generateSeniorFriendlyAnswer(
   const knowledge = findRelevantKnowledge(topicContext, {
     language: selectedLanguage,
     conditionLabels: profileConditions,
+    conditionIds: profile.conditionIds ?? [],
   });
 
   // 첨부 파일이 없고 글로만 질문했는데 시니어 식품·건강 서비스와 무관한 주제이면
@@ -321,6 +404,8 @@ export async function generateSeniorFriendlyAnswer(
     "문장 하나에는 핵심 하나만 담고, 한 문단은 1~2개의 짧은 문장으로 작성하세요.",
     "TTS로 자연스럽게 읽히도록 표와 긴 목록은 피하고 문장 사이를 짧은 문단으로 나누세요.",
     "첨부된 글, 음성, 사진이 있으면 각각 따로 답하지 말고 하나의 질문으로 함께 이해하세요.",
+    // 촬영 목적을 고른 경우에만 사진을 어떻게 볼지 좁혀 준다.
+    ...(media.image ? imagePurposeInstructions(media.imagePurpose) : []),
     "사용자 질문에 방언이 있으면 방언 참고 자료를 이용해 표준어 의미로 이해하세요.",
     "이전 대화가 있으면 현재 질문을 가장 최근 대화의 후속 질문으로 먼저 해석하세요.",
     "예를 들어 직전 대화가 토마토주스와 복숭아였고 현재 질문이 '레시피 알려줘'라면, 그 주제의 안전한 레시피를 이어서 답하세요.",
@@ -333,11 +418,15 @@ export async function generateSeniorFriendlyAnswer(
     "음성으로 남긴 상세 메모는 목록으로 고를 수 없는 개인 사정입니다. 목록으로 등록한 알레르기·질병보다 구체적이므로 함께 반영하세요.",
     "예를 들어 목록에는 견과류만 등록됐지만 메모에 '견과류 중에 특히 호두가 안 맞는다'가 있으면 호두를 특히 강하게 피하도록 안내하세요.",
     "메모 내용과 목록이 어긋나면 더 조심스러운 쪽을 따르고, 메모를 근거로 새 질병을 진단하지는 마세요.",
+    "성별과 나이대는 하루 권장 섭취량 기준이 달라지는 부분에만 쓰세요. 철분은 폐경 전 여성이 더 필요하고, 칼슘과 비타민D는 여성의 골다공증 위험이 높고, 퓨린과 요산은 남성의 통풍 위험이 높으며, 하루 열량과 단백질 권장량도 체격 차이로 다릅니다.",
+    "성별만으로 질병을 추정하거나 단정하지 마세요. 성별이 미입력이면 성별과 무관한 일반 기준으로 설명하세요.",
+    "성역할을 가정하는 표현을 쓰지 마세요. 조리를 누가 하는지, 가족 중 누가 챙겨주는지 임의로 단정하지 마세요.",
     "사용자 알레르기나 질병 정보와 충돌하거나 불확실하면 안전 원칙을 우선하세요.",
     "risk_level은 danger, caution, safe 중 하나만 사용하세요.",
     "등록 알레르기와 직접 충돌하거나 섭취하지 말아야 한다고 답할 때는 danger로 표시하세요.",
     "불확실하여 전문가 확인이 필요하지만 명확한 금지는 아닐 때만 caution으로 표시하세요.",
     "위험 또는 비권장 상황이면 warning_message에 한 문장의 구체적인 경고를 작성하고, safe이면 빈 문자열로 작성하세요.",
+    `사용자 성별: ${localizedGenderLabel(profile.gender, selectedLanguage)}`,
     `사용자 나이대: ${profile.ageBand ?? "미입력"}대`,
     `알레르기: ${profileAllergies.join(", ") || "미입력"}`,
     `질병 정보: ${profileConditions.join(", ") || "미입력"}`,
@@ -379,6 +468,7 @@ export async function generateSeniorFriendlyAnswer(
   }
 
   const cacheKey = `${prompt}\n@@image:${mediaFingerprint(media.image)}\n@@audio:${mediaFingerprint(media.audio)}`;
+  // 촬영 목적은 프롬프트 지시문에 이미 섞여 들어가므로 cacheKey에 따로 붙이지 않는다.
   const cachedAnswer = readAnswerCache(cacheKey);
   if (cachedAnswer) {
     console.info("[SilverLens] 같은 질문이라 보관해 둔 답변을 다시 씁니다.");
@@ -410,21 +500,64 @@ export async function generateSeniorFriendlyAnswer(
   if (!generated) throw new Error("Gemini가 빈 답변을 반환했습니다.");
 
   const parsed = parseStructuredAnswer(generated);
-  const result: SeniorAnswerResult =
-    allergyConflictLabels.length > 0
-      ? {
-          ...parsed,
-          riskLevel: "danger",
-          warningMessage: localizedAllergyWarning(
-            selectedLanguage,
-            allergyConflictLabels,
-          ),
-        }
-      : (parsed.riskLevel === "danger" || parsed.riskLevel === "caution") &&
-          !parsed.warningMessage
-        ? { ...parsed, warningMessage: localizedGeneralWarning(selectedLanguage) }
-        : parsed;
+  const result = applySafetyFloor(
+    parsed,
+    selectedLanguage,
+    allergyConflictLabels,
+    knowledge.riskFloorHits,
+  );
 
   writeAnswerCache(cacheKey, result);
   return result;
+}
+
+/**
+ * 모델이 매긴 위험도를 코드가 다시 검사해 하한선을 보장한다.
+ *
+ * 실측에서 작은 모델이 신장질환자에게 바나나를 "하루 반 개"로 권한 사례가 있었다.
+ * 안전 판정을 확률적인 모델 출력에만 맡기지 않으려는 장치다.
+ * 우선순위는 등록 알레르기 직접 충돌 > 안전 규칙 하한선 > 모델 판정 순이다.
+ */
+function applySafetyFloor(
+  parsed: SeniorAnswerResult,
+  language: string,
+  allergyConflictLabels: string[],
+  riskFloorHits: RiskFloorHit[],
+): SeniorAnswerResult {
+  if (allergyConflictLabels.length > 0) {
+    return {
+      ...parsed,
+      riskLevel: "danger",
+      warningMessage: localizedAllergyWarning(language, allergyConflictLabels),
+    };
+  }
+
+  if (riskFloorHits.length > 0) {
+    const floor = riskFloorHits.reduce<RiskLevel>(
+      (current, hit) => higherRisk(current, hit.floor),
+      "safe",
+    );
+    const raised = higherRisk(parsed.riskLevel, floor);
+    if (raised !== parsed.riskLevel) {
+      console.info(
+        `[SilverLens] 안전 규칙으로 위험도를 올렸습니다: ${parsed.riskLevel} → ${raised} (${riskFloorHits
+          .map((hit) => `${hit.ruleId}:${hit.matchedFoods.join("/")}`)
+          .join(", ")})`,
+      );
+    }
+    return {
+      ...parsed,
+      riskLevel: raised,
+      warningMessage:
+        parsed.warningMessage || localizedRuleWarning(language, riskFloorHits),
+    };
+  }
+
+  if (
+    (parsed.riskLevel === "danger" || parsed.riskLevel === "caution") &&
+    !parsed.warningMessage
+  ) {
+    return { ...parsed, warningMessage: localizedGeneralWarning(language) };
+  }
+  return parsed;
 }

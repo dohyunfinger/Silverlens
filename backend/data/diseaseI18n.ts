@@ -17,7 +17,49 @@ export type FrequentCondition = {
 };
 
 const diseaseI18n = diseaseI18nJson as DiseaseI18nEntry[];
-const frequentConditions = frequentConditionsJson as FrequentCondition[];
+
+/**
+ * 데이터 파일의 오타가 앱 전체를 멈추게 하지 않도록 여기서 걸러 낸다.
+ * 실제로 senior_frequent_conditions.json 에 배열이 한 단계 중첩된 채로 들어가
+ * 모듈을 읽는 순간 서버가 죽은 적이 있다. 그래서 중첩을 펴고 형식도 확인한다.
+ */
+function readFrequentConditions(value: unknown): FrequentCondition[] {
+  const flat: unknown[] = [];
+  const walk = (item: unknown) => {
+    if (Array.isArray(item)) {
+      for (const child of item) walk(child);
+      return;
+    }
+    flat.push(item);
+  };
+  walk(value);
+
+  const entries: FrequentCondition[] = [];
+  let skipped = 0;
+  for (const item of flat) {
+    const candidate = item as Partial<FrequentCondition> | null;
+    if (
+      candidate &&
+      typeof candidate === "object" &&
+      typeof candidate.name === "string" &&
+      candidate.name.trim() &&
+      typeof candidate.raw === "string" &&
+      candidate.raw.trim()
+    ) {
+      entries.push({ name: candidate.name, raw: candidate.raw });
+    } else {
+      skipped += 1;
+    }
+  }
+  if (skipped > 0) {
+    console.warn(
+      `[SilverLens] 노인 다빈도 상병 데이터에서 형식이 맞지 않는 ${skipped}개 항목을 건너뜁니다.`,
+    );
+  }
+  return entries;
+}
+
+const frequentConditions = readFrequentConditions(frequentConditionsJson);
 
 function normalizeKey(value: string) {
   return value

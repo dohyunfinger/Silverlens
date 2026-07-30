@@ -52,6 +52,8 @@ export async function POST(request: Request) {
       text: result.transcript,
       allergies: result.allergies,
       conditions: result.conditions,
+      gender: result.gender,
+      ageBand: result.ageBand,
     });
   } catch (error) {
     if (isGeminiQuotaError(error)) {

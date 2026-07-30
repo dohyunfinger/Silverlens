@@ -28,12 +28,28 @@ export type KoreanDishName = {
   variant_count: number;
 };
 
+export type RiskLevelName = "danger" | "caution" | "safe";
+
 export type SafetyRule = {
   id: string;
   severity: string;
   applies_to: string[];
+  /** health_terms.json 의 질병 ID. 문자열 대조보다 정확해서 이쪽을 먼저 본다. */
+  condition_ids: string[];
+  /** 질문에 이 식품이 등장하면 규칙이 실제로 걸린 것으로 본다. */
+  food_triggers: string[];
+  /** 질병과 식품이 함께 걸렸을 때 보장할 최소 위험도. null이면 하한선 없음. */
+  risk_floor: RiskLevelName | null;
   rule: string;
   detail?: string;
+};
+
+/** 질병 + 위험 식품이 함께 걸려 위험도 하한선이 생긴 근거. */
+export type RiskFloorHit = {
+  ruleId: string;
+  floor: RiskLevelName;
+  matchedFoods: string[];
+  rule: string;
 };
 
 type RecipeRecord = {
@@ -205,31 +221,114 @@ function localizeSeniorFoodRecord(
   };
 }
 
+const RISK_ORDER: Record<RiskLevelName, number> = {
+  safe: 0,
+  caution: 1,
+  danger: 2,
+};
+
+export function higherRisk(
+  left: RiskLevelName,
+  right: RiskLevelName,
+): RiskLevelName {
+  return RISK_ORDER[left] >= RISK_ORDER[right] ? left : right;
+}
+
+/**
+ * 규칙이 사용자 질병에 해당하는지 본다.
+ *
+ * 예전에는 applies_to 문자열을 대조했는데, 규칙에 "만성 신장질환"이라 적고
+ * 화면 표시명은 "신장질환"이어서 신장 규칙이 한 번도 걸리지 않았다.
+ * 그래서 health_terms ID 대조를 먼저 하고, ID가 없는 경우에만 문자열로 돕는다.
+ */
+function ruleMatchesConditions(
+  rule: SafetyRule,
+  conditionIds: string[],
+  conditionLabels: string[],
+) {
+  if (rule.condition_ids.length > 0) {
+    if (rule.condition_ids.some((id) => conditionIds.includes(id))) return true;
+  }
+  if (conditionLabels.length === 0) return false;
+
+  const labels = conditionLabels.map(normalized);
+  return rule.applies_to.some((target) => {
+    const candidate = normalized(target);
+    if (candidate.length < 2) return false;
+    // 표기가 서로 조금 달라도 한쪽이 다른 쪽을 포함하면 같은 질병으로 본다.
+    return labels.some(
+      (label) => label.includes(candidate) || candidate.includes(label),
+    );
+  });
+}
+
 /**
  * 사용자가 등록한 질병과 관련된 안전 원칙만 골라 낸다.
  * "전체" 규칙은 항상 포함하고, 질병별 규칙은 등록 질병과 겹칠 때만 넣는다.
  */
 function relevantSafetyRules(
   rules: SafetyRule[],
+  conditionIds: string[],
   conditionLabels: string[],
-  question: string,
 ) {
-  const haystack = normalized([question, ...conditionLabels].join(" "));
   return rules.filter((rule) => {
     if (rule.applies_to.includes("전체")) return true;
-    return rule.applies_to.some((target) => {
-      const candidate = normalized(target);
-      return candidate.length >= 2 && haystack.includes(candidate);
-    });
+    return ruleMatchesConditions(rule, conditionIds, conditionLabels);
   });
+}
+
+/**
+ * 위험도 하한선을 계산한다.
+ *
+ * 질병만 걸려도 하한선을 주면 과경보가 된다(신장질환자가 두부를 물어도 위험).
+ * 그래서 질병과 위험 식품이 **함께** 걸렸을 때만 하한선을 만든다.
+ * 모델이 판정을 낮게 주더라도 화면에는 이 값 이상이 표시된다.
+ */
+function riskFloorHits(
+  rules: SafetyRule[],
+  question: string,
+  conditionIds: string[],
+  conditionLabels: string[],
+): RiskFloorHit[] {
+  const normalizedQuestion = normalized(question);
+  const hits: RiskFloorHit[] = [];
+
+  for (const rule of rules) {
+    if (!rule.risk_floor || rule.food_triggers.length === 0) continue;
+    if (!ruleMatchesConditions(rule, conditionIds, conditionLabels)) continue;
+
+    const matchedFoods = rule.food_triggers.filter((food) => {
+      const candidate = normalized(food);
+      return candidate.length >= 2 && normalizedQuestion.includes(candidate);
+    });
+    if (matchedFoods.length === 0) continue;
+
+    hits.push({
+      ruleId: rule.id,
+      floor: rule.risk_floor,
+      matchedFoods,
+      rule: rule.rule,
+    });
+  }
+
+  return hits;
 }
 
 export function findRelevantKnowledge(
   question: string,
-  options: { language?: string; conditionLabels?: string[] } = {},
+  options: {
+    language?: string;
+    conditionLabels?: string[];
+    conditionIds?: string[];
+  } = {},
 ) {
   const knowledge = loadKnowledgeData();
-  const { language, conditionLabels = [] } = options;
+  const { language, conditionLabels = [], conditionIds = [] } = options;
+  const safetyRules = relevantSafetyRules(
+    knowledge.safetyRules,
+    conditionIds,
+    conditionLabels,
+  );
 
   return {
     dialectHints: dictionaryMatches(question, knowledge.dialectDictionary),
@@ -239,10 +338,12 @@ export function findRelevantKnowledge(
     foods: rankedMatches(knowledge.seniorFoodKnowledge, question, 4).map((record) =>
       localizeSeniorFoodRecord(record, language),
     ),
-    safetyRules: relevantSafetyRules(
+    safetyRules,
+    riskFloorHits: riskFloorHits(
       knowledge.safetyRules,
-      conditionLabels,
       question,
+      conditionIds,
+      conditionLabels,
     ),
   };
 }

@@ -29,7 +29,14 @@ export type TranscriptionResult = {
   transcript: string;
   allergies: string[];
   conditions: string[];
+  /** 말한 내용에 성별이 분명히 나올 때만 채운다. 아니면 null. */
+  gender: "male" | "female" | null;
+  /** 화면 버튼과 같은 나이대(40~90). 말하지 않았으면 null. */
+  ageBand: number | null;
 };
+
+/** 화면의 나이 버튼과 같은 구간만 받는다(frontend ageChoices 와 동일). */
+const AGE_BANDS = [40, 50, 60, 70, 80, 90];
 
 function cleanItems(value: unknown, kind: HealthKind) {
   if (!Array.isArray(value)) return [];
@@ -37,6 +44,22 @@ function cleanItems(value: unknown, kind: HealthKind) {
     value
       .filter((item): item is string => isHealthTermId(kind, item)),
   )];
+}
+
+function cleanGender(value: unknown): "male" | "female" | null {
+  return value === "male" || value === "female" ? value : null;
+}
+
+/**
+ * "예순", "60대", "63살" 같은 표현이 섞여 와도 화면 버튼 구간으로 맞춘다.
+ * 40 미만은 40으로, 90 초과는 90으로 묶는다(버튼이 이하·이상 표기라서).
+ */
+function cleanAgeBand(value: unknown): number | null {
+  const parsed = typeof value === "number" ? value : Number(value);
+  if (!Number.isFinite(parsed) || parsed <= 0) return null;
+  const decade = Math.floor(parsed / 10) * 10;
+  const clamped = Math.min(90, Math.max(40, decade));
+  return AGE_BANDS.includes(clamped) ? clamped : null;
 }
 
 function parseStructuredResult(text: string): TranscriptionResult {
@@ -56,6 +79,8 @@ function parseStructuredResult(text: string): TranscriptionResult {
     transcript?: unknown;
     allergies?: unknown;
     conditions?: unknown;
+    gender?: unknown;
+    age?: unknown;
   };
   const transcript =
     typeof parsed.transcript === "string" ? parsed.transcript.trim() : "";
@@ -65,6 +90,8 @@ function parseStructuredResult(text: string): TranscriptionResult {
     transcript,
     allergies: cleanItems(parsed.allergies, "allergy"),
     conditions: cleanItems(parsed.conditions, "condition"),
+    gender: cleanGender(parsed.gender),
+    ageBand: cleanAgeBand(parsed.age),
   };
 }
 
@@ -99,6 +126,12 @@ export async function transcribeAudio(
                   '예: "복숭아 알레르기가 있고 알츠하이머가 있어요" → allergies ["allergy_peach"], conditions ["condition_alzheimers"].',
                   "말하지 않은 건강정보를 추측해서 추가하지 마세요.",
                   "카탈로그에 없는 항목은 배열에 임의로 추가하지 마세요.",
+                  // 성별·나이는 화면의 선택 버튼을 자동으로 눌러 주는 데 쓴다.
+                  '성별을 직접 말한 경우에만 gender 에 "male" 또는 "female" 을 넣고, 말하지 않았으면 null 을 넣으세요.',
+                  "목소리 톤이나 이름으로 성별을 추측하지 마세요. 말로 밝힌 경우에만 넣으세요.",
+                  "나이를 말한 경우에만 age 에 숫자만 넣고, 말하지 않았으면 null 을 넣으세요.",
+                  '"예순", "60대", "63살" 처럼 말해도 age 에는 숫자로 적으세요(예: 60, 63).',
+                  "나이를 짐작해서 넣지 마세요.",
                   `현재 입력 화면: ${purpose}`,
                   `화면 표시 언어: ${selectedLanguage}`,
                   `건강정보 다국어 카탈로그: ${JSON.stringify(healthCatalog)}`,
@@ -106,7 +139,7 @@ export async function transcribeAudio(
                   `외래어·별칭 참고 사전: ${JSON.stringify(foodAliases)}`,
                   "방언이나 외래어로 들리는 식품명은 참고 사전의 표준 이름으로 바꿔 적으세요.",
                   "반드시 다음 JSON 객체만 반환하세요.",
-                  '{"transcript":"받아쓴 전체 문장","allergies":["카탈로그 allergy ID"],"conditions":["카탈로그 condition ID"]}',
+                  '{"transcript":"받아쓴 전체 문장","allergies":["카탈로그 allergy ID"],"conditions":["카탈로그 condition ID"],"gender":"male|female|null","age":숫자 또는 null}',
                 ].join("\n"),
               },
               {

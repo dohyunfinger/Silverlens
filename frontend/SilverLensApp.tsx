@@ -11,6 +11,8 @@ import {
   useState,
 } from "react";
 import ReactMarkdown from "react-markdown";
+import { clearStore, describeStore, readStore, writeStore } from "./localStore";
+import { type PhotoIssue, preparePhoto } from "./photoCapture";
 import {
   getHealthGroupOptions,
   getHealthLabel,
@@ -51,14 +53,30 @@ type PendingAudio = {
   duration: number;
   url: string;
 };
+/**
+ * 사진을 찍기 전에 고른 촬영 목적.
+ * 같은 사진이라도 성분표를 읽어야 할 때와 음식을 알아봐야 할 때 볼 곳이 달라서,
+ * 촬영 안내와 AI 지시를 함께 나눈다.
+ */
+type PhotoPurpose = "label" | "food" | "medicine";
 type PendingImage = {
   file: File;
   url: string;
+  purpose: PhotoPurpose | null;
+  /** 밝기·흔들림 검사 결과. 검사를 못 했으면 null. */
+  issues: PhotoIssue[] | null;
+  width: number;
+  height: number;
+  byteSize: number;
 };
 type VoiceAnalysis = {
   text: string;
   allergies: string[];
   conditions: string[];
+  /** 말로 직접 밝힌 성별. 말하지 않았으면 null. */
+  gender: Gender | null;
+  /** 말로 밝힌 나이대(40~90). 말하지 않았으면 null. */
+  ageBand: number | null;
 };
 /**
  * 목록으로 고를 수 없는 상세 사정을 음성 그대로 남겨 둔 메모.
@@ -322,6 +340,196 @@ const languages: Array<{
 
 /** 시니어 서비스라 실제로 쓰이는 구간만 큰 버튼으로 노출한다. (앞뒤는 이하·이상으로 묶음) */
 const ageChoices = [40, 50, 60, 70, 80, 90];
+
+/**
+ * 자주 묻는 질문 버튼.
+ *
+ * 빈 입력창은 어르신에게 부담이 커서 첫 질문을 못 던지는 경우가 많다.
+ * 그래서 바로 누를 수 있는 예시를 두고, 사진 버튼은 질문을 보내는 대신
+ * 카메라를 연다. 문구는 주제 이탈 판정(isLikelyOnTopic)을 통과하도록
+ * 음식·건강 낱말을 반드시 포함시켰다.
+ */
+type QuickAsk = {
+  id: string;
+  icon: string;
+  action: "photo" | "ask";
+  label: Record<Language, string>;
+  question?: Record<Language, string>;
+};
+
+const quickAsks: QuickAsk[] = [
+  {
+    id: "photo",
+    icon: "📷",
+    action: "photo",
+    label: {
+      "ko-KR": "사진으로 물어보기",
+      "en-US": "Ask with a photo",
+      "ja-JP": "写真で聞く",
+    },
+  },
+  {
+    id: "medicine",
+    icon: "💊",
+    action: "ask",
+    label: {
+      "ko-KR": "약과 안 맞는 음식",
+      "en-US": "Foods that clash with my medicine",
+      "ja-JP": "薬と合わない食べ物",
+    },
+    question: {
+      "ko-KR": "제가 먹는 약과 같이 먹으면 안 되는 음식이 뭔가요?",
+      "en-US": "Which foods should I avoid with the medicine I take?",
+      "ja-JP": "私が飲んでいる薬と一緒に食べてはいけない食品は何ですか？",
+    },
+  },
+  {
+    id: "soft-food",
+    icon: "🥣",
+    action: "ask",
+    label: {
+      "ko-KR": "부드럽게 먹는 방법",
+      "en-US": "How to make food softer",
+      "ja-JP": "やわらかく食べる方法",
+    },
+    question: {
+      "ko-KR": "씹기 편하게 음식을 부드럽게 조리하는 방법을 알려주세요.",
+      "en-US": "Please tell me how to cook food softer so it is easier to chew.",
+      "ja-JP": "かみやすいように食べ物をやわらかく調理する方法を教えてください。",
+    },
+  },
+  {
+    id: "today-meal",
+    icon: "🍚",
+    action: "ask",
+    label: {
+      "ko-KR": "오늘 뭐 먹을까요",
+      "en-US": "What should I eat today",
+      "ja-JP": "今日は何を食べましょう",
+    },
+    question: {
+      "ko-KR": "제 건강 정보에 맞는 오늘 반찬을 추천해 주세요.",
+      "en-US": "Please recommend side dishes for today that suit my health information.",
+      "ja-JP": "私の健康情報に合う今日のおかずをおすすめしてください。",
+    },
+  },
+];
+
+/** 등록 질병에 맞춰 하나만 더 붙이는 버튼. safety_rules 의 질병 ID를 그대로 쓴다. */
+const conditionQuickAsks: Array<{ conditionIds: string[] } & QuickAsk> = [
+  {
+    id: "diabetes",
+    icon: "🩸",
+    action: "ask",
+    conditionIds: ["condition_diabetes"],
+    label: {
+      "ko-KR": "혈당 안 오르는 반찬",
+      "en-US": "Side dishes that keep blood sugar steady",
+      "ja-JP": "血糖が上がりにくいおかず",
+    },
+    question: {
+      "ko-KR": "혈당이 천천히 오르는 반찬을 알려주세요.",
+      "en-US": "Please tell me side dishes that raise blood sugar slowly.",
+      "ja-JP": "血糖がゆっくり上がるおかずを教えてください。",
+    },
+  },
+  {
+    id: "kidney",
+    icon: "💧",
+    action: "ask",
+    conditionIds: ["condition_kidney_disease", "condition_dialysis"],
+    label: {
+      "ko-KR": "칼륨 적은 채소",
+      "en-US": "Vegetables low in potassium",
+      "ja-JP": "カリウムが少ない野菜",
+    },
+    question: {
+      "ko-KR": "칼륨이 적어서 신장에 부담이 덜한 채소를 알려주세요.",
+      "en-US": "Please tell me vegetables low in potassium that are gentler on the kidneys.",
+      "ja-JP": "カリウムが少なく腎臓の負担が軽い野菜を教えてください。",
+    },
+  },
+  {
+    id: "dysphagia",
+    icon: "🥄",
+    action: "ask",
+    conditionIds: ["condition_dysphagia"],
+    label: {
+      "ko-KR": "삼키기 쉬운 음식",
+      "en-US": "Foods that are easy to swallow",
+      "ja-JP": "飲み込みやすい食べ物",
+    },
+    question: {
+      "ko-KR": "삼키기 쉽게 만드는 음식과 조리법을 알려주세요.",
+      "en-US": "Please tell me foods and cooking methods that are easy to swallow.",
+      "ja-JP": "飲み込みやすい食べ物と調理法を教えてください。",
+    },
+  },
+  {
+    id: "hypertension",
+    icon: "🧂",
+    action: "ask",
+    conditionIds: ["condition_hypertension", "condition_heart_failure"],
+    label: {
+      "ko-KR": "싱겁게 먹는 방법",
+      "en-US": "How to eat with less salt",
+      "ja-JP": "薄味で食べる方法",
+    },
+    question: {
+      "ko-KR": "짜지 않게 간을 맞추면서 맛있게 먹는 방법을 알려주세요.",
+      "en-US": "Please tell me how to season food tastily with less salt.",
+      "ja-JP": "塩を減らしても おいしく味つけする方法を教えてください。",
+    },
+  },
+  {
+    id: "gout",
+    icon: "🦶",
+    action: "ask",
+    conditionIds: ["condition_gout"],
+    label: {
+      "ko-KR": "통풍에 피할 음식",
+      "en-US": "Foods to avoid with gout",
+      "ja-JP": "痛風で避ける食べ物",
+    },
+    question: {
+      "ko-KR": "통풍이 있을 때 피해야 할 음식을 알려주세요.",
+      "en-US": "Please tell me which foods to avoid when I have gout.",
+      "ja-JP": "痛風があるときに避けるべき食べ物を教えてください。",
+    },
+  },
+  {
+    id: "anticoagulant",
+    icon: "🩹",
+    action: "ask",
+    conditionIds: ["condition_anticoagulant"],
+    label: {
+      "ko-KR": "와파린과 음식",
+      "en-US": "Warfarin and food",
+      "ja-JP": "ワルファリンと食事",
+    },
+    question: {
+      "ko-KR": "와파린을 먹을 때 조심해야 할 음식을 알려주세요.",
+      "en-US": "Please tell me which foods need care while taking warfarin.",
+      "ja-JP": "ワルファリンを飲むときに気をつける食品を教えてください。",
+    },
+  },
+  {
+    id: "osteoporosis",
+    icon: "🦴",
+    action: "ask",
+    conditionIds: ["condition_osteoporosis"],
+    label: {
+      "ko-KR": "뼈에 좋은 음식",
+      "en-US": "Foods good for bones",
+      "ja-JP": "骨に良い食べ物",
+    },
+    question: {
+      "ko-KR": "뼈 건강에 도움이 되는 음식을 알려주세요.",
+      "en-US": "Please tell me foods that help bone health.",
+      "ja-JP": "骨の健康に役立つ食べ物を教えてください。",
+    },
+  },
+];
 const narrationRateOptions = [
   { label: { "ko-KR": "아주 천천히", "en-US": "Very slow", "ja-JP": "とてもゆっくり" }, value: 0.72 },
   { label: { "ko-KR": "조금 느리게", "en-US": "A little slow", "ja-JP": "少しゆっくり" }, value: 0.82 },
@@ -334,6 +542,112 @@ const narrationRateOptions = [
 const DEFAULT_RATE_INDEX = 2;
 const NARRATION_RATE_STORAGE_KEY = "silverlens:narration-rate-index-v2";
 const HEALTH_NOTES_STORAGE_KEY = "silverlens:health-notes-v1";
+const PROFILE_STORE_KEY = "state-v1";
+/** 대화 이력은 최근 것만 남긴다. 오래된 것까지 두면 저장 용량이 계속 늘어난다. */
+const MAX_STORED_TURNS = 30;
+const BACKUP_FILE_NAME = "silverlens-backup.json";
+
+/** 기기에 저장하는 내용. 답변 음성은 다시 만들 수 있어 저장하지 않는다. */
+type StoredState = {
+  version: number;
+  savedAt: number;
+  profile: {
+    language: Language | null;
+    gender: Gender | null;
+    ageBand: number;
+    ageConfirmed: boolean;
+    allergyIds: string[];
+    conditionIds: string[];
+    healthNotes: HealthNote[];
+  };
+  chatTurns: ChatTurn[];
+};
+
+function stringArray(value: unknown): string[] {
+  return Array.isArray(value)
+    ? value.filter((item): item is string => typeof item === "string")
+    : [];
+}
+
+function sanitizeHealthNotes(value: unknown): HealthNote[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter(
+      (item): item is HealthNote =>
+        Boolean(item) &&
+        typeof item === "object" &&
+        typeof (item as HealthNote).text === "string" &&
+        (item as HealthNote).text.trim().length > 0,
+    )
+    .slice(-MAX_HEALTH_NOTES);
+}
+
+function sanitizeChatTurns(value: unknown): ChatTurn[] {
+  if (!Array.isArray(value)) return [];
+  return value
+    .filter(
+      (item): item is ChatTurn =>
+        Boolean(item) &&
+        typeof item === "object" &&
+        typeof (item as ChatTurn).id === "string" &&
+        typeof (item as ChatTurn).answer === "string" &&
+        Array.isArray((item as ChatTurn).pages),
+    )
+    .map((turn) => ({
+      id: turn.id,
+      question: typeof turn.question === "string" ? turn.question : "",
+      answer: turn.answer,
+      pages: stringArray(turn.pages),
+      attachmentLabels: stringArray(turn.attachmentLabels),
+      riskLevel: (turn.riskLevel === "danger" || turn.riskLevel === "caution"
+        ? turn.riskLevel
+        : "safe") as ChatTurn["riskLevel"],
+      warningMessage:
+        typeof turn.warningMessage === "string" ? turn.warningMessage : "",
+    }))
+    .filter((turn) => turn.pages.length > 0)
+    .slice(-MAX_STORED_TURNS);
+}
+
+/** 저장 파일이나 저장소에서 읽은 값이 깨져 있어도 화면이 죽지 않게 걸러 낸다. */
+function sanitizeStoredState(value: unknown): StoredState | null {
+  if (!value || typeof value !== "object") return null;
+  const raw = value as Partial<StoredState>;
+  const profile = (raw.profile ?? {}) as Partial<StoredState["profile"]>;
+  const languageValid = languages.some((item) => item.id === profile.language);
+  const ageBand =
+    typeof profile.ageBand === "number" && ageChoices.includes(profile.ageBand)
+      ? profile.ageBand
+      : 70;
+
+  return {
+    version: 1,
+    savedAt: typeof raw.savedAt === "number" ? raw.savedAt : Date.now(),
+    profile: {
+      language: languageValid ? (profile.language as Language) : null,
+      gender:
+        profile.gender === "male" || profile.gender === "female"
+          ? profile.gender
+          : null,
+      ageBand,
+      ageConfirmed: profile.ageConfirmed === true,
+      allergyIds: stringArray(profile.allergyIds),
+      conditionIds: stringArray(profile.conditionIds),
+      healthNotes: sanitizeHealthNotes(profile.healthNotes),
+    },
+    chatTurns: sanitizeChatTurns(raw.chatTurns),
+  };
+}
+
+/** v1 이전에 localStorage에만 있던 음성 메모를 읽어 온다. */
+function readLegacyHealthNotes(): HealthNote[] {
+  try {
+    const raw = window.localStorage.getItem(HEALTH_NOTES_STORAGE_KEY);
+    return raw ? sanitizeHealthNotes(JSON.parse(raw)) : [];
+  } catch {
+    return [];
+  }
+}
 /** 메모는 프롬프트에 그대로 들어가므로 최근 것만 유지한다. */
 const MAX_HEALTH_NOTES = 8;
 const TTS_CACHE_NAME = "silverlens-tts-v1";
@@ -377,6 +691,36 @@ const automaticNoticeCopy: Record<
   },
 };
 
+/**
+ * 촬영 목적 3분기. 어르신이 사진으로 물어보는 상황은 실제로 이 셋으로 나뉜다.
+ * 목적을 고르면 곧바로 카메라가 열리므로 버튼 하나만 더 누르는 셈이다.
+ */
+const photoPurposeOptions: Array<{
+  id: PhotoPurpose;
+  icon: string;
+  labelKey: "photoPurposeLabel" | "photoPurposeFood" | "photoPurposeMedicine";
+  tipKey: "photoPurposeLabelTip" | "photoPurposeFoodTip" | "photoPurposeMedicineTip";
+}> = [
+  {
+    id: "label",
+    icon: "🏷️",
+    labelKey: "photoPurposeLabel",
+    tipKey: "photoPurposeLabelTip",
+  },
+  {
+    id: "food",
+    icon: "🍚",
+    labelKey: "photoPurposeFood",
+    tipKey: "photoPurposeFoodTip",
+  },
+  {
+    id: "medicine",
+    icon: "💊",
+    labelKey: "photoPurposeMedicine",
+    tipKey: "photoPurposeMedicineTip",
+  },
+];
+
 const uiCopy = {
   "ko-KR": {
     menuLabel: "서비스 메뉴",
@@ -399,8 +743,8 @@ const uiCopy = {
     answerSpeedPreview: "🔈 이 속도로 들어보기",
     answerSpeedSample: "지금 이 속도로 답변을 읽어드릴게요.",
     answerSpeedLimited: "이 브라우저는 한국어 음성 속도 조절이 제한돼요. 끊어 읽기로 속도를 맞춥니다.",
-    ageOver: "이상",
-    ageUnder: "이하",
+    ageOver: "{age}세 이상",
+    ageUnder: "{age}세 이하",
     writeText: "글로 쓰기",
     riskDanger: "위험",
     riskCaution: "주의",
@@ -445,6 +789,31 @@ const uiCopy = {
     start: "설정 완료하고 대화 시작",
     completionHint: "언어·성별·나이대를 선택하면 대화를 시작할 수 있어요.",
     backToSetup: "← 설정으로",
+    welcomeVoice:
+      "안녕하세요. 무엇이든 편하게 말씀해 주세요. 드시려는 음식 이름을 말하시거나 사진을 찍어 보여주시면 드셔도 괜찮은지 알려드립니다. 알레르기나 앓고 계신 병이 있으시면 내 정보 입력하기 버튼을 눌러 알려주세요.",
+    welcomeTitle: "말씀만 하시면 됩니다",
+    welcomeBody:
+      "드시려는 음식 이름을 말하거나 사진을 찍어 보여주세요. 드셔도 괜찮은지 큰 글자로 알려드립니다.",
+    welcomeReplay: "🔊 안내 다시 듣기",
+    openProfile: "내 정보 입력하기",
+    openProfileHelp: "알레르기·질병을 알려주면 더 정확해요",
+    profileDone: "입력 완료, 대화로 돌아가기",
+    profileOptional: "이 정보는 넣지 않아도 대화할 수 있어요. 알려주시면 더 정확하게 안내합니다.",
+    waitTranscribing: "건강정보를 입력하고 있어요. 잠시만 기다려 주세요.",
+    backupTitle: "내 정보 저장",
+    backupHelp: "이 기기에만 저장됩니다. 로그인은 필요하지 않아요.",
+    backupSavedAt: "{time}에 저장했어요.",
+    backupNever: "아직 저장된 내용이 없어요.",
+    backupStoreLocal: "이 브라우저의 저장 공간이 제한되어 간단히 저장합니다.",
+    backupStoreNone: "이 브라우저에서는 저장할 수 없어요.",
+    backupExport: "저장 파일 내보내기",
+    backupImport: "저장 파일 불러오기",
+    backupClear: "저장한 내용 지우기",
+    backupExportDone: "저장 파일을 내려받았어요. 기기를 바꿀 때 이 파일을 불러오세요.",
+    backupImportDone: "저장 파일을 불러왔어요.",
+    backupImportFail: "저장 파일을 읽지 못했어요. 다른 파일을 골라 주세요.",
+    backupClearConfirm: "저장한 정보와 대화를 모두 지울까요?",
+    backupCleared: "저장한 내용을 지웠어요.",
     profileAge: "대 맞춤",
     headline: "오늘은 무엇을 도와드릴까요?",
     answerLabel: "AI 답변",
@@ -458,10 +827,14 @@ const uiCopy = {
     foodWarning: "음식 경고",
     foodCheck: "먹기 전 확인",
     attachmentLabel: "함께 보낸 첨부",
+    quickAskTitle: "이런 것도 물어보실 수 있어요",
     emptyAnswerTitle: "질문을 보내면 답변을 큰 글자로 보여드려요.",
     emptyAnswerHelp: "답변이 길면 오른쪽 카드로 이어지고, 왼쪽으로 넘기면 이전 답변을 다시 볼 수 있어요.",
     previousCards: "← 이전 답변",
     nextCards: "이어지는 답변 →",
+    pageBadge: "{total}장 중 {current}장",
+    nextPagePrompt: "다음 장에 내용이 이어집니다",
+    lastPageNotice: "이 답변은 여기까지입니다.",
     cardSelector: "답변 카드 선택",
     stopReplay: "■ 답변 재생 멈추기",
     preparingReplay: "🔊 음성 준비 중 · 준비되면 바로 재생",
@@ -487,6 +860,8 @@ const uiCopy = {
     processingVoice: "음성을 글자로 바꾸고 있어요. 잠시만 기다려 주세요.",
     profileVoiceFound: "AI가 음성을 확인해 알레르기 {allergies}개, 질병 {conditions}개를 나누어 입력했어요.",
     profileVoiceEmpty: "음성에서 분명하게 말한 알레르기나 질병 정보를 찾지 못했어요.",
+    voiceFoundGender: "말씀하신 성별도 함께 골라 두었어요.",
+    voiceFoundAge: "말씀하신 나이에 맞춰 {age}대를 골라 두었어요.",
     audioPreviewFail: "음성은 첨부됐지만 글자로 미리보지 못했습니다. 음성 자체는 함께 보낼 수 있어요.",
     transcribeRetry: "음성을 글자로 바꾸지 못했습니다. 다시 말해 주세요.",
     micPermission: "마이크 권한을 허용하면 음성으로 말할 수 있어요.",
@@ -498,6 +873,28 @@ const uiCopy = {
     audioPhotoQuestion: "음성과 사진으로 질문",
     audioQuestion: "음성으로 질문",
     photoQuestion: "사진으로 질문",
+    photoPurposeTitle: "무엇을 찍으실 건가요?",
+    photoPurposeHelp: "고르시면 잘 찍는 방법을 알려 드리고 바로 카메라가 열려요.",
+    photoPurposeCancel: "그만두기",
+    photoPurposeLabel: "성분표·라벨",
+    photoPurposeLabelTip: "글자가 화면을 가득 채우게, 봉지를 펴서 찍어 주세요.",
+    photoPurposeFood: "음식·식재료",
+    photoPurposeFoodTip: "음식 전체가 들어오게, 위에서 내려다보며 찍어 주세요.",
+    photoPurposeMedicine: "약 봉투·약 이름",
+    photoPurposeMedicineTip: "약 이름과 하루 몇 번 먹는지가 보이게 찍어 주세요.",
+    photoPreparing: "사진을 확인하고 있어요.",
+    photoReviewTitle: "사진을 확인해 주세요",
+    photoReviewHelp: "글자가 읽히면 그대로 물어보시고, 아니면 다시 찍어 주세요.",
+    photoRetake: "다시 찍기",
+    photoUseIt: "이대로 물어보기",
+    photoZoomOpen: "크게 보기",
+    photoZoomClose: "닫기",
+    photoQualityOk: "잘 찍혔어요. 그대로 물어보셔도 돼요.",
+    photoQualityDark: "사진이 어두워요. 불을 켜거나 창가에서 다시 찍어 보세요.",
+    photoQualityBright: "빛이 너무 세서 글자가 날아갔어요. 그림자를 피해 다시 찍어 보세요.",
+    photoQualityBlurry: "사진이 흐릿해요. 손을 어딘가에 받치고 다시 찍어 보세요.",
+    photoQualitySkipped: "사진 상태는 확인하지 못했어요. 글자가 읽히는지 직접 봐 주세요.",
+    photoSizeNote: "보낼 사진 크기",
   },
   "en-US": {
     menuLabel: "Service menu",
@@ -520,8 +917,8 @@ const uiCopy = {
     answerSpeedPreview: "🔈 Hear this speed",
     answerSpeedSample: "I will read answers at this speed.",
     answerSpeedLimited: "This browser limits voice speed control, so pauses are used instead.",
-    ageOver: "and above",
-    ageUnder: "and under",
+    ageOver: "{age} and above",
+    ageUnder: "{age} and under",
     writeText: "Write text",
     riskDanger: "Danger",
     riskCaution: "Caution",
@@ -566,6 +963,32 @@ const uiCopy = {
     start: "Finish setup and start chat",
     completionHint: "Choose language, gender, and age to start chatting.",
     backToSetup: "← Back to setup",
+    welcomeVoice:
+      "Hello. Just say whatever you like. Tell me the name of a food or show me a photo, and I will tell you whether it is fine to eat. If you have allergies or a condition, press the My information button to let me know.",
+    welcomeTitle: "Just speak to me",
+    welcomeBody:
+      "Say the name of a food or show me a photo. I will tell you in large text whether it is fine to eat.",
+    welcomeReplay: "🔊 Play the guide again",
+    openProfile: "My information",
+    openProfileHelp: "Allergies and conditions make answers more precise",
+    profileDone: "Done, back to the conversation",
+    profileOptional:
+      "You can chat without filling this in. Sharing it makes the guidance more precise.",
+    waitTranscribing: "I'm saving your health information. One moment please.",
+    backupTitle: "Saved on this device",
+    backupHelp: "Everything stays on this device. No sign-in needed.",
+    backupSavedAt: "Saved at {time}.",
+    backupNever: "Nothing saved yet.",
+    backupStoreLocal: "This browser limits storage, so we save a simpler copy.",
+    backupStoreNone: "This browser cannot save anything.",
+    backupExport: "Export a backup file",
+    backupImport: "Load a backup file",
+    backupClear: "Delete saved data",
+    backupExportDone: "Backup file downloaded. Load it when you change devices.",
+    backupImportDone: "Backup file loaded.",
+    backupImportFail: "Could not read that file. Please choose another one.",
+    backupClearConfirm: "Delete all saved information and conversations?",
+    backupCleared: "Saved data deleted.",
     profileAge: "s profile",
     headline: "How can I help today?",
     answerLabel: "AI Answer",
@@ -579,10 +1002,14 @@ const uiCopy = {
     foodWarning: "Food warning",
     foodCheck: "Check before eating",
     attachmentLabel: "Sent attachments",
+    quickAskTitle: "You can also ask things like these",
     emptyAnswerTitle: "Send a question and I’ll show the answer in large text.",
     emptyAnswerHelp: "Long answers continue on the next card. Swipe left to revisit previous answers.",
     previousCards: "← Previous answers",
     nextCards: "More answers →",
+    pageBadge: "Page {current} of {total}",
+    nextPagePrompt: "The answer continues on the next page",
+    lastPageNotice: "That is the end of this answer.",
     cardSelector: "Choose answer card",
     stopReplay: "■ Stop answer playback",
     preparingReplay: "🔊 Voice preparing · plays when ready",
@@ -608,6 +1035,8 @@ const uiCopy = {
     processingVoice: "Converting your voice to text. Please wait a moment.",
     profileVoiceFound: "AI found {allergies} allergies and {conditions} conditions from your voice and added them separately.",
     profileVoiceEmpty: "I could not find clearly spoken allergy or condition information in the voice.",
+    voiceFoundGender: "I also selected the gender you mentioned.",
+    voiceFoundAge: "I selected the {age}s to match the age you mentioned.",
     audioPreviewFail: "The recording is attached, but I could not preview it as text. The audio can still be sent.",
     transcribeRetry: "I could not convert the voice to text. Please try again.",
     micPermission: "Allow microphone permission to speak by voice.",
@@ -619,6 +1048,28 @@ const uiCopy = {
     audioPhotoQuestion: "Question with voice and photo",
     audioQuestion: "Question with voice",
     photoQuestion: "Question with photo",
+    photoPurposeTitle: "What are you taking a photo of?",
+    photoPurposeHelp: "Pick one and we will share a tip, then open the camera.",
+    photoPurposeCancel: "Cancel",
+    photoPurposeLabel: "Ingredient list or label",
+    photoPurposeLabelTip: "Flatten the package and fill the screen with the text.",
+    photoPurposeFood: "Food or ingredient",
+    photoPurposeFoodTip: "Look down from above so the whole dish fits in.",
+    photoPurposeMedicine: "Medicine packet or name",
+    photoPurposeMedicineTip: "Make sure the medicine name and daily doses are visible.",
+    photoPreparing: "Checking the photo.",
+    photoReviewTitle: "Please check the photo",
+    photoReviewHelp: "If you can read the text, go ahead and ask. If not, take it again.",
+    photoRetake: "Take again",
+    photoUseIt: "Ask with this photo",
+    photoZoomOpen: "View larger",
+    photoZoomClose: "Close",
+    photoQualityOk: "Looks good. You can ask with this photo.",
+    photoQualityDark: "The photo is dark. Turn on a light or move near a window.",
+    photoQualityBright: "Too much glare washed out the text. Avoid direct light and retake.",
+    photoQualityBlurry: "The photo is blurry. Rest your hand on something and retake.",
+    photoQualitySkipped: "We could not check this photo. Please confirm the text is readable.",
+    photoSizeNote: "Photo size to send",
   },
   "ja-JP": {
     menuLabel: "サービスメニュー",
@@ -641,8 +1092,8 @@ const uiCopy = {
     answerSpeedPreview: "🔈 この速さで聞く",
     answerSpeedSample: "この速さで回答をお読みします。",
     answerSpeedLimited: "このブラウザは音声速度の調整が制限されるため、区切り読みで調整します。",
-    ageOver: "以上",
-    ageUnder: "以下",
+    ageOver: "{age}歳以上",
+    ageUnder: "{age}歳以下",
     writeText: "文字で書く",
     riskDanger: "危険",
     riskCaution: "注意",
@@ -687,6 +1138,32 @@ const uiCopy = {
     start: "設定を完了して会話を始める",
     completionHint: "言語・性別・年齢を選ぶと会話を始められます。",
     backToSetup: "← 設定へ戻る",
+    welcomeVoice:
+      "こんにちは。何でも気軽に話してください。食べたい食品の名前を言うか、写真を撮って見せてくださると、食べても大丈夫かお知らせします。アレルギーやご病気があれば、「私の情報を入力」ボタンを押して教えてください。",
+    welcomeTitle: "話すだけで大丈夫です",
+    welcomeBody:
+      "食べたい食品の名前を言うか、写真を撮って見せてください。食べても大丈夫か大きな文字でお知らせします。",
+    welcomeReplay: "🔊 案内をもう一度聞く",
+    openProfile: "私の情報を入力",
+    openProfileHelp: "アレルギーや病気を教えるとより正確です",
+    profileDone: "入力完了、会話に戻る",
+    profileOptional:
+      "この情報がなくても会話できます。教えていただくとより正確に案内します。",
+    waitTranscribing: "健康情報を保存しています。少しお待ちください。",
+    backupTitle: "この端末に保存",
+    backupHelp: "この端末だけに保存されます。ログインは不要です。",
+    backupSavedAt: "{time}に保存しました。",
+    backupNever: "まだ保存された内容がありません。",
+    backupStoreLocal: "このブラウザは保存領域が限られるため簡易保存します。",
+    backupStoreNone: "このブラウザでは保存できません。",
+    backupExport: "バックアップを書き出す",
+    backupImport: "バックアップを読み込む",
+    backupClear: "保存した内容を消す",
+    backupExportDone: "バックアップを保存しました。端末を変えるときに読み込んでください。",
+    backupImportDone: "バックアップを読み込みました。",
+    backupImportFail: "ファイルを読めませんでした。別のファイルを選んでください。",
+    backupClearConfirm: "保存した情報と会話をすべて消しますか？",
+    backupCleared: "保存した内容を消しました。",
     profileAge: "代向け",
     headline: "今日は何をお手伝いしましょうか？",
     answerLabel: "AI回答",
@@ -700,10 +1177,14 @@ const uiCopy = {
     foodWarning: "食品の警告",
     foodCheck: "食べる前に確認",
     attachmentLabel: "一緒に送った添付",
+    quickAskTitle: "こんなことも聞けます",
     emptyAnswerTitle: "質問を送ると、回答を大きな文字で表示します。",
     emptyAnswerHelp: "回答が長い場合は次のカードに続きます。左へ戻ると前の回答を見られます。",
     previousCards: "← 前の回答",
     nextCards: "続きの回答 →",
+    pageBadge: "全{total}枚中 {current}枚目",
+    nextPagePrompt: "次のページに続きがあります",
+    lastPageNotice: "この回答はここまでです。",
     cardSelector: "回答カードを選択",
     stopReplay: "■ 回答再生を止める",
     preparingReplay: "🔊 音声準備中 · 準備後すぐ再生",
@@ -729,6 +1210,8 @@ const uiCopy = {
     processingVoice: "音声を文字に変換しています。少しお待ちください。",
     profileVoiceFound: "AIが音声を確認し、アレルギー{allergies}件、病気{conditions}件を分けて入力しました。",
     profileVoiceEmpty: "音声から明確なアレルギーや病気の情報を見つけられませんでした。",
+    voiceFoundGender: "お話しになった性別も一緒に選んでおきました。",
+    voiceFoundAge: "お話しになった年齢に合わせて{age}代を選んでおきました。",
     audioPreviewFail: "音声は添付されましたが、文字プレビューはできませんでした。音声自体は一緒に送れます。",
     transcribeRetry: "音声を文字に変換できませんでした。もう一度話してください。",
     micPermission: "マイクの許可をすると、音声で話せます。",
@@ -740,11 +1223,47 @@ const uiCopy = {
     audioPhotoQuestion: "音声と写真で質問",
     audioQuestion: "音声で質問",
     photoQuestion: "写真で質問",
+    photoPurposeTitle: "何を撮りますか？",
+    photoPurposeHelp: "選ぶと上手に撮るコツをお伝えして、すぐカメラが開きます。",
+    photoPurposeCancel: "やめる",
+    photoPurposeLabel: "成分表・ラベル",
+    photoPurposeLabelTip: "袋を平らに伸ばし、文字が画面いっぱいになるように撮ってください。",
+    photoPurposeFood: "料理・食材",
+    photoPurposeFoodTip: "真上から見下ろして、料理全体が入るように撮ってください。",
+    photoPurposeMedicine: "薬の袋・薬の名前",
+    photoPurposeMedicineTip: "薬の名前と一日何回飲むかが見えるように撮ってください。",
+    photoPreparing: "写真を確認しています。",
+    photoReviewTitle: "写真を確認してください",
+    photoReviewHelp: "文字が読めればそのまま質問し、読めなければ撮り直してください。",
+    photoRetake: "撮り直す",
+    photoUseIt: "この写真で質問する",
+    photoZoomOpen: "大きく見る",
+    photoZoomClose: "閉じる",
+    photoQualityOk: "きれいに撮れました。このまま質問できます。",
+    photoQualityDark: "写真が暗いです。明かりをつけるか窓の近くで撮り直してください。",
+    photoQualityBright: "光が強すぎて文字が飛んでいます。直射光を避けて撮り直してください。",
+    photoQualityBlurry: "写真がぼやけています。手をどこかに固定して撮り直してください。",
+    photoQualitySkipped: "写真の状態は確認できませんでした。文字が読めるかご自身で確認してください。",
+    photoSizeNote: "送る写真の大きさ",
   },
 } satisfies Record<Language, Record<string, string>>;
 
 type AboutFeature = { title: string; text: string };
 type AboutStep = { step: string; title: string; text: string };
+/**
+ * 소개 페이지의 "이렇게 쓰세요" 단계.
+ * 사진을 올리는 대신 실제 화면을 흉내 낸 작은 목업을 CSS로 그린다.
+ * 스크린샷을 쓰면 화면을 고칠 때마다 이미지가 낡고 용량도 늘어난다.
+ */
+type AboutGuideStep = {
+  step: string;
+  title: string;
+  text: string;
+  tips: string[];
+  mockTitle: string;
+  mockItems: string[];
+  mockNote: string;
+};
 const GITHUB_URL = "https://github.com/dohyunfinger/-OGQ-";
 
 const teamMembers: Array<{ name: string; roles: Record<Language, string> }> = [
@@ -772,6 +1291,7 @@ type AboutCopy = {
   teamTitle: string;
   navFeatures: string;
   navWorkflow: string;
+  navGuide: string;
   languageLabel: string;
   heroSecondaryCta: string;
   brandSubtitle: string;
@@ -789,6 +1309,14 @@ type AboutCopy = {
   workflowTitleAccent: string;
   workflowDescription: string;
   steps: AboutStep[];
+  /** 어르신이 화면에서 무엇을 누르면 되는지 순서대로 보여 주는 사용 가이드. */
+  guideBadge: string;
+  guideTitle: string;
+  guideTitleAccent: string;
+  guideDescription: string;
+  guideTipsLabel: string;
+  guideSteps: AboutGuideStep[];
+  guideCta: string;
   /** 실제 서비스 화면 조각을 소개 페이지 안에서 미리 보여 주는 블록. */
   previewBadge: string;
   previewTitle: string;
@@ -811,6 +1339,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
     teamTitle: "만든 사람들",
     navFeatures: "핵심 기능",
     navWorkflow: "이용 흐름",
+    navGuide: "사용 방법",
     languageLabel: "언어 선택",
     heroSecondaryCta: "지금 시작하기",
     brandSubtitle: "디지털 세상의 소외를 지우는 빛, SilverLens",
@@ -879,6 +1408,67 @@ const aboutCopy: Record<Language, AboutCopy> = {
         text: "이해한 정보를 바탕으로 일상 식단, 건강 습관, 생활 선택에 바로 적용할 수 있도록 행동 중심의 도움을 제공합니다.",
       },
     ],
+    guideBadge: "How to use",
+    guideTitle: "처음 오셨어도 괜찮습니다,",
+    guideTitleAccent: "네 단계만 보시면 됩니다",
+    guideDescription:
+      "가입도, 로그인도 없습니다. 화면에 들어오면 바로 물어보실 수 있고, 아래 네 단계는 더 정확한 답을 받는 방법입니다. 건강 정보는 이 기기에만 저장되고 서버로 올라가지 않습니다.",
+    guideTipsLabel: "이렇게 하시면 편합니다",
+    guideSteps: [
+      {
+        step: "1단계",
+        title: "언어와 성별, 나이를 고릅니다",
+        text: "화면 위쪽 '내 정보 입력하기' 버튼을 누르면 나옵니다. 성별과 나이는 하루 권장 섭취량이 달라지는 부분에만 쓰이고, 넣지 않으셔도 대화는 그대로 됩니다.",
+        tips: [
+          "나이는 '49세 이하'부터 '90세 이상'까지 버튼으로 고릅니다.",
+          "잘못 눌렀으면 같은 버튼을 한 번 더 눌러 취소합니다.",
+          "언어를 바꾸면 등록해 둔 건강 정보 표기도 함께 바뀝니다.",
+        ],
+        mockTitle: "언어 · 성별 · 나이",
+        mockItems: ["🇰🇷 한국어", "여자", "70대"],
+        mockNote: "넣지 않아도 대화할 수 있어요",
+      },
+      {
+        step: "2단계",
+        title: "알레르기와 질병을 등록합니다",
+        text: "여기까지 넣어 두시면 답변이 달라집니다. 등록한 알레르기 식품은 추천에서 빠지고, 질병에 걸리는 음식은 위험도를 한 단계 높여 알려 드립니다.",
+        tips: [
+          "묶음 제목을 누르면 항목이 펼쳐집니다. 해당 없으면 '해당없음'을 누르세요.",
+          "목록에 없으면 '직접 입력'으로 적으실 수 있습니다.",
+          "'말해서 입력'을 누르고 말씀하시면 그대로 메모로 남아 답변에 함께 반영됩니다.",
+        ],
+        mockTitle: "알레르기 · 질병",
+        mockItems: ["우유", "견과류", "당뇨"],
+        mockNote: "🎙 말해서 입력도 됩니다",
+      },
+      {
+        step: "3단계",
+        title: "말하거나, 찍거나, 적어서 물어봅니다",
+        text: "세 가지 중 편한 것을 쓰시면 됩니다. 사투리로 말씀하셔도 알아듣습니다. 음성과 사진을 함께 보내면 하나의 질문으로 이해합니다.",
+        tips: [
+          "음성은 큰 마이크 버튼을 누르고 말한 뒤 한 번 더 누르면 첨부됩니다.",
+          "사진은 성분표·음식·약 봉투 중 무엇을 찍는지 먼저 고르면 찍는 방법을 알려 드립니다.",
+          "찍은 사진이 어둡거나 흐리면 다시 찍으라고 알려 드립니다.",
+        ],
+        mockTitle: "물어보는 방법",
+        mockItems: ["🎙 음성으로 말하기", "📷 사진 올리기", "⌨ 글로 쓰기"],
+        mockNote: "자주 묻는 질문 버튼을 눌러도 됩니다",
+      },
+      {
+        step: "4단계",
+        title: "답변을 한 장씩 넘겨 봅니다",
+        text: "답변이 길면 여러 장으로 나눠 드립니다. 카드 위쪽에 '3장 중 1장'처럼 표시되고, 아래 '다음 장 보기' 버튼을 누르면 뒷장이 나옵니다.",
+        tips: [
+          "손가락으로 좌우로 밀어서 넘기실 수도 있습니다.",
+          "마지막 장에는 '여기까지입니다'라고 적혀 있습니다.",
+          "'답변 다시 듣기'를 누르면 소리로 읽어 드립니다.",
+        ],
+        mockTitle: "3장 중 1장",
+        mockItems: ["무를 푹 끓이면 단맛이 살아나요. 설탕은 넣지 않으셔도 됩니다."],
+        mockNote: "다음 장 보기 →",
+      },
+    ],
+    guideCta: "바로 시작해 보기",
     previewBadge: "Real UI",
     previewTitle: "서비스 화면은 이렇게 생겼습니다",
     previewDescription:
@@ -899,6 +1489,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
     teamTitle: "Team",
     navFeatures: "Core features",
     navWorkflow: "Workflow",
+    navGuide: "How to use",
     languageLabel: "Choose language",
     heroSecondaryCta: "Start now",
     brandSubtitle: "SilverLens, the light that removes digital exclusion",
@@ -967,6 +1558,67 @@ const aboutCopy: Record<Language, AboutCopy> = {
         text: "The answer turns into action for daily meals, health habits, and everyday choices.",
       },
     ],
+    guideBadge: "How to use",
+    guideTitle: "First time here is fine,",
+    guideTitleAccent: "four steps are all it takes",
+    guideDescription:
+      "No sign-up, no login. You can ask a question the moment the screen opens, and these four steps simply help the answer fit you better. Health details stay on this device and are never uploaded to a server.",
+    guideTipsLabel: "Handy to know",
+    guideSteps: [
+      {
+        step: "Step 1",
+        title: "Pick language, gender, and age",
+        text: "Press the button at the top of the screen. Gender and age are used only where daily intake guidance differs, and you can keep chatting without entering them.",
+        tips: [
+          "Age is chosen with buttons, from 49 or younger to 90 or older.",
+          "Pressed the wrong one? Press the same button again to clear it.",
+          "Changing the language also changes how saved health details are shown.",
+        ],
+        mockTitle: "Language · Gender · Age",
+        mockItems: ["🇬🇧 English", "Female", "70s"],
+        mockNote: "You can chat without filling this in",
+      },
+      {
+        step: "Step 2",
+        title: "Register allergies and conditions",
+        text: "This is what changes the answers. Registered allergens are dropped from suggestions, and foods that clash with your condition come back one risk level higher.",
+        tips: [
+          "Press a group heading to open its items, or choose None if it does not apply.",
+          "Not on the list? Type it in with direct entry.",
+          "Press Speak to enter and your own words are kept as a note the AI reads too.",
+        ],
+        mockTitle: "Allergies · Conditions",
+        mockItems: ["Milk", "Tree nuts", "Diabetes"],
+        mockNote: "🎙 Speaking it in works too",
+      },
+      {
+        step: "Step 3",
+        title: "Speak, snap, or type your question",
+        text: "Use whichever is easiest. Dialect is understood. Send voice and a photo together and both are read as one question.",
+        tips: [
+          "For voice, press the big microphone, speak, then press once more to attach.",
+          "For photos, choose label, food, or medicine first and we share how to shoot it.",
+          "If the photo comes out dark or blurry, we tell you to take it again.",
+        ],
+        mockTitle: "Ways to ask",
+        mockItems: ["🎙 Speak", "📷 Upload a photo", "⌨ Type it"],
+        mockNote: "The common question buttons work too",
+      },
+      {
+        step: "Step 4",
+        title: "Turn the answer one card at a time",
+        text: "Long answers are split across cards. The top shows something like 1 of 3, and the button below opens the next card.",
+        tips: [
+          "You can also swipe left or right to turn cards.",
+          "The last card says the answer ends there.",
+          "Press Read the answer again to hear it out loud.",
+        ],
+        mockTitle: "1 of 3",
+        mockItems: ["Simmer the radish well and its own sweetness comes out. No sugar needed."],
+        mockNote: "See the next card →",
+      },
+    ],
+    guideCta: "Try it now",
     previewBadge: "Real UI",
     previewTitle: "This is what the service screen looks like",
     previewDescription:
@@ -988,6 +1640,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
     teamTitle: "制作メンバー",
     navFeatures: "主要機能",
     navWorkflow: "利用の流れ",
+    navGuide: "使い方",
     languageLabel: "言語を選ぶ",
     heroSecondaryCta: "今すぐ始める",
     brandSubtitle: "デジタル世界の疎外を消す光、SilverLens",
@@ -1056,6 +1709,67 @@ const aboutCopy: Record<Language, AboutCopy> = {
         text: "理解した情報を毎日の食事、健康習慣、暮らしの選択にすぐ活かせるよう、行動中心で支えます。",
       },
     ],
+    guideBadge: "How to use",
+    guideTitle: "はじめてでも大丈夫、",
+    guideTitleAccent: "四つの手順だけです",
+    guideDescription:
+      "登録もログインもありません。画面が開いたらすぐ質問できます。下の四つの手順は、より合った答えを受け取るためのものです。健康情報はこの端末だけに保存され、サーバーには送りません。",
+    guideTipsLabel: "覚えておくと便利です",
+    guideSteps: [
+      {
+        step: "手順 1",
+        title: "言語・性別・年齢を選びます",
+        text: "画面上の「自分の情報を入力」ボタンから開きます。性別と年齢は一日の推奨摂取量が変わる部分にだけ使い、入力しなくても会話はできます。",
+        tips: [
+          "年齢は「49歳以下」から「90歳以上」までボタンで選びます。",
+          "押し間違えたら同じボタンをもう一度押して取り消せます。",
+          "言語を変えると、登録した健康情報の表記も一緒に変わります。",
+        ],
+        mockTitle: "言語 · 性別 · 年齢",
+        mockItems: ["🇯🇵 日本語", "女性", "70代"],
+        mockNote: "入力しなくても会話できます",
+      },
+      {
+        step: "手順 2",
+        title: "アレルギーと疾患を登録します",
+        text: "ここまで入れると答えが変わります。登録したアレルギー食品はおすすめから外れ、疾患に触れる食品は危険度を一段上げてお知らせします。",
+        tips: [
+          "グループの見出しを押すと項目が開きます。該当しなければ「該当なし」を押してください。",
+          "一覧になければ「直接入力」で書けます。",
+          "「話して入力」を押して話すと、その言葉がメモとして残り回答にも反映されます。",
+        ],
+        mockTitle: "アレルギー · 疾患",
+        mockItems: ["牛乳", "ナッツ類", "糖尿病"],
+        mockNote: "🎙 話して入力もできます",
+      },
+      {
+        step: "手順 3",
+        title: "話す・撮る・書く、どれでも質問できます",
+        text: "楽な方法を選んでください。方言のままでも通じます。音声と写真を一緒に送ると、ひとつの質問として理解します。",
+        tips: [
+          "音声は大きなマイクを押して話し、もう一度押すと添付されます。",
+          "写真は成分表・料理・薬の袋のどれを撮るか先に選ぶと、撮り方をお伝えします。",
+          "撮った写真が暗い、またはぼやけている場合は撮り直しをお知らせします。",
+        ],
+        mockTitle: "質問の方法",
+        mockItems: ["🎙 音声で話す", "📷 写真を送る", "⌨ 文字で書く"],
+        mockNote: "よくある質問ボタンからでも大丈夫です",
+      },
+      {
+        step: "手順 4",
+        title: "回答を一枚ずつめくって読みます",
+        text: "答えが長いときは何枚かに分けます。カードの上に「3枚中1枚」のように表示され、下のボタンを押すと次の枚が出ます。",
+        tips: [
+          "指で左右に払ってめくることもできます。",
+          "最後の枚には、ここまでという案内が入ります。",
+          "「回答をもう一度聞く」を押すと声で読み上げます。",
+        ],
+        mockTitle: "3枚中1枚",
+        mockItems: ["大根をよく煮ると甘みが出ます。砂糖は入れなくて大丈夫です。"],
+        mockNote: "次の枚を見る →",
+      },
+    ],
+    guideCta: "すぐに始めてみる",
     previewBadge: "Real UI",
     previewTitle: "サービス画面はこんな見た目です",
     previewDescription:
@@ -1119,6 +1833,70 @@ const aboutStepIcons = [
     <path d="M12 5l7 7-7 7" />
   </svg>,
 ];
+
+const aboutGuideIcons = [
+  <svg key="person" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+    <circle cx="12" cy="8" r="3.5" />
+    <path d="M5 20c0-3.3 3.1-5.5 7-5.5s7 2.2 7 5.5" />
+  </svg>,
+  <svg key="clipboard" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+    <path d="M9 4h6v3H9z" />
+    <path d="M7 5H5v15h14V5h-2" />
+    <path d="M9 12h6M9 16h4" />
+  </svg>,
+  <svg key="mic" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+    <rect x="9" y="3" width="6" height="10" rx="3" />
+    <path d="M6 11a6 6 0 0 0 12 0" />
+    <path d="M12 17v4M9 21h6" />
+  </svg>,
+  <svg key="cards" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+    <rect x="3" y="6" width="12" height="13" rx="2" />
+    <path d="M8 3h11a2 2 0 0 1 2 2v11" />
+    <path d="M6 11h6M6 15h4" />
+  </svg>,
+];
+
+/**
+ * 실제 화면을 흉내 낸 작은 목업. 스크린샷 대신 CSS로 그려서
+ * 서비스 화면을 고쳐도 이 그림이 낡지 않고 용량도 늘지 않는다.
+ * 장식이라 스크린 리더에서는 숨기고, 설명은 옆의 글과 팁 목록이 담당한다.
+ */
+function AboutGuideMock({ index, step }: { index: number; step: AboutGuideStep }) {
+  return (
+    <div className="about-guide-mock" aria-hidden="true">
+      <span className="about-guide-mock-title">{step.mockTitle}</span>
+
+      {index === 3 ? (
+        <>
+          <p className="about-guide-mock-answer">{step.mockItems[0]}</p>
+          <span className="about-guide-mock-next">{step.mockNote}</span>
+        </>
+      ) : index === 2 ? (
+        <>
+          <div className="about-guide-mock-stack">
+            {step.mockItems.map((item) => (
+              <span className="about-guide-mock-button" key={item}>
+                {item}
+              </span>
+            ))}
+          </div>
+          <span className="about-guide-mock-note">{step.mockNote}</span>
+        </>
+      ) : (
+        <>
+          <div className="about-guide-mock-chips">
+            {step.mockItems.map((item) => (
+              <span className="about-guide-mock-chip" key={item}>
+                {item}
+              </span>
+            ))}
+          </div>
+          <span className="about-guide-mock-note">{step.mockNote}</span>
+        </>
+      )}
+    </div>
+  );
+}
 
 type BrowserNarrationState = {
   pages: string[];
@@ -1238,6 +2016,38 @@ function narrationGapMs(rate: number) {
   return Math.round((baseline - rate) * 3200);
 }
 
+/**
+ * 방언 변환 서버 주소를 쓸 수 있는지 판단한다.
+ *
+ * NEXT_PUBLIC_ 값은 빌드 시점에 클라이언트 번들에 박히므로, 개발용
+ * `http://127.0.0.1:8001`이 배포본에 그대로 실려 나갈 수 있다. 그러면 방문자
+ * 브라우저가 자기 PC의 8001 포트를 찾게 되고, HTTPS 사이트에서는 혼합 콘텐츠로
+ * 차단된다. 그래서 화면이 로컬에서 열렸을 때만 로컬 주소를 쓴다.
+ */
+function usableDialectApiUrl() {
+  const raw = process.env.NEXT_PUBLIC_DIALECT_API_URL?.trim();
+  if (!raw || typeof window === "undefined") return null;
+
+  let target: URL;
+  try {
+    target = new URL(raw);
+  } catch {
+    return null;
+  }
+
+  const isLocalTarget = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(target.hostname);
+  const isLocalPage = /^(localhost|127\.0\.0\.1|\[::1\])$/.test(
+    window.location.hostname,
+  );
+  if (isLocalTarget && !isLocalPage) return null;
+
+  // HTTPS 페이지에서 HTTP 주소를 부르면 브라우저가 막으므로 미리 건너뛴다.
+  if (window.location.protocol === "https:" && target.protocol === "http:") {
+    return null;
+  }
+  return raw;
+}
+
 function getNextStep(
   language: Language | null,
   gender: Gender | null,
@@ -1285,6 +2095,37 @@ function Sidebar({
         <span>{copy.sidebarNote}</span>
       </div>
     </aside>
+  );
+}
+
+function QuickAskButtons({
+  items,
+  language,
+  disabled,
+  onPick,
+  variant,
+}: {
+  items: QuickAsk[];
+  language: Language;
+  disabled: boolean;
+  onPick: (item: QuickAsk) => void;
+  variant: "large" | "compact";
+}) {
+  return (
+    <div className={`quick-asks ${variant}`}>
+      {items.map((item) => (
+        <button
+          key={item.id}
+          type="button"
+          className="quick-ask"
+          onClick={() => onPick(item)}
+          disabled={disabled}
+        >
+          <span aria-hidden="true">{item.icon}</span>
+          <strong>{item.label[language]}</strong>
+        </button>
+      ))}
+    </div>
   );
 }
 
@@ -1465,7 +2306,12 @@ function HealthPickerCard({
 }
 
 export default function SilverLensApp() {
-  const [screen, setScreen] = useState<PageScreen>("setup");
+  /*
+   * 첫 화면은 대화 화면이다.
+   * 어르신에게 언어·성별·나이·알레르기·질병을 먼저 다 채우게 하면 대화에 닿기 전에
+   * 지쳐 이탈한다. 그래서 바로 말할 수 있게 두고, 정보 입력은 버튼으로 안내한다.
+   */
+  const [screen, setScreen] = useState<PageScreen>("chat");
   const [language, setLanguage] = useState<Language | null>(null);
   const [gender, setGender] = useState<Gender | null>(null);
   const [ageBand, setAgeBand] = useState(70);
@@ -1478,10 +2324,22 @@ export default function SilverLensApp() {
   const [showAllergyInput, setShowAllergyInput] = useState(false);
   const [showConditionInput, setShowConditionInput] = useState(false);
   const [healthNotes, setHealthNotes] = useState<HealthNote[]>([]);
+  const [storeReady, setStoreReady] = useState(false);
+  const [storeSavedAt, setStoreSavedAt] = useState<number | null>(null);
+  const [storeKind, setStoreKind] = useState<
+    "indexeddb" | "localstorage" | "none"
+  >("none");
+  const [backupNotice, setBackupNotice] = useState("");
   const [recordingContext, setRecordingContext] = useState<RecordingContext | null>(null);
   const [recordedUrl, setRecordedUrl] = useState<string | null>(null);
   const [pendingAudio, setPendingAudio] = useState<PendingAudio | null>(null);
   const [pendingImage, setPendingImage] = useState<PendingImage | null>(null);
+  /** 사진 흐름 단계. null 이면 아무 창도 열려 있지 않다. */
+  const [photoStep, setPhotoStep] = useState<"purpose" | "review" | null>(null);
+  /** 카메라를 열기 직전에 고른 촬영 목적. 다시 찍기에서도 그대로 쓴다. */
+  const [photoPurpose, setPhotoPurpose] = useState<PhotoPurpose | null>(null);
+  const [isPreparingPhoto, setIsPreparingPhoto] = useState(false);
+  const [isPhotoZoomOpen, setIsPhotoZoomOpen] = useState(false);
   const [recordingError, setRecordingError] = useState("");
   const [chatInput, setChatInput] = useState("");
   const [chatTurns, setChatTurns] = useState<ChatTurn[]>([]);
@@ -1524,6 +2382,7 @@ export default function SilverLensApp() {
   const initialTtsPlayed = useRef(false);
   const answerTouchStartX = useRef<number | null>(null);
   const photoInputRef = useRef<HTMLInputElement | null>(null);
+  const backupInputRef = useRef<HTMLInputElement | null>(null);
   const languageSectionRef = useRef<HTMLFieldSetElement | null>(null);
   const genderSectionRef = useRef<HTMLFieldSetElement | null>(null);
   const ageSectionRef = useRef<HTMLFieldSetElement | null>(null);
@@ -2168,83 +3027,197 @@ export default function SilverLensApp() {
     return () => window.clearTimeout(timer);
   }, []);
 
-  // 음성 상세 메모는 새로고침 뒤에도 AI가 계속 참고해야 하므로 브라우저에 남긴다.
-  useEffect(() => {
-    const timer = window.setTimeout(() => {
+  /** 저장된 값을 화면 상태로 되살린다. 대화가 있으면 마지막 카드로 이동한다. */
+  const applyStoredState = useCallback((value: unknown) => {
+    const state = sanitizeStoredState(value);
+    if (!state) return false;
+
+    setLanguage(state.profile.language);
+    setGender(state.profile.gender);
+    setAgeBand(state.profile.ageBand);
+    setAgeConfirmed(state.profile.ageConfirmed);
+    setAllergyIds(state.profile.allergyIds);
+    setConditionIds(state.profile.conditionIds);
+    setHealthNotes(state.profile.healthNotes);
+    setChatTurns(state.chatTurns);
+
+    const totalPages = state.chatTurns.reduce(
+      (total, turn) => total + turn.pages.length,
+      0,
+    );
+    setAnswerCardIndex(Math.max(0, totalPages - 1));
+    return true;
+  }, []);
+
+  const exportBackup = useCallback(() => {
+    const snapshot: StoredState = {
+      version: 1,
+      savedAt: Date.now(),
+      profile: {
+        language,
+        gender,
+        ageBand,
+        ageConfirmed,
+        allergyIds,
+        conditionIds,
+        healthNotes,
+      },
+      chatTurns: chatTurns.slice(-MAX_STORED_TURNS),
+    };
+    const url = URL.createObjectURL(
+      new Blob([JSON.stringify(snapshot, null, 2)], {
+        type: "application/json",
+      }),
+    );
+    const anchor = document.createElement("a");
+    anchor.href = url;
+    anchor.download = BACKUP_FILE_NAME;
+    anchor.click();
+    URL.revokeObjectURL(url);
+    setBackupNotice(activeCopy.backupExportDone);
+  }, [
+    activeCopy.backupExportDone,
+    ageBand,
+    ageConfirmed,
+    allergyIds,
+    chatTurns,
+    conditionIds,
+    gender,
+    healthNotes,
+    language,
+  ]);
+
+  const importBackup = useCallback(
+    async (file: File) => {
       try {
-        const stored = window.localStorage.getItem(HEALTH_NOTES_STORAGE_KEY);
-        if (!stored) return;
-        const parsed = JSON.parse(stored) as unknown;
-        if (!Array.isArray(parsed)) return;
-        const restored = parsed
-          .filter((item): item is HealthNote =>
-            Boolean(
-              item &&
-                typeof item === "object" &&
-                typeof (item as HealthNote).text === "string" &&
-                (item as HealthNote).text.trim().length > 0,
-            ),
-          )
-          .slice(-MAX_HEALTH_NOTES);
-        if (restored.length > 0) setHealthNotes(restored);
+        const parsed = JSON.parse(await file.text()) as unknown;
+        setBackupNotice(
+          applyStoredState(parsed)
+            ? activeCopy.backupImportDone
+            : activeCopy.backupImportFail,
+        );
       } catch {
-        // 저장된 메모가 깨져 있으면 무시하고 빈 상태로 시작한다.
+        setBackupNotice(activeCopy.backupImportFail);
       }
-    }, 0);
-    return () => window.clearTimeout(timer);
-  }, []);
+    },
+    [activeCopy.backupImportDone, activeCopy.backupImportFail, applyStoredState],
+  );
 
-  const persistHealthNotes = useCallback((notes: HealthNote[]) => {
+  const clearSavedData = useCallback(async () => {
+    if (!window.confirm(activeCopy.backupClearConfirm)) return;
+    await clearStore(PROFILE_STORE_KEY);
     try {
-      window.localStorage.setItem(
-        HEALTH_NOTES_STORAGE_KEY,
-        JSON.stringify(notes),
-      );
+      window.localStorage.removeItem(HEALTH_NOTES_STORAGE_KEY);
     } catch {
-      // 저장 공간이 막혀 있어도 화면 동작은 계속되어야 한다.
+      // 이미 없으면 무시한다.
     }
+    setLanguage(null);
+    setGender(null);
+    setAgeBand(70);
+    setAgeConfirmed(false);
+    setAllergyIds([]);
+    setConditionIds([]);
+    setHealthNotes([]);
+    setChatTurns([]);
+    setAnswerCardIndex(0);
+    setStoreSavedAt(null);
+    setBackupNotice(activeCopy.backupCleared);
+  }, [activeCopy.backupClearConfirm, activeCopy.backupCleared]);
+
+  /**
+   * 기기에 저장해 둔 프로필과 대화를 되살린다.
+   *
+   * 어르신이 매번 87개 목록에서 알레르기·질병을 다시 고르게 하면 재방문이 어렵다.
+   * 로그인도 서버도 없이 브라우저 안에만 두고, 옛 localStorage 메모도 한 번 옮겨 온다.
+   */
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      const kind = await describeStore();
+      const stored = await readStore<StoredState>(PROFILE_STORE_KEY);
+      if (cancelled) return;
+
+      setStoreKind(kind);
+      if (stored) {
+        applyStoredState(stored);
+        setStoreSavedAt(typeof stored.savedAt === "number" ? stored.savedAt : null);
+      } else {
+        // v1 이전에는 음성 메모만 localStorage에 있었다. 한 번만 옮겨 온다.
+        const legacy = readLegacyHealthNotes();
+        if (legacy.length > 0) setHealthNotes(legacy);
+      }
+      setStoreReady(true);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [applyStoredState]);
+
+  /** 값이 바뀌면 잠시 뒤 한 번만 저장한다(선택마다 곧바로 쓰지 않도록). */
+  useEffect(() => {
+    if (!storeReady) return;
+    const timer = window.setTimeout(() => {
+      const snapshot: StoredState = {
+        version: 1,
+        savedAt: Date.now(),
+        profile: {
+          language,
+          gender,
+          ageBand,
+          ageConfirmed,
+          allergyIds,
+          conditionIds,
+          healthNotes,
+        },
+        // 답변 음성은 저장하지 않는다. 용량이 크고 다시 만들 수 있다.
+        chatTurns: chatTurns.slice(-MAX_STORED_TURNS),
+      };
+      void writeStore(PROFILE_STORE_KEY, snapshot).then(() => {
+        setStoreSavedAt(snapshot.savedAt);
+      });
+    }, 500);
+    return () => window.clearTimeout(timer);
+  }, [
+    storeReady,
+    language,
+    gender,
+    ageBand,
+    ageConfirmed,
+    allergyIds,
+    conditionIds,
+    healthNotes,
+    chatTurns,
+  ]);
+
+  const addHealthNote = useCallback((kind: HealthNote["kind"], text: string) => {
+    const cleaned = text.trim();
+    if (!cleaned) return;
+    setHealthNotes((current) => {
+      // 같은 문장을 두 번 저장하면 프롬프트만 길어지므로 건너뛴다.
+      if (current.some((note) => note.text === cleaned && note.kind === kind)) {
+        return current;
+      }
+      return [
+        ...current,
+        {
+          id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+          kind,
+          text: cleaned,
+          savedAt: Date.now(),
+        },
+      ].slice(-MAX_HEALTH_NOTES);
+    });
   }, []);
 
-  const addHealthNote = useCallback(
-    (kind: HealthNote["kind"], text: string) => {
-      const cleaned = text.trim();
-      if (!cleaned) return;
-      setHealthNotes((current) => {
-        // 같은 문장을 두 번 저장하면 프롬프트만 길어지므로 건너뛴다.
-        if (current.some((note) => note.text === cleaned && note.kind === kind)) {
-          return current;
-        }
-        const next = [
-          ...current,
-          {
-            id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
-            kind,
-            text: cleaned,
-            savedAt: Date.now(),
-          },
-        ].slice(-MAX_HEALTH_NOTES);
-        persistHealthNotes(next);
-        return next;
-      });
-    },
-    [persistHealthNotes],
-  );
+  const removeHealthNote = useCallback((id: string) => {
+    setHealthNotes((current) => current.filter((note) => note.id !== id));
+  }, []);
 
-  const removeHealthNote = useCallback(
-    (id: string) => {
-      setHealthNotes((current) => {
-        const next = current.filter((note) => note.id !== id);
-        persistHealthNotes(next);
-        return next;
-      });
-    },
-    [persistHealthNotes],
-  );
-
+  // 첫 진입 안내는 "언어를 고르세요"가 아니라 "무엇을 말하면 되는지"를 읽어 준다.
   useEffect(() => {
     if (!voicePreferenceReady || !autoVoiceGuide || initialTtsPlayed.current) return;
     initialTtsPlayed.current = true;
-    queueBrowserNarration(promptCopy["ko-KR"].language, "ko-KR", 450);
+    queueBrowserNarration(uiCopy["ko-KR"].welcomeVoice, "ko-KR", 450);
   }, [autoVoiceGuide, queueBrowserNarration, voicePreferenceReady]);
 
   useEffect(() => {
@@ -2460,7 +3433,7 @@ export default function SilverLensApp() {
    */
   const normalizeDialectLocally = useCallback(
     async (text: string, lang: Language = activeLanguage) => {
-      const dialectUrl = process.env.NEXT_PUBLIC_DIALECT_API_URL;
+      const dialectUrl = usableDialectApiUrl();
       if (!dialectUrl || !text.trim()) return text;
       if (baseLanguageTag(lang) !== "ko") return text;
 
@@ -2522,17 +3495,70 @@ export default function SilverLensApp() {
       text?: string;
       allergies?: string[];
       conditions?: string[];
+      gender?: unknown;
+      ageBand?: unknown;
       error?: string;
     };
     if (!response.ok || !payload.text?.trim()) {
       throw new Error(payload.error || "음성을 인식하지 못했습니다.");
     }
+    // 서버가 이미 걸러 주지만, 화면 상태에 바로 들어가는 값이라 한 번 더 확인한다.
+    const gender =
+      payload.gender === "male" || payload.gender === "female"
+        ? (payload.gender as Gender)
+        : null;
+    const ageBand =
+      typeof payload.ageBand === "number" && ageChoices.includes(payload.ageBand)
+        ? payload.ageBand
+        : null;
     return {
       text: payload.text.trim(),
       allergies: uniqueItems(payload.allergies ?? []),
       conditions: uniqueItems(payload.conditions ?? []),
+      gender,
+      ageBand,
     };
   }, [activeLanguage]);
+
+  /**
+   * 음성에서 찾은 프로필 정보를 화면 선택 상태에 실제로 반영한다.
+   *
+   * 알레르기·질병은 이미 고른 것에 더하기만 한다(음성이 기존 선택을 지우면 위험하다).
+   * 성별·나이는 아직 고르지 않았을 때만 채운다. 직접 고른 값을 음성이 덮어쓰면
+   * 어르신이 왜 바뀌었는지 알 수 없다.
+   * 반환값은 어르신에게 무엇이 등록됐는지 알려 줄 안내 문구다.
+   */
+  const applyVoiceProfile = (analysis: VoiceAnalysis) => {
+    if (analysis.allergies.length > 0) {
+      setAllergyIds((current) => uniqueItems([...current, ...analysis.allergies]));
+    }
+    if (analysis.conditions.length > 0) {
+      setConditionIds((current) => uniqueItems([...current, ...analysis.conditions]));
+    }
+    const pickedGender = Boolean(analysis.gender) && !gender;
+    const pickedAge = analysis.ageBand !== null && !ageConfirmed;
+    if (pickedGender && analysis.gender) setGender(analysis.gender);
+    if (pickedAge && analysis.ageBand !== null) {
+      setAgeBand(analysis.ageBand);
+      setAgeConfirmed(true);
+    }
+
+    const found = analysis.allergies.length + analysis.conditions.length;
+    const parts = [
+      found > 0
+        ? activeCopy.profileVoiceFound
+            .replace("{allergies}", String(analysis.allergies.length))
+            .replace("{conditions}", String(analysis.conditions.length))
+        : activeCopy.profileVoiceEmpty,
+    ];
+    if (pickedGender) parts.push(activeCopy.voiceFoundGender);
+    if (pickedAge) {
+      parts.push(
+        activeCopy.voiceFoundAge.replace("{age}", String(analysis.ageBand)),
+      );
+    }
+    return { notice: parts.join(" "), changed: found > 0 || pickedGender || pickedAge };
+  };
 
   const toggleRecording = async (context: RecordingContext) => {
     setRecordingError("");
@@ -2598,15 +3624,17 @@ export default function SilverLensApp() {
             setTranscript(text);
             if (context === "chat") {
               setChatInput(text);
+              /*
+               * 대화 화면에서 "나는 알츠하이머가 있고 복숭아 알레르기가 있어" 처럼
+               * 건강 정보를 말하는 어르신이 많다. 설정 화면으로 다시 들어가지 않아도
+               * 곧바로 내 정보에 반영해 준다. 찾은 게 있을 때만 알린다.
+               */
+              const applied = applyVoiceProfile(analysis);
+              setProfileVoiceNotice(applied.changed ? applied.notice : "");
             } else {
-              setAllergyIds((current) =>
-                uniqueItems([...current, ...analysis.allergies]),
-              );
-              setConditionIds((current) =>
-                uniqueItems([...current, ...analysis.conditions]),
-              );
               setShowAllergyInput(false);
               setShowConditionInput(false);
+              const applied = applyVoiceProfile(analysis);
               // 목록으로 고를 수 없는 상세 설명("견과류 중에 특히 호두")을 원문 그대로 남긴다.
               addHealthNote(
                 context === "allergy"
@@ -2616,17 +3644,7 @@ export default function SilverLensApp() {
                     : "setup",
                 text,
               );
-              const total =
-                analysis.allergies.length + analysis.conditions.length;
-              setProfileVoiceNotice(
-                `${
-                  total > 0
-                    ? activeCopy.profileVoiceFound
-                        .replace("{allergies}", String(analysis.allergies.length))
-                        .replace("{conditions}", String(analysis.conditions.length))
-                    : activeCopy.profileVoiceEmpty
-                } ${activeCopy.noteSaved}`,
-              );
+              setProfileVoiceNotice(`${applied.notice} ${activeCopy.noteSaved}`);
             }
         } catch (error) {
           setRecordingError(
@@ -2648,17 +3666,29 @@ export default function SilverLensApp() {
     }
   };
 
+  /**
+   * 설정 화면에서 대화로 돌아간다.
+   * 정보 입력은 이제 필수 단계가 아니라 선택이므로 미완성이어도 막지 않는다.
+   * 음성 인식이 돌아가는 중에만 잠깐 기다리게 한다.
+   */
   const beginChat = () => {
     if (isTranscribingVoice) {
-      setProfileVoiceNotice("건강정보를 입력하고 있어요. 잠시만 기다려 주세요.");
-      return;
-    }
-    if (nextStep !== "complete") {
-      announceNext();
+      setProfileVoiceNotice(activeCopy.waitTranscribing);
       return;
     }
     stopNarration();
     setScreen("chat");
+  };
+
+  /** 대화 화면에서 정보 입력 화면으로 이동하며 현재 단계를 음성으로 안내한다. */
+  const openProfileSetup = () => {
+    stopNarration();
+    setScreen("setup");
+    announceNext();
+  };
+
+  const replayWelcome = () => {
+    speakGuideNarration(activeCopy.welcomeVoice, activeLanguage);
   };
 
   const answerCards = useMemo<AnswerCard[]>(
@@ -2709,7 +3739,35 @@ export default function SilverLensApp() {
     moveAnswerCard(distance < 0 ? 1 : -1);
   };
 
-  const handlePhoto = (event: ChangeEvent<HTMLInputElement>) => {
+  /** 사진 흐름 시작. 먼저 무엇을 찍는지 고르게 한다. */
+  const openPhotoFlow = () => {
+    stopNarration();
+    setChatError("");
+    setIsPhotoZoomOpen(false);
+    setPhotoStep("purpose");
+  };
+
+  const closePhotoFlow = () => {
+    setPhotoStep(null);
+    setIsPhotoZoomOpen(false);
+  };
+
+  /** 목적을 고르면 안내를 읽어 주고 바로 카메라(파일 선택)를 연다. */
+  const choosePhotoPurpose = (purpose: PhotoPurpose, tip: string) => {
+    setPhotoPurpose(purpose);
+    setPhotoStep(null);
+    speakGuideNarration(tip, activeLanguage);
+    photoInputRef.current?.click();
+  };
+
+  /** 확인 화면에서 다시 찍기. 목적은 그대로 두고 카메라만 다시 연다. */
+  const retakePhoto = () => {
+    stopNarration();
+    setIsPhotoZoomOpen(false);
+    photoInputRef.current?.click();
+  };
+
+  const handlePhoto = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
     event.target.value = "";
     if (!file) return;
@@ -2722,7 +3780,31 @@ export default function SilverLensApp() {
       return;
     }
     setChatError("");
-    setPendingImage({ file, url: URL.createObjectURL(file) });
+    setIsPreparingPhoto(true);
+    setPhotoStep("review");
+    try {
+      // 장변을 줄이고 밝기·흔들림을 재는 동안 확인 화면에 "확인 중"을 띄운다.
+      const prepared = await preparePhoto(file);
+      setPendingImage((previous) => {
+        if (previous) URL.revokeObjectURL(previous.url);
+        return {
+          file: prepared.file,
+          url: prepared.url,
+          purpose: photoPurpose,
+          issues: prepared.processed ? prepared.quality.issues : null,
+          width: prepared.width,
+          height: prepared.height,
+          byteSize: prepared.file.size,
+        };
+      });
+    } finally {
+      setIsPreparingPhoto(false);
+    }
+  };
+
+  /** 확인 화면에서 "이대로 물어보기". 첨부만 확정하고 질문은 아직 보내지 않는다. */
+  const acceptPendingPhoto = () => {
+    closePhotoFlow();
     queueAutomaticNarration(
       automaticNoticeCopy[activeLanguage].photoAttached,
       activeLanguage,
@@ -2736,11 +3818,17 @@ export default function SilverLensApp() {
   };
 
   const clearPendingImage = () => {
-    setPendingImage(null);
+    setPendingImage((previous) => {
+      if (previous) URL.revokeObjectURL(previous.url);
+      return null;
+    });
+    setPhotoPurpose(null);
+    closePhotoFlow();
   };
 
-  const askGemini = async () => {
-    const cleaned = chatInput.trim();
+  /** overrideText 가 있으면 입력창 내용 대신 그 문장을 보낸다(자주 묻는 질문 버튼). */
+  const askGemini = async (overrideText?: string) => {
+    const cleaned = (overrideText ?? chatInput).trim();
     const hasMeaningfulText = Boolean(cleaned && /[\p{L}\p{N}]/u.test(cleaned));
     if (!hasMeaningfulText && !pendingAudio && !pendingImage) {
       setChatError(activeCopy.requireInput);
@@ -2760,9 +3848,18 @@ export default function SilverLensApp() {
       const normalizedText = cleaned
         ? await normalizeDialectLocally(cleaned, activeLanguage)
         : cleaned;
+      const purposeOption = pendingImage
+        ? photoPurposeOptions.find((option) => option.id === pendingImage.purpose)
+        : undefined;
       const attachmentLabels = [
         ...(pendingAudio ? [`🎙 ${activeCopy.audioLabel} ${formatDuration(pendingAudio.duration)}`] : []),
-        ...(pendingImage ? [`🖼 ${activeCopy.photoOneLabel}`] : []),
+        ...(pendingImage
+          ? [
+              purposeOption
+                ? `🖼 ${activeCopy.photoOneLabel} · ${activeCopy[purposeOption.labelKey]}`
+                : `🖼 ${activeCopy.photoOneLabel}`,
+            ]
+          : []),
       ];
       const questionLabel =
         cleaned ||
@@ -2778,8 +3875,12 @@ export default function SilverLensApp() {
           message: normalizedText,
           audio,
           image,
+          // 촬영 목적이 있으면 Vision 지시를 그 목적에 맞게 좁힌다.
+          imagePurpose: pendingImage?.purpose ?? undefined,
           profile: {
             language: activeLanguage,
+            // 성별을 고르지 않았으면 보내지 않는다(프롬프트가 일반 기준으로 답한다).
+            gender: gender ?? undefined,
             ageBand,
             allergies: localizedAllergies,
             conditions: localizedConditions,
@@ -2828,7 +3929,11 @@ export default function SilverLensApp() {
       setChatTurns((turns) => [...turns, nextTurn]);
       setChatInput("");
       setPendingAudio(null);
-      setPendingImage(null);
+      setPendingImage((previous) => {
+        if (previous) URL.revokeObjectURL(previous.url);
+        return null;
+      });
+      setPhotoPurpose(null);
       setTranscript("");
       // 서버 TTS가 필요한 설정일 때만 미리 만들어 둔다(기본 속도에서는 호출하지 않음).
       if (serverNarrationNeeded(activeLanguage)) {
@@ -2868,6 +3973,7 @@ export default function SilverLensApp() {
 
             <nav className="about-bar-nav" aria-label={activeCopy.menuLabel}>
               <a href="#about-features">{about.navFeatures}</a>
+              <a href="#about-guide">{about.navGuide}</a>
               <a href="#about-workflow">{about.navWorkflow}</a>
             </nav>
 
@@ -2986,7 +4092,55 @@ export default function SilverLensApp() {
             </div>
           </section>
 
-          <section className="about-panel" id="about-workflow">
+          {/*
+            어르신이 실제로 무엇을 누르면 되는지 순서대로 보여 주는 구간.
+            왼쪽은 설명과 팁, 오른쪽은 실제 화면을 흉내 낸 작은 목업이다.
+          */}
+          <section className="about-panel" id="about-guide">
+            <div className="about-wrap">
+              <div className="about-section-header">
+                <p className="about-section-badge">{about.guideBadge}</p>
+                <h2 className="about-section-title">
+                  {about.guideTitle}
+                  <span>{about.guideTitleAccent}</span>
+                </h2>
+                <p className="about-section-description">{about.guideDescription}</p>
+              </div>
+
+              <ol className="about-guide-list">
+                {about.guideSteps.map((item, index) => (
+                  <li className="about-guide-item" key={item.step}>
+                    <div className="about-guide-body">
+                      <div className="about-guide-head">
+                        <div className="about-icon-box">{aboutGuideIcons[index]}</div>
+                        <div>
+                          <span className="about-step">{item.step}</span>
+                          <h3>{item.title}</h3>
+                        </div>
+                      </div>
+                      <div className="about-line" />
+                      <p className="about-guide-text">{item.text}</p>
+                      <p className="about-guide-tips-label">{about.guideTipsLabel}</p>
+                      <ul className="about-guide-tips">
+                        {item.tips.map((tip) => (
+                          <li key={tip}>{tip}</li>
+                        ))}
+                      </ul>
+                    </div>
+                    <AboutGuideMock index={index} step={item} />
+                  </li>
+                ))}
+              </ol>
+
+              <div className="about-guide-cta">
+                <button className="about-btn-primary" onClick={leaveAbout}>
+                  {about.guideCta}
+                </button>
+              </div>
+            </div>
+          </section>
+
+          <section className="about-panel about-panel-tint" id="about-workflow">
             <div className="about-wrap">
               <div className="about-section-header">
                 <p className="about-section-badge">{about.workflowBadge}</p>
@@ -3063,23 +4217,89 @@ export default function SilverLensApp() {
 
   if (screen === "chat") {
     const isRecording = recordingContext === "chat";
+    // 등록 질병에 맞는 버튼을 하나만 덧붙인다. 여러 개면 화면이 길어진다.
+    const conditionAsk = conditionQuickAsks.find((item) =>
+      item.conditionIds.some((id) => conditionIds.includes(id)),
+    );
+    const visibleQuickAsks: QuickAsk[] = conditionAsk
+      ? [...quickAsks, conditionAsk]
+      : quickAsks;
+    const pickQuickAsk = (item: QuickAsk) => {
+      if (item.action === "photo") {
+        openPhotoFlow();
+        return;
+      }
+      const question = item.question?.[activeLanguage];
+      if (question) void askGemini(question);
+    };
+    // 같은 답변 안에서 다음 장이 남아 있는지. 다른 대화로 넘어가는 것과 구분한다.
+    const hasNextPageInTurn = Boolean(
+      activeAnswerCard &&
+        activeAnswerCard.pageIndex + 1 < activeAnswerCard.pageCount,
+    );
     // 음성 인식 결과가 들어오면 글 입력창을 자동으로 펼쳐 확인·수정할 수 있게 한다.
     const isTextInputVisible = showTextInput || chatInput.trim().length > 0;
+    const hasProfileInfo =
+      ageConfirmed || allergyIds.length > 0 || conditionIds.length > 0;
+    const pendingPhotoPurpose = pendingImage
+      ? photoPurposeOptions.find((option) => option.id === pendingImage.purpose)
+      : undefined;
+    // 검사를 못 했으면(null) 직접 확인해 달라고 하고, 문제가 없으면 잘 찍혔다고 알린다.
+    const photoQualityMessages: string[] = !pendingImage
+      ? []
+      : pendingImage.issues === null
+        ? [activeCopy.photoQualitySkipped]
+        : pendingImage.issues.length === 0
+          ? [activeCopy.photoQualityOk]
+          : pendingImage.issues.map((issue) =>
+              issue === "dark"
+                ? activeCopy.photoQualityDark
+                : issue === "bright"
+                  ? activeCopy.photoQualityBright
+                  : activeCopy.photoQualityBlurry,
+            );
+    const hasPhotoQualityProblem = Boolean(
+      pendingImage?.issues && pendingImage.issues.length > 0,
+    );
     return (
       <main className="app-shell">
         <Sidebar active="chat" onNavigate={setScreen} copy={activeCopy} />
         <section className="chat-screen">
           <header className="chat-header">
-            <button className="back-button" onClick={() => setScreen("setup")}>
-              {activeCopy.backToSetup}
+            {/* 정보를 아직 안 넣었으면 버튼을 강조해 눈에 띄게 한다. */}
+            <button
+              className={hasProfileInfo ? "back-button" : "back-button highlight"}
+              onClick={openProfileSetup}
+            >
+              <strong>{activeCopy.openProfile}</strong>
+              {!hasProfileInfo && <small>{activeCopy.openProfileHelp}</small>}
             </button>
             <div className="profile-pills">
               <span>🌐 {languages.find((item) => item.id === activeLanguage)?.label}</span>
-              <span>● {ageBand}{activeCopy.profileAge}</span>
+              {ageConfirmed && <span>● {ageBand}{activeCopy.profileAge}</span>}
+              {allergyIds.length + conditionIds.length > 0 && (
+                <span>
+                  ♡ {activeCopy.allergyTitle} {allergyIds.length} · {activeCopy.conditionTitle}{" "}
+                  {conditionIds.length}
+                </span>
+              )}
             </div>
           </header>
 
           <h1>{activeCopy.headline}</h1>
+
+          {/* 첫 진입에서 무엇을 하면 되는지 한눈에 알려 주는 안내. */}
+          {answerCards.length === 0 && (
+            <section className="chat-welcome" aria-label={activeCopy.welcomeTitle}>
+              <div>
+                <strong>{activeCopy.welcomeTitle}</strong>
+                <p>{activeCopy.welcomeBody}</p>
+              </div>
+              <button type="button" className="chat-welcome-replay" onClick={replayWelcome}>
+                {activeCopy.welcomeReplay}
+              </button>
+            </section>
+          )}
 
           <section className="answer-section" aria-live="polite">
             <div className="answer-heading">
@@ -3115,6 +4335,13 @@ export default function SilverLensApp() {
                       <span>{activeCopy.questionBadge}</span>
                       <strong>{activeAnswerCard.question}</strong>
                     </div>
+                    {activeAnswerCard.pageCount > 1 && (
+                      <p className="answer-page-badge">
+                        {activeCopy.pageBadge
+                          .replace("{current}", String(activeAnswerCard.pageIndex + 1))
+                          .replace("{total}", String(activeAnswerCard.pageCount))}
+                      </p>
+                    )}
                     {activeAnswerCard.warningMessage && (
                       <div
                         className={`answer-warning ${activeAnswerCard.riskLevel}`}
@@ -3148,6 +4375,32 @@ export default function SilverLensApp() {
                     <div className="answer-markdown">
                       <ReactMarkdown>{activeAnswerCard.content}</ReactMarkdown>
                     </div>
+                    {/*
+                      답변이 여러 장이면 어르신이 첫 장만 보고 끝낼 수 있다.
+                      카드 안에서 다음 장이 있다는 것과 누르는 곳을 분명히 알린다.
+                    */}
+                    {activeAnswerCard.pageCount > 1 &&
+                      (hasNextPageInTurn ? (
+                        <button
+                          type="button"
+                          className="answer-next-page"
+                          onClick={() => moveAnswerCard(1)}
+                        >
+                          <span className="answer-next-page-text">
+                            <strong>{activeCopy.nextPagePrompt}</strong>
+                            <small>
+                              {activeCopy.pageBadge
+                                .replace("{current}", String(activeAnswerCard.pageIndex + 2))
+                                .replace("{total}", String(activeAnswerCard.pageCount))}
+                            </small>
+                          </span>
+                          <span className="answer-next-page-arrow" aria-hidden="true">
+                            →
+                          </span>
+                        </button>
+                      ) : (
+                        <p className="answer-last-page">{activeCopy.lastPageNotice}</p>
+                      ))}
                   </>
                 ) : (
                   <div className="answer-placeholder">
@@ -3155,6 +4408,15 @@ export default function SilverLensApp() {
                     <p>
                       {activeCopy.emptyAnswerHelp}
                     </p>
+                    {/* 빈 입력창 앞에서 막히지 않도록 바로 누를 수 있는 예시를 둔다. */}
+                    <p className="quick-asks-title">{activeCopy.quickAskTitle}</p>
+                    <QuickAskButtons
+                      items={visibleQuickAsks}
+                      language={activeLanguage}
+                      disabled={isLoadingAnswer}
+                      onPick={pickQuickAsk}
+                      variant="large"
+                    />
                   </div>
                 )}
               </article>
@@ -3253,6 +4515,20 @@ export default function SilverLensApp() {
           </section>
 
           <section className="question-composer" aria-label={activeCopy.questionArea}>
+            {/* 첫 답변 뒤에도 예시를 쓸 수 있게, 접이식으로 짧게 둔다. */}
+            {answerCards.length > 0 && (
+              <details className="quick-asks-fold">
+                <summary>{activeCopy.quickAskTitle}</summary>
+                <QuickAskButtons
+                  items={visibleQuickAsks}
+                  language={activeLanguage}
+                  disabled={isLoadingAnswer}
+                  onPick={pickQuickAsk}
+                  variant="compact"
+                />
+              </details>
+            )}
+
             <button
               className={isRecording ? "mic-primary recording" : "mic-primary"}
               onClick={() => toggleRecording("chat")}
@@ -3264,7 +4540,7 @@ export default function SilverLensApp() {
             </button>
 
             <div className="composer-secondary">
-              <button className="composer-tool" onClick={() => photoInputRef.current?.click()}>
+              <button className="composer-tool" onClick={openPhotoFlow}>
                 <span aria-hidden="true">📷</span>
                 <strong>{activeCopy.uploadPhoto}</strong>
               </button>
@@ -3318,10 +4594,26 @@ export default function SilverLensApp() {
                   )}
                   {pendingImage && (
                     <div className="attachment-chip">
-                      <span className="attachment-icon">🖼️</span>
+                      <button
+                        type="button"
+                        className="attachment-thumb"
+                        onClick={() => {
+                          setPhotoStep("review");
+                          setIsPhotoZoomOpen(false);
+                        }}
+                        aria-label={activeCopy.photoZoomOpen}
+                      >
+                        {/* blob URL 은 이미지 최적화를 거칠 수 없어 img 를 그대로 쓴다. */}
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src={pendingImage.url} alt="" />
+                      </button>
                       <span>
                         <strong>{activeCopy.photoAttached}</strong>
-                        <small>{pendingImage.file.name}</small>
+                        <small>
+                          {pendingPhotoPurpose
+                            ? activeCopy[pendingPhotoPurpose.labelKey]
+                            : pendingImage.file.name}
+                        </small>
                       </span>
                       <button onClick={clearPendingImage} aria-label={activeCopy.photoAttached}>×</button>
                     </div>
@@ -3332,9 +4624,16 @@ export default function SilverLensApp() {
               </div>
             )}
 
+            {/* 말씀에서 건강 정보를 찾아 내 정보에 넣었으면 조용히 넘기지 않고 알린다. */}
+            {profileVoiceNotice && (
+              <p className="profile-voice-notice" role="status">
+                {profileVoiceNotice}
+              </p>
+            )}
+
             <button
               className="send-question"
-              onClick={askGemini}
+              onClick={() => askGemini()}
               disabled={
                 isLoadingAnswer ||
                 (!chatInput.trim() && !pendingAudio && !pendingImage)
@@ -3351,18 +4650,115 @@ export default function SilverLensApp() {
           <p className="medical-note">
             🛡 {activeCopy.medicalNote}
           </p>
+
+          {/* 1단계: 무엇을 찍는지 고른다. 고르면 안내를 읽어 주고 카메라가 바로 열린다. */}
+          {photoStep === "purpose" && (
+            <div className="photo-sheet" role="dialog" aria-modal="true" aria-label={activeCopy.photoPurposeTitle}>
+              <div className="photo-sheet-panel">
+                <h2>{activeCopy.photoPurposeTitle}</h2>
+                <p className="photo-sheet-help">{activeCopy.photoPurposeHelp}</p>
+                <div className="photo-purpose-list">
+                  {photoPurposeOptions.map((option) => (
+                    <button
+                      key={option.id}
+                      type="button"
+                      className="photo-purpose"
+                      onClick={() =>
+                        choosePhotoPurpose(option.id, activeCopy[option.tipKey])
+                      }
+                    >
+                      <span className="photo-purpose-icon" aria-hidden="true">{option.icon}</span>
+                      <span className="photo-purpose-text">
+                        <strong>{activeCopy[option.labelKey]}</strong>
+                        <small>{activeCopy[option.tipKey]}</small>
+                      </span>
+                    </button>
+                  ))}
+                </div>
+                <button type="button" className="photo-sheet-cancel" onClick={closePhotoFlow}>
+                  {activeCopy.photoPurposeCancel}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* 2단계: 찍은 사진을 크게 보여 주고 밝기·흔들림 판정을 알려 준다. */}
+          {photoStep === "review" && (
+            <div className="photo-sheet" role="dialog" aria-modal="true" aria-label={activeCopy.photoReviewTitle}>
+              <div className="photo-sheet-panel">
+                <h2>{activeCopy.photoReviewTitle}</h2>
+                {isPreparingPhoto || !pendingImage ? (
+                  <p className="photo-sheet-help" role="status">{activeCopy.photoPreparing}</p>
+                ) : (
+                  <>
+                    <button
+                      type="button"
+                      className="photo-review-frame"
+                      onClick={() => setIsPhotoZoomOpen(true)}
+                      aria-label={activeCopy.photoZoomOpen}
+                    >
+                      {/* eslint-disable-next-line @next/next/no-img-element */}
+                      <img src={pendingImage.url} alt={activeCopy.photoReviewTitle} />
+                      <span className="photo-review-zoom" aria-hidden="true">
+                        🔍 {activeCopy.photoZoomOpen}
+                      </span>
+                    </button>
+                    <ul
+                      className={
+                        hasPhotoQualityProblem
+                          ? "photo-quality warn"
+                          : "photo-quality"
+                      }
+                      aria-live="polite"
+                    >
+                      {photoQualityMessages.map((text) => (
+                        <li key={text}>{text}</li>
+                      ))}
+                    </ul>
+                    <p className="photo-sheet-help">{activeCopy.photoReviewHelp}</p>
+                    {pendingImage.width > 0 && (
+                      <p className="photo-review-meta">
+                        {activeCopy.photoSizeNote}: {pendingImage.width}×{pendingImage.height} ·{" "}
+                        {Math.max(1, Math.round(pendingImage.byteSize / 1024))}KB
+                      </p>
+                    )}
+                    <div className="photo-review-actions">
+                      <button type="button" className="photo-retake" onClick={retakePhoto}>
+                        📷 {activeCopy.photoRetake}
+                      </button>
+                      <button type="button" className="photo-accept" onClick={acceptPendingPhoto}>
+                        ✓ {activeCopy.photoUseIt}
+                      </button>
+                    </div>
+                  </>
+                )}
+              </div>
+            </div>
+          )}
+
+          {/* 확대 보기: 작은 글자를 어르신이 직접 확인할 수 있게 화면 전체로 띄운다. */}
+          {isPhotoZoomOpen && pendingImage && (
+            <div className="photo-zoom" role="dialog" aria-modal="true" aria-label={activeCopy.photoZoomOpen}>
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src={pendingImage.url} alt={activeCopy.photoZoomOpen} />
+              <button type="button" className="photo-zoom-close" onClick={() => setIsPhotoZoomOpen(false)}>
+                ✕ {activeCopy.photoZoomClose}
+              </button>
+            </div>
+          )}
         </section>
       </main>
     );
   }
 
   const setupRecording = recordingContext === "setup";
-  const canStart = nextStep === "complete" && !isTranscribingVoice;
 
   return (
     <main className="app-shell">
       <Sidebar active="setup" onNavigate={setScreen} copy={activeCopy} />
       <section className="setup-screen">
+        <p className="setup-optional-note">{activeCopy.profileOptional}</p>
+
         {/* 세 단계 이름을 그대로 두고, 누르면 해당 항목으로 화면과 포커스를 옮긴다. */}
         <nav className="setup-progress" aria-label={promptCopy[activeLanguage][nextStep]}>
           {setupProgressItems.map((item) => (
@@ -3479,9 +4875,10 @@ export default function SilverLensApp() {
                   </strong>
                   <small>
                     {age === ageChoices[0]
-                      ? activeCopy.ageUnder
+                      ? // "40대 이하"는 41~49세가 빠진 것처럼 보이므로 경계 나이를 적는다.
+                        activeCopy.ageUnder.replace("{age}", String(age + 9))
                       : isLast
-                        ? activeCopy.ageOver
+                        ? activeCopy.ageOver.replace("{age}", String(age))
                         : `${age} ~ ${age + 9}`}
                   </small>
                   {selected && <span className="selection-check">✓</span>}
@@ -3584,6 +4981,59 @@ export default function SilverLensApp() {
           )}
         </section>
 
+        {/*
+          기기 저장 안내와 백업.
+          로그인·서버 없이 이 기기에만 두므로, 기기를 바꿀 때는 파일로 옮긴다.
+        */}
+        <section className="data-backup" aria-label={activeCopy.backupTitle}>
+          <div className="data-backup-head">
+            <strong>{activeCopy.backupTitle}</strong>
+            <small>
+              {storeKind === "none"
+                ? activeCopy.backupStoreNone
+                : storeKind === "localstorage"
+                  ? activeCopy.backupStoreLocal
+                  : activeCopy.backupHelp}
+            </small>
+            <small className="data-backup-time">
+              {storeSavedAt
+                ? activeCopy.backupSavedAt.replace(
+                    "{time}",
+                    new Date(storeSavedAt).toLocaleString(activeLanguage),
+                  )
+                : activeCopy.backupNever}
+            </small>
+          </div>
+          <div className="data-backup-actions">
+            <button type="button" onClick={exportBackup}>
+              {activeCopy.backupExport}
+            </button>
+            <button type="button" onClick={() => backupInputRef.current?.click()}>
+              {activeCopy.backupImport}
+            </button>
+            <input
+              ref={backupInputRef}
+              className="visually-hidden"
+              type="file"
+              accept="application/json,.json"
+              onChange={(event) => {
+                const file = event.target.files?.[0];
+                if (file) void importBackup(file);
+                event.target.value = "";
+              }}
+              aria-label={activeCopy.backupImport}
+            />
+            <button type="button" className="danger" onClick={() => void clearSavedData()}>
+              {activeCopy.backupClear}
+            </button>
+          </div>
+          {backupNotice && (
+            <p className="data-backup-notice" role="status">
+              {backupNotice}
+            </p>
+          )}
+        </section>
+
         <div className="voice-row">
           <button
             className={setupRecording ? "voice-control recording" : "voice-control"}
@@ -3618,17 +5068,18 @@ export default function SilverLensApp() {
         )}
         {recordingError && <p className="error-message" role="alert">{recordingError}</p>}
 
+        {/*
+          정보 입력은 선택이므로 미완성이어도 항상 대화로 돌아갈 수 있다.
+          음성 인식이 진행 중일 때만 잠시 막는다.
+        */}
         <button
-          className={canStart ? "start-button" : "start-button disabled"}
+          className={isTranscribingVoice ? "start-button disabled" : "start-button"}
           onClick={beginChat}
-          aria-disabled={!canStart}
+          aria-disabled={isTranscribingVoice}
         >
-          <span>{activeCopy.start}</span>
+          <span>{activeCopy.profileDone}</span>
           <span aria-hidden="true">›</span>
         </button>
-        {!canStart && (
-          <p className="completion-hint">{activeCopy.completionHint}</p>
-        )}
       </section>
     </main>
   );

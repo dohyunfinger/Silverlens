@@ -46,13 +46,23 @@ export async function GET(request: Request) {
   const url = new URL(request.url);
   const question = (url.searchParams.get("q") || SAMPLE_QUESTION).slice(0, 400);
   const language = url.searchParams.get("language") || "ko-KR";
-  const conditionLabels = (url.searchParams.get("conditions") || "당뇨, 만성 신장질환")
+  // 값이 비어 있는 채로 넘어오면 "질병 없음"으로 다뤄야 하므로 ?? 로 판단한다.
+  const rawConditions = url.searchParams.get("conditions");
+  const conditionLabels = (rawConditions ?? "당뇨, 만성 신장질환")
+    .split(",")
+    .map((item) => item.trim())
+    .filter(Boolean);
+  const conditionIds = (url.searchParams.get("conditionIds") || "")
     .split(",")
     .map((item) => item.trim())
     .filter(Boolean);
 
   const stats = getKnowledgeStats();
-  const knowledge = findRelevantKnowledge(question, { language, conditionLabels });
+  const knowledge = findRelevantKnowledge(question, {
+    language,
+    conditionLabels: conditionIds.length > 0 ? [] : conditionLabels,
+    conditionIds,
+  });
   const allergyGroups = getHealthGroupOptions("allergy", language);
   const conditionGroups = getHealthGroupOptions("condition", language);
   const groupedAllergyCount = allergyGroups.reduce(
@@ -116,6 +126,7 @@ export async function GET(request: Request) {
         cautionDiseases: item.disease_info?.caution_diseases ?? [],
       })),
       safetyRules: knowledge.safetyRules.map((rule) => rule.id),
+      riskFloorHits: knowledge.riskFloorHits,
     },
     translationChecks: [
       { input: "고지혈증", en: localizeDiseaseName("고지혈증", "en-US"), ja: localizeDiseaseName("고지혈증", "ja-JP") },
