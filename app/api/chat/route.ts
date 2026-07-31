@@ -6,6 +6,7 @@ import {
   type HealthNote,
   type ImagePurpose,
   IMAGE_PURPOSES,
+  type InlineImage,
   type InlineMedia,
   isMeaningfulText,
   type UserGender,
@@ -14,6 +15,12 @@ import {
 import { isGeminiQuotaError } from "../../../backend/services/geminiQuota";
 
 const MAX_INLINE_DATA_LENGTH = 18 * 1024 * 1024;
+/**
+ * 한 번에 보낼 수 있는 사진 수.
+ * 한 상에 놓인 반찬을 여러 번 찍어 보내는 경우를 감당할 만큼만 열어 둔다.
+ * 더 늘리면 요청이 커져 휴대폰에서 업로드가 오래 걸린다.
+ */
+const MAX_IMAGES = 4;
 
 function isInlineMedia(value: unknown): value is InlineMedia {
   if (!value || typeof value !== "object") return false;
@@ -24,6 +31,42 @@ function isInlineMedia(value: unknown): value is InlineMedia {
     typeof candidate.mimeType === "string" &&
     candidate.mimeType.length > 0
   );
+}
+
+function cleanImagePurpose(value: unknown): ImagePurpose | null {
+  return IMAGE_PURPOSES.includes(value as ImagePurpose)
+    ? (value as ImagePurpose)
+    : null;
+}
+
+/**
+ * 사진 목록을 걸러 낸다.
+ *
+ * 화면은 `images` 배열로 보내지만, 브라우저에 옛 화면이 캐시로 남아 있으면
+ * 예전처럼 `image` 하나만 보낼 수 있다. 두 형태를 모두 받아 준다.
+ */
+function cleanImages(body: {
+  images?: unknown;
+  image?: unknown;
+  imagePurpose?: unknown;
+}): InlineImage[] {
+  const raw = Array.isArray(body.images)
+    ? body.images
+    : body.image
+      ? [{ ...(body.image as object), purpose: body.imagePurpose }]
+      : [];
+
+  const cleaned: InlineImage[] = [];
+  for (const item of raw) {
+    if (!isInlineMedia(item)) continue;
+    const purpose = cleanImagePurpose((item as { purpose?: unknown }).purpose);
+    cleaned.push({
+      media: { data: item.data, mimeType: item.mimeType },
+      purpose,
+    });
+    if (cleaned.length >= MAX_IMAGES) break;
+  }
+  return cleaned;
 }
 
 function cleanHistory(value: unknown): ConversationTurn[] {
@@ -113,6 +156,7 @@ export async function POST(request: Request) {
     const body = (await request.json()) as {
       message?: unknown;
       audio?: unknown;
+      images?: unknown;
       image?: unknown;
       imagePurpose?: unknown;
       profile?: unknown;
@@ -120,12 +164,9 @@ export async function POST(request: Request) {
     };
     const message = typeof body.message === "string" ? body.message.trim() : "";
     const audio = isInlineMedia(body.audio) ? body.audio : null;
-    const image = isInlineMedia(body.image) ? body.image : null;
     // 촬영 목적도 프롬프트에 들어가므로 정해진 세 값만 통과시킨다.
-    const imagePurpose = IMAGE_PURPOSES.includes(body.imagePurpose as ImagePurpose)
-      ? (body.imagePurpose as ImagePurpose)
-      : null;
-    if (!isMeaningfulText(message) && !audio && !image) {
+    const images = cleanImages(body);
+    if (!isMeaningfulText(message) && !audio && images.length === 0) {
       return NextResponse.json(
         { error: "글, 음성, 사진 중 하나 이상을 보내 주세요." },
         { status: 400 },
@@ -137,16 +178,20 @@ export async function POST(request: Request) {
         { status: 400 },
       );
     }
-    if ((audio?.data.length ?? 0) + (image?.data.length ?? 0) > MAX_INLINE_DATA_LENGTH) {
+    // 사진 여러 장을 합친 크기로 판단한다. 한 장씩 볼 때와 기준이 달라야 한다.
+    const attachedBytes =
+      (audio?.data.length ?? 0) +
+      images.reduce((total, image) => total + image.media.data.length, 0);
+    if (attachedBytes > MAX_INLINE_DATA_LENGTH) {
       return NextResponse.json(
-        { error: "첨부 파일이 너무 큽니다. 더 짧은 음성이나 작은 사진을 사용해 주세요." },
+        { error: "첨부 파일이 너무 큽니다. 사진 수를 줄이거나 더 짧은 음성을 사용해 주세요." },
         { status: 413 },
       );
     }
     const result = await generateSeniorFriendlyAnswer(
       message,
       cleanProfile(body.profile),
-      { audio, image, imagePurpose },
+      { audio, images },
       cleanHistory(body.history),
     );
     return NextResponse.json({

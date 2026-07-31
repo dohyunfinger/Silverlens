@@ -1,9 +1,8 @@
-<svg viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SilverLens">
-  <title>SilverLens</title>
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SilverLens">
+  <title>SilverLens — 앱 아이콘 (작은 크기에서도 형태가 남는 판)</title>
   <!--
-    브랜드 아이콘. docs/brand/logo-app-icon.svg 와 같은 도형이다.
-    탭에 16px 로 뜨는 자리라 요소를 딥그린 바탕과 크림색 돋보기 둘로만 줄였다.
-    (예전에는 프로젝트 색과 무관한 파란 템플릿 아이콘이 들어 있었다.)
+    작은 크기에서는 안쪽 그림이 뭉개진다.
+    그래서 아이콘판은 요소를 둘로만 줄였다. 딥그린 바탕과 크림색 돋보기.
   -->
   <defs>
     <linearGradient id="silverlensIconBg" x1="0" y1="0" x2="0" y2="1">
@@ -14,5 +13,6 @@
   <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#silverlensIconBg)"/>
   <path d="M40.5 40.5 L51 51" stroke="#fff5df" stroke-width="7" stroke-linecap="round"/>
   <circle cx="27.5" cy="27.5" r="14.5" fill="none" stroke="#fff5df" stroke-width="6"/>
+  <!-- 렌즈 안의 밥알 하나. 식품이라는 최소 신호. -->
   <circle cx="27.5" cy="27.5" r="6" fill="#f6c9a5"/>
 </svg>

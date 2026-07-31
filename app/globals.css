@@ -3055,6 +3055,67 @@ textarea:focus-visible {
   list-style: none;
 }
 
+/*
+ * 사진 여러 장을 넣었을 때 어느 장을 보고 있는지 고르는 줄.
+ * 가로로만 넘기게 두어 창 높이가 늘어나지 않게 한다.
+ */
+.photo-review-strip {
+  display: flex;
+  gap: 8px;
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.photo-review-thumb {
+  position: relative;
+  flex: 0 0 auto;
+  width: 62px;
+  height: 62px;
+  padding: 0;
+  overflow: hidden;
+  border: 3px solid #cbd9cf;
+  border-radius: 12px;
+  background: #10231a;
+  cursor: pointer;
+}
+
+.photo-review-thumb.current {
+  border-color: var(--green-800);
+}
+
+.photo-review-thumb img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* 몇 번째 사진인지. 답변에서 "첫 번째 사진"이라고 말할 때 짝을 맞춘다. */
+.photo-review-thumb span {
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  min-width: 18px;
+  padding: 1px 4px;
+  border-radius: 6px;
+  color: white;
+  background: rgba(9, 32, 21, .78);
+  font-size: 12px;
+  font-weight: 900;
+}
+
+/* 한 장 더 넣기. 그만두기와 헷갈리지 않게 확인 버튼과 같은 초록 계열로 둔다. */
+.photo-add-more {
+  min-height: 56px;
+  border: 3px solid var(--green-800);
+  border-radius: 14px;
+  color: var(--green-900);
+  background: var(--green-100);
+  font-size: 18px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
 /* 어둡거나 흐릿하면 눈에 띄게 바꿔 다시 찍기를 유도한다. */
 .photo-quality.warn {
   border-color: #d9a23f;
@@ -3072,11 +3133,16 @@ textarea:focus-visible {
 
 .photo-review-actions {
   display: grid;
-  grid-template-columns: repeat(2, minmax(0, 1fr));
+  /*
+   * 버튼이 둘일 때도 셋일 때도("한 장 더 넣기"가 붙는 경우) 한 줄에 놓이게 둔다.
+   * 폭이 모자라면 자동으로 줄을 나눈다.
+   */
+  grid-template-columns: repeat(auto-fit, minmax(136px, 1fr));
   gap: 10px;
 }
 
 .photo-retake,
+.photo-add-more,
 .photo-accept {
   min-height: 68px;
   padding: 10px 12px;
@@ -3148,9 +3214,14 @@ textarea:focus-visible {
     font-size: 19px;
   }
 
-  /* 좁은 화면에서는 두 버튼을 위아래로 두어 글자가 잘리지 않게 한다. */
+  /* 좁은 화면에서는 버튼을 위아래로 쌓아 글자가 잘리지 않게 한다. */
   .photo-review-actions {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .photo-review-thumb {
+    width: 54px;
+    height: 54px;
   }
 }
 
@@ -3932,15 +4003,64 @@ textarea:focus-visible {
   letter-spacing: -.02em;
 }
 
-.about-foot {
+/*
+ * 출처 · 고지 · 저작권.
+ *
+ * 읽어야 하는 글이 아니라 확인하는 글이라 본문보다 작게 두고 가운데로 모은다.
+ * 예전에는 이 위에 "© SilverLens. 사투리를 이해하는 AI로…" 한 줄이 따로 있었는데,
+ * 저작권 표시가 두 번 나오고 그 문구는 바로 위 CTA 구간과 겹쳐서 없앴다.
+ */
+.about-legal {
+  display: grid;
+  gap: 6px;
   width: 100%;
-  max-width: 720px;
-  margin: 0;
+  max-width: 760px;
+  margin-top: clamp(20px, 2.6vw, 28px);
   padding-top: clamp(20px, 2.5vw, 28px);
   border-top: 1px solid var(--line);
+  text-align: center;
+}
+
+.about-legal p {
+  margin: 0;
+}
+
+.about-legal-line {
   color: var(--muted);
-  font-size: var(--fs-100);
-  line-height: 1.7;
+  font-size: 13px;
+  font-weight: 700;
+  line-height: 1.65;
+}
+
+/* 의료 고지. 책임 범위라 조금 더 눈에 들어오게 둔다. */
+.about-legal-note {
+  margin-top: 4px;
+  color: #6b5b3d;
+  font-size: 13px;
+  font-weight: 800;
+  line-height: 1.65;
+}
+
+.about-legal-copy {
+  margin-top: 10px;
+  color: var(--about-text);
+  font-size: 13px;
+  font-weight: 800;
+  letter-spacing: -.01em;
+}
+
+/* 대회 프로젝트 페이지 링크. 깃허브 링크와 나란히 두되 색을 눌러 둔다. */
+.about-project-link {
+  color: var(--about-primary, var(--green-900));
+  background: transparent;
+}
+
+@media (max-width: 560px) {
+  .about-legal-line,
+  .about-legal-note,
+  .about-legal-copy {
+    font-size: 12px;
+  }
 }
 
 @media (max-width: 760px) {

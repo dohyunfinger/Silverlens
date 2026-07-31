@@ -49,6 +49,50 @@ export type ImagePurpose = "label" | "food" | "medicine";
 
 export const IMAGE_PURPOSES: readonly ImagePurpose[] = ["label", "food", "medicine"];
 
+/** 사진 한 장과 그 사진을 찍은 목적. 한 번에 여러 장을 보낼 수 있다. */
+export type InlineImage = {
+  media: InlineMedia;
+  purpose: ImagePurpose | null;
+};
+
+/**
+ * 사진에 먹을 것이 없을 때의 지시.
+ *
+ * 화면의 "밝기와 흔들림은 괜찮아요"는 사진이 밝고 선명한지만 재서 나온 안내이고
+ * 무엇이 찍혔는지는 보지 않는다. 그래서 벽이나 사람 사진도 그대로 넘어올 수 있다.
+ * 그때 억지로 음식으로 읽으면 엉뚱한 식품 안내가 나가므로 여기서 막는다.
+ */
+function imageContentGuardInstructions(count: number): string[] {
+  if (count === 0) return [];
+  const lines = [
+    "사진에 음식, 식재료, 식품 성분표, 약 봉투 가운데 아무것도 없으면 억지로 음식으로 해석하지 마세요.",
+    "그때는 사진에 무엇이 보이는지 한 문장으로만 말한 뒤, 드시려는 음식이나 성분표를 다시 찍어 달라고 안내하세요.",
+    "먹을 것이 없는 사진에는 없는 위험을 만들어 내지 말고 risk_level 은 safe, warning_message 는 빈 문자열로 두세요.",
+  ];
+  if (count > 1) {
+    lines.push(
+      "사진 여러 장 중 일부에만 먹을 것이 있으면, 먹을 것이 있는 사진만 판단하고 나머지는 무엇인지만 짧게 언급하세요.",
+    );
+  }
+  return lines;
+}
+
+/**
+ * 여러 장이 함께 올 때의 지시.
+ *
+ * 한 상에 여러 반찬이 놓인 경우가 흔해서, 장마다 따로 답하면 어르신이 읽기 어렵다.
+ * 그래서 무엇이 있는지 하나씩 짚은 뒤 전체를 함께 판단하도록 지시한다.
+ */
+function multipleImageInstructions(count: number): string[] {
+  if (count < 2) return [];
+  return [
+    `첨부된 사진이 ${count}장입니다. 한 장만 보고 답하지 말고 모든 사진을 빠짐없이 확인하세요.`,
+    "먼저 각 사진에 무엇이 있는지 짧게 하나씩 짚어 말하고, 그다음 전체를 한 끼로 보고 판단하세요.",
+    "여러 음식이 함께 있으면 그중 등록된 질병·알레르기에 가장 걸리는 것을 먼저 알리고, 나머지는 뒤에 덧붙이세요.",
+    "사진마다 위험도가 다르면 가장 위험한 것을 기준으로 risk_level 을 정하세요.",
+  ];
+}
+
 /** 촬영 목적별 Vision 지시. 목적이 없으면 기존처럼 사진 전체를 보고 판단한다. */
 function imagePurposeInstructions(purpose?: ImagePurpose | null): string[] {
   if (purpose === "label") {
@@ -333,8 +377,8 @@ export async function generateSeniorFriendlyAnswer(
   profile: UserProfile = {},
   media: {
     audio?: InlineMedia | null;
-    image?: InlineMedia | null;
-    imagePurpose?: ImagePurpose | null;
+    /** 사진은 여러 장을 받는다. 어르신이 한 상을 여러 번 찍어 보내는 경우가 있다. */
+    images?: InlineImage[];
   } = {},
   history: ConversationTurn[] = [],
 ): Promise<SeniorAnswerResult> {
@@ -370,7 +414,8 @@ export async function generateSeniorFriendlyAnswer(
 
   // 첨부 파일이 없고 글로만 질문했는데 시니어 식품·건강 서비스와 무관한 주제이면
   // Gemini API를 호출하지 않고 바로 안내 답변을 돌려줘 토큰 낭비를 막습니다.
-  const hasMedia = Boolean(media.audio || media.image);
+  const images = media.images ?? [];
+  const hasMedia = Boolean(media.audio || images.length > 0);
   if (!hasMedia && isMeaningfulText(message) && !isLikelyOnTopic(topicContext, knowledge)) {
     return {
       answer: localizedOffTopicAnswer(selectedLanguage),
@@ -405,8 +450,15 @@ export async function generateSeniorFriendlyAnswer(
     "문장 하나에는 핵심 하나만 담고, 한 문단은 1~2개의 짧은 문장으로 작성하세요.",
     "TTS로 자연스럽게 읽히도록 표와 긴 목록은 피하고 문장 사이를 짧은 문단으로 나누세요.",
     "첨부된 글, 음성, 사진이 있으면 각각 따로 답하지 말고 하나의 질문으로 함께 이해하세요.",
+    // 사진에 먹을 것이 없으면 억지로 판단하지 않게 먼저 막는다.
+    ...imageContentGuardInstructions(images.length),
+    // 여러 장이면 전부 확인하도록 먼저 못 박는다.
+    ...multipleImageInstructions(images.length),
     // 촬영 목적을 고른 경우에만 사진을 어떻게 볼지 좁혀 준다.
-    ...(media.image ? imagePurposeInstructions(media.imagePurpose) : []),
+    // 목적이 섞여 있으면(성분표 + 음식) 각 목적의 지시를 겹치지 않게 모아 넣는다.
+    ...[...new Set(images.map((image) => image.purpose).filter(Boolean))].flatMap(
+      (purpose) => imagePurposeInstructions(purpose as ImagePurpose),
+    ),
     "사용자 질문에 방언이 있으면 방언 참고 자료를 이용해 표준어 의미로 이해하세요.",
     "이전 대화가 있으면 현재 질문을 가장 최근 대화의 후속 질문으로 먼저 해석하세요.",
     "예를 들어 직전 대화가 토마토주스와 복숭아였고 현재 질문이 '레시피 알려줘'라면, 그 주제의 안전한 레시피를 이어서 답하세요.",
@@ -454,11 +506,12 @@ export async function generateSeniorFriendlyAnswer(
     role: "user",
     parts: [{ text: prompt }],
   };
-  if (media.image) {
+  // 사진은 보낸 순서대로 넣는다. 순서가 프롬프트의 "몇 번째 사진"과 맞아야 한다.
+  for (const image of images) {
     requestContent.parts.push({
       inline_data: {
-        data: media.image.data,
-        mime_type: media.image.mimeType,
+        data: image.media.data,
+        mime_type: image.media.mimeType,
       },
     });
   }
@@ -471,7 +524,10 @@ export async function generateSeniorFriendlyAnswer(
     });
   }
 
-  const cacheKey = `${prompt}\n@@image:${mediaFingerprint(media.image)}\n@@audio:${mediaFingerprint(media.audio)}`;
+  const imageFingerprint = images
+    .map((image) => mediaFingerprint(image.media))
+    .join("|");
+  const cacheKey = `${prompt}\n@@image:${imageFingerprint || "none"}\n@@audio:${mediaFingerprint(media.audio)}`;
   // 촬영 목적은 프롬프트 지시문에 이미 섞여 들어가므로 cacheKey에 따로 붙이지 않는다.
   const cachedAnswer = readAnswerCache(cacheKey);
   if (cachedAnswer) {

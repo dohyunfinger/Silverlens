@@ -1,0 +1,24 @@
+<svg width="300" height="72" viewBox="0 0 300 72" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SilverLens">
+  <title>SilverLens — 심볼과 이름을 나란히 둔 조합</title>
+  <!--
+    심볼은 logo-lens-smile 과 같은 도형이다.
+    밥그릇 판으로 바꾸려면 이 <g> 안을 logo-lens-bowl.svg 의 도형으로 바꾸면 된다.
+  -->
+  <g transform="translate(4,4) scale(0.95)">
+    <circle cx="27" cy="27" r="22" fill="#f6c9a5" opacity="0.35"/>
+    <path d="M41 41 L54 54" stroke="#173f35" stroke-width="7" stroke-linecap="round"/>
+    <circle cx="27" cy="27" r="17" fill="#e7f2ec"/>
+    <circle cx="19.4" cy="29.4" r="3" fill="#f6c9a5"/>
+    <circle cx="34.6" cy="29.4" r="3" fill="#f6c9a5"/>
+    <circle cx="22" cy="23.4" r="2.3" fill="#173f35"/>
+    <circle cx="32" cy="23.4" r="2.3" fill="#173f35"/>
+    <path d="M20.6 29.6 C22.4 34 31.6 34 33.4 29.6" stroke="#173f35" stroke-width="3.1" stroke-linecap="round" fill="none"/>
+    <circle cx="27" cy="27" r="17" stroke="#173f35" stroke-width="5"/>
+  </g>
+  <!--
+    글자는 텍스트로 두었다. 폰트가 없는 환경에서는 모양이 달라질 수 있으니,
+    인쇄물이나 제출용 이미지로 쓸 때는 글자를 경로로 변환해 쓰는 편이 안전하다.
+  -->
+  <text x="76" y="38" font-family="Pretendard, 'Noto Sans KR', system-ui, sans-serif" font-size="27" font-weight="800" fill="#173f35" letter-spacing="-0.6">SilverLens</text>
+  <text x="77" y="56" font-family="Pretendard, 'Noto Sans KR', system-ui, sans-serif" font-size="12.5" font-weight="700" fill="#56635c" letter-spacing="0.2">먹는 사람에게 맞춘 식품 안전 AI</text>
+</svg>

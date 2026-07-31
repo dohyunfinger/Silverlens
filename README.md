@@ -1,3 +1,5 @@
+<img src="docs/brand/preview/2-lens-smile.png" alt="SilverLens 로고" width="96">
+
 # SilverLens
 
 **사투리와 음식 사진을 이해해, 먹는 사람에게 맞는 식품 안전 정보를 알려 주는 AI 서비스**

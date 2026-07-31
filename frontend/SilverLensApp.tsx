@@ -11,7 +11,16 @@ import {
   useState,
 } from "react";
 import ReactMarkdown from "react-markdown";
-import { clearStore, describeStore, readStore, writeStore } from "./localStore";
+import {
+  clearPendingPhotos,
+  clearStore,
+  describeStore,
+  loadPendingPhotos,
+  readStore,
+  savePendingPhotos,
+  type StoredPendingPhoto,
+  writeStore,
+} from "./localStore";
 import { type PhotoIssue, preparePhoto } from "./photoCapture";
 import {
   getHealthGroupOptions,
@@ -60,6 +69,8 @@ type PendingAudio = {
  */
 type PhotoPurpose = "label" | "food" | "medicine";
 type PendingImage = {
+  /** 목록에서 한 장만 지우거나 확인 화면에서 골라 보기 위한 식별자. */
+  id: string;
   file: File;
   url: string;
   purpose: PhotoPurpose | null;
@@ -929,6 +940,34 @@ const automaticNoticeCopy: Record<
  * 촬영 목적 3분기. 어르신이 사진으로 물어보는 상황은 실제로 이 셋으로 나뉜다.
  * 목적을 고르면 곧바로 카메라가 열리므로 버튼 하나만 더 누르는 셈이다.
  */
+/**
+ * 한 번에 첨부할 수 있는 사진 수. 서버의 MAX_IMAGES 와 같은 값으로 둔다.
+ * 한 상에 놓인 반찬을 나눠 찍는 정도는 담기고, 그보다 많으면 업로드가 길어진다.
+ */
+const MAX_PENDING_PHOTOS = 4;
+
+/**
+ * 이 기기에서 "지금 찍기"가 뜻이 있는지.
+ *
+ * `capture` 속성은 데스크톱 브라우저가 무시한다. 그래서 데스크톱에서는
+ * "지금 찍기"와 "저장된 사진 고르기"가 똑같은 파일 선택창을 연다. 웹캠이 있어도
+ * 그렇다. 같은 일을 하는 버튼을 둘 두면 어느 것을 눌러야 하는지 헷갈리므로
+ * 데스크톱에서는 고르는 단계를 건너뛰고 바로 파일 선택으로 간다.
+ *
+ * 판단은 손가락으로 쓰는 기기인지로 한다. 브라우저가 알려 주면 그 값을 먼저 믿고,
+ * 없으면 터치 지원과 포인터 종류로 본다.
+ */
+function deviceLikelyHasCamera() {
+  if (typeof window === "undefined" || typeof navigator === "undefined") return false;
+  const uaData = (navigator as Navigator & { userAgentData?: { mobile?: boolean } })
+    .userAgentData;
+  if (typeof uaData?.mobile === "boolean") return uaData.mobile;
+  const coarsePointer =
+    typeof window.matchMedia === "function" &&
+    window.matchMedia("(pointer: coarse)").matches;
+  return coarsePointer && (navigator.maxTouchPoints ?? 0) > 0;
+}
+
 const photoPurposeOptions: Array<{
   id: PhotoPurpose;
   icon: string;
@@ -1129,12 +1168,15 @@ const uiCopy = {
     photoPurposeMedicineTip: "약 이름과 하루 몇 번 먹는지가 보이게 찍어 주세요.",
     photoPreparing: "사진을 확인하고 있어요.",
     photoReviewTitle: "사진을 확인해 주세요",
-    photoReviewHelp: "글자가 읽히면 그대로 물어보시고, 아니면 다시 찍어 주세요.",
-    photoRetake: "다시 찍기",
+    photoReviewHelp: "찍으려던 것이 잘 보이면 그대로 물어보시고, 아니면 다시 찍어 주세요.",
+    photoRetake: "이 사진 다시 찍기",
+    photoAddMore: "한 장 더 넣기",
     photoUseIt: "이대로 물어보기",
+    photoCountAttached: "사진 {count}장",
+    photoMaxReached: "사진은 한 번에 {max}장까지 보낼 수 있어요. 먼저 보내고 다시 물어봐 주세요.",
     photoZoomOpen: "크게 보기",
     photoZoomClose: "닫기",
-    photoQualityOk: "잘 찍혔어요. 그대로 물어보셔도 돼요.",
+    photoQualityOk: "밝기와 흔들림은 괜찮아요. 무엇이 찍혔는지는 답변에서 알려드려요.",
     photoQualityDark: "사진이 어두워요. 불을 켜거나 창가에서 다시 찍어 보세요.",
     photoQualityBright: "빛이 너무 세서 글자가 날아갔어요. 그림자를 피해 다시 찍어 보세요.",
     photoQualityBlurry: "사진이 흐릿해요. 손을 어딘가에 받치고 다시 찍어 보세요.",
@@ -1314,12 +1356,15 @@ const uiCopy = {
     photoPurposeMedicineTip: "Make sure the medicine name and daily doses are visible.",
     photoPreparing: "Checking the photo.",
     photoReviewTitle: "Please check the photo",
-    photoReviewHelp: "If you can read the text, go ahead and ask. If not, take it again.",
-    photoRetake: "Take again",
-    photoUseIt: "Ask with this photo",
+    photoReviewHelp: "If what you meant to capture is clear, go ahead and ask. If not, take it again.",
+    photoRetake: "Retake this photo",
+    photoAddMore: "Add one more",
+    photoUseIt: "Ask with these photos",
+    photoCountAttached: "{count} photo(s)",
+    photoMaxReached: "You can send up to {max} photos at once. Please send these first.",
     photoZoomOpen: "View larger",
     photoZoomClose: "Close",
-    photoQualityOk: "Looks good. You can ask with this photo.",
+    photoQualityOk: "Brightness and focus look fine. We will tell you what is in the photo in the answer.",
     photoQualityDark: "The photo is dark. Turn on a light or move near a window.",
     photoQualityBright: "Too much glare washed out the text. Avoid direct light and retake.",
     photoQualityBlurry: "The photo is blurry. Rest your hand on something and retake.",
@@ -1499,12 +1544,15 @@ const uiCopy = {
     photoPurposeMedicineTip: "薬の名前と一日何回飲むかが見えるように撮ってください。",
     photoPreparing: "写真を確認しています。",
     photoReviewTitle: "写真を確認してください",
-    photoReviewHelp: "文字が読めればそのまま質問し、読めなければ撮り直してください。",
-    photoRetake: "撮り直す",
+    photoReviewHelp: "撮りたかったものがはっきり見えていればそのまま質問し、見えていなければ撮り直してください。",
+    photoRetake: "この写真を撮り直す",
+    photoAddMore: "もう一枚追加",
     photoUseIt: "この写真で質問する",
+    photoCountAttached: "写真 {count} 枚",
+    photoMaxReached: "写真は一度に{max}枚まで送れます。まず送信してからもう一度お尋ねください。",
     photoZoomOpen: "大きく見る",
     photoZoomClose: "閉じる",
-    photoQualityOk: "きれいに撮れました。このまま質問できます。",
+    photoQualityOk: "明るさとぶれは問題ありません。何が写っているかは回答でお伝えします。",
     photoQualityDark: "写真が暗いです。明かりをつけるか窓の近くで撮り直してください。",
     photoQualityBright: "光が強すぎて文字が飛んでいます。直射光を避けて撮り直してください。",
     photoQualityBlurry: "写真がぼやけています。手をどこかに固定して撮り直してください。",
@@ -1535,6 +1583,8 @@ type AboutGuideStep = {
   mockHighlight: number;
 };
 const GITHUB_URL = "https://github.com/dohyunfinger/-OGQ-";
+/** 대회 플랫폼에 올라간 프로젝트 소개 페이지. */
+const PROJECT_PAGE_URL = "https://meister.itshin.com/team/silverlens";
 
 const teamMembers: Array<{ name: string; roles: Record<Language, string> }> = [
   {
@@ -1601,7 +1651,11 @@ type AboutCopy = {
   previewAnswerTitle: string;
   previewAnswerText: string;
   previewMic: string;
-  footer: string;
+  projectPageCta: string;
+  contestNote: string;
+  dataSourceNote: string;
+  footMedicalNote: string;
+  copyright: string;
 };
 
 const aboutCopy: Record<Language, AboutCopy> = {
@@ -1764,7 +1818,14 @@ const aboutCopy: Record<Language, AboutCopy> = {
     previewAnswerTitle: "큰 글자 답변 카드",
     previewAnswerText: "무를 푹 끓이면 단맛이 살아나요. 설탕은 넣지 않으셔도 됩니다.",
     previewMic: "🎙 눌러서 말하기",
-    footer: "© SilverLens. 사투리를 이해하는 AI로 시니어의 건강 식생활 접근성을 높입니다.",
+    projectPageCta: "대회 프로젝트 페이지",
+    contestNote:
+      "전국마이스터고 스타프로젝트 참가작 · 주최 전국마이스터고등학교장협의회 · NAVER OGQ마켓",
+    dataSourceNote: "데이터 출처: 국립국어원 우리말샘 · 공공데이터포털",
+    footMedicalNote:
+      "이 서비스는 진단이나 처방을 하지 않습니다. 건강에 관한 판단은 의사·약사와 상의해 주세요.",
+    copyright:
+      "© 2026 우승에 동의 · 구미전자공업고등학교 전자시스템제어과 · MIT License",
   },
   "en-US": {
     backToService: "Back to service",
@@ -1924,8 +1985,15 @@ const aboutCopy: Record<Language, AboutCopy> = {
     previewAnswerTitle: "Large-type answer card",
     previewAnswerText: "Simmer the radish well and its own sweetness comes out. No sugar needed.",
     previewMic: "🎙 Press to speak",
-    footer:
-      "© SilverLens. AI that understands dialects, improving access to healthy eating for older adults.",
+    projectPageCta: "Contest project page",
+    contestNote:
+      "An entry for the Meister High School Star Project · Hosted by the Korea Meister High School Principals' Council and NAVER OGQ Market",
+    dataSourceNote:
+      "Data sources: Urimalsam (National Institute of Korean Language) · Public Data Portal",
+    footMedicalNote:
+      "This service does not diagnose or prescribe. Please consult a doctor or pharmacist for health decisions.",
+    copyright:
+      "© 2026 Team Wooseung-e Dongui · Gumi Electronic Technical High School · MIT License",
   },
   "ja-JP": {
     backToService: "サービスに戻る",
@@ -2085,7 +2153,14 @@ const aboutCopy: Record<Language, AboutCopy> = {
     previewAnswerTitle: "大きな文字の回答カード",
     previewAnswerText: "大根をよく煮ると甘みが出ます。砂糖は入れなくて大丈夫です。",
     previewMic: "🎙 押して話す",
-    footer: "© SilverLens. 方言を理解するAIで、シニアの健康な食生活へのアクセスを高めます。",
+    projectPageCta: "コンテストのプロジェクトページ",
+    contestNote:
+      "全国マイスター高スタープロジェクト参加作 · 主催 全国マイスター高等学校長協議会 · NAVER OGQマーケット",
+    dataSourceNote: "データ出典：国立国語院ウリマルセム · 公共データポータル",
+    footMedicalNote:
+      "このサービスは診断や処方を行いません。健康に関する判断は医師・薬剤師にご相談ください。",
+    copyright:
+      "© 2026 チーム・優勝に同意 · 亀尾電子工業高等学校 · MIT License",
   },
 };
 
@@ -2691,7 +2766,18 @@ export default function SilverLensApp() {
   const [recordingContext, setRecordingContext] = useState<RecordingContext | null>(null);
   const [recordedUrl, setRecordedUrl] = useState<string | null>(null);
   const [pendingAudio, setPendingAudio] = useState<PendingAudio | null>(null);
-  const [pendingImage, setPendingImage] = useState<PendingImage | null>(null);
+  /**
+   * 첨부한 사진들. 한 장만 두면 두 번째로 찍은 사진이 앞의 사진을 덮어써서
+   * 한 상을 여러 번 찍어도 마지막 한 장만 전송됐다. 그래서 배열로 둔다.
+   */
+  const [pendingImages, setPendingImages] = useState<PendingImage[]>([]);
+  /** 확인 화면과 확대 보기에서 지금 보고 있는 사진. */
+  const [reviewImageId, setReviewImageId] = useState<string | null>(null);
+  /**
+   * 기기에 맡겨 둔 사진을 되살렸는지.
+   * 되살리기 전에 빈 목록을 저장하면 맡겨 둔 사진을 지워 버리므로 순서를 지킨다.
+   */
+  const [pendingPhotosRestored, setPendingPhotosRestored] = useState(false);
   /** 사진 흐름 단계. null 이면 아무 창도 열려 있지 않다. */
   const [photoStep, setPhotoStep] = useState<
     "purpose" | "source" | "review" | null
@@ -2747,6 +2833,15 @@ export default function SilverLensApp() {
   const recordingStartedAtRef = useRef<number | null>(null);
   const initialTtsPlayed = useRef(false);
   const answerTouchStartX = useRef<number | null>(null);
+  /**
+   * 방금 고른 촬영 목적. 상태와 별도로 ref 에도 둔다.
+   *
+   * 파일 선택은 카메라 앱을 다녀온 뒤 돌아오는 흐름이라, 목적을 고른 시점과
+   * 사진이 들어오는 시점 사이에 화면이 다시 그려지는 것을 기다릴 수 없다.
+   * 상태만 보면 느린 기기에서 목적이 비어 넘어가 촬영 목적별 지시가 빠졌다.
+   * ref 는 즉시 반영되므로 이 값을 사진에 붙인다.
+   */
+  const photoPurposeRef = useRef<PhotoPurpose | null>(null);
   /** 카메라를 바로 여는 입력(capture 지정). */
   const photoInputRef = useRef<HTMLInputElement | null>(null);
   /** 앨범에서 고르는 입력. capture 를 두지 않아야 저장된 사진을 고를 수 있다. */
@@ -3686,11 +3781,75 @@ export default function SilverLensApp() {
     };
   }, [pendingAudio]);
 
+  /**
+   * 미리보기 주소 정리.
+   * 목록이 바뀔 때마다 전부 해제하면 아직 화면에 쓰이는 주소까지 끊긴다.
+   * 그래서 한 장을 지울 때 그 자리에서 해제하고, 여기서는 화면을 떠날 때만 남은 것을 정리한다.
+   */
+  const pendingImagesRef = useRef<PendingImage[]>([]);
+  useEffect(() => {
+    pendingImagesRef.current = pendingImages;
+  }, [pendingImages]);
   useEffect(() => {
     return () => {
-      if (pendingImage) URL.revokeObjectURL(pendingImage.url);
+      for (const image of pendingImagesRef.current) URL.revokeObjectURL(image.url);
     };
-  }, [pendingImage]);
+  }, []);
+
+  /**
+   * 카메라를 다녀오는 사이 화면이 새로 열려도 사진이 사라지지 않게 되살린다.
+   *
+   * 휴대폰에서 카메라를 열면 브라우저가 페이지를 메모리에서 내려놓는 일이 있다.
+   * 그러면 돌아왔을 때 화면이 처음부터 다시 그려지고 앞서 찍은 사진이 없어진다.
+   * 실제로 "사진을 찍으면 한 번씩 앞에 올린 것이 다 사라진다"는 증상이 이것이었다.
+   */
+  useEffect(() => {
+    let cancelled = false;
+    void (async () => {
+      const stored = await loadPendingPhotos();
+      if (cancelled) {
+        return;
+      }
+      if (stored.length > 0 && typeof URL?.createObjectURL === "function") {
+        setPendingImages(
+          stored.slice(0, MAX_PENDING_PHOTOS).map((photo) => ({
+            id: photo.id,
+            file: photo.file,
+            url: URL.createObjectURL(photo.file),
+            purpose: (photo.purpose ?? null) as PhotoPurpose | null,
+            issues: (photo.issues ?? null) as PhotoIssue[] | null,
+            width: photo.width,
+            height: photo.height,
+            byteSize: photo.byteSize,
+          })),
+        );
+      }
+      setPendingPhotosRestored(true);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
+  /** 사진 목록이 바뀔 때마다 기기에 맡겨 둔다. 비면 맡긴 것도 지운다. */
+  useEffect(() => {
+    if (!pendingPhotosRestored) return;
+    if (pendingImages.length === 0) {
+      void clearPendingPhotos();
+      return;
+    }
+    const records: StoredPendingPhoto[] = pendingImages.map((image) => ({
+      id: image.id,
+      file: image.file,
+      purpose: image.purpose,
+      issues: image.issues,
+      width: image.width,
+      height: image.height,
+      byteSize: image.byteSize,
+      savedAt: Date.now(),
+    }));
+    void savePendingPhotos(records);
+  }, [pendingImages, pendingPhotosRestored]);
 
   /**
    * 사진 안내창이 열리거나 단계가 바뀌면 창 본문으로 포커스를 옮긴다.
@@ -4221,9 +4380,17 @@ export default function SilverLensApp() {
    * 카메라 화면에서 되돌아 나올 방법이 없었다.
    */
   const choosePhotoPurpose = (purpose: PhotoPurpose, tip: string) => {
+    // ref 를 먼저 채운다. 사진이 화면 갱신보다 먼저 들어와도 목적이 붙는다.
+    photoPurposeRef.current = purpose;
     setPhotoPurpose(purpose);
-    setPhotoStep("source");
     speakGuideNarration(tip, activeLanguage);
+    // 데스크톱에서는 카메라와 앨범이 같은 창이라 고르게 하지 않고 바로 연다.
+    if (deviceLikelyHasCamera()) {
+      setPhotoStep("source");
+      return;
+    }
+    setPhotoStep(null);
+    photoGalleryInputRef.current?.click();
   };
 
   /** 카메라 또는 앨범을 연다. 어느 쪽이든 고른 사진은 확인 화면으로 넘어간다. */
@@ -4234,12 +4401,7 @@ export default function SilverLensApp() {
     else photoGalleryInputRef.current?.click();
   };
 
-  /** 확인 화면에서 다시 고르기. 목적은 그대로 두고 가져올 곳만 다시 묻는다. */
-  const retakePhoto = () => {
-    stopNarration();
-    setIsPhotoZoomOpen(false);
-    setPhotoStep("source");
-  };
+
 
   const handlePhoto = async (event: ChangeEvent<HTMLInputElement>) => {
     const file = event.target.files?.[0];
@@ -4253,24 +4415,32 @@ export default function SilverLensApp() {
       setChatError(activeCopy.imageTooLarge);
       return;
     }
+    if (pendingImages.length >= MAX_PENDING_PHOTOS) {
+      setChatError(
+        activeCopy.photoMaxReached.replace("{max}", String(MAX_PENDING_PHOTOS)),
+      );
+      closePhotoFlow();
+      return;
+    }
     setChatError("");
     setIsPreparingPhoto(true);
     setPhotoStep("review");
     try {
       // 장변을 줄이고 밝기·흔들림을 재는 동안 확인 화면에 "확인 중"을 띄운다.
       const prepared = await preparePhoto(file);
-      setPendingImage((previous) => {
-        if (previous) URL.revokeObjectURL(previous.url);
-        return {
-          file: prepared.file,
-          url: prepared.url,
-          purpose: photoPurpose,
-          issues: prepared.processed ? prepared.quality.issues : null,
-          width: prepared.width,
-          height: prepared.height,
-          byteSize: prepared.file.size,
-        };
-      });
+      const added: PendingImage = {
+        id: `photo-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
+        file: prepared.file,
+        url: prepared.url,
+        purpose: photoPurposeRef.current,
+        issues: prepared.processed ? prepared.quality.issues : null,
+        width: prepared.width,
+        height: prepared.height,
+        byteSize: prepared.file.size,
+      };
+      // 앞서 찍은 사진을 지우지 않고 뒤에 붙인다. 순서가 곧 프롬프트의 사진 순서다.
+      setPendingImages((previous) => [...previous, added]);
+      setReviewImageId(added.id);
     } finally {
       setIsPreparingPhoto(false);
     }
@@ -4291,20 +4461,52 @@ export default function SilverLensApp() {
     setTranscript("");
   };
 
-  const clearPendingImage = () => {
-    setPendingImage((previous) => {
-      if (previous) URL.revokeObjectURL(previous.url);
-      return null;
+  /** 사진 한 장만 뺀다. 나머지 첨부는 그대로 둔다. */
+  const removePendingImage = (id: string) => {
+    setPendingImages((previous) => {
+      const target = previous.find((image) => image.id === id);
+      if (target) URL.revokeObjectURL(target.url);
+      return previous.filter((image) => image.id !== id);
     });
-    setPhotoPurpose(null);
-    closePhotoFlow();
+    setReviewImageId((current) => (current === id ? null : current));
+    setIsPhotoZoomOpen(false);
+    if (photoStep === "review") closePhotoFlow();
+  };
+
+  /** 확인 화면에서 "이 사진 다시 찍기". 보고 있던 장만 빼고 가져올 곳을 다시 묻는다. */
+  const replaceReviewedPhoto = () => {
+    stopNarration();
+    setIsPhotoZoomOpen(false);
+    if (reviewImageId) {
+      setPendingImages((previous) => {
+        const target = previous.find((image) => image.id === reviewImageId);
+        if (target) URL.revokeObjectURL(target.url);
+        return previous.filter((image) => image.id !== reviewImageId);
+      });
+      setReviewImageId(null);
+    }
+    // 데스크톱에서는 고를 것이 없으니 파일 선택창을 바로 연다.
+    if (!deviceLikelyHasCamera()) {
+      setPhotoStep(null);
+      photoGalleryInputRef.current?.click();
+      return;
+    }
+    setPhotoStep("source");
+  };
+
+  /** 확인 화면에서 "한 장 더 넣기". 지금까지 찍은 것은 두고 목적부터 다시 고른다. */
+  const addAnotherPhoto = () => {
+    stopNarration();
+    setIsPhotoZoomOpen(false);
+    setPhotoStep("purpose");
   };
 
   /** overrideText 가 있으면 입력창 내용 대신 그 문장을 보낸다(자주 묻는 질문 버튼). */
   const askGemini = async (overrideText?: string) => {
     const cleaned = (overrideText ?? chatInput).trim();
     const hasMeaningfulText = Boolean(cleaned && /[\p{L}\p{N}]/u.test(cleaned));
-    if (!hasMeaningfulText && !pendingAudio && !pendingImage) {
+    const hasPendingImages = pendingImages.length > 0;
+    if (!hasMeaningfulText && !pendingAudio && !hasPendingImages) {
       setChatError(activeCopy.requireInput);
       return;
     }
@@ -4312,32 +4514,55 @@ export default function SilverLensApp() {
     setChatError("");
     setIsLoadingAnswer(true);
     try {
-      const [audio, image] = await Promise.all([
+      // 사진은 첨부한 순서대로 모두 보낸다. 순서가 프롬프트의 사진 순서와 맞아야 한다.
+      const [audio, images] = await Promise.all([
         pendingAudio
           ? convertRecordingToWav(pendingAudio.blob).then(blobToInlineData)
           : null,
-        pendingImage ? blobToInlineData(pendingImage.file) : null,
+        Promise.all(
+          pendingImages.map(async (image) => ({
+            ...(await blobToInlineData(image.file)),
+            purpose: image.purpose ?? undefined,
+          })),
+        ),
       ]);
       // 글로 쓴 질문도 방언 변환 모델을 거치게 한다(음성 질문은 녹음 직후 이미 통과).
       const normalizedText = cleaned
         ? await normalizeDialectLocally(cleaned, activeLanguage)
         : cleaned;
-      const purposeOption = pendingImage
-        ? photoPurposeOptions.find((option) => option.id === pendingImage.purpose)
-        : undefined;
+      const photoLabel = hasPendingImages
+        ? (() => {
+            const purposeNames = [
+              ...new Set(
+                pendingImages
+                  .map(
+                    (image) =>
+                      photoPurposeOptions.find((option) => option.id === image.purpose)
+                        ?.labelKey,
+                  )
+                  .filter(Boolean)
+                  .map((labelKey) => activeCopy[labelKey as "photoPurposeFood"]),
+              ),
+            ];
+            const count =
+              pendingImages.length > 1
+                ? activeCopy.photoCountAttached.replace(
+                    "{count}",
+                    String(pendingImages.length),
+                  )
+                : activeCopy.photoOneLabel;
+            return purposeNames.length > 0
+              ? `🖼 ${count} · ${purposeNames.join(", ")}`
+              : `🖼 ${count}`;
+          })()
+        : null;
       const attachmentLabels = [
         ...(pendingAudio ? [`🎙 ${activeCopy.audioLabel} ${formatDuration(pendingAudio.duration)}`] : []),
-        ...(pendingImage
-          ? [
-              purposeOption
-                ? `🖼 ${activeCopy.photoOneLabel} · ${activeCopy[purposeOption.labelKey]}`
-                : `🖼 ${activeCopy.photoOneLabel}`,
-            ]
-          : []),
+        ...(photoLabel ? [photoLabel] : []),
       ];
       const questionLabel =
         cleaned ||
-        (pendingAudio && pendingImage
+        (pendingAudio && hasPendingImages
           ? activeCopy.audioPhotoQuestion
           : pendingAudio
             ? activeCopy.audioQuestion
@@ -4348,9 +4573,8 @@ export default function SilverLensApp() {
         body: JSON.stringify({
           message: normalizedText,
           audio,
-          image,
-          // 촬영 목적이 있으면 Vision 지시를 그 목적에 맞게 좁힌다.
-          imagePurpose: pendingImage?.purpose ?? undefined,
+          // 사진마다 촬영 목적을 함께 보내 Vision 지시를 목적에 맞게 좁힌다.
+          images,
           profile: {
             language: activeLanguage,
             // 성별을 고르지 않았으면 보내지 않는다(프롬프트가 일반 기준으로 답한다).
@@ -4403,10 +4627,13 @@ export default function SilverLensApp() {
       setChatTurns((turns) => [...turns, nextTurn]);
       setChatInput("");
       setPendingAudio(null);
-      setPendingImage((previous) => {
-        if (previous) URL.revokeObjectURL(previous.url);
-        return null;
+      // 보낸 사진은 모두 비우고 미리보기 주소도 함께 정리한다.
+      setPendingImages((previous) => {
+        for (const image of previous) URL.revokeObjectURL(image.url);
+        return [];
       });
+      setReviewImageId(null);
+      photoPurposeRef.current = null;
       setPhotoPurpose(null);
       setTranscript("");
       // 서버 TTS가 필요한 설정일 때만 미리 만들어 둔다(기본 속도에서는 호출하지 않음).
@@ -4683,6 +4910,20 @@ export default function SilverLensApp() {
                     </svg>
                     {about.githubCta}
                   </a>
+                  {/* 대회 플랫폼에 올라간 소개 페이지. 심사·공유 경로로 함께 둔다. */}
+                  <a
+                    className="about-github about-project-link"
+                    href={PROJECT_PAGE_URL}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <svg viewBox="0 0 24 24" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="2.2" strokeLinecap="round">
+                      <path d="M14 4h6v6" />
+                      <path d="M20 4 11 13" />
+                      <path d="M18 14v4a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h4" />
+                    </svg>
+                    {about.projectPageCta}
+                  </a>
                 </div>
 
                 <div className="about-team">
@@ -4697,7 +4938,16 @@ export default function SilverLensApp() {
                   </ul>
                 </div>
 
-              <p className="about-foot">{about.footer}</p>
+              {/*
+                출처와 책임 범위를 밝히는 자리.
+                건강을 다루는 서비스라 진단·처방을 하지 않는다는 고지를 여기서도 남긴다.
+              */}
+              <div className="about-legal">
+                <p className="about-legal-line">{about.contestNote}</p>
+                <p className="about-legal-line">{about.dataSourceNote}</p>
+                <p className="about-legal-note">{about.footMedicalNote}</p>
+                <p className="about-legal-copy">{about.copyright}</p>
+              </div>
             </div>
           </footer>
         </main>
@@ -4746,21 +4996,22 @@ export default function SilverLensApp() {
     const isTextInputVisible = showTextInput || chatInput.trim().length > 0;
     const hasProfileInfo =
       ageConfirmed || allergyIds.length > 0 || conditionIds.length > 0;
-    const pendingPhotoPurpose = pendingImage
-      ? photoPurposeOptions.find((option) => option.id === pendingImage.purpose)
-      : undefined;
+    // 확인 화면이 보여 줄 사진. 지정된 것이 없으면 가장 마지막에 넣은 사진을 본다.
+    const reviewImage =
+      pendingImages.find((image) => image.id === reviewImageId) ??
+      pendingImages[pendingImages.length - 1];
     // 사진을 아직 고르지 않은 단계에서는 방금 누른 목적을 그대로 쓴다.
     const chosenPhotoPurpose = photoPurposeOptions.find(
       (option) => option.id === photoPurpose,
     );
     // 검사를 못 했으면(null) 직접 확인해 달라고 하고, 문제가 없으면 잘 찍혔다고 알린다.
-    const photoQualityMessages: string[] = !pendingImage
+    const photoQualityMessages: string[] = !reviewImage
       ? []
-      : pendingImage.issues === null
+      : reviewImage.issues === null
         ? [activeCopy.photoQualitySkipped]
-        : pendingImage.issues.length === 0
+        : reviewImage.issues.length === 0
           ? [activeCopy.photoQualityOk]
-          : pendingImage.issues.map((issue) =>
+          : reviewImage.issues.map((issue) =>
               issue === "dark"
                 ? activeCopy.photoQualityDark
                 : issue === "bright"
@@ -4768,7 +5019,7 @@ export default function SilverLensApp() {
                   : activeCopy.photoQualityBlurry,
             );
     const hasPhotoQualityProblem = Boolean(
-      pendingImage?.issues && pendingImage.issues.length > 0,
+      reviewImage?.issues && reviewImage.issues.length > 0,
     );
     return (
       <main className="app-shell">
@@ -5226,7 +5477,7 @@ export default function SilverLensApp() {
               </div>
             )}
 
-            {(pendingAudio || pendingImage) && (
+            {(pendingAudio || pendingImages.length > 0) && (
               <div className="pending-attachments" aria-label={activeCopy.pendingTitle}>
                 <strong>{activeCopy.pendingTitle}</strong>
                 <div className="attachment-list">
@@ -5240,32 +5491,47 @@ export default function SilverLensApp() {
                       <button onClick={clearPendingAudio} aria-label={activeCopy.audioAttached}>×</button>
                     </div>
                   )}
-                  {pendingImage && (
-                    <div className="attachment-chip">
-                      <button
-                        type="button"
-                        className="attachment-thumb"
-                        onClick={() => {
-                          setPhotoStep("review");
-                          setIsPhotoZoomOpen(false);
-                        }}
-                        aria-label={activeCopy.photoZoomOpen}
-                      >
-                        {/* blob URL 은 이미지 최적화를 거칠 수 없어 img 를 그대로 쓴다. */}
-                        {/* eslint-disable-next-line @next/next/no-img-element */}
-                        <img src={pendingImage.url} alt="" />
-                      </button>
-                      <span>
-                        <strong>{activeCopy.photoAttached}</strong>
-                        <small>
-                          {pendingPhotoPurpose
-                            ? activeCopy[pendingPhotoPurpose.labelKey]
-                            : pendingImage.file.name}
-                        </small>
-                      </span>
-                      <button onClick={clearPendingImage} aria-label={activeCopy.photoAttached}>×</button>
-                    </div>
-                  )}
+                  {/* 첨부한 사진을 넣은 순서대로 모두 보여 준다. ×는 그 한 장만 뺀다. */}
+                  {pendingImages.map((image, index) => {
+                    const purposeOption = photoPurposeOptions.find(
+                      (option) => option.id === image.purpose,
+                    );
+                    return (
+                      <div className="attachment-chip" key={image.id}>
+                        <button
+                          type="button"
+                          className="attachment-thumb"
+                          onClick={() => {
+                            setReviewImageId(image.id);
+                            setPhotoStep("review");
+                            setIsPhotoZoomOpen(false);
+                          }}
+                          aria-label={activeCopy.photoZoomOpen}
+                        >
+                          {/* blob URL 은 이미지 최적화를 거칠 수 없어 img 를 그대로 쓴다. */}
+                          {/* eslint-disable-next-line @next/next/no-img-element */}
+                          <img src={image.url} alt="" />
+                        </button>
+                        <span>
+                          <strong>
+                            {activeCopy.photoAttached}
+                            {pendingImages.length > 1 ? ` ${index + 1}` : ""}
+                          </strong>
+                          <small>
+                            {purposeOption
+                              ? activeCopy[purposeOption.labelKey]
+                              : image.file.name}
+                          </small>
+                        </span>
+                        <button
+                          onClick={() => removePendingImage(image.id)}
+                          aria-label={`${activeCopy.photoAttached} ${index + 1} ×`}
+                        >
+                          ×
+                        </button>
+                      </div>
+                    );
+                  })}
                 </div>
                 {transcript && <p>{activeCopy.transcript}: {transcript}</p>}
                 <p>{activeCopy.sendPendingHelp}</p>
@@ -5284,7 +5550,7 @@ export default function SilverLensApp() {
               onClick={() => askGemini()}
               disabled={
                 isLoadingAnswer ||
-                (!chatInput.trim() && !pendingAudio && !pendingImage)
+                (!chatInput.trim() && !pendingAudio && pendingImages.length === 0)
               }
             >
               <span aria-hidden="true">➤</span>
@@ -5385,8 +5651,13 @@ export default function SilverLensApp() {
           {photoStep === "review" && (
             <div className="photo-sheet" role="dialog" aria-modal="true" aria-label={activeCopy.photoReviewTitle}>
               <div className="photo-sheet-panel" ref={photoPanelRef} tabIndex={-1}>
-                <h2>{activeCopy.photoReviewTitle}</h2>
-                {isPreparingPhoto || !pendingImage ? (
+                <h2>
+                  {activeCopy.photoReviewTitle}
+                  {pendingImages.length > 1 && (
+                    <> ({activeCopy.photoCountAttached.replace("{count}", String(pendingImages.length))})</>
+                  )}
+                </h2>
+                {isPreparingPhoto || !reviewImage ? (
                   <p className="photo-sheet-help" role="status">{activeCopy.photoPreparing}</p>
                 ) : (
                   <>
@@ -5397,11 +5668,34 @@ export default function SilverLensApp() {
                       aria-label={activeCopy.photoZoomOpen}
                     >
                       {/* eslint-disable-next-line @next/next/no-img-element */}
-                      <img src={pendingImage.url} alt={activeCopy.photoReviewTitle} />
+                      <img src={reviewImage.url} alt={activeCopy.photoReviewTitle} />
                       <span className="photo-review-zoom" aria-hidden="true">
                         🔍 {activeCopy.photoZoomOpen}
                       </span>
                     </button>
+                    {/* 두 장 이상이면 어느 장을 보고 있는지 고를 수 있게 한다. */}
+                    {pendingImages.length > 1 && (
+                      <div className="photo-review-strip">
+                        {pendingImages.map((image, index) => (
+                          <button
+                            type="button"
+                            key={image.id}
+                            className={
+                              image.id === reviewImage.id
+                                ? "photo-review-thumb current"
+                                : "photo-review-thumb"
+                            }
+                            onClick={() => setReviewImageId(image.id)}
+                            aria-current={image.id === reviewImage.id}
+                            aria-label={`${activeCopy.photoAttached} ${index + 1}`}
+                          >
+                            {/* eslint-disable-next-line @next/next/no-img-element */}
+                            <img src={image.url} alt="" />
+                            <span>{index + 1}</span>
+                          </button>
+                        ))}
+                      </div>
+                    )}
                     <ul
                       className={
                         hasPhotoQualityProblem
@@ -5415,16 +5709,21 @@ export default function SilverLensApp() {
                       ))}
                     </ul>
                     <p className="photo-sheet-help">{activeCopy.photoReviewHelp}</p>
-                    {pendingImage.width > 0 && (
+                    {reviewImage.width > 0 && (
                       <p className="photo-review-meta">
-                        {activeCopy.photoSizeNote}: {pendingImage.width}×{pendingImage.height} ·{" "}
-                        {Math.max(1, Math.round(pendingImage.byteSize / 1024))}KB
+                        {activeCopy.photoSizeNote}: {reviewImage.width}×{reviewImage.height} ·{" "}
+                        {Math.max(1, Math.round(reviewImage.byteSize / 1024))}KB
                       </p>
                     )}
                     <div className="photo-review-actions">
-                      <button type="button" className="photo-retake" onClick={retakePhoto}>
+                      <button type="button" className="photo-retake" onClick={replaceReviewedPhoto}>
                         📷 {activeCopy.photoRetake}
                       </button>
+                      {pendingImages.length < MAX_PENDING_PHOTOS && (
+                        <button type="button" className="photo-add-more" onClick={addAnotherPhoto}>
+                          ＋ {activeCopy.photoAddMore}
+                        </button>
+                      )}
                       <button type="button" className="photo-accept" onClick={acceptPendingPhoto}>
                         ✓ {activeCopy.photoUseIt}
                       </button>
@@ -5436,10 +5735,10 @@ export default function SilverLensApp() {
           )}
 
           {/* 확대 보기: 작은 글자를 어르신이 직접 확인할 수 있게 화면 전체로 띄운다. */}
-          {isPhotoZoomOpen && pendingImage && (
+          {isPhotoZoomOpen && reviewImage && (
             <div className="photo-zoom" role="dialog" aria-modal="true" aria-label={activeCopy.photoZoomOpen}>
               {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img src={pendingImage.url} alt={activeCopy.photoZoomOpen} />
+              <img src={reviewImage.url} alt={activeCopy.photoZoomOpen} />
               <button type="button" className="photo-zoom-close" onClick={() => setIsPhotoZoomOpen(false)}>
                 ✕ {activeCopy.photoZoomClose}
               </button>
