@@ -149,21 +149,37 @@ def load_disease_i18n(path: Path) -> list[dict[str, str]]:
 
 
 def load_senior_frequent_conditions(path: Path) -> list[dict[str, str]]:
-    """노인 다빈도 상병 목록. 붙여 쓴 상병명에 읽기용 공백을 넣어 함께 저장한다."""
-    raw_names: list[str] = []
+    """노인 다빈도 상병 목록.
+
+    원본에는 읽기 쉽게 띄어쓴 이름을 적고, 통계 원본 표기(raw)는 그 이름에서
+    공백을 지워 만든다. 예전에는 붙여 쓴 이름만 원본에 두고 '및/또는' 앞뒤에만
+    공백을 넣어 name 을 만들었는데, 그러면 "류마티스 관절염"처럼 손으로 띄어쓴
+    이름을 되만들 수 없어 스크립트를 다시 돌릴 때마다 띄어쓰기가 사라졌다.
+
+    붙여 쓴 이름을 적어도 되도록 '및/또는' 앞뒤를 띄우는 처리는 그대로 둔다.
+    """
+    written_names: list[str] = []
     for line in path.read_text(encoding="utf-8").splitlines():
-        for chunk in line.split(","):
+        stripped = line.strip()
+        # 주석은 줄 단위로 먼저 걸러 낸다. 예전에는 쉼표로 자른 뒤에 확인해서
+        # 쉼표가 들어간 주석의 뒷부분이 상병명으로 섞여 들어갔다.
+        if not stripped or stripped.startswith("#"):
+            continue
+        for chunk in stripped.split(","):
             name = chunk.strip()
-            if name and not name.startswith("#"):
-                raw_names.append(name)
+            if name:
+                written_names.append(name)
 
     entries: list[dict[str, str]] = []
     seen: set[str] = set()
-    for raw in raw_names:
-        if raw in seen:
+    for written in written_names:
+        readable = re.sub(
+            r"\s+", " ", written.replace("및", " 및 ").replace("또는", " 또는 ")
+        ).strip()
+        raw = re.sub(r"\s+", "", readable)
+        if not raw or raw in seen:
             continue
         seen.add(raw)
-        readable = re.sub(r"\s+", " ", raw.replace("및", " 및 ").replace("또는", " 또는 ")).strip()
         entries.append({"name": readable, "raw": raw})
     return entries
 

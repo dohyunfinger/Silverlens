@@ -103,9 +103,19 @@ summary:focus-visible {
   }
 }
 
+/*
+ * fill-mode 는 backwards 만 쓴다.
+ *
+ * both 로 두면 애니메이션이 끝난 뒤에도 마지막 프레임(transform: none)이 남고,
+ * 계산값은 none 이 아니라 항등 행렬이 된다. 항등이라도 transform 이 있으면
+ * 이 요소가 position: fixed 자손의 기준 상자가 되어 버린다.
+ * 그래서 사진 안내창(.photo-sheet)이 화면 대신 페이지 전체를 덮으며,
+ * 화면이 긴 폰에서는 창이 보이지 않는 곳에 떴다.
+ * backwards 는 시작 전 상태만 미리 적용하고 끝난 뒤에는 남지 않는다.
+ */
 .app-shell,
 .about-root {
-  animation: screenEnter .3s ease both;
+  animation: screenEnter .3s ease backwards;
 }
 
 @media (prefers-reduced-motion: reduce) {
@@ -706,8 +716,16 @@ textarea:focus-visible {
 .health-picker {
   grid-column: 1 / -1;
   display: grid;
+  /*
+   * 열을 지정하지 않으면 암시적 열이 auto 로 잡히고, auto 열은 안쪽 내용의
+   * min-content 폭보다 좁아지지 않는다. 입력칸 하나가 기본으로 20글자 폭을
+   * 요구해서 그 폭이 카드를 밀어내고, 카드가 화면보다 넓어져 오른쪽이 잘렸다.
+   * minmax(0, 1fr) 로 두면 필요한 만큼 줄어든다.
+   */
+  grid-template-columns: minmax(0, 1fr);
   /* min-width 를 풀어 두지 않으면 안쪽 내용이 카드를 밀어내 오른쪽이 잘린다. */
   min-width: 0;
+  max-width: 100%;
   gap: 8px;
   max-height: 460px;
   margin-top: 8px;
@@ -754,6 +772,7 @@ textarea:focus-visible {
 }
 
 .health-group {
+  min-width: 0;
   border: 2px solid var(--line);
   border-radius: 12px;
   background: white;
@@ -795,8 +814,15 @@ textarea:focus-visible {
 }
 
 .health-group summary strong {
+  /* 묶음 제목이 길면 줄바꿈으로 처리한다. 그대로 두면 제목이 카드를 넓힌다. */
+  min-width: 0;
   font-size: 18px;
   font-weight: 900;
+  overflow-wrap: anywhere;
+}
+
+.health-group summary em {
+  flex: 0 0 auto;
 }
 
 .health-group summary em {
@@ -811,16 +837,27 @@ textarea:focus-visible {
 
 .health-card input {
   grid-column: 1 / -1;
+  /*
+   * 입력칸은 기본으로 20글자쯤 되는 고유 폭을 갖는다. 그대로 두면 좁은 폰에서
+   * 그 폭이 카드를 밀어내므로 부모 폭을 따르게 못 박는다.
+   */
+  width: 100%;
+  min-width: 0;
+  max-width: 100%;
   min-height: 44px;
   padding: 0 12px;
   border: 2px solid #a8b1a9;
   border-radius: 8px;
   font-size: 17px;
+  /* padding 을 폭에 포함시켜 100% 가 부모를 넘지 않게 한다. */
+  box-sizing: border-box;
 }
 
 .health-option-list {
   grid-column: 1 / -1;
   display: grid;
+  /* 긴 항목 이름이 열을 밀어내지 않도록 열이 줄어들 수 있게 둔다. */
+  grid-template-columns: minmax(0, 1fr);
   gap: 6px;
   margin: 0;
   padding: 8px 10px 11px;
@@ -846,7 +883,14 @@ textarea:focus-visible {
   transition: background 0.12s ease, border-color 0.12s ease, color 0.12s ease;
 }
 
+/* "우유 · 달걀 (유제품 포함)" 처럼 긴 이름이 버튼을 넓히지 않게 줄바꿈을 허용한다. */
+.health-option > span:first-child {
+  min-width: 0;
+  overflow-wrap: anywhere;
+}
+
 .health-option .check-mark {
+  flex: 0 0 auto;
   font-size: 18px;
   font-weight: 900;
   color: var(--green-900);
@@ -1062,11 +1106,13 @@ textarea:focus-visible {
   display: grid;
   width: 42px;
   height: 42px;
+  flex: 0 0 auto;
   place-items: center;
   border-radius: 50%;
   color: var(--green-900);
   background: white;
-  font-size: 36px;
+  /* 화살표는 SVG 라서 이 값이 곧 아이콘 크기(1em)가 된다. */
+  font-size: 26px;
 }
 
 .start-button.disabled {
@@ -1148,22 +1194,29 @@ textarea:focus-visible {
 
 .back-button {
   display: grid;
+  /*
+   * 부제가 없을 때 글자가 버튼 위쪽에 붙어 보였다.
+   * 내용을 세로·가로 가운데로 모아 한 줄일 때도 두 줄일 때도 균형이 맞게 한다.
+   */
+  place-content: center;
+  justify-items: center;
   gap: 2px;
   min-width: 0;
   min-height: 48px;
-  padding: 6px 14px;
+  padding: 8px 18px;
   border: 2px solid var(--green-800);
   border-radius: var(--r-sm);
   color: var(--green-900);
   background: white;
   font-weight: 900;
-  text-align: left;
+  text-align: center;
   cursor: pointer;
 }
 
 .back-button strong {
   font-size: 17px;
   font-weight: 900;
+  line-height: 1.25;
 }
 
 .back-button small {
@@ -1405,12 +1458,13 @@ textarea:focus-visible {
 /* 접혀 있을 때만 "누르면 펼쳐진다"는 표시를 붙인다. */
 .profile-lang-caret {
   display: none;
-  margin-left: 1px;
-  font-size: 12px;
+  margin-left: 2px;
+  /* 어르신이 "누를 수 있는 곳"임을 알아채도록 글자보다 크게 둔다. */
+  font-size: 22px;
 }
 
 .profile-lang:not(.open) .profile-lang-item.active .profile-lang-caret {
-  display: inline;
+  display: block;
 }
 
 /* 국기 아이콘. 이모지 대신 SVG 라서 어느 기기에서나 같은 그림이 나온다. */
@@ -2525,10 +2579,22 @@ textarea:focus-visible {
   /* 카드 글자가 뒤에 있어도 읽히도록 반투명 + 흐림 처리 */
   background: rgba(255, 255, 255, 0.72);
   backdrop-filter: blur(4px);
-  font-size: 42px;
+  /* 화살표는 SVG 라서 이 값이 곧 아이콘 크기(1em)가 된다. */
+  font-size: 30px;
   font-weight: 900;
   box-shadow: 0 6px 16px rgba(31, 40, 35, 0.12);
   transition: background .15s ease, opacity .15s ease;
+}
+
+/*
+ * 선으로 그린 방향 화살표.
+ * 글자 대신 쓰는 이유는 '›' 같은 글리프가 폰트마다 위아래로 치우쳐
+ * 버튼 가운데에 오지 않기 때문이다.
+ */
+.chevron-icon {
+  display: block;
+  width: 1em;
+  height: 1em;
 }
 
 .answer-carousel > .answer-arrow:first-child {
@@ -2811,6 +2877,8 @@ textarea:focus-visible {
   z-index: 60;
   display: grid;
   place-items: center;
+  /* 창이 화면보다 길어지면 배경째로 스크롤되게 두어 버튼이 잘리지 않게 한다. */
+  overflow-y: auto;
   padding: 18px;
   background: rgba(9, 32, 21, .62);
 }
@@ -2819,6 +2887,11 @@ textarea:focus-visible {
   display: grid;
   width: min(520px, 100%);
   max-height: calc(100vh - 36px);
+  /*
+   * 폰 브라우저는 주소창 높이를 100vh 에 포함해서 계산해 창 아래가 잘린다.
+   * dvh 를 아는 브라우저에서는 실제 보이는 높이로 다시 잡는다.
+   */
+  max-height: calc(100dvh - 36px);
   gap: 12px;
   overflow-y: auto;
   padding: 22px 20px 20px;
@@ -2826,6 +2899,16 @@ textarea:focus-visible {
   border-radius: 22px;
   background: white;
   box-shadow: 0 22px 50px rgba(0, 60, 40, .3);
+}
+
+/* 단계가 바뀔 때 여기로 포커스를 옮긴다. 마우스 사용자에게 테두리는 보이지 않게 둔다. */
+.photo-sheet-panel:focus {
+  outline: none;
+}
+
+.photo-sheet-panel:focus-visible {
+  outline: 3px solid var(--green-800);
+  outline-offset: 3px;
 }
 
 .photo-sheet-panel h2 {
@@ -2907,6 +2990,23 @@ textarea:focus-visible {
   background: white;
   font-size: 18px;
   font-weight: 800;
+}
+
+/* 앞 단계로 되돌아가기. 그만두기와 헷갈리지 않게 글자만 남긴 모양으로 둔다. */
+.photo-sheet-back {
+  min-height: 50px;
+  border: 0;
+  border-radius: 14px;
+  color: var(--green-900);
+  background: transparent;
+  font-size: 17px;
+  font-weight: 900;
+  cursor: pointer;
+}
+
+.photo-sheet-back:hover,
+.photo-sheet-back:focus-visible {
+  background: var(--green-100);
 }
 
 /* 확인 화면: 찍은 사진을 최대한 크게 보여 준다. */
@@ -3460,6 +3560,37 @@ textarea:focus-visible {
 .about-bar-nav a:hover {
   color: var(--about-secondary);
   background: var(--about-wash);
+}
+
+/* 지금 보고 있는 구간을 메뉴에서 알려 준다. */
+.about-bar-nav a.active {
+  color: var(--about-primary);
+  background: var(--about-wash-strong);
+  font-weight: 900;
+}
+
+/*
+ * 얼마나 읽었는지 알려 주는 막대.
+ * 긴 한 장짜리 페이지에서 위치를 잃지 않게 하려고 둔 것으로,
+ * 폭만 바뀌므로 움직임에 민감한 사용자에게도 부담이 적다.
+ */
+.about-progress {
+  position: absolute;
+  bottom: -1px;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  overflow: hidden;
+  background: var(--about-wash);
+}
+
+.about-progress span {
+  display: block;
+  width: 100%;
+  height: 100%;
+  transform: scaleX(0);
+  transform-origin: left center;
+  background: linear-gradient(90deg, var(--about-secondary-fill), var(--about-secondary-deep));
 }
 
 .about-bar-actions {
@@ -4937,5 +5068,141 @@ textarea:focus-visible {
     min-height: 48px;
     padding: 0 10px;
     font-size: 16px;
+  }
+}
+
+/* ── 소개 화면 스크롤 연출 ──────────────────────────────────────
+ *
+ * 구간이 화면에 들어올 때 아주 조금만 올라오며 나타난다.
+ * 크게 움직이면 어르신이 읽던 곳을 놓치므로 이동 거리를 18px 로 제한했다.
+ * 움직임을 줄이는 설정에서는 아래 @media 로 전부 끈다.
+ */
+.about-panel {
+  opacity: 0;
+  transform: translateY(18px);
+  transition: opacity .5s ease, transform .5s ease;
+}
+
+.about-panel.is-visible {
+  opacity: 1;
+  transform: none;
+}
+
+/*
+ * 첫 화면(히어로)은 들어오자마자 보여야 하므로 관찰 결과를 기다리지 않는다.
+ * JavaScript 가 아예 동작하지 않는 환경에서도 첫 화면은 읽을 수 있다.
+ */
+.about-panel-hero {
+  opacity: 1;
+  transform: none;
+}
+
+/* 맨 위로 돌아가는 버튼 */
+.about-to-top {
+  position: fixed;
+  right: 22px;
+  bottom: 22px;
+  z-index: 35;
+  display: grid;
+  width: 56px;
+  height: 56px;
+  place-items: center;
+  /* 아래를 가리키는 화살표를 돌려 위를 가리키게 한다. */
+  transform: translateY(12px);
+  border: 0;
+  border-radius: 50%;
+  color: #fff;
+  background: linear-gradient(160deg, var(--about-secondary-fill), var(--about-secondary-deep));
+  font-size: 26px;
+  opacity: 0;
+  pointer-events: none;
+  box-shadow: 0 14px 30px rgba(23, 63, 53, .28);
+  cursor: pointer;
+  transition: opacity .25s ease, transform .25s ease;
+}
+
+.about-to-top.visible {
+  transform: none;
+  opacity: 1;
+  pointer-events: auto;
+}
+
+.about-to-top span {
+  display: block;
+  /* 아래 화살표를 뒤집어 위로 향하게 한다. */
+  transform: rotate(180deg);
+}
+
+.about-to-top:hover {
+  box-shadow: 0 18px 36px rgba(23, 63, 53, .36);
+}
+
+/*
+ * 실제 화면을 찍은 사진.
+ * public/guide/step-1 ~ step-4 를 넣으면 CSS 목업 대신 이 사진이 쓰인다.
+ * 파일이 없으면 브라우저가 읽기에 실패하고 목업이 그대로 남는다.
+ */
+.about-guide-shot {
+  display: block;
+  width: 100%;
+  /*
+   * 폰 화면을 찍은 사진은 세로로 길다(대략 3:4).
+   * 높이를 제한하고 contain 으로 맞춰 잘리지도, 늘어나지도 않게 한다.
+   */
+  max-height: 560px;
+  object-fit: contain;
+  border-radius: var(--about-radius-md);
+}
+
+/* 사진을 쓸 때는 목업용 어두운 바탕과 여백이 필요 없다. */
+.about-guide-mock.has-shot {
+  background: transparent;
+  box-shadow: none;
+}
+
+@media (min-width: 900px) {
+  /* 세로로 긴 사진이 들어갈 자리를 조금 더 준다. */
+  .about-guide-item:has(.about-guide-mock.has-shot) {
+    grid-template-columns: minmax(0, 1fr) minmax(0, 320px);
+  }
+}
+
+/* 강조한 곳에 손가락이 닿은 자리를 주황빛으로 표시한다. */
+.about-guide-mock-chip.highlight::after,
+.about-guide-mock-button.highlight::after {
+  content: "";
+  position: absolute;
+  right: -7px;
+  bottom: -9px;
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 138, 43, .95), rgba(255, 138, 43, 0) 70%);
+}
+
+.about-guide-mock-button.highlight {
+  position: relative;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .about-panel,
+  .about-panel.is-visible {
+    opacity: 1;
+    transform: none;
+    transition: none;
+  }
+
+  .about-to-top {
+    transition: none;
+  }
+}
+
+@media (max-width: 600px) {
+  .about-to-top {
+    right: 14px;
+    bottom: 14px;
+    width: 48px;
+    height: 48px;
+    font-size: 22px;
   }
 }

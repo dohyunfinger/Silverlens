@@ -50,3 +50,20 @@ export function getGeminiConfig() {
     ),
   };
 }
+
+/**
+ * 데이터 점검 화면(/log)과 그 API(/api/log)를 열어 둘지 판단한다.
+ *
+ * 이 화면은 어떤 모델을 쓰는지, API 키가 설정됐는지, 방언 서버 주소가 무엇인지를
+ * 인증 없이 보여 준다. 그래서 개발 환경에서만 기본으로 열고, 배포 환경에서는
+ * SILVERLENS_ENABLE_LOG=true 를 직접 설정해야 열리게 한다.
+ *
+ * 화면과 API가 서로 다른 기준으로 열리면 API는 404인데 화면은 뜨는 일이 생기므로
+ * 두 곳이 이 함수 하나만 보게 한다.
+ */
+export function isDataLogEnabled() {
+  return (
+    process.env.NODE_ENV !== "production" ||
+    process.env.SILVERLENS_ENABLE_LOG === "true"
+  );
+}

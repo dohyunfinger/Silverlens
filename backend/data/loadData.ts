@@ -1,5 +1,6 @@
 import dialectDictionary from "../../data/dialect_dictionary.json";
 import foodAliases from "../../data/food_aliases.json";
+import globalDishNames from "../../data/global_dish_names.json";
 import koreanDishNames from "../../data/korean_dish_names.json";
 import recipes from "../../data/recipes.json";
 import safetyRules from "../../data/safety_rules.json";
@@ -81,6 +82,12 @@ export type KnowledgeData = {
   dialectDictionary: DialectDictionaryEntry[];
   foodAliases: FoodAlias[];
   recipes: RecipeRecord[];
+  /**
+   * 외국 음식 사전. 한식 요리 사전과 뜻이 겹치지 않도록 파일과 배열을 따로 둔다.
+   * 어르신에게는 낯선 이름이라 프롬프트에서도 "쉬운 우리말로 풀어 달라"는
+   * 지시와 함께 별도 항목으로 넘긴다.
+   */
+  globalDishes: RecipeRecord[];
   safetyRules: SafetyRule[];
   seniorFoodKnowledge: SeniorFoodRecord[];
   koreanDishNames: KoreanDishName[];
@@ -94,6 +101,7 @@ export function loadKnowledgeData(): KnowledgeData {
       dialectDictionary: dialectDictionary as DialectDictionaryEntry[],
       foodAliases: foodAliases as FoodAlias[],
       recipes: recipes as RecipeRecord[],
+      globalDishes: globalDishNames as RecipeRecord[],
       safetyRules: safetyRules as SafetyRule[],
       seniorFoodKnowledge: seniorFoodKnowledge as SeniorFoodRecord[],
       koreanDishNames: koreanDishNames as KoreanDishName[],
@@ -130,22 +138,89 @@ function aliasMatches(query: string, entries: FoodAlias[], limit = 8) {
     .slice(0, limit);
 }
 
+const HANGUL_SYLLABLE = /[가-힣]/;
+
+type SearchIndex = {
+  /** 공백을 지운 검색용 문자열. "마카로니 샐러드" 같은 이름도 찾을 수 있다. */
+  compact: string;
+  /** compact 의 같은 자리 문자가 원문에서 무엇 뒤에 있었는지. 낱말 시작 판단용. */
+  previous: string[];
+};
+
+/**
+ * 공백을 지운 검색 문자열과 함께, 각 글자가 원문에서 무엇 뒤에 있었는지 남긴다.
+ * 공백을 지우면 낱말 경계가 사라져 "손흥민 어제"에서 '민어'가 걸리기 때문이다.
+ */
+function buildSearchIndex(text: string): SearchIndex {
+  const lower = text.toLocaleLowerCase("ko-KR");
+  let compact = "";
+  const previous: string[] = [];
+  for (let index = 0; index < lower.length; index += 1) {
+    const character = lower[index];
+    if (/\s/.test(character)) continue;
+    previous.push(index > 0 ? lower[index - 1] : "");
+    compact += character;
+  }
+  return { compact, previous };
+}
+
+/**
+ * 낱말 시작 위치에서만 이름을 인정한다.
+ *
+ * 한국어는 조사가 뒤에 붙으므로("케밥이", "국수는") 뒤쪽은 막지 않는다.
+ * 앞쪽만 막아도 '후무스'의 '무', '손흥민 어제'의 '민어', '아사도'의 '사도'처럼
+ * 다른 낱말 안에 파묻힌 우연한 일치를 걸러 낼 수 있다.
+ */
+function mentionsTerm(index: SearchIndex, term: string) {
+  if (!term) return false;
+  for (let from = 0; ; ) {
+    const at = index.compact.indexOf(term, from);
+    if (at < 0) return false;
+    if (!HANGUL_SYLLABLE.test(index.previous[at] ?? "")) return true;
+    from = at + 1;
+  }
+}
+
+/**
+ * 한식 메뉴명이면서 일상 낱말로도 자주 쓰이는 이름.
+ *
+ * "산적한 문제가 많아요", "적을 소탕했다", "울면 안 돼요"처럼 음식과 무관한
+ * 문장에서 걸려 주제 판정을 열어 버리기 때문에 메뉴명 힌트에서만 제외한다.
+ * 실제로 이 음식을 물어볼 때는 "먹어도" 같은 낱말이 함께 오므로 주제 판정은
+ * 그대로 통과하고, 요리 사전·시니어 식품 검색도 영향을 받지 않는다.
+ */
+const AMBIGUOUS_DISH_NAMES = new Set(["산적", "소탕", "다식", "미음", "약식", "울면"]);
+
 /**
  * 질문 안에 한식 메뉴명이 들어 있는지 확인한다.
  * senior_food_knowledge/recipes 에 없는 메뉴라도 "실제로 존재하는 한식"임을
  * 알려 주면 모델이 엉뚱한 식재료로 넘어가는 것을 막을 수 있다.
+ *
+ * 세 글자 미만은 오탐을 걱정해 통째로 빼 두었는데, 그 바람에 국수·김밥·미역국처럼
+ * 시니어 식단에서 흔한 두 글자 메뉴 105개가 한 번도 걸리지 않았다.
+ * 지금은 두 글자까지 낱말 경계를 확인해 받아들이고, 한 글자("번")만 제외한다.
  */
 function dishNameMatches(query: string, entries: KoreanDishName[], limit = 6) {
-  const normalizedQuery = normalized(query);
+  const queryIndex = buildSearchIndex(query);
   const matched = entries.filter((entry) => {
     const name = normalized(entry.name);
-    return name.length >= 3 && normalizedQuery.includes(name);
+    // "번역", "번호"처럼 흔한 낱말의 첫 글자와 겹치는 한 글자 이름은 제외한다.
+    // 목록에 있는 한 글자 이름은 '번' 하나뿐이라 잃는 것이 없다.
+    if (name.length < 2) return false;
+    if (AMBIGUOUS_DISH_NAMES.has(name)) return false;
+    return mentionsTerm(queryIndex, name);
   });
   return matched
     .sort((left, right) => right.name.length - left.name.length)
     .slice(0, limit);
 }
 
+/**
+ * 검색용 문자열. 낱말 경계를 볼 수 있게 공백은 남겨 둔다.
+ *
+ * 예전에는 공백까지 지운 한 덩어리였는데, 그래서 "주식 사도 될까요?"의 '사도'가
+ * '아사도' 안에서 걸리고 "손흥민 어제 골"에서 '민어'가 걸렸다.
+ */
 function recordText(record: RecipeRecord | SeniorFoodRecord) {
   const dialects = Object.values(record.dialects ?? {}).flat();
   const recipeIngredients =
@@ -153,30 +228,29 @@ function recordText(record: RecipeRecord | SeniorFoodRecord) {
       ? record.ingredients
       : [];
 
-  return normalized(
-    [
-      record.standard_name,
-      record.category ?? "",
-      ...dialects,
-      ...recipeIngredients,
-    ].join(" "),
-  );
+  return [
+    record.standard_name,
+    record.category ?? "",
+    ...dialects,
+    ...recipeIngredients,
+  ]
+    .join(" ")
+    .toLocaleLowerCase("ko-KR");
 }
 
 function scoreRecord(
   record: RecipeRecord | SeniorFoodRecord,
-  query: string,
+  queryIndex: SearchIndex,
   tokens: string[],
 ) {
-  const searchable = recordText(record);
-  const normalizedQuery = normalized(query);
+  const searchIndex = buildSearchIndex(recordText(record));
   const name = normalized(record.standard_name);
   let score = 0;
 
-  if (normalizedQuery.includes(name)) score += 20;
+  if (mentionsTerm(queryIndex, name)) score += 20;
   for (const token of tokens) {
     if (token === name) score += 12;
-    else if (searchable.includes(token)) score += 3;
+    else if (mentionsTerm(searchIndex, token)) score += 3;
   }
   return score;
 }
@@ -192,11 +266,22 @@ function rankedMatches<T extends RecipeRecord | SeniorFoodRecord>(
       .map(normalized)
       .filter((token) => token.length >= 2),
   )];
+  const queryIndex = buildSearchIndex(query);
 
+  // 자료에 같은 이름이 두 번 들어간 항목이 있어(예: 제육볶음, 민어) 검색 결과가
+  // 같은 음식으로 채워지는 일이 있었다. 프롬프트에 넣을 자리는 네 개뿐이라
+  // 이름이 겹치면 점수가 높은 쪽만 남긴다.
+  const seen = new Set<string>();
   return records
-    .map((record) => ({ record, score: scoreRecord(record, query, tokens) }))
+    .map((record) => ({ record, score: scoreRecord(record, queryIndex, tokens) }))
     .filter((item) => item.score > 0)
     .sort((left, right) => right.score - left.score)
+    .filter((item) => {
+      const key = normalized(item.record.standard_name);
+      if (seen.has(key)) return false;
+      seen.add(key);
+      return true;
+    })
     .slice(0, limit)
     .map((item) => item.record);
 }
@@ -330,11 +415,23 @@ export function findRelevantKnowledge(
     conditionLabels,
   );
 
+  const matchedRecipes = rankedMatches(knowledge.recipes, question, 4);
+  // 도넛처럼 두 사전에 다 있는 음식은 재료 목록이 서로 달라서, 둘 다 넘기면
+  // 모델이 어느 쪽을 따라야 할지 헷갈린다. 파일은 그대로 두고 검색 결과에서만
+  // 한식 요리 사전을 우선해 겹치는 이름을 뺀다.
+  const matchedRecipeNames = new Set(
+    matchedRecipes.map((record) => normalized(record.standard_name)),
+  );
+  const matchedGlobalDishes = rankedMatches(knowledge.globalDishes, question, 3).filter(
+    (record) => !matchedRecipeNames.has(normalized(record.standard_name)),
+  );
+
   return {
     dialectHints: dictionaryMatches(question, knowledge.dialectDictionary),
     foodAliasHints: aliasMatches(question, knowledge.foodAliases),
     dishNameHints: dishNameMatches(question, knowledge.koreanDishNames),
-    recipes: rankedMatches(knowledge.recipes, question, 4),
+    recipes: matchedRecipes,
+    globalDishes: matchedGlobalDishes,
     foods: rankedMatches(knowledge.seniorFoodKnowledge, question, 4).map((record) =>
       localizeSeniorFoodRecord(record, language),
     ),
@@ -385,6 +482,7 @@ export function getKnowledgeStats() {
       foodAliases: knowledge.foodAliases.length,
       koreanDishNames: knowledge.koreanDishNames.length,
       recipes: knowledge.recipes.length,
+      globalDishes: knowledge.globalDishes.length,
       safetyRules: knowledge.safetyRules.length,
       seniorFoodKnowledge: knowledge.seniorFoodKnowledge.length,
     },

@@ -296,6 +296,7 @@ function isLikelyOnTopic(topicContext: string, knowledge: ReturnType<typeof find
   if (
     knowledge.dialectHints.length > 0 ||
     knowledge.recipes.length > 0 ||
+    knowledge.globalDishes.length > 0 ||
     knowledge.foods.length > 0 ||
     knowledge.dishNameHints.length > 0 ||
     knowledge.foodAliasHints.length > 0
@@ -414,6 +415,8 @@ export async function generateSeniorFriendlyAnswer(
     "DATA의 건강 효능·권장량을 검증된 의학 사실처럼 단정하지 마세요.",
     "외래어·별칭 참고가 있으면 어르신이 알아듣기 쉬운 우리말 이름을 먼저 말하고 원래 이름을 괄호로 덧붙이세요.",
     "한식 메뉴명 참고에 걸린 이름은 실제로 존재하는 한식이므로 모르는 음식으로 처리하지 마세요.",
+    "외국 음식 DATA에 걸린 음식은 어르신에게 낯선 이름입니다. 어떤 나라 음식이고 어떤 재료로 만드는 음식인지 한 문장으로 먼저 풀어 준 뒤 답하세요.",
+    "외국 음식을 설명할 때도 재료를 기준으로 등록된 알레르기와 질병에 맞는지 함께 확인하고, 우리 식재료로 바꿀 수 있으면 그 방법을 알려 주세요.",
     "적용할 안전 원칙은 사용자 질병·질문에 맞게 미리 골라 둔 것입니다. 해당 원칙과 어긋나는 조리법이나 식재료를 권하지 마세요.",
     "음성으로 남긴 상세 메모는 목록으로 고를 수 없는 개인 사정입니다. 목록으로 등록한 알레르기·질병보다 구체적이므로 함께 반영하세요.",
     "예를 들어 목록에는 견과류만 등록됐지만 메모에 '견과류 중에 특히 호두가 안 맞는다'가 있으면 호두를 특히 강하게 피하도록 안내하세요.",
@@ -439,6 +442,7 @@ export async function generateSeniorFriendlyAnswer(
     `질문에서 찾은 외래어·별칭 참고: ${JSON.stringify(knowledge.foodAliasHints)}`,
     `질문에서 찾은 한식 메뉴명 참고: ${JSON.stringify(knowledge.dishNameHints)}`,
     `관련 요리·재료 DATA: ${JSON.stringify(knowledge.recipes)}`,
+    `관련 외국 음식 DATA: ${JSON.stringify(knowledge.globalDishes)}`,
     `관련 시니어 식품 DATA: ${JSON.stringify(knowledge.foods)}`,
     `적용할 안전 원칙: ${JSON.stringify(knowledge.safetyRules)}`,
     `현재 사용자 글 질문: ${message || "없음. 첨부된 음성이나 사진을 중심으로 답변할 것"}`,

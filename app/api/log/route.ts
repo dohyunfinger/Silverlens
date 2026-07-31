@@ -1,4 +1,5 @@
 import { NextResponse } from "next/server";
+import { isDataLogEnabled } from "../../../backend/config/env";
 import {
   findRelevantKnowledge,
   getDialectDictionaryForPrompt,
@@ -24,19 +25,29 @@ import { getNarrationCacheStats } from "../../../backend/services/ttsService";
  * 기본적으로 개발 환경에서만 열립니다. 배포 환경에서 확인이 필요하면
  * SILVERLENS_ENABLE_LOG=true 를 설정하세요. API 키 같은 비밀값은 값이 아니라
  * "설정됨 / 없음" 여부만 돌려줍니다.
+ *
+ * 열림 여부는 backend/config/env.ts 의 isDataLogEnabled 한 곳에서만 판단해
+ * /log 화면과 기준이 어긋나지 않게 합니다.
  */
-function isLogEnabled() {
-  return (
-    process.env.NODE_ENV !== "production" ||
-    process.env.SILVERLENS_ENABLE_LOG === "true"
-  );
-}
-
 const SAMPLE_QUESTION =
   "정구지랑 무시 넣고 제육볶음 하려는데 브로컬리도 괜찮아요? 무루팍이 시원찮아서요";
 
+/** 화면 언어는 정해진 세 값만 받는다. 값이 그대로 검색·번역에 쓰이기 때문이다. */
+const SUPPORTED_LANGUAGES = ["ko-KR", "en-US", "ja-JP"];
+const MAX_CONDITION_ITEMS = 40;
+const MAX_CONDITION_LENGTH = 60;
+
+/** 주소창으로 들어오는 값이라 개수와 길이를 서버에서 잘라 낸다. */
+function cleanConditionList(raw: string) {
+  return raw
+    .split(",")
+    .map((item) => item.trim().slice(0, MAX_CONDITION_LENGTH))
+    .filter(Boolean)
+    .slice(0, MAX_CONDITION_ITEMS);
+}
+
 export async function GET(request: Request) {
-  if (!isLogEnabled()) {
+  if (!isDataLogEnabled()) {
     return NextResponse.json(
       { error: "로그 화면이 꺼져 있습니다. SILVERLENS_ENABLE_LOG=true 로 열 수 있습니다." },
       { status: 404 },
@@ -45,17 +56,14 @@ export async function GET(request: Request) {
 
   const url = new URL(request.url);
   const question = (url.searchParams.get("q") || SAMPLE_QUESTION).slice(0, 400);
-  const language = url.searchParams.get("language") || "ko-KR";
+  const requestedLanguage = url.searchParams.get("language") || "ko-KR";
+  const language = SUPPORTED_LANGUAGES.includes(requestedLanguage)
+    ? requestedLanguage
+    : "ko-KR";
   // 값이 비어 있는 채로 넘어오면 "질병 없음"으로 다뤄야 하므로 ?? 로 판단한다.
   const rawConditions = url.searchParams.get("conditions");
-  const conditionLabels = (rawConditions ?? "당뇨, 만성 신장질환")
-    .split(",")
-    .map((item) => item.trim())
-    .filter(Boolean);
-  const conditionIds = (url.searchParams.get("conditionIds") || "")
-    .split(",")
-    .map((item) => item.trim())
-    .filter(Boolean);
+  const conditionLabels = cleanConditionList(rawConditions ?? "당뇨, 만성 신장질환");
+  const conditionIds = cleanConditionList(url.searchParams.get("conditionIds") || "");
 
   const stats = getKnowledgeStats();
   const knowledge = findRelevantKnowledge(question, {
@@ -121,6 +129,7 @@ export async function GET(request: Request) {
         variantCount: item.variant_count,
       })),
       recipes: knowledge.recipes.map((item) => item.standard_name),
+      globalDishes: knowledge.globalDishes.map((item) => item.standard_name),
       foods: knowledge.foods.map((item) => ({
         name: item.standard_name,
         cautionDiseases: item.disease_info?.caution_diseases ?? [],

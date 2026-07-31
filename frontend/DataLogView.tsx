@@ -41,6 +41,7 @@ type LogPayload = {
     foodAliasHints: Array<{ alias: string; standard: string; kind: string }>;
     dishNameHints: Array<{ name: string; variantCount: number }>;
     recipes: string[];
+    globalDishes: string[];
     foods: Array<{ name: string; cautionDiseases: string[] }>;
     safetyRules: string[];
   };
@@ -262,6 +263,13 @@ export default function DataLogView() {
                 <li key={name}>{name}</li>
               ))}
               {data.search.recipes.length === 0 && <li>없음</li>}
+            </ul>
+            <h3>외국 음식 사전 {data.search.globalDishes.length}건</h3>
+            <ul>
+              {data.search.globalDishes.map((name) => (
+                <li key={name}>{name}</li>
+              ))}
+              {data.search.globalDishes.length === 0 && <li>없음</li>}
             </ul>
             <h3>시니어 식품 {data.search.foods.length}건 (주의 질병은 선택 언어로 변환)</h3>
             <ul>

@@ -1,5 +1,6 @@
 import { getGeminiConfig } from "../config/env";
 import { callGeminiGenerateContent } from "./geminiClient";
+import { extractAgeFromTranscript } from "./koreanAge";
 import {
   getDialectDictionaryForPrompt,
   getFoodAliasesForPrompt,
@@ -62,6 +63,8 @@ function cleanAgeBand(value: unknown): number | null {
   return AGE_BANDS.includes(clamped) ? clamped : null;
 }
 
+
+
 function parseStructuredResult(text: string): TranscriptionResult {
   const withoutFence = text
     .replace(/^```(?:json)?\s*/i, "")
@@ -91,7 +94,10 @@ function parseStructuredResult(text: string): TranscriptionResult {
     allergies: cleanItems(parsed.allergies, "allergy"),
     conditions: cleanItems(parsed.conditions, "condition"),
     gender: cleanGender(parsed.gender),
-    ageBand: cleanAgeBand(parsed.age),
+    // 문장에서 직접 읽어 낸 나이를 먼저 쓰고, 없을 때만 모델이 준 값을 쓴다.
+    ageBand:
+      cleanAgeBand(extractAgeFromTranscript(transcript)) ??
+      cleanAgeBand(parsed.age),
   };
 }
 
@@ -130,7 +136,12 @@ export async function transcribeAudio(
                   '성별을 직접 말한 경우에만 gender 에 "male" 또는 "female" 을 넣고, 말하지 않았으면 null 을 넣으세요.',
                   "목소리 톤이나 이름으로 성별을 추측하지 마세요. 말로 밝힌 경우에만 넣으세요.",
                   "나이를 말한 경우에만 age 에 숫자만 넣고, 말하지 않았으면 null 을 넣으세요.",
-                  '"예순", "60대", "63살" 처럼 말해도 age 에는 숫자로 적으세요(예: 60, 63).',
+                  '"60대", "63살" 처럼 말하면 age 에 숫자로 적으세요(예: 60, 63).',
+                  // 우리말 수사를 한 칸씩 밀려 옮기는 일이 실제로 있어 표를 그대로 준다.
+                  "우리말 나이는 다음 표 그대로 옮기세요. 서른=30, 마흔=40, 쉰=50, 예순=60, 일흔=70, 여든=80, 아흔=90.",
+                  "한자말 나이도 다음 표 그대로 옮기세요. 삼십=30, 사십=40, 오십=50, 육십=60, 칠십=70, 팔십=80, 구십=90.",
+                  '예: "나이는 일흔이고" → age 70. "예순다섯입니다" → age 65.',
+                  "표에 없는 값으로 바꾸거나 한 단계 올리거나 내리지 마세요.",
                   "나이를 짐작해서 넣지 마세요.",
                   `현재 입력 화면: ${purpose}`,
                   `화면 표시 언어: ${selectedLanguage}`,

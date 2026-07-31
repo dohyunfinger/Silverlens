@@ -399,6 +399,37 @@ const trigrams = (["heaven", "water", "fire", "earth"] as const).map((name) => {
   };
 });
 
+/**
+ * 방향 표시 화살표.
+ *
+ * '›' '‹' '▾' 같은 글자는 폰트마다 글리프가 위아래로 치우쳐 있어서, 원이나
+ * 네모 버튼 안에 넣으면 가운데로 오지 않고 아래로 쏠린다. 그래서 선으로 직접
+ * 그린다. viewBox 가 좌우·위아래로 대칭이라 어느 크기에서도 가운데 온다.
+ *
+ * 크기는 부모의 font-size 를 따라간다(1em).
+ */
+function ChevronIcon({ direction }: { direction: "left" | "right" | "down" }) {
+  const rotation = { right: 0, left: 180, down: 90 }[direction];
+  return (
+    <svg
+      className="chevron-icon"
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        d="M8.5 5L15.5 12L8.5 19"
+        fill="none"
+        stroke="currentColor"
+        strokeWidth="3"
+        strokeLinecap="round"
+        strokeLinejoin="round"
+        transform={rotation ? `rotate(${rotation} 12 12)` : undefined}
+      />
+    </svg>
+  );
+}
+
 function LanguageFlag({ id }: { id: Language }) {
   // 흰 바탕 국기가 흰 배경에 묻히지 않도록 아주 옅은 테두리를 두른다.
   const frame = (
@@ -1082,8 +1113,14 @@ const uiCopy = {
     audioQuestion: "음성으로 질문",
     photoQuestion: "사진으로 질문",
     photoPurposeTitle: "무엇을 찍으실 건가요?",
-    photoPurposeHelp: "고르시면 잘 찍는 방법을 알려 드리고 바로 카메라가 열려요.",
+    photoPurposeHelp: "고르시면 잘 찍는 방법을 알려 드려요.",
     photoPurposeCancel: "그만두기",
+    photoSourceTitle: "사진을 어떻게 가져올까요?",
+    photoSourceCamera: "지금 찍기",
+    photoSourceCameraHelp: "카메라가 열립니다",
+    photoSourceGallery: "저장된 사진 고르기",
+    photoSourceGalleryHelp: "앨범에서 고릅니다",
+    photoSourceBack: "← 무엇을 찍을지 다시 고르기",
     photoPurposeLabel: "성분표·라벨",
     photoPurposeLabelTip: "글자가 화면을 가득 채우게, 봉지를 펴서 찍어 주세요.",
     photoPurposeFood: "음식·식재료",
@@ -1261,8 +1298,14 @@ const uiCopy = {
     audioQuestion: "Question with voice",
     photoQuestion: "Question with photo",
     photoPurposeTitle: "What are you taking a photo of?",
-    photoPurposeHelp: "Pick one and we will share a tip, then open the camera.",
+    photoPurposeHelp: "Pick one and we will share a tip for it.",
     photoPurposeCancel: "Cancel",
+    photoSourceTitle: "How would you like to add the photo?",
+    photoSourceCamera: "Take one now",
+    photoSourceCameraHelp: "Opens the camera",
+    photoSourceGallery: "Choose a saved photo",
+    photoSourceGalleryHelp: "Pick from your album",
+    photoSourceBack: "← Choose what to photograph again",
     photoPurposeLabel: "Ingredient list or label",
     photoPurposeLabelTip: "Flatten the package and fill the screen with the text.",
     photoPurposeFood: "Food or ingredient",
@@ -1440,8 +1483,14 @@ const uiCopy = {
     audioQuestion: "音声で質問",
     photoQuestion: "写真で質問",
     photoPurposeTitle: "何を撮りますか？",
-    photoPurposeHelp: "選ぶと上手に撮るコツをお伝えして、すぐカメラが開きます。",
+    photoPurposeHelp: "選ぶと上手に撮るコツをお伝えします。",
     photoPurposeCancel: "やめる",
+    photoSourceTitle: "写真はどうやって用意しますか？",
+    photoSourceCamera: "今すぐ撮る",
+    photoSourceCameraHelp: "カメラが開きます",
+    photoSourceGallery: "保存した写真から選ぶ",
+    photoSourceGalleryHelp: "アルバムから選びます",
+    photoSourceBack: "← 何を撮るかもう一度選ぶ",
     photoPurposeLabel: "成分表・ラベル",
     photoPurposeLabelTip: "袋を平らに伸ばし、文字が画面いっぱいになるように撮ってください。",
     photoPurposeFood: "料理・食材",
@@ -1468,8 +1517,9 @@ type AboutFeature = { title: string; text: string };
 type AboutStep = { step: string; title: string; text: string };
 /**
  * 소개 페이지의 "이렇게 쓰세요" 단계.
- * 사진을 올리는 대신 실제 화면을 흉내 낸 작은 목업을 CSS로 그린다.
- * 스크린샷을 쓰면 화면을 고칠 때마다 이미지가 낡고 용량도 늘어난다.
+ *
+ * public/guide/step-1 ~ step-4 에 실제 화면 사진을 넣어 두면 그 사진을 쓴다.
+ * 사진이 없으면 아래 mock* 값으로 CSS 목업을 그려서, 사진 없이도 설명이 끊기지 않는다.
  */
 type AboutGuideStep = {
   step: string;
@@ -1537,6 +1587,8 @@ type AboutCopy = {
   guideTipsLabel: string;
   guideSteps: AboutGuideStep[];
   guideCta: string;
+  /** 맨 위로 돌아가는 버튼의 읽어 주는 이름. */
+  toTop: string;
   /** 실제 서비스 화면 조각을 소개 페이지 안에서 미리 보여 주는 블록. */
   previewBadge: string;
   previewTitle: string;
@@ -1699,6 +1751,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
       },
     ],
     guideCta: "바로 시작해 보기",
+    toTop: "맨 위로 돌아가기",
     previewBadge: "Real UI",
     previewTitle: "서비스 화면은 이렇게 생겼습니다",
     previewDescription:
@@ -1858,6 +1911,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
       },
     ],
     guideCta: "Try it now",
+    toTop: "Back to top",
     previewBadge: "Real UI",
     previewTitle: "This is what the service screen looks like",
     previewDescription:
@@ -2018,6 +2072,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
       },
     ],
     guideCta: "すぐに始めてみる",
+    toTop: "一番上に戻る",
     previewBadge: "Real UI",
     previewTitle: "サービス画面はこんな見た目です",
     previewDescription:
@@ -2105,22 +2160,53 @@ const aboutGuideIcons = [
 ];
 
 /**
- * 실제 화면을 흉내 낸 작은 목업.
+ * 사용 가이드에 넣을 실제 화면 사진의 파일 이름.
  *
- * 서비스 화면을 어둡게 띄우고 눌러야 할 곳만 밝게 남긴 뒤, 아래에 흰 글씨로
- * 한 문장을 얹는다. 어르신용 사용 안내에서 흔히 쓰는 방식이라 어디를 누르면
- * 되는지 한눈에 들어온다. 스크린샷 대신 CSS로 그려서 서비스 화면을 고쳐도
- * 그림이 낡지 않고 용량도 늘지 않는다.
+ * public/guide/ 에 step-1 ~ step-4 를 넣으면 그 사진이 쓰인다.
+ * 내보내는 형식이 사람마다 달라서 png, jpg, webp 를 차례로 찾아본다.
+ * 하나도 없으면 CSS 목업이 그대로 남으므로 코드를 고칠 필요가 없다.
+ */
+const ABOUT_GUIDE_SHOT_TYPES = ["png", "jpg", "jpeg", "webp"] as const;
+
+/**
+ * 사용 가이드의 화면 그림.
+ *
+ * 실제 화면 사진이 있으면 그것을 쓰고, 없으면 화면을 흉내 낸 CSS 목업을 그린다.
+ * 목업은 서비스 화면을 어둡게 띄우고 눌러야 할 곳만 밝게 남긴 뒤 아래에 흰
+ * 글씨로 한 문장을 얹는 방식이다. 어르신용 안내에서 흔히 쓰는 형태라 어디를
+ * 누르면 되는지 한눈에 들어온다.
  *
  * 장식이라 스크린 리더에서는 숨기고, 설명은 옆의 글과 팁 목록이 담당한다.
  */
 function AboutGuideMock({ index, step }: { index: number; step: AboutGuideStep }) {
+  // 확장자를 하나씩 시도한다. 다 실패하면 사진 없이 목업만 남는다.
+  const [typeIndex, setTypeIndex] = useState(0);
+  const [shotLoaded, setShotLoaded] = useState(false);
+  const shotType = ABOUT_GUIDE_SHOT_TYPES[typeIndex];
   const itemClass = (itemIndex: number, base: string) =>
     itemIndex === step.mockHighlight ? `${base} highlight` : base;
 
   return (
-    <figure className="about-guide-mock" aria-hidden="true">
-      <div className="about-guide-mock-screen">
+    <figure
+      className={shotLoaded ? "about-guide-mock has-shot" : "about-guide-mock"}
+      aria-hidden="true"
+    >
+      {shotType && (
+        <>
+          {/* 있을 수도 없을 수도 있는 파일이라 이미지 최적화를 거치지 않고 그대로 읽는다. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img
+            className="about-guide-shot"
+            src={`/guide/step-${index + 1}.${shotType}`}
+            alt=""
+            hidden={!shotLoaded}
+            onLoad={() => setShotLoaded(true)}
+            onError={() => setTypeIndex((current) => current + 1)}
+          />
+        </>
+      )}
+
+      <div className="about-guide-mock-screen" hidden={shotLoaded}>
         <span className="about-guide-mock-title">{step.mockTitle}</span>
 
         {index === 3 ? (
@@ -2159,7 +2245,13 @@ function AboutGuideMock({ index, step }: { index: number; step: AboutGuideStep }
         )}
       </div>
 
-      <figcaption className="about-guide-mock-caption">{step.mockCaption}</figcaption>
+      {/*
+        실제 화면 사진에는 설명 문구가 이미 박혀 있어서, 사진을 쓸 때는
+        같은 말을 두 번 보여 주지 않도록 이 캡션을 숨긴다.
+      */}
+      <figcaption className="about-guide-mock-caption" hidden={shotLoaded}>
+        {step.mockCaption}
+      </figcaption>
     </figure>
   );
 }
@@ -2601,13 +2693,19 @@ export default function SilverLensApp() {
   const [pendingAudio, setPendingAudio] = useState<PendingAudio | null>(null);
   const [pendingImage, setPendingImage] = useState<PendingImage | null>(null);
   /** 사진 흐름 단계. null 이면 아무 창도 열려 있지 않다. */
-  const [photoStep, setPhotoStep] = useState<"purpose" | "review" | null>(null);
+  const [photoStep, setPhotoStep] = useState<
+    "purpose" | "source" | "review" | null
+  >(null);
   /** 카메라를 열기 직전에 고른 촬영 목적. 다시 찍기에서도 그대로 쓴다. */
   const [photoPurpose, setPhotoPurpose] = useState<PhotoPurpose | null>(null);
   const [isPreparingPhoto, setIsPreparingPhoto] = useState(false);
   const [isPhotoZoomOpen, setIsPhotoZoomOpen] = useState(false);
   /** 대화 화면 헤더의 언어 알약이 펼쳐져 있는지. */
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
+  /** 소개 화면에서 얼마나 읽었는지(0~1). 상단 진행 막대에 쓴다. */
+  const [aboutProgress, setAboutProgress] = useState(0);
+  /** 소개 화면에서 지금 보고 있는 구간의 id. 상단 메뉴를 강조하는 데 쓴다. */
+  const [aboutSection, setAboutSection] = useState("about-top");
   const [recordingError, setRecordingError] = useState("");
   const [chatInput, setChatInput] = useState("");
   const [chatTurns, setChatTurns] = useState<ChatTurn[]>([]);
@@ -2649,8 +2747,18 @@ export default function SilverLensApp() {
   const recordingStartedAtRef = useRef<number | null>(null);
   const initialTtsPlayed = useRef(false);
   const answerTouchStartX = useRef<number | null>(null);
+  /** 카메라를 바로 여는 입력(capture 지정). */
   const photoInputRef = useRef<HTMLInputElement | null>(null);
+  /** 앨범에서 고르는 입력. capture 를 두지 않아야 저장된 사진을 고를 수 있다. */
+  const photoGalleryInputRef = useRef<HTMLInputElement | null>(null);
+  /**
+   * 사진 안내창 본문. 폰은 화면이 길어서 창이 떠도 어르신 눈이 아래에 남아 있다.
+   * 그래서 단계가 바뀔 때마다 이 요소로 포커스를 옮겨 제목부터 읽히게 한다.
+   */
+  const photoPanelRef = useRef<HTMLDivElement | null>(null);
   const backupInputRef = useRef<HTMLInputElement | null>(null);
+  /** 소개 화면은 이 요소가 스크롤을 담당한다(position: fixed + overflow-y: auto). */
+  const aboutRootRef = useRef<HTMLDivElement | null>(null);
   const languageSectionRef = useRef<HTMLFieldSetElement | null>(null);
   const genderSectionRef = useRef<HTMLFieldSetElement | null>(null);
   const ageSectionRef = useRef<HTMLFieldSetElement | null>(null);
@@ -3273,6 +3381,74 @@ export default function SilverLensApp() {
     void ensureSpeechVoicesReady();
   }, []);
 
+  /**
+   * 소개 화면의 읽기 진행 막대와 구간 강조, 그리고 구간이 화면에 들어올 때
+   * 살짝 올라오며 나타나는 효과를 담당한다.
+   *
+   * 움직임을 줄이는 설정(prefers-reduced-motion)이면 나타나는 효과를 건너뛰고
+   * 처음부터 보이게 둔다. 진행 막대는 움직임이 아니라 위치 표시라서 그대로 둔다.
+   */
+  useEffect(() => {
+    if (screen !== "about") return;
+    const root = aboutRootRef.current;
+    if (!root) return;
+
+    const panels = Array.from(root.querySelectorAll<HTMLElement>(".about-panel"));
+    const reduceMotion =
+      typeof window.matchMedia === "function" &&
+      window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
+    let frame = 0;
+    const measure = () => {
+      frame = 0;
+      const scrollable = root.scrollHeight - root.clientHeight;
+      // 1% 단위로 끊어 스크롤마다 화면을 다시 그리지 않게 한다.
+      const ratio = scrollable > 0 ? root.scrollTop / scrollable : 0;
+      setAboutProgress(Math.round(Math.min(1, Math.max(0, ratio)) * 100) / 100);
+
+      // 화면 위쪽 35% 선을 지난 마지막 구간을 "지금 보는 곳"으로 본다.
+      const line = root.clientHeight * 0.35;
+      let current = "";
+      for (const panel of panels) {
+        if (panel.id && panel.getBoundingClientRect().top <= line) current = panel.id;
+      }
+      if (current) setAboutSection(current);
+    };
+    const onScroll = () => {
+      if (frame) return;
+      frame = window.requestAnimationFrame(measure);
+    };
+
+    measure();
+    root.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+
+    let observer: IntersectionObserver | null = null;
+    if (!reduceMotion && typeof IntersectionObserver === "function") {
+      observer = new IntersectionObserver(
+        (entries) => {
+          for (const entry of entries) {
+            if (!entry.isIntersecting) continue;
+            entry.target.classList.add("is-visible");
+            // 한 번 나타난 구간은 다시 관찰하지 않는다.
+            observer?.unobserve(entry.target);
+          }
+        },
+        { root, threshold: 0.12 },
+      );
+      for (const panel of panels) observer.observe(panel);
+    } else {
+      for (const panel of panels) panel.classList.add("is-visible");
+    }
+
+    return () => {
+      if (frame) window.cancelAnimationFrame(frame);
+      root.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      observer?.disconnect();
+    };
+  }, [screen]);
+
   useEffect(() => {
     const timer = window.setTimeout(() => {
       const stored = window.localStorage.getItem("silverlens:auto-voice-guide");
@@ -3515,6 +3691,25 @@ export default function SilverLensApp() {
       if (pendingImage) URL.revokeObjectURL(pendingImage.url);
     };
   }, [pendingImage]);
+
+  /**
+   * 사진 안내창이 열리거나 단계가 바뀌면 창 본문으로 포커스를 옮긴다.
+   * 폰은 화면이 위아래로 길어서, 창이 떠도 어르신은 방금 누른 버튼 쪽을 보고 있다.
+   * 포커스를 옮기면 화면이 창으로 따라오고 스크린리더도 제목부터 읽는다.
+   * 뒤쪽 화면은 스크롤을 잠가 창 밖으로 밀려나지 않게 한다.
+   */
+  useEffect(() => {
+    if (!photoStep) return;
+    const timer = window.setTimeout(() => {
+      photoPanelRef.current?.focus({ preventScroll: false });
+    }, 0);
+    const previousOverflow = document.body.style.overflow;
+    document.body.style.overflow = "hidden";
+    return () => {
+      window.clearTimeout(timer);
+      document.body.style.overflow = previousOverflow;
+    };
+  }, [photoStep]);
 
   const announceNext = useCallback(
     (
@@ -4020,19 +4215,30 @@ export default function SilverLensApp() {
     setIsPhotoZoomOpen(false);
   };
 
-  /** 목적을 고르면 안내를 읽어 주고 바로 카메라(파일 선택)를 연다. */
+  /**
+   * 목적을 고르면 잘 찍는 방법을 읽어 주고, 사진을 어디서 가져올지 묻는다.
+   * 예전에는 곧바로 카메라를 열었는데, 이미 앨범에 있는 사진을 쓰려던 분은
+   * 카메라 화면에서 되돌아 나올 방법이 없었다.
+   */
   const choosePhotoPurpose = (purpose: PhotoPurpose, tip: string) => {
     setPhotoPurpose(purpose);
-    setPhotoStep(null);
+    setPhotoStep("source");
     speakGuideNarration(tip, activeLanguage);
-    photoInputRef.current?.click();
   };
 
-  /** 확인 화면에서 다시 찍기. 목적은 그대로 두고 카메라만 다시 연다. */
+  /** 카메라 또는 앨범을 연다. 어느 쪽이든 고른 사진은 확인 화면으로 넘어간다. */
+  const openPhotoSource = (source: "camera" | "gallery") => {
+    stopNarration();
+    setIsPhotoZoomOpen(false);
+    if (source === "camera") photoInputRef.current?.click();
+    else photoGalleryInputRef.current?.click();
+  };
+
+  /** 확인 화면에서 다시 고르기. 목적은 그대로 두고 가져올 곳만 다시 묻는다. */
   const retakePhoto = () => {
     stopNarration();
     setIsPhotoZoomOpen(false);
-    photoInputRef.current?.click();
+    setPhotoStep("source");
   };
 
   const handlePhoto = async (event: ChangeEvent<HTMLInputElement>) => {
@@ -4231,8 +4437,12 @@ export default function SilverLensApp() {
     };
 
     return (
-      <div className="about-root">
+      <div className="about-root" ref={aboutRootRef}>
         <header className="about-bar">
+          {/* 얼마나 읽었는지 알려 주는 막대. 긴 페이지에서 위치를 잃지 않게 한다. */}
+          <div className="about-progress" aria-hidden="true">
+            <span style={{ transform: `scaleX(${aboutProgress})` }} />
+          </div>
           <div className="about-bar-inner">
             <a className="about-bar-brand" href="#about-top">
               <span className="about-bar-mark" aria-hidden="true">SL</span>
@@ -4240,9 +4450,21 @@ export default function SilverLensApp() {
             </a>
 
             <nav className="about-bar-nav" aria-label={activeCopy.menuLabel}>
-              <a href="#about-features">{about.navFeatures}</a>
-              <a href="#about-guide">{about.navGuide}</a>
-              <a href="#about-workflow">{about.navWorkflow}</a>
+              {/* 지금 보고 있는 구간을 메뉴에 표시한다. */}
+              {[
+                { id: "about-features", label: about.navFeatures },
+                { id: "about-guide", label: about.navGuide },
+                { id: "about-workflow", label: about.navWorkflow },
+              ].map((item) => (
+                <a
+                  key={item.id}
+                  href={`#${item.id}`}
+                  className={aboutSection === item.id ? "active" : undefined}
+                  aria-current={aboutSection === item.id ? "true" : undefined}
+                >
+                  {item.label}
+                </a>
+              ))}
             </nav>
 
             <div className="about-bar-actions">
@@ -4479,6 +4701,21 @@ export default function SilverLensApp() {
             </div>
           </footer>
         </main>
+
+        {/* 한참 내려온 뒤에만 나타나는 맨 위로 버튼. 긴 페이지에서 되돌아가기 쉽게 한다. */}
+        <button
+          type="button"
+          className={aboutProgress > 0.12 ? "about-to-top visible" : "about-to-top"}
+          onClick={() => {
+            aboutRootRef.current?.scrollTo({ top: 0, behavior: "smooth" });
+          }}
+          aria-label={about.toTop}
+          tabIndex={aboutProgress > 0.12 ? 0 : -1}
+        >
+          <span aria-hidden="true">
+            <ChevronIcon direction="down" />
+          </span>
+        </button>
       </div>
     );
   }
@@ -4512,6 +4749,10 @@ export default function SilverLensApp() {
     const pendingPhotoPurpose = pendingImage
       ? photoPurposeOptions.find((option) => option.id === pendingImage.purpose)
       : undefined;
+    // 사진을 아직 고르지 않은 단계에서는 방금 누른 목적을 그대로 쓴다.
+    const chosenPhotoPurpose = photoPurposeOptions.find(
+      (option) => option.id === photoPurpose,
+    );
     // 검사를 못 했으면(null) 직접 확인해 달라고 하고, 문제가 없으면 잘 찍혔다고 알린다.
     const photoQualityMessages: string[] = !pendingImage
       ? []
@@ -4576,8 +4817,8 @@ export default function SilverLensApp() {
                     >
                       <LanguageFlag id={item.id} />
                       <span>{item.label}</span>
-                      <span className="profile-lang-caret" aria-hidden="true">
-                        ▾
+                      <span className="profile-lang-caret">
+                        <ChevronIcon direction="down" />
                       </span>
                     </button>
                   );
@@ -4722,7 +4963,7 @@ export default function SilverLensApp() {
                 disabled={!activeAnswerCard || visibleAnswerCardIndex === 0}
                 aria-label={activeCopy.prevAnswer}
               >
-                ‹
+                <ChevronIcon direction="left" />
               </button>
               <article className="answer-card">
                 {activeAnswerCard ? (
@@ -4823,7 +5064,7 @@ export default function SilverLensApp() {
                 }
                 aria-label={activeCopy.nextAnswer}
               >
-                ›
+                <ChevronIcon direction="right" />
               </button>
             </div>
 
@@ -4938,6 +5179,7 @@ export default function SilverLensApp() {
                 <span aria-hidden="true">📷</span>
                 <strong>{activeCopy.uploadPhoto}</strong>
               </button>
+              {/* 지금 찍기: capture 를 주면 폰에서 카메라가 바로 열린다. */}
               <input
                 ref={photoInputRef}
                 className="visually-hidden"
@@ -4945,7 +5187,19 @@ export default function SilverLensApp() {
                 accept="image/png,image/jpeg,image/webp,image/heic,image/heif"
                 capture="environment"
                 onChange={handlePhoto}
-                aria-label={activeCopy.uploadPhoto}
+                aria-label={activeCopy.photoSourceCamera}
+              />
+              {/*
+                저장된 사진 고르기: capture 를 두지 않아야 앨범이 열린다.
+                하나의 입력으로 둘을 겸할 수 없어 입력을 따로 둔다.
+              */}
+              <input
+                ref={photoGalleryInputRef}
+                className="visually-hidden"
+                type="file"
+                accept="image/png,image/jpeg,image/webp,image/heic,image/heif"
+                onChange={handlePhoto}
+                aria-label={activeCopy.photoSourceGallery}
               />
               <button
                 className={isTextInputVisible ? "composer-tool active" : "composer-tool"}
@@ -5048,7 +5302,7 @@ export default function SilverLensApp() {
           {/* 1단계: 무엇을 찍는지 고른다. 고르면 안내를 읽어 주고 카메라가 바로 열린다. */}
           {photoStep === "purpose" && (
             <div className="photo-sheet" role="dialog" aria-modal="true" aria-label={activeCopy.photoPurposeTitle}>
-              <div className="photo-sheet-panel">
+              <div className="photo-sheet-panel" ref={photoPanelRef} tabIndex={-1}>
                 <h2>{activeCopy.photoPurposeTitle}</h2>
                 <p className="photo-sheet-help">{activeCopy.photoPurposeHelp}</p>
                 <div className="photo-purpose-list">
@@ -5076,10 +5330,61 @@ export default function SilverLensApp() {
             </div>
           )}
 
-          {/* 2단계: 찍은 사진을 크게 보여 주고 밝기·흔들림 판정을 알려 준다. */}
+          {/*
+            2단계: 사진을 어디서 가져올지 고른다.
+            카메라만 열면 앨범에 이미 있는 사진을 쓸 방법이 없어 두 갈래로 나눴다.
+          */}
+          {photoStep === "source" && (
+            <div className="photo-sheet" role="dialog" aria-modal="true" aria-label={activeCopy.photoSourceTitle}>
+              <div className="photo-sheet-panel" ref={photoPanelRef} tabIndex={-1}>
+                <h2>{activeCopy.photoSourceTitle}</h2>
+                {chosenPhotoPurpose && (
+                  <p className="photo-sheet-help">
+                    {activeCopy[chosenPhotoPurpose.tipKey]}
+                  </p>
+                )}
+                <div className="photo-purpose-list">
+                  <button
+                    type="button"
+                    className="photo-purpose"
+                    onClick={() => openPhotoSource("camera")}
+                  >
+                    <span className="photo-purpose-icon" aria-hidden="true">📷</span>
+                    <span className="photo-purpose-text">
+                      <strong>{activeCopy.photoSourceCamera}</strong>
+                      <small>{activeCopy.photoSourceCameraHelp}</small>
+                    </span>
+                  </button>
+                  <button
+                    type="button"
+                    className="photo-purpose"
+                    onClick={() => openPhotoSource("gallery")}
+                  >
+                    <span className="photo-purpose-icon" aria-hidden="true">🖼️</span>
+                    <span className="photo-purpose-text">
+                      <strong>{activeCopy.photoSourceGallery}</strong>
+                      <small>{activeCopy.photoSourceGalleryHelp}</small>
+                    </span>
+                  </button>
+                </div>
+                <button
+                  type="button"
+                  className="photo-sheet-back"
+                  onClick={() => setPhotoStep("purpose")}
+                >
+                  {activeCopy.photoSourceBack}
+                </button>
+                <button type="button" className="photo-sheet-cancel" onClick={closePhotoFlow}>
+                  {activeCopy.photoPurposeCancel}
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* 3단계: 고른 사진을 크게 보여 주고 밝기·흔들림 판정을 알려 준다. */}
           {photoStep === "review" && (
             <div className="photo-sheet" role="dialog" aria-modal="true" aria-label={activeCopy.photoReviewTitle}>
-              <div className="photo-sheet-panel">
+              <div className="photo-sheet-panel" ref={photoPanelRef} tabIndex={-1}>
                 <h2>{activeCopy.photoReviewTitle}</h2>
                 {isPreparingPhoto || !pendingImage ? (
                   <p className="photo-sheet-help" role="status">{activeCopy.photoPreparing}</p>
@@ -5470,7 +5775,9 @@ export default function SilverLensApp() {
           aria-disabled={isTranscribingVoice}
         >
           <span>{activeCopy.profileDone}</span>
-          <span aria-hidden="true">›</span>
+          <span aria-hidden="true">
+            <ChevronIcon direction="right" />
+          </span>
         </button>
       </section>
     </main>

@@ -21,9 +21,9 @@ SilverLens는 모든 것이 눈부시게 빨라지는 세상 속에서 소외된
 | 이름 | 역할 | 담당 |
 |------|------|------|
 | 박정찬 | Team Leader | 프로젝트 기획 및 AI 프롬프트 설계 |
-| 최수혁 | Backend Developer | Python 백엔드 코어 개발 및 AI 기능 구현 |
+| 최수혁 | Backend Developer | 백엔드 코어 개발 및 AI 기능 구현 |
 | 이도현 | GitHub Manager | Git 관리 및 프로젝트 배포 관리 |
-| 김근호 | Designer | Streamlit UI/UX 설계 및 화면 디자인 |
+| 김근호 | Frontend Developer | 화면 구현 및 UI/UX 설계 |
 
 # SilverLens 차별점
 
@@ -56,148 +56,159 @@ SilverLens는 단순히 AI 기능을 제공하는 것이 아니라, **어르신�
 **3. 간단한 UI/UX와 손주 감성 음성**
 <br>복잡한 메뉴와 카테고리는 어르신들에게 기술에 대한 두려움만 심어줄 뿐입니다. SilverLens는 어르신들의 인지 특성을 고려하여 복잡한 화면 구성을 직관적으로 단순화하고 글자 크기를 키웠습니다. 여기에 실제 손주의 목소리 톤을 학습한 TTS를 적용하여, 기계가 아닌 다정한 가족과 소통하는 듯한 정서적 안정감을 선물합니다.
 
-
-# SilverLens 프로젝트 구조 및 아키텍처
-
-그래서 세 가지로 나눠 대응합니다.
-
-1. **기본 속도면 브라우저 음성** — `needsServerNarration()`이 판정합니다. 속도 슬라이더가
-   기본값(보통)이면 브라우저가 rate를 무시해도 실제 차이가 5% 미만이라 들리지 않으므로,
-   지연이 없는 `speechSynthesis`를 씁니다. 어르신이 속도를 옮긴 순간부터 서버 TTS로
-   넘어가 슬라이더가 확실히 반영됩니다.
-2. **첫 조각만 짧게** — 맨 처음 듣는 조각은 70자로 떼어내고 나머지는 210자로 묶습니다.
-   124자 답변 한 페이지 기준으로 첫 소리까지 17.5초 → 9.5초로 줄었습니다.
-3. **선행 로딩** — 조각을 재생하는 동안 다음 2개를 미리 만듭니다. 첫 조각 재생 14.0초
-   동안 다음 조각 생성 8.8초가 끝나므로 페이지가 넘어갈 때 침묵이 생기지 않습니다.
-
-서버 메모리 캐시까지 걸려 있어 같은 문장을 다시 들을 때는 9.5초 → 9ms입니다.
-
-이 장치들로도 부족하면 하루 한도 자체를 늘려야 합니다. Google AI Studio에서
-결제 정보를 연결해 Tier 1으로 올리는 것이 가장 확실하고 즉시 적용됩니다.
-현재 상태는 `/log` 화면의 "한도에 걸려 잠시 쉬는 모델" 항목에서 확인할 수 있습니다.
-
-## 전체 구조
+# 프로젝트 구조
 
 ```text
 SilverLens/
-├── .env.example
-├── .env.local                  # 직접 생성: 실제 API 키
+├── .env.local                          # 직접 생성: 실제 API 키 (저장소에 올리지 않음)
 ├── .gitignore
-├── app/                        # Next.js 진입점과 서버 API
+├── .npmrc
+├── app/                                # Next.js 진입점과 서버 API
 │   ├── api/
-│   │   ├── chat/route.ts       # Gemini 대화 API
-│   │   ├── log/route.ts        # 임시 데이터 점검 API (개발 환경 전용)
-│   │   ├── transcribe/route.ts # 휴대폰·배포 환경 Gemini STT
-│   │   └── tts/route.ts        # Gemini 2.5 Flash TTS API
+│   │   ├── chat/route.ts               # Gemini 대화 API
+│   │   ├── log/route.ts                # 임시 데이터 점검 API (기본 개발 환경 전용)
+│   │   ├── transcribe/route.ts         # 휴대폰·배포 환경 Gemini STT
+│   │   └── tts/route.ts                # Gemini 2.5 Flash TTS API
 │   ├── globals.css
 │   ├── layout.tsx
-│   ├── log/page.tsx            # 임시 데이터 점검 화면
+│   ├── log/page.tsx                    # 임시 데이터 점검 화면 (API와 같은 조건으로 닫힘)
 │   └── page.tsx
 ├── frontend/
-│   ├── SilverLensApp.tsx       # 설정·대화·서비스·팀원 화면
-│   └── DataLogView.tsx         # 임시 데이터 점검 화면 본문
+│   ├── SilverLensApp.tsx               # 설정·대화·서비스·팀원 화면
+│   ├── DataLogView.tsx                 # 임시 데이터 점검 화면 본문
+│   ├── localStore.ts                   # 건강정보 브라우저 저장 (IndexedDB)
+│   └── photoCapture.ts                 # 사진 촬영 · 전송 전 크기 축소
 ├── backend/
-│   ├── config/env.ts           # 환경변수 검사 · 모델 폴백 목록
-│   ├── data/loadData.ts        # JSON 자료 메모리 캐시·질문 기반 검색
-│   ├── data/healthTerms.ts     # 다국어 건강정보 ID·표시명 연결
-│   ├── data/diseaseI18n.ts     # 질병명 한국어→영어·일본어 변환
+│   ├── config/
+│   │   └── env.ts                      # 환경변수 검사 · 모델 폴백 · 점검 화면 개방 여부
+│   ├── data/
+│   │   ├── loadData.ts                 # JSON 자료 메모리 캐시 · 질문 기반 검색
+│   │   ├── healthTerms.ts              # 다국어 건강정보 ID · 표시명 연결
+│   │   └── diseaseI18n.ts              # 질병명 한국어 → 영어 · 일본어 변환
 │   ├── services/
-│   │   ├── geminiClient.ts     # 모델 폴백 · 429 재시도 · 모델 휴식 관리
-│   │   ├── geminiQuota.ts      # 429 전용 오류와 재시도 시간 해석
-│   │   ├── geminiService.ts    # 답변 생성 · 답변 캐시
-│   │   ├── transcriptionService.ts
-│   │   └── ttsService.ts
+│   │   ├── geminiClient.ts             # 모델 폴백 · 429 재시도 · 모델 휴식 관리
+│   │   ├── geminiQuota.ts              # 429 전용 오류와 재시도 시간 해석
+│   │   ├── geminiService.ts            # 답변 생성 · 답변 캐시 · 위험도 하한선
+│   │   ├── koreanAge.ts                # 음성 문장에서 나이 읽기 (일흔 → 70)
+│   │   ├── transcriptionService.ts     # 음성 인식 · 건강정보 분류
+│   │   └── ttsService.ts               # 답변 음성 생성 · 서버 캐시
 │   └── local_dialect/
-│       ├── main.py             # Gemma 2 한국어 방언 변환 서버
+│       ├── main.py                     # Gemma 2 한국어 방언 변환 서버 (FastAPI)
 │       └── requirements.txt
 ├── data/
-│   ├── sources/                        # 사람이 편집하는 원본
-│   │   ├── dialect_dictionary.csv      # 사투리,표준어,지역,분류
-│   │   ├── disease_i18n.csv            # key,en,ja,ja_romaji
+│   ├── sources/                        # 사람이 편집하는 원본 데이터
+│   │   ├── dialect_dictionary.csv      # 사투리, 표준어, 지역, 분류
+│   │   ├── disease_i18n.csv            # key, en, ja, ja_romaji
 │   │   ├── korean_dish_names.txt       # 한식 메뉴명 원본 목록
 │   │   ├── recipes.json                # 요리 사전 원본
 │   │   ├── senior_food_knowledge.py    # 식재료 지식 원본
-│   │   └── senior_frequent_conditions.txt
-│   ├── dialect_dictionary.json         # 생성물
-│   ├── disease_i18n.json               # 생성물
-│   ├── korean_dish_names.json          # 생성물
-│   ├── recipes.json                    # 생성물
-│   ├── senior_food_knowledge.json      # 생성물
-│   ├── senior_frequent_conditions.json # 생성물
-│   ├── food_aliases.json       # 손으로 관리: 외래어·별칭
-│   ├── safety_rules.json       # 손으로 관리: 질병별 안전 원칙
-│   ├── health_groups.json      # 손으로 관리: 알레르기·질병 묶음 타이틀
-│   └── health_terms.json       # 손으로 관리: 한국어·영어·일본어 알레르기·질병명
+│   │   └── senior_frequent_conditions.txt  # 노인 다빈도 상병명 (띄어쓴 이름 한 줄에 하나)
+│   ├── dialect_dictionary.json         # 생성 데이터
+│   ├── disease_i18n.json               # 생성 데이터
+│   ├── korean_dish_names.json          # 생성 데이터
+│   ├── recipes.json                    # 생성 데이터
+│   ├── senior_food_knowledge.json      # 생성 데이터
+│   ├── senior_frequent_conditions.json # 생성 데이터
+│   ├── global_dish_names.json          # 외국 음식 사전 (한식과 분리해 관리)
+│   ├── food_aliases.json               # 외래어 · 별칭 데이터
+│   ├── safety_rules.json               # 질병별 안전 원칙
+│   ├── health_groups.json              # 알레르기 · 질병 그룹
+│   └── health_terms.json               # 다국어 건강정보
+├── worker/
+│   └── index.ts                        # Cloudflare Worker 진입점 · 이미지 최적화
+├── build/
+│   └── sites-vite-plugin.ts            # 배포 산출물 생성 플러그인
 ├── scripts/
-│   └── prepare_knowledge_data.py
+│   ├── prepare_knowledge_data.py       # data/sources → data/*.json 변환 및 검증
+│   ├── build-verified.sh               # 빌드 후 산출물까지 확인
+│   ├── validate-artifact.sh            # Worker 진입점 · 배포 설정 확인
+│   ├── install-ci.sh
+│   └── sites-env.sh
+├── tests/
+│   └── rendered-html.test.mjs          # 서버 렌더 결과 확인
+├── public/
+│   ├── favicon.svg
+│   └── guide/                          # 소개 화면 사용법 사진 (없으면 CSS 목업으로 대체)
+├── docs/
+│   └── reference-images/               # 기획 · 발표용 참고 이미지
+├── .openai/hosting.json                # 배포 설정
+├── eslint.config.mjs
+├── postcss.config.mjs
+├── next.config.ts
+├── vite.config.ts
 ├── package.json
 └── tsconfig.json
 ```
 
-변환 단계에서 사투리 사전은 검증을 함께 받습니다. 한 글자 사투리, 표준어와
-같은 항목, 중복 항목은 프롬프트에서 오탐만 늘리므로 자동으로 제외되고, 지역과
-분류 값이 정해진 목록에서 벗어나면 변환이 실패합니다.
+`data/sources/` 안의 파일만 사람이 직접 고치고, `data/` 바로 아래의 생성 데이터는
+`npm run prepare:data` 로만 갱신합니다. 다만 `global_dish_names.json`, `food_aliases.json`,
+`safety_rules.json`, `health_groups.json`, `health_terms.json` 은 손으로 관리하는 파일이라
+변환 스크립트가 건드리지 않습니다.
 
-`backend/data/loadData.ts`는 현재 질문과 최근 대화에 실제로 언급된 식품명·별칭·
-재료를 기준으로 관련 항목만 찾아 Gemini 답변 프롬프트에 넣습니다. 질병명만
-일치한다는 이유로 장어 같은 무관한 식품 자료를 끌어오지 않습니다. 안전 원칙도
-전체 목록을 그대로 넣지 않고 `applies_to`가 사용자 질병이나 질문과 겹치는
-항목만 골라 보냅니다.
+# AI 구성
 
-`data/health_terms.json`의 각 항목은 하나의 고정 ID와 한국어·영어·일본어
-표시명을 가집니다. 음성 분류 결과는 표시 문구가 아니라 이 ID로 저장되므로
-화면 언어를 바꾸면 같은 건강정보가 해당 언어로 다시 표시됩니다.
-`data/disease_i18n.json`은 여기서 한 걸음 더 나아가, 식재료 지식의
-`caution_diseases`처럼 한국어로만 적힌 질병명을 화면 언어로 바꿔 줍니다.
+## 언어 모델
 
-`data/health_groups.json`은 알레르기 46개와 질병 41개를 성격이 비슷한 묶음으로
-나눕니다. 설정 화면은 기본 상태에서 선택 결과만 보여 주고, `+ 직접 입력`을
-누를 때 글자 입력칸과 묶음 목록을 함께 펼칩니다. 묶음에 빠진 항목이 생기면
-`그 밖의 항목`으로 모이므로 화면에서 사라지지 않습니다.
+| 구성 요소           | 사용 기술                                        |
+| --------------- | -------------------------------------------- |
+| 언어 모델           | Gemini 3.6 Flash                             |
+| 예비 언어 모델         | Gemini 3.5 Flash Lite → Gemini 3.1 Flash Lite |
+| 음성 인식 및 건강정보 분류 | Gemini 오디오 입력                                |
+| 로컬 방언 → 표준어 변환  | sjbaek/gemma2-2b-it-korean-dialect           |
+| 배포 환경 방언 해석     | `data/dialect_dictionary.json` 검색 결과와 Gemini |
+| 설정·추천 안내        | Web Speech API 기반 브라우저 TTS                   |
+| AI 답변 음성        | Gemini 2.5 Flash TTS                         |
+| 예비 답변 음성 모델      | Gemini 3.1 Flash TTS Preview                 |
+| AI 답변 음성 예비 수단  | Web Speech API 기반 브라우저 TTS                   |
 
-## 음성으로 남긴 상세 메모
+## AI 답변 음성(TTS)
 
-목록으로 고를 수 없는 사정(예: "견과류 중에 특히 호두가 안 맞아요")은 설정
-화면의 `🎙 말해서 입력`으로 받은 문장을 그대로 저장합니다. 메모는 브라우저
-`localStorage`(`silverlens:health-notes-v1`)에 최근 8개만 남고, 대화할 때
-`/api/chat`의 `profile.healthNotes`로 함께 전달되어 답변 프롬프트에 들어갑니다.
-서버에서도 종류·길이·개수를 다시 잘라 내므로 프롬프트가 무한정 늘어나지 않습니다.
+| 항목       | 내용                                                                 |
+| -------- | ------------------------------------------------------------------ |
+| 음성 생성 방식 | 긴 답변을 여러 개의 짧은 문장 묶음으로 동시에 생성                                      |
+| 음성 캐시    | 생성된 음성을 브라우저 메모리에 저장하여 같은 답변은 다시 변환하지 않고 재사용                       |
+| 서버 음성 캐시  | 서버도 만든 음성을 30분 · 최대 20MB 범위에서 보관하여 같은 문장은 즉시 응답                     |
+| 답변 표시 방식 | 큰 글씨 카드 형태로 표시                                                     |
+| 카드 구성    | 왼쪽은 이전 대화, 오른쪽은 이어지는 답변 및 새로운 대화                                   |
+| 자동 재생    | 현재 카드의 TTS가 끝나면 다음 카드로 자동 이동하여 이어서 재생                              |
+| 예비 음성    | Gemini TTS 요청 실패 또는 API Key가 없으면 Web Speech API 기반 브라우저 TTS로 자동 전환 |
+| 자동 이동 지원 | 예비 음성(TTS) 사용 시에도 카드 자동 이동 기능 동일하게 지원                              |
 
-## AI 구성
+## 건강정보 음성 분류
 
-- 언어 모델: Gemini 3.6 Flash
-- 음성 인식 및 건강정보 분류: Gemini 오디오 입력
-- 로컬 방언→표준어 변환: `sjbaek/gemma2-2b-it-korean-dialect`
-- 배포 환경 방언 해석: `data/dialect_dictionary.json` 검색 결과와 Gemini
-- 설정·추천 안내: Web Speech API 기반 브라우저 TTS
-- AI 답변 음성: Gemini 2.5 Flash TTS
-- AI 답변 음성 예비 수단: Web Speech API 기반 브라우저 TTS
+| 항목    | 내용                                                     |
+| ----- | ------------------------------------------------------ |
+| 분석 대상 | 음성 전체를 분석하여 알레르기와 질병 정보를 분리                            |
+| AI 처리 | Gemini가 건강정보를 추출하고 항목을 분류                              |
+| 서버 검증 | AI가 반환한 결과를 `health_terms.json`에 등록된 고유 ID와 다시 대조하여 검증 |
+| 등록 기준 | 등록된 건강정보(ID)만 입력 가능                                    |
+| 예외 처리 | 등록되지 않은 항목이나 사용자가 명시하지 않은 정보는 자동 입력하지 않음               |
 
-AI 답변 음성은 짧은 문장 묶음으로 동시에 준비하고 브라우저 메모리에 보관합니다.
-같은 답변을 다시 들을 때는 이미 준비된 음성을 재사용하므로 다시 변환하지 않습니다.
-화면에서는 답변을 큰 글자 카드로 나누고, 왼쪽은 이전 대화, 오른쪽은 이어지는
-답변과 새 대화 순서로 이동합니다. 한 카드의 TTS 재생이 끝나면 다음 카드로
-자동 이동해 이어서 읽습니다. Gemini TTS 요청이 실패하거나 API 키가 없으면
-브라우저 TTS로 전환하며, 이 경우에도 카드가 자동 이동합니다.
+## 대화 문맥 유지
 
-건강정보 음성은 AI가 음성 전체를 확인한 뒤 알레르기와 질병을 분리합니다.
-AI가 반환한 항목은 `health_terms.json`에 실제로 등록된 ID인지 서버에서 다시
-검사합니다. 명시하지 않은 정보나 카탈로그에 없는 임의 값은 자동 입력하지 않습니다.
+| 항목       | 내용                                                |
+| -------- | ------------------------------------------------- |
+| 문맥 유지 범위 | 최근 6개의 질문과 답변을 다음 요청에 함께 전달                       |
+| 문맥 활용    | 이전 대화를 기반으로 후속 질문의 의미를 이어서 해석                     |
+| 후속 질문 처리 | 주어가 생략된 질문도 가장 최근 대화 주제를 기준으로 이해                  |
+| 프롬프트 제한  | 최근 음식 주제를 유지하도록 프롬프트를 제한하여 의도와 다른 음식으로 해석되는 것을 방지 |
+| 적용 예시    | "레시피 알려줘" → 가장 최근에 대화한 음식의 레시피로 해석                |
 
-대화 API는 최근 6개의 질문과 답변을 다음 요청에 함께 전달합니다. “레시피
-알려줘”처럼 주어가 생략된 후속 질문은 가장 최근 음식 주제를 이어서 해석하도록
-프롬프트를 제한합니다.
+## 자동 음성 안내
 
-답변은 `answer`, `riskLevel`, `warningMessage` 구조로 반환됩니다. 등록된
-알레르기 식품이 현재 질문 또는 이어지는 대화 주제에 직접 포함되면 코드가
-`danger`를 우선 적용해 답변 카드 상단에 빨간 경고를 표시합니다.
-
-자동 음성 안내 버튼은 켜짐·꺼짐 상태를 브라우저에 저장합니다. 꺼짐일 때는
-단계 안내와 새 답변이 자동 재생되지 않지만 `안내 다시 듣기`와
-`답변 다시 듣기`는 계속 사용할 수 있습니다.
+| 항목       | 내용                                                    |
+| -------- | ----------------------------------------------------- |
+| 설정 저장    | 자동 음성 안내의 켜짐·꺼짐 상태를 브라우저에 저장                          |
+| 자동 재생    | 켜짐 상태에서는 단계 안내와 새로운 AI 답변을 자동으로 재생                    |
+| 자동 재생 해제 | 꺼짐 상태에서는 단계 안내와 새로운 AI 답변을 자동으로 재생하지 않음               |
+| 계속 사용 가능 | 자동 재생이 꺼져 있어도 **안내 다시 듣기**와 **답변 다시 듣기** 기능은 계속 사용 가능 |
 
 
 # 디지털 세상의 소외를 지우는 빛, SilverLens
 > **저희가 생각하는 가장 좋은 기술은 인간을 가르치려 들지 않고, 가장 낮은 곳에서 인간을 닮아가는 기술이라고 믿습니다.**
 
 <br>**기술이 고도화될수록 소외받는 어르신들이 생겨난다면, 고등학생인 저희가 배운 기술로 그 격차를 가장 따뜻하게 메워보고 싶습니다.** 대한민국 모든 어르신들이 타인의 도움 없이도 당당하고 안전하게 디지털 세상을 누릴 수 있도록, 저희 SilverLens 팀은 기술에 마음을 담는 발걸음을 멈추지 않겠습니다.
+
+# 라이선스
+
+이 프로젝트는 **MIT License**를 따릅니다.
