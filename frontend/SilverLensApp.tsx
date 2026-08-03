@@ -666,7 +666,7 @@ const conditionQuickAsks: Array<{ conditionIds: string[] } & QuickAsk> = [
     id: "diabetes",
     icon: "🩸",
     action: "ask",
-    conditionIds: ["condition_diabetes"],
+    conditionIds: ["condition_diabetes", "condition_prediabetes"],
     label: {
       "ko-KR": "혈당 안 오르는 반찬",
       "en-US": "Side dishes that keep blood sugar steady",
@@ -762,7 +762,11 @@ const conditionQuickAsks: Array<{ conditionIds: string[] } & QuickAsk> = [
     id: "osteoporosis",
     icon: "🦴",
     action: "ask",
-    conditionIds: ["condition_osteoporosis"],
+    conditionIds: [
+      "condition_osteoporosis",
+      "condition_menopause",
+      "condition_vitamin_d_deficiency",
+    ],
     label: {
       "ko-KR": "뼈에 좋은 음식",
       "en-US": "Foods good for bones",
@@ -902,7 +906,7 @@ const promptCopy: Record<Language, Record<SetupStep, string>> = {
     language: "사용할 언어를 선택해 주세요.",
     gender: "성별을 선택해 주세요.",
     age: "해당하는 나이대 버튼을 눌러 주세요.",
-    complete: "기본 설정이 끝났습니다. 알레르기와 질병 정보는 선택해서 추가할 수 있어요.",
+    complete: "기본 설정이 끝났습니다. 알레르기와 질병·건강 상태는 선택해서 추가할 수 있어요.",
   },
   "en-US": {
     language: "Please choose your language.",
@@ -914,7 +918,7 @@ const promptCopy: Record<Language, Record<SetupStep, string>> = {
     language: "使用する言語を選んでください。",
     gender: "性別を選んでください。",
     age: "該当する年齢層のボタンを押してください。",
-    complete: "基本設定が完了しました。アレルギーや病気の情報も追加できます。",
+    complete: "基本設定が完了しました。アレルギーや病気・健康状態も追加できます。",
   },
 };
 
@@ -1030,8 +1034,8 @@ const uiCopy = {
     ageHelp: "해당하는 나이대 버튼을 눌러 주세요. 다시 누르면 선택이 취소됩니다.",
     allergyTitle: "알레르기 정보",
     allergyHelp: "먹으면 불편한 음식",
-    conditionTitle: "질병 정보",
-    conditionHelp: "현재 치료 중인 질환",
+    conditionTitle: "질병·건강 상태",
+    conditionHelp: "현재 치료하거나 관리 중인 상태",
     noneOption: "해당없음",
     directInput: "+ 직접 입력",
     directInputClose: "− 목록 닫기",
@@ -1049,12 +1053,12 @@ const uiCopy = {
     noteRemove: "메모 지우기",
     noteSaved: "말씀하신 내용을 상세 메모로 저장했어요.",
     noteKindAllergy: "알레르기",
-    noteKindCondition: "질병",
+    noteKindCondition: "건강 상태",
     noteKindSetup: "건강정보",
     quotaExceeded: "AI 무료 사용 한도에 도달했어요. 잠시 뒤에 다시 질문해 주세요.",
     quotaWait: "AI 무료 사용 한도에 도달했어요. {seconds}초 뒤에 다시 질문해 주세요.",
     voiceProfile: "건강정보 한 번에 말하기",
-    voiceProfileHelp: "알레르기와 질병을 함께 말해요.",
+    voiceProfileHelp: "알레르기와 질병·건강 상태를 함께 말해요.",
     replayGuide: "안내 다시 듣기",
     replayGuideHelp: "현재 단계부터 안내",
     savedRecording: "음성이 저장되었습니다.",
@@ -1069,14 +1073,14 @@ const uiCopy = {
       "드시려는 음식 이름을 말하거나 사진을 찍어 보여주세요. 드셔도 괜찮은지 큰 글자로 알려드립니다.",
     welcomeReplay: "🔊 안내 다시 듣기",
     openProfile: "내 정보 입력하기",
-    openProfileHelp: "알레르기·질병을 알려주면 더 정확해요",
+    openProfileHelp: "알레르기·건강 상태를 알려주면 더 정확해요",
     profileDone: "입력 완료, 대화로 돌아가기",
     waitTranscribing: "건강정보를 입력하고 있어요. 잠시만 기다려 주세요.",
     quickProfileTitle: "먼저 알려주시면 더 정확해요",
     quickProfileHelp: "말씀하시거나 아래 버튼을 눌러 주세요. 넘어가도 대화는 됩니다.",
     quickProfileSpeak: "내 정보 말하기",
     quickProfileSpeakHelp: "예: 나이는 일흔이고 복숭아 알레르기가 있어요",
-    quickProfileMore: "알레르기 · 질병까지 자세히 입력하기",
+    quickProfileMore: "알레르기 · 건강 상태까지 자세히 입력하기",
     quickProfileDone: "알려주신 정보로 답변합니다",
     backupTitle: "내 정보 저장",
     backupHelp: "이 기기에만 저장됩니다. 로그인은 필요하지 않아요.",
@@ -1136,8 +1140,8 @@ const uiCopy = {
     sendHelp: "글·음성·사진을 함께 전송",
     medicalNote: "이 내용은 일반 생활 참고용이며 진단·치료를 대신하지 않습니다. 처방받은 식단이 있으면 그 안내를 우선하세요.",
     processingVoice: "음성을 글자로 바꾸고 있어요. 잠시만 기다려 주세요.",
-    profileVoiceFound: "AI가 음성을 확인해 알레르기 {allergies}개, 질병 {conditions}개를 나누어 입력했어요.",
-    profileVoiceEmpty: "음성에서 분명하게 말한 알레르기나 질병 정보를 찾지 못했어요.",
+    profileVoiceFound: "AI가 음성을 확인해 알레르기 {allergies}개, 질병·건강 상태 {conditions}개를 나누어 입력했어요.",
+    profileVoiceEmpty: "음성에서 분명하게 말한 알레르기나 질병·건강 상태를 찾지 못했어요.",
     voiceFoundGender: "말씀하신 성별도 함께 골라 두었어요.",
     voiceFoundAge: "말씀하신 나이에 맞춰 {age}대를 골라 두었어요.",
     audioPreviewFail: "음성은 첨부됐지만 글자로 미리보지 못했습니다. 음성 자체는 함께 보낼 수 있어요.",
@@ -1219,7 +1223,7 @@ const uiCopy = {
     allergyTitle: "Allergies",
     allergyHelp: "Foods that make you uncomfortable",
     conditionTitle: "Health conditions",
-    conditionHelp: "Conditions currently being treated",
+    conditionHelp: "Conditions currently being treated or managed",
     noneOption: "None",
     directInput: "+ Type directly",
     directInputClose: "− Close the list",
@@ -1406,8 +1410,8 @@ const uiCopy = {
     ageHelp: "該当する年齢層のボタンを押してください。もう一度押すと選択が解除されます。",
     allergyTitle: "アレルギー情報",
     allergyHelp: "食べると不調になる食品",
-    conditionTitle: "病気の情報",
-    conditionHelp: "現在治療中の病気",
+    conditionTitle: "病気・健康状態",
+    conditionHelp: "現在治療中または管理中の状態",
     noneOption: "該当なし",
     directInput: "+ 直接入力",
     directInputClose: "− 一覧を閉じる",
@@ -1425,12 +1429,12 @@ const uiCopy = {
     noteRemove: "メモを消す",
     noteSaved: "話した内容を詳しいメモとして保存しました。",
     noteKindAllergy: "アレルギー",
-    noteKindCondition: "病気",
+    noteKindCondition: "健康状態",
     noteKindSetup: "健康情報",
     quotaExceeded: "AIの無料利用上限に達しました。少し待ってからもう一度質問してください。",
     quotaWait: "AIの無料利用上限に達しました。{seconds}秒後にもう一度質問してください。",
     voiceProfile: "健康情報をまとめて話す",
-    voiceProfileHelp: "アレルギーと病気を一緒に話せます。",
+    voiceProfileHelp: "アレルギーと病気・健康状態を一緒に話せます。",
     replayGuide: "案内をもう一度聞く",
     replayGuideHelp: "現在の手順から案内",
     savedRecording: "音声が保存されました。",
@@ -1445,14 +1449,14 @@ const uiCopy = {
       "食べたい食品の名前を言うか、写真を撮って見せてください。食べても大丈夫か大きな文字でお知らせします。",
     welcomeReplay: "🔊 案内をもう一度聞く",
     openProfile: "私の情報を入力",
-    openProfileHelp: "アレルギーや病気を教えるとより正確です",
+    openProfileHelp: "アレルギーや健康状態を教えるとより正確です",
     profileDone: "入力完了、会話に戻る",
     waitTranscribing: "健康情報を保存しています。少しお待ちください。",
     quickProfileTitle: "先に教えていただくとより正確です",
     quickProfileHelp: "お話しになるか、下のボタンを押してください。飛ばしても会話できます。",
     quickProfileSpeak: "自分の情報を話す",
     quickProfileSpeakHelp: "例：年齢は七十で、桃のアレルギーがあります",
-    quickProfileMore: "アレルギー・病気まで詳しく入力する",
+    quickProfileMore: "アレルギー・健康状態まで詳しく入力する",
     quickProfileDone: "教えていただいた情報でお答えします",
     backupTitle: "この端末に保存",
     backupHelp: "この端末だけに保存されます。ログインは不要です。",
@@ -1512,8 +1516,8 @@ const uiCopy = {
     sendHelp: "文字・音声・写真を一緒に送信",
     medicalNote: "この内容は一般的な生活参考情報であり、診断や治療の代わりではありません。処方された食事指導がある場合はそちらを優先してください。",
     processingVoice: "音声を文字に変換しています。少しお待ちください。",
-    profileVoiceFound: "AIが音声を確認し、アレルギー{allergies}件、病気{conditions}件を分けて入力しました。",
-    profileVoiceEmpty: "音声から明確なアレルギーや病気の情報を見つけられませんでした。",
+    profileVoiceFound: "AIが音声を確認し、アレルギー{allergies}件、病気・健康状態{conditions}件を分けて入力しました。",
+    profileVoiceEmpty: "音声から明確なアレルギーや病気・健康状態を見つけられませんでした。",
     voiceFoundGender: "お話しになった性別も一緒に選んでおきました。",
     voiceFoundAge: "お話しになった年齢に合わせて{age}代を選んでおきました。",
     audioPreviewFail: "音声は添付されましたが、文字プレビューはできませんでした。音声自体は一緒に送れます。",
@@ -1684,27 +1688,27 @@ const aboutCopy: Record<Language, AboutCopy> = {
     features: [
       {
         title: "사투리 이해 대화",
-        text: "표준어 중심 서비스에서 소외되기 쉬운 지역 어르신도 익숙한 말투로 자연스럽게 질문할 수 있습니다.",
+        text: "사투리 사전 257개를 음성 인식 단계부터 함께 넘겨, '정구지'처럼 지역에서 쓰는 말도 뜻을 알아듣습니다.",
       },
       {
-        title: "쉬운 문장 재구성",
-        text: "어려운 의료·영양 정보를 짧고 편한 문장으로 바꿔 설명해 정보 이해의 장벽을 낮춥니다.",
+        title: "낯선 식재료 풀이",
+        text: "외래어 별칭 101개와 외국 음식 사전 501종으로 로즈마리·아보카도 같은 낯선 이름을 쉬운 우리말로 풀어 드립니다.",
       },
       {
-        title: "안전 중심 정보 안내",
-        text: "사용자의 불안을 키우지 않으면서 핵심을 명확히 전달하는 방식으로 건강 정보를 더 믿고 활용하게 돕습니다.",
+        title: "코드가 지키는 안전선",
+        text: "등록한 질병과 위험 식품이 함께 걸리면 AI 판정과 무관하게 최소 위험도를 코드가 보장해, 경고가 사라지지 않습니다.",
       },
       {
-        title: "빠른 정보 접근",
-        text: "필요한 답을 바로 찾을 수 있도록 질문 흐름을 단순화해 시니어가 오래 헤매지 않도록 설계했습니다.",
+        title: "말하고 찍어서 묻기",
+        text: "음성과 사진 네 장까지, 글까지 하나의 질문으로 함께 이해합니다. 한 상을 나눠 찍어도 전부 살펴봅니다.",
       },
       {
-        title: "단계별 식생활 가이드",
-        text: "무엇을 먹어야 하는지, 어떻게 바꾸면 좋은지 일상 단위의 순서로 안내해 실생활에 연결합니다.",
+        title: "큰 글씨 답변과 음성",
+        text: "긴 답변은 큰 글씨 카드로 나눠 보여 주고, 읽어 주는 속도는 어르신이 직접 맞추실 수 있습니다.",
       },
       {
-        title: "익숙한 디지털 경험",
-        text: "큰 제목, 넉넉한 여백, 단정한 카드 구조로 복잡함 없이 편안하게 읽을 수 있는 화면을 제공합니다.",
+        title: "기기에만 남는 건강 정보",
+        text: "알레르기와 질병·건강 상태는 서버 DB가 아니라 이 기기에만 저장합니다. 가입도 로그인도 없습니다.",
       },
     ],
     workflowBadge: "Workflow",
@@ -1760,17 +1764,17 @@ const aboutCopy: Record<Language, AboutCopy> = {
       },
       {
         step: "2단계",
-        title: "알레르기와 질병을 등록합니다",
-        text: "여기까지 넣어 두시면 답변이 달라집니다. 등록한 알레르기 식품은 추천에서 빠지고, 질병에 걸리는 음식은 위험도를 한 단계 높여 알려 드립니다.",
+        title: "알레르기와 질병·건강 상태를 등록합니다",
+        text: "여기까지 넣어 두시면 답변이 달라집니다. 등록한 알레르기 식품은 추천에서 빠지고, 질병과 부딪히는 음식은 안전 규칙이 정한 위험도까지 코드가 끌어올려 알려 드립니다.",
         tips: [
           "묶음 제목을 누르면 항목이 펼쳐집니다. 해당 없으면 '해당없음'을 누르세요.",
-          "목록에 없으면 '직접 입력'으로 적으실 수 있습니다.",
+          "목록에 없으면 '직접 입력'으로 적으실 수 있고, 적어 주신 병명은 정식 상병 표기로 맞춰 저장합니다.",
           "'말해서 입력'을 누르고 말씀하시면 그대로 메모로 남아 답변에 함께 반영됩니다.",
         ],
-        mockTitle: "알레르기 · 질병",
+        mockTitle: "알레르기 · 건강 상태",
         mockItems: ["우유", "견과류", "🎙 말해서 입력"],
         mockNote: "목록에서 골라도, 말로 해도 됩니다",
-        mockCaption: "알레르기와 질병을 넣어 두시면 더 안전하게 안내합니다.",
+        mockCaption: "알레르기와 건강 상태를 넣어 두시면 더 안전하게 안내합니다.",
         mockHighlight: 2,
       },
       {
@@ -1780,7 +1784,8 @@ const aboutCopy: Record<Language, AboutCopy> = {
         tips: [
           "음성은 큰 마이크 버튼을 누르고 말한 뒤 한 번 더 누르면 첨부됩니다.",
           "사진은 성분표·음식·약 봉투 중 무엇을 찍는지 먼저 고르면 찍는 방법을 알려 드립니다.",
-          "찍은 사진이 어둡거나 흐리면 다시 찍으라고 알려 드립니다.",
+          "휴대폰에서는 지금 찍거나 저장된 사진에서 고를 수 있고, 한 상을 나눠 찍어 네 장까지 함께 보낼 수 있습니다.",
+          "사진의 밝기와 흔들림은 미리 봐 드리고, 무엇이 찍혔는지는 답변에서 알려 드립니다.",
         ],
         mockTitle: "물어보는 방법",
         mockItems: ["🎙 음성으로 말하기", "📷 사진 올리기", "⌨ 글로 쓰기"],
@@ -1791,15 +1796,15 @@ const aboutCopy: Record<Language, AboutCopy> = {
       {
         step: "4단계",
         title: "답변을 한 장씩 넘겨 봅니다",
-        text: "답변이 길면 여러 장으로 나눠 드립니다. 카드 위쪽에 '3장 중 1장'처럼 표시되고, 아래 '다음 장 보기' 버튼을 누르면 뒷장이 나옵니다.",
+        text: "답변이 길면 여러 장으로 나눠 드립니다. 카드 아래 '다음 장에 내용이 이어집니다' 버튼에 몇 장 중 몇 장인지 함께 적혀 있고, 그 버튼을 누르면 뒷장이 나옵니다.",
         tips: [
           "손가락으로 좌우로 밀어서 넘기실 수도 있습니다.",
-          "마지막 장에는 '여기까지입니다'라고 적혀 있습니다.",
+          "마지막 장에는 '이 답변은 여기까지입니다'라고 적혀 있습니다.",
           "'답변 다시 듣기'를 누르면 소리로 읽어 드립니다.",
         ],
         mockTitle: "대화 1 · 답변 1/3",
         mockItems: ["무를 푹 끓이면 단맛이 살아나요. 설탕은 넣지 않으셔도 됩니다."],
-        mockNote: "다음 장 보기 →",
+        mockNote: "다음 장에 내용이 이어집니다 →",
         mockCaption: "큰 글씨 카드로 보여주고, 길면 다음 카드로 이어집니다.",
         mockHighlight: -1,
       },
@@ -1852,27 +1857,27 @@ const aboutCopy: Record<Language, AboutCopy> = {
     features: [
       {
         title: "Dialect-friendly conversation",
-        text: "Older adults in any region can ask questions in their own words, even when standard-language services leave them out.",
+        text: "A 257-entry dialect dictionary is passed in from the speech recognition step, so regional words like \"jeongguji\" are understood.",
       },
       {
-        title: "Rewritten in plain words",
-        text: "Difficult medical and nutrition details are rewritten into short, comfortable sentences that are easy to follow.",
+        title: "Unfamiliar ingredients explained",
+        text: "101 loanword aliases and a 501-item global dish dictionary turn names like rosemary or avocado into plain, familiar words.",
       },
       {
-        title: "Safety-first guidance",
-        text: "Key points are stated clearly without raising anxiety, so health information feels trustworthy and usable.",
+        title: "A safety floor kept by code",
+        text: "When a registered condition and a risky food both match, code guarantees a minimum risk level, so the warning never disappears.",
       },
       {
-        title: "Fast access to answers",
-        text: "The question flow stays simple so the answer arrives quickly and nobody gets lost along the way.",
+        title: "Speak, snap, or type",
+        text: "Voice, up to four photos, and text are read together as one question. Shoot a full table in several photos and every one is reviewed.",
       },
       {
-        title: "Step-by-step food guide",
-        text: "What to eat and what to change is explained in everyday order, connecting advice to real meals.",
+        title: "Large-type answers with voice",
+        text: "Long answers are split into large-type cards, and the reading speed can be adjusted by the user.",
       },
       {
-        title: "Familiar digital experience",
-        text: "Large headings, generous spacing, and tidy cards keep every screen calm and easy to read.",
+        title: "Health details stay on the device",
+        text: "Allergies and health conditions are stored on this device, not in a server database. No sign-up, no login.",
       },
     ],
     workflowBadge: "Workflow",
@@ -1906,7 +1911,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
     guideTitle: "First time here is fine,",
     guideTitleAccent: "four steps are all it takes",
     guideDescription:
-      "No sign-up, no login. You can ask a question the moment the screen opens, and these four steps simply help the answer fit you better. Health details stay on this device and are never uploaded to a server.",
+      "No sign-up, no login. You can ask a question the moment the screen opens, and these four steps simply help the answer fit you better. Health details are stored on this device, not in a server database.",
     guideTipsLabel: "Handy to know",
     guideSteps: [
       {
@@ -1928,10 +1933,10 @@ const aboutCopy: Record<Language, AboutCopy> = {
       {
         step: "Step 2",
         title: "Register allergies and conditions",
-        text: "This is what changes the answers. Registered allergens are dropped from suggestions, and foods that clash with your condition come back one risk level higher.",
+        text: "This is what changes the answers. Registered allergens are dropped from suggestions, and for foods that clash with your condition, code raises the risk to the level the safety rule requires.",
         tips: [
           "Press a group heading to open its items, or choose None if it does not apply.",
-          "Not on the list? Type it in with direct entry.",
+          "Not on the list? Type it in with direct entry, and the name is saved in its standard clinical form.",
           "Press Speak to enter and your own words are kept as a note the AI reads too.",
         ],
         mockTitle: "Allergies · Conditions",
@@ -1947,7 +1952,8 @@ const aboutCopy: Record<Language, AboutCopy> = {
         tips: [
           "For voice, press the big microphone, speak, then press once more to attach.",
           "For photos, choose label, food, or medicine first and we share how to shoot it.",
-          "If the photo comes out dark or blurry, we tell you to take it again.",
+          "On a phone you can take one now or pick a saved photo, and send up to four photos of the same table together.",
+          "We check brightness and blur in advance; what is actually in the photo is told to you in the answer.",
         ],
         mockTitle: "Ways to ask",
         mockItems: ["🎙 Speak", "📷 Upload a photo", "⌨ Type it"],
@@ -1958,15 +1964,15 @@ const aboutCopy: Record<Language, AboutCopy> = {
       {
         step: "Step 4",
         title: "Turn the answer one card at a time",
-        text: "Long answers are split across cards. The top shows something like 1 of 3, and the button below opens the next card.",
+        text: "Long answers are split across cards. The button below the card reads \"The answer continues on the next page\" with the page count beside it, and pressing it opens the next card.",
         tips: [
           "You can also swipe left or right to turn cards.",
-          "The last card says the answer ends there.",
-          "Press Read the answer again to hear it out loud.",
+          "The last card says \"That is the end of this answer.\"",
+          "Press Replay answer to hear it out loud.",
         ],
         mockTitle: "Conversation 1 · Answer 1/3",
         mockItems: ["Simmer the radish well and its own sweetness comes out. No sugar needed."],
-        mockNote: "See the next card →",
+        mockNote: "The answer continues on the next page →",
         mockCaption: "Answers come as large-type cards and continue onto the next card.",
         mockHighlight: -1,
       },
@@ -2020,27 +2026,27 @@ const aboutCopy: Record<Language, AboutCopy> = {
     features: [
       {
         title: "方言がわかる対話",
-        text: "標準語中心のサービスで取り残されがちな地域の高齢者も、慣れた話し方でそのまま質問できます。",
+        text: "257項目の方言辞典を音声認識の段階から渡すので、地域で使う言い方もそのまま意味を受け取ります。",
       },
       {
-        title: "やさしい文章に再構成",
-        text: "難しい医療・栄養の情報を短くやさしい文に置き換えて説明し、理解の壁を下げます。",
+        title: "見慣れない食材の解説",
+        text: "外来語の別名101件と外国料理辞典501種で、ローズマリーやアボカドのような名前をやさしい言葉に置き換えて説明します。",
       },
       {
-        title: "安全を優先した案内",
-        text: "不安をあおらずに要点をはっきり伝える方法で、健康情報を安心して活用できるようにします。",
+        title: "コードが守る安全の下限",
+        text: "登録した疾患と危険食品が同時に当てはまると、AIの判定に関わらずコードが最低の危険度を保証し、警告が消えません。",
       },
       {
-        title: "すばやい情報アクセス",
-        text: "必要な答えにすぐ届くよう質問の流れを単純にし、迷う時間を減らします。",
+        title: "話して撮って質問する",
+        text: "音声と写真4枚まで、文字も合わせてひとつの質問として理解します。食卓を分けて撮っても全部を見ます。",
       },
       {
-        title: "段階的な食生活ガイド",
-        text: "何を食べるか、どう変えるかを日常の順序で案内し、実生活につなげます。",
+        title: "大きな文字の回答と音声",
+        text: "長い回答は大きな文字のカードに分けて見せ、読み上げの速さはご自分で合わせられます。",
       },
       {
-        title: "慣れやすいデジタル体験",
-        text: "大きな見出し、ゆったりした余白、整ったカード構成で、負担なく読める画面を提供します。",
+        title: "端末にだけ残る健康情報",
+        text: "アレルギーと健康状態はサーバーDBではなく、この端末に保存します。登録もログインもありません。",
       },
     ],
     workflowBadge: "Workflow",
@@ -2074,13 +2080,13 @@ const aboutCopy: Record<Language, AboutCopy> = {
     guideTitle: "はじめてでも大丈夫、",
     guideTitleAccent: "四つの手順だけです",
     guideDescription:
-      "登録もログインもありません。画面が開いたらすぐ質問できます。下の四つの手順は、より合った答えを受け取るためのものです。健康情報はこの端末だけに保存され、サーバーには送りません。",
+      "登録もログインもありません。画面が開いたらすぐ質問できます。下の四つの手順は、より合った答えを受け取るためのものです。健康情報はサーバーDBではなく、この端末に保存されます。",
     guideTipsLabel: "覚えておくと便利です",
     guideSteps: [
       {
         step: "手順 1",
         title: "言語・性別・年齢を選びます",
-        text: "画面上の「自分の情報を入力」ボタンから開きます。性別と年齢は一日の推奨摂取量が変わる部分にだけ使い、入力しなくても会話はできます。",
+        text: "画面上の「私の情報を入力」ボタンから開きます。性別と年齢は一日の推奨摂取量が変わる部分にだけ使い、入力しなくても会話はできます。",
         tips: [
           "最初の画面で「自分の情報を話す」を押して話すと、性別と年齢が一度に入ります。",
           "最初の画面にある性別・年齢のボタンを直接押して選ぶこともできます。",
@@ -2096,10 +2102,10 @@ const aboutCopy: Record<Language, AboutCopy> = {
       {
         step: "手順 2",
         title: "アレルギーと疾患を登録します",
-        text: "ここまで入れると答えが変わります。登録したアレルギー食品はおすすめから外れ、疾患に触れる食品は危険度を一段上げてお知らせします。",
+        text: "ここまで入れると答えが変わります。登録したアレルギー食品はおすすめから外れ、疾患とぶつかる食品は安全ルールが定めた危険度までコードが引き上げてお知らせします。",
         tips: [
           "グループの見出しを押すと項目が開きます。該当しなければ「該当なし」を押してください。",
-          "一覧になければ「直接入力」で書けます。",
+          "一覧になければ「直接入力」で書けます。書いていただいた病名は正式な傷病表記に合わせて保存します。",
           "「話して入力」を押して話すと、その言葉がメモとして残り回答にも反映されます。",
         ],
         mockTitle: "アレルギー · 疾患",
@@ -2115,10 +2121,11 @@ const aboutCopy: Record<Language, AboutCopy> = {
         tips: [
           "音声は大きなマイクを押して話し、もう一度押すと添付されます。",
           "写真は成分表・料理・薬の袋のどれを撮るか先に選ぶと、撮り方をお伝えします。",
-          "撮った写真が暗い、またはぼやけている場合は撮り直しをお知らせします。",
+          "スマートフォンでは今撮ることも、保存された写真から選ぶこともでき、食卓を分けて4枚まで一緒に送れます。",
+          "写真の明るさとぶれは先に確認し、何が写っているかは回答でお伝えします。",
         ],
         mockTitle: "質問の方法",
-        mockItems: ["🎙 音声で話す", "📷 写真を送る", "⌨ 文字で書く"],
+        mockItems: ["🎙 音声で話す", "📷 写真を追加", "⌨ 文字で書く"],
         mockNote: "よくある質問ボタンからでも大丈夫です",
         mockCaption: "話すか、写真を送るか、直接書けば大丈夫です。",
         mockHighlight: 1,
@@ -2126,15 +2133,15 @@ const aboutCopy: Record<Language, AboutCopy> = {
       {
         step: "手順 4",
         title: "回答を一枚ずつめくって読みます",
-        text: "答えが長いときは何枚かに分けます。カードの上に「3枚中1枚」のように表示され、下のボタンを押すと次の枚が出ます。",
+        text: "答えが長いときは何枚かに分けます。カードの下の「次のページに続きがあります」ボタンに何枚中何枚かも書かれていて、そのボタンを押すと次の枚が出ます。",
         tips: [
           "指で左右に払ってめくることもできます。",
-          "最後の枚には、ここまでという案内が入ります。",
+          "最後の枚には「この回答はここまでです。」と書かれています。",
           "「回答をもう一度聞く」を押すと声で読み上げます。",
         ],
         mockTitle: "会話 1 · 回答 1/3",
         mockItems: ["大根をよく煮ると甘みが出ます。砂糖は入れなくて大丈夫です。"],
-        mockNote: "次の枚を見る →",
+        mockNote: "次のページに続きがあります →",
         mockCaption: "大きな文字のカードで見せ、長ければ次のカードへ続きます。",
         mockHighlight: -1,
       },
@@ -2887,6 +2894,14 @@ export default function SilverLensApp() {
     () => conditionIds.map((id) => getHealthLabel(id, activeLanguage)),
     [activeLanguage, conditionIds],
   );
+
+  /**
+   * 화면에서 고른 언어를 문서 언어에도 반영한다.
+   * 스크린리더와 브라우저 번역 기능이 한국어로 고정된 문서로 오인하지 않게 한다.
+   */
+  useEffect(() => {
+    document.documentElement.lang = activeLanguage;
+  }, [activeLanguage]);
 
   const stopNarration = useCallback(() => {
     narrationSequenceRef.current += 1;
@@ -3666,7 +3681,7 @@ export default function SilverLensApp() {
   /**
    * 기기에 저장해 둔 프로필과 대화를 되살린다.
    *
-   * 어르신이 매번 87개 목록에서 알레르기·질병을 다시 고르게 하면 재방문이 어렵다.
+   * 어르신이 매번 많은 알레르기·질병·건강 상태를 다시 고르게 하면 재방문이 어렵다.
    * 로그인도 서버도 없이 브라우저 안에만 두고, 옛 localStorage 메모도 한 번 옮겨 온다.
    */
   useEffect(() => {

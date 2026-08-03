@@ -1,5 +1,41 @@
 [
   {
+    "ko": "폐경",
+    "en": "Menopause",
+    "ja": "閉経",
+    "ja_romaji": "Heikei"
+  },
+  {
+    "ko": "당뇨 전단계",
+    "en": "Prediabetes",
+    "ja": "境界型糖尿病",
+    "ja_romaji": "Kyoukaigata Tounyoubyou"
+  },
+  {
+    "ko": "관상동맥질환",
+    "en": "Coronary Artery Disease",
+    "ja": "冠動脈疾患",
+    "ja_romaji": "Kandoumyaku Shikkan"
+  },
+  {
+    "ko": "치주질환",
+    "en": "Periodontal Disease",
+    "ja": "歯周病",
+    "ja_romaji": "Shishuubyou"
+  },
+  {
+    "ko": "불안장애",
+    "en": "Anxiety Disorder",
+    "ja": "不安障害",
+    "ja_romaji": "Fuan Shougai"
+  },
+  {
+    "ko": "비타민 D 결핍증",
+    "en": "Vitamin D Deficiency",
+    "ja": "ビタミンD欠乏症",
+    "ja_romaji": "Bitamin D Ketsuboushou"
+  },
+  {
     "ko": "고지혈증",
     "en": "Hyperlipidemia",
     "ja": "高脂血症",

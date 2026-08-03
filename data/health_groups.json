@@ -156,7 +156,9 @@
       "condition_obesity",
       "condition_gout",
       "condition_hypothyroidism",
-      "condition_hyperthyroidism"
+      "condition_hyperthyroidism",
+      "condition_prediabetes",
+      "condition_menopause"
     ]
   },
   {
@@ -173,6 +175,7 @@
       "condition_heart_disease",
       "condition_heart_failure",
       "condition_atrial_fibrillation",
+      "condition_coronary_artery_disease",
       "condition_stroke",
       "condition_anticoagulant",
       "condition_anemia"
@@ -190,6 +193,7 @@
     "members": [
       "condition_kidney_disease",
       "condition_dialysis",
+      "condition_kidney_stones",
       "condition_benign_prostatic_hyperplasia",
       "condition_incontinence"
     ]
@@ -206,11 +210,13 @@
     "members": [
       "condition_gastric_ulcer",
       "condition_gerd",
+      "condition_gastritis_dyspepsia",
       "condition_constipation",
       "condition_ibs",
       "condition_pancreatitis",
       "condition_gallstone",
-      "condition_liver_disease"
+      "condition_liver_disease",
+      "condition_fatty_liver"
     ]
   },
   {
@@ -225,7 +231,9 @@
     "members": [
       "condition_osteoporosis",
       "condition_osteoarthritis",
-      "condition_sarcopenia"
+      "condition_rheumatoid_arthritis",
+      "condition_sarcopenia",
+      "condition_vitamin_d_deficiency"
     ]
   },
   {
@@ -240,7 +248,9 @@
     "members": [
       "condition_dementia_alzheimers",
       "condition_parkinsons",
+      "condition_peripheral_neuropathy",
       "condition_depression",
+      "condition_anxiety",
       "condition_insomnia"
     ]
   },
@@ -265,13 +275,14 @@
     "kind": "condition",
     "icon": "🦷",
     "labels": {
-      "ko-KR": "씹기 · 삼키기 · 영양",
-      "en-US": "Chewing, swallowing and nutrition",
-      "ja-JP": "かむ・飲み込む・栄養"
+      "ko-KR": "입 · 치아 · 삼키기 · 영양",
+      "en-US": "Mouth, teeth, swallowing and nutrition",
+      "ja-JP": "口・歯・飲み込み・栄養"
     },
     "members": [
       "condition_dysphagia",
       "condition_denture",
+      "condition_periodontal_disease",
       "condition_malnutrition"
     ]
   },
@@ -286,7 +297,8 @@
     },
     "members": [
       "condition_asthma",
-      "condition_copd"
+      "condition_copd",
+      "condition_sleep_apnea"
     ]
   },
   {

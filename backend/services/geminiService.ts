@@ -476,7 +476,7 @@ export async function generateSeniorFriendlyAnswer(
     "성별과 나이대는 하루 권장 섭취량 기준이 달라지는 부분에만 쓰세요. 철분은 폐경 전 여성이 더 필요하고, 칼슘과 비타민D는 여성의 골다공증 위험이 높고, 퓨린과 요산은 남성의 통풍 위험이 높으며, 하루 열량과 단백질 권장량도 체격 차이로 다릅니다.",
     "성별만으로 질병을 추정하거나 단정하지 마세요. 성별이 미입력이면 성별과 무관한 일반 기준으로 설명하세요.",
     "성역할을 가정하는 표현을 쓰지 마세요. 조리를 누가 하는지, 가족 중 누가 챙겨주는지 임의로 단정하지 마세요.",
-    "사용자 알레르기나 질병 정보와 충돌하거나 불확실하면 안전 원칙을 우선하세요.",
+    "사용자 알레르기나 질병·건강 상태와 충돌하거나 불확실하면 안전 원칙을 우선하세요.",
     "risk_level은 danger, caution, safe 중 하나만 사용하세요.",
     "등록 알레르기와 직접 충돌하거나 섭취하지 말아야 한다고 답할 때는 danger로 표시하세요.",
     "불확실하여 전문가 확인이 필요하지만 명확한 금지는 아닐 때만 caution으로 표시하세요.",
@@ -484,7 +484,7 @@ export async function generateSeniorFriendlyAnswer(
     `사용자 성별: ${localizedGenderLabel(profile.gender, selectedLanguage)}`,
     `사용자 나이대: ${profile.ageBand ?? "미입력"}대`,
     `알레르기: ${profileAllergies.join(", ") || "미입력"}`,
-    `질병 정보: ${profileConditions.join(", ") || "미입력"}`,
+    `질병·건강 상태: ${profileConditions.join(", ") || "미입력"}`,
     `코드가 직접 확인한 알레르기 충돌: ${allergyConflictLabels.join(", ") || "없음"}`,
     `어르신이 음성으로 남긴 상세 메모: ${
       healthNoteLines.length > 0 ? JSON.stringify(healthNoteLines) : "없음"

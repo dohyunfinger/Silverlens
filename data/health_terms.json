@@ -477,9 +477,7 @@
     "aliases": [
       "心臓病",
       "cardiovascular disease",
-      "heart disease",
-      "협심증",
-      "심근경색"
+      "heart disease"
     ]
   },
   {
@@ -1395,6 +1393,263 @@
       "소변 조절",
       "incontinence",
       "尿失禁"
+    ]
+  },
+  {
+    "id": "condition_menopause",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "폐경 전후 · 폐경 후",
+      "en-US": "Menopause / Postmenopause",
+      "ja-JP": "更年期・閉経後"
+    },
+    "aliases": [
+      "폐경",
+      "완경",
+      "갱년기",
+      "폐경기",
+      "폐경 후",
+      "폐경 및 여성의 기타 중년기 장애",
+      "menopause",
+      "perimenopause",
+      "postmenopause",
+      "climacteric",
+      "閉経",
+      "更年期",
+      "閉経後"
+    ]
+  },
+  {
+    "id": "condition_prediabetes",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "당뇨 전단계 · 혈당 상승",
+      "en-US": "Prediabetes / Elevated blood sugar",
+      "ja-JP": "境界型糖尿病・血糖値上昇"
+    },
+    "aliases": [
+      "당뇨 전단계",
+      "당뇨병 전단계",
+      "혈당 상승",
+      "혈당치 상승",
+      "공복혈당장애",
+      "내당능장애",
+      "prediabetes",
+      "impaired fasting glucose",
+      "impaired glucose tolerance",
+      "境界型糖尿病",
+      "糖尿病予備群",
+      "血糖値上昇"
+    ]
+  },
+  {
+    "id": "condition_coronary_artery_disease",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "관상동맥질환 · 협심증",
+      "en-US": "Coronary artery disease / Angina",
+      "ja-JP": "冠動脈疾患・狭心症"
+    },
+    "aliases": [
+      "관상동맥질환",
+      "관상동맥병",
+      "협심증",
+      "심근경색",
+      "허혈성 심장질환",
+      "coronary artery disease",
+      "coronary heart disease",
+      "angina",
+      "heart attack",
+      "myocardial infarction",
+      "ischemic heart disease",
+      "冠動脈疾患",
+      "狭心症",
+      "心筋梗塞",
+      "虚血性心疾患"
+    ]
+  },
+  {
+    "id": "condition_gastritis_dyspepsia",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "위염 · 기능성 소화불량",
+      "en-US": "Gastritis / Functional dyspepsia",
+      "ja-JP": "胃炎・機能性ディスペプシア"
+    },
+    "aliases": [
+      "위염",
+      "십이지장염",
+      "위염 및 십이지장염",
+      "기능성 소화불량",
+      "소화불량",
+      "gastritis",
+      "duodenitis",
+      "functional dyspepsia",
+      "dyspepsia",
+      "胃炎",
+      "十二指腸炎",
+      "機能性ディスペプシア",
+      "消化不良"
+    ]
+  },
+  {
+    "id": "condition_fatty_liver",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "지방간",
+      "en-US": "Fatty liver disease",
+      "ja-JP": "脂肪肝"
+    },
+    "aliases": [
+      "지방간",
+      "비알코올성 지방간",
+      "대사이상 지방간",
+      "fatty liver",
+      "fatty liver disease",
+      "NAFLD",
+      "MASLD",
+      "脂肪肝",
+      "非アルコール性脂肪性肝疾患"
+    ]
+  },
+  {
+    "id": "condition_kidney_stones",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "신장 · 요로결석",
+      "en-US": "Kidney / Urinary stones",
+      "ja-JP": "腎・尿路結石"
+    },
+    "aliases": [
+      "신장결석",
+      "신장 결석",
+      "요로결석",
+      "요로결석증",
+      "요관결석",
+      "방광결석",
+      "kidney stones",
+      "renal stones",
+      "urolithiasis",
+      "nephrolithiasis",
+      "腎結石",
+      "尿路結石",
+      "尿管結石"
+    ]
+  },
+  {
+    "id": "condition_rheumatoid_arthritis",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "류마티스 관절염",
+      "en-US": "Rheumatoid arthritis",
+      "ja-JP": "関節リウマチ"
+    },
+    "aliases": [
+      "류마티스 관절염",
+      "류머티즘 관절염",
+      "류마티스",
+      "rheumatoid arthritis",
+      "RA",
+      "関節リウマチ",
+      "リウマチ"
+    ]
+  },
+  {
+    "id": "condition_periodontal_disease",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "치주질환 · 잇몸병",
+      "en-US": "Gum disease / Periodontitis",
+      "ja-JP": "歯周病・歯周炎"
+    },
+    "aliases": [
+      "치주질환",
+      "치주염",
+      "치은염",
+      "잇몸병",
+      "잇몸 질환",
+      "gum disease",
+      "periodontal disease",
+      "periodontitis",
+      "gingivitis",
+      "歯周病",
+      "歯周炎",
+      "歯肉炎"
+    ]
+  },
+  {
+    "id": "condition_peripheral_neuropathy",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "말초신경병증",
+      "en-US": "Peripheral neuropathy",
+      "ja-JP": "末梢神経障害"
+    },
+    "aliases": [
+      "말초신경병증",
+      "말초 신경병증",
+      "말초신경장애",
+      "손발 저림",
+      "peripheral neuropathy",
+      "neuropathy",
+      "末梢神経障害"
+    ]
+  },
+  {
+    "id": "condition_sleep_apnea",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "수면무호흡증",
+      "en-US": "Sleep apnea",
+      "ja-JP": "睡眠時無呼吸症候群"
+    },
+    "aliases": [
+      "수면무호흡",
+      "수면무호흡증",
+      "수면무호흡 증후군",
+      "코골이 무호흡",
+      "sleep apnea",
+      "sleep apnoea",
+      "OSA",
+      "睡眠時無呼吸症候群",
+      "睡眠時無呼吸"
+    ]
+  },
+  {
+    "id": "condition_anxiety",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "불안장애",
+      "en-US": "Anxiety disorder",
+      "ja-JP": "不安障害"
+    },
+    "aliases": [
+      "불안장애",
+      "불안 장애",
+      "불안증",
+      "anxiety disorder",
+      "anxiety",
+      "不安障害",
+      "不安症"
+    ]
+  },
+  {
+    "id": "condition_vitamin_d_deficiency",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "비타민 D 결핍",
+      "en-US": "Vitamin D deficiency",
+      "ja-JP": "ビタミンD欠乏症"
+    },
+    "aliases": [
+      "비타민 D 결핍",
+      "비타민D 결핍",
+      "비타민 D 결핍증",
+      "비타민D결핍증",
+      "vitamin D deficiency",
+      "low vitamin D",
+      "ビタミンD欠乏症",
+      "ビタミンD不足"
     ]
   }
 ]

@@ -98,8 +98,12 @@
   {
     "id": "diabetes-glycemic-load",
     "severity": "caution",
-    "applies_to": ["당뇨병"],
-    "condition_ids": ["condition_diabetes", "condition_obesity"],
+    "applies_to": ["당뇨병", "당뇨 전단계"],
+    "condition_ids": [
+      "condition_diabetes",
+      "condition_prediabetes",
+      "condition_obesity"
+    ],
     "food_triggers": [
       "과일주스",
       "꿀",
@@ -119,7 +123,7 @@
       "식혜"
     ],
     "risk_floor": "caution",
-    "rule": "당뇨가 있는 분께는 단순당과 혈당을 빨리 올리는 조리법을 권하지 않는다.",
+    "rule": "당뇨병이나 당뇨 전단계가 있는 분께는 단순당과 혈당을 빨리 올리는 조리법을 권하지 않는다.",
     "detail": "과일주스·꿀·조림·물엿 대신 통과일 소량, 흰죽 대신 잡곡밥, 감자·고구마는 굽기보다 찌기를 권한다. 식사 순서를 채소 → 단백질 → 밥으로 안내하면 혈당 상승이 완만해진다."
   },
   {
