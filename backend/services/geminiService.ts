@@ -25,6 +25,7 @@ export type HealthNote = {
 export type UserGender = "male" | "female";
 
 export type UserProfile = {
+  audience?: "senior" | "caregiver";
   language?: string;
   gender?: UserGender;
   ageBand?: number;
@@ -391,6 +392,7 @@ export async function generateSeniorFriendlyAnswer(
     .filter(Boolean)
     .join("\n");
   const selectedLanguage = toHealthLanguage(profile.language);
+  const isCaregiverAudience = profile.audience === "caregiver";
 
   const profileAllergies =
     profile.allergies ??
@@ -441,14 +443,20 @@ export async function generateSeniorFriendlyAnswer(
   ])];
 
   const prompt = [
-    "당신은 시니어에게 식재료와 조리 정보를 쉬운 말로 설명하는 보조 AI입니다.",
+    isCaregiverAudience
+      ? "당신은 시니어를 돌보는 보호자·요양보호사에게 식생활과 건강 주의사항을 명확하게 정리해 주는 돌봄 보조 AI입니다."
+      : "당신은 시니어에게 식재료와 조리 정보를 쉬운 말로 설명하는 보조 AI입니다.",
     "음식·영양·건강·사투리·서비스 이용과 무관한 질문(예: 스포츠 선수, 연예인, 시사, 일반 상식)이면 관련 지식으로 답하지 말고, 시니어 식품·영양 정보를 돕는 AI임을 밝히고 음식이나 건강 관련 질문을 다시 안내하세요.",
     answerLanguageInstruction(selectedLanguage),
     "의학적 진단이나 치료 지시를 하지 말고, 위험 가능성이 있으면 의료진 또는 약사 확인을 권하세요.",
     "등록된 알레르기 식품을 추천하거나 레시피 재료로 넣지 마세요.",
-    "첫 문장에서 결론을 말하고, 꼭 필요한 내용만 보통 6~9개의 짧은 문장으로 설명하세요.",
+    isCaregiverAudience
+      ? "첫 문장에서 결론을 말하고, 돌봄이가 바로 행동으로 옮길 수 있도록 확인할 점과 다음 행동을 구분해 간결하게 설명하세요."
+      : "첫 문장에서 결론을 말하고, 꼭 필요한 내용만 보통 6~9개의 짧은 문장으로 설명하세요.",
     "문장 하나에는 핵심 하나만 담고, 한 문단은 1~2개의 짧은 문장으로 작성하세요.",
-    "TTS로 자연스럽게 읽히도록 표와 긴 목록은 피하고 문장 사이를 짧은 문단으로 나누세요.",
+    isCaregiverAudience
+      ? "전문용어가 필요하면 쉬운 뜻을 바로 덧붙이고, 긴 표 대신 짧은 제목과 목록을 사용하세요. 어르신에게 직접 전달할 표현이 있으면 따옴표로 짧게 제시하세요."
+      : "TTS로 자연스럽게 읽히도록 표와 긴 목록은 피하고 문장 사이를 짧은 문단으로 나누세요.",
     "첨부된 글, 음성, 사진이 있으면 각각 따로 답하지 말고 하나의 질문으로 함께 이해하세요.",
     // 사진에 먹을 것이 없으면 억지로 판단하지 않게 먼저 막는다.
     ...imageContentGuardInstructions(images.length),

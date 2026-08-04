@@ -5784,3 +5784,374 @@ textarea:focus-visible {
     transition: none;
   }
 }
+
+/* 돌봄이 대화 화면 --------------------------------------------------------- */
+
+.caregiver-header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.caregiver-new-chat {
+  min-height: 40px;
+  padding: 8px 13px;
+  border: 1px solid #d5dcda;
+  border-radius: 10px;
+  color: #36544c;
+  background: #fff;
+  font-size: 13px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.caregiver-new-chat:hover {
+  border-color: #aebdb8;
+  background: #f3f7f5;
+}
+
+.caregiver-root.is-chatting {
+  grid-template-rows: auto minmax(0, 1fr) auto;
+  background: #fff;
+}
+
+.caregiver-root.is-chatting .caregiver-header {
+  width: 100%;
+  padding: 0 28px;
+  border-bottom: 1px solid #eceeed;
+  background: rgba(255, 255, 255, .94);
+  backdrop-filter: blur(14px);
+}
+
+.caregiver-chat {
+  min-height: 0;
+  overflow-x: hidden;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  scrollbar-gutter: stable;
+}
+
+.caregiver-thread {
+  display: grid;
+  width: min(100% - 48px, 920px);
+  gap: 52px;
+  margin: 0 auto;
+  padding: 44px 0 64px;
+}
+
+.caregiver-turn {
+  display: grid;
+  gap: 34px;
+}
+
+.caregiver-user-message {
+  max-width: min(72%, 680px);
+  justify-self: end;
+  margin: 0;
+  padding: 14px 19px;
+  border-radius: 22px;
+  color: #202426;
+  background: #f1f2f1;
+  font-size: 16px;
+  line-height: 1.55;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+
+.caregiver-assistant-message {
+  display: grid;
+  width: min(100%, 780px);
+  gap: 20px;
+  justify-self: start;
+}
+
+.caregiver-assistant-message > header {
+  display: flex;
+  align-items: center;
+  gap: 11px;
+  color: #4d5c57;
+  font-size: 14px;
+}
+
+.caregiver-answer-mark {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  border-radius: 9px;
+  color: #fff;
+  background: #183f36;
+  font-size: 10px;
+  font-weight: 850;
+  letter-spacing: .03em;
+}
+
+.caregiver-answer-body {
+  color: #202527;
+  font-size: 17px;
+  line-height: 1.75;
+}
+
+.caregiver-answer-body > :first-child {
+  margin-top: 0;
+}
+
+.caregiver-answer-body > :last-child {
+  margin-bottom: 0;
+}
+
+.caregiver-answer-body p {
+  margin: 0 0 16px;
+}
+
+.caregiver-answer-body h1,
+.caregiver-answer-body h2,
+.caregiver-answer-body h3 {
+  margin: 26px 0 10px;
+  color: #173a32;
+  font-size: 19px;
+  line-height: 1.45;
+}
+
+.caregiver-answer-body ul,
+.caregiver-answer-body ol {
+  display: grid;
+  gap: 7px;
+  margin: 12px 0 18px;
+  padding-left: 24px;
+}
+
+.caregiver-answer-body li {
+  padding-left: 3px;
+}
+
+.caregiver-answer-body strong {
+  color: #162f29;
+  font-weight: 800;
+}
+
+.caregiver-answer-body code {
+  padding: 2px 6px;
+  border-radius: 6px;
+  background: #f0f3f2;
+  font-size: .9em;
+}
+
+.caregiver-risk-note {
+  margin: 0;
+  padding: 13px 15px;
+  border-left: 4px solid #b87818;
+  border-radius: 8px;
+  color: #513b1b;
+  background: #fff7e7;
+  font-size: 14px;
+  font-weight: 750;
+  line-height: 1.55;
+}
+
+.caregiver-risk-note.danger {
+  border-left-color: #b42318;
+  color: #681f1a;
+  background: #fff0ef;
+}
+
+.caregiver-risk-note.safe {
+  border-left-color: #397063;
+  color: #244c42;
+  background: #f0f7f4;
+}
+
+.caregiver-answer-loading {
+  display: flex;
+  min-height: 56px;
+  align-items: center;
+  gap: 6px;
+  color: #62706b;
+}
+
+.caregiver-answer-loading > span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: #397063;
+  animation: caregiverDot 1.1s ease-in-out infinite;
+}
+
+.caregiver-answer-loading > span:nth-child(2) {
+  animation-delay: .14s;
+}
+
+.caregiver-answer-loading > span:nth-child(3) {
+  animation-delay: .28s;
+}
+
+.caregiver-answer-loading p {
+  margin: 0 0 0 8px;
+  font-size: 14px;
+}
+
+@keyframes caregiverDot {
+  0%, 70%, 100% {
+    transform: translateY(0);
+    opacity: .38;
+  }
+  35% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+.caregiver-answer-error {
+  padding: 16px 18px;
+  border: 1px solid #efcbc7;
+  border-radius: 12px;
+  color: #6e2923;
+  background: #fff6f5;
+  font-size: 14px;
+}
+
+.caregiver-answer-error p {
+  margin: 6px 0 0;
+  line-height: 1.55;
+}
+
+.caregiver-chat-dock {
+  position: relative;
+  z-index: 4;
+  padding: 8px 24px max(18px, env(safe-area-inset-bottom));
+  background: linear-gradient(to bottom, rgba(255, 255, 255, 0), #fff 18px);
+}
+
+.caregiver-chat-note {
+  min-height: 19px;
+  margin: 0 auto 7px;
+  color: #858b89;
+  font-size: 11px;
+  text-align: center;
+}
+
+.caregiver-composer-dock {
+  width: min(100%, 1040px);
+  margin: 0 auto;
+}
+
+.caregiver-composer-dock .caregiver-composer-inner {
+  min-height: 72px;
+  grid-template-columns: 48px minmax(0, 1fr) 46px 56px;
+  padding: 7px 9px 7px 14px;
+  border-radius: 36px;
+}
+
+.caregiver-composer-dock .caregiver-submit-button {
+  width: 56px;
+  height: 56px;
+}
+
+.caregiver-composer input:disabled,
+.caregiver-mic-button:disabled {
+  cursor: default;
+  opacity: .58;
+}
+
+.caregiver-submit-button.is-loading svg {
+  fill: currentColor;
+  stroke-width: 0;
+}
+
+@media (max-width: 700px) {
+  .caregiver-root.is-chatting {
+    overflow: hidden;
+  }
+
+  .caregiver-root.is-chatting .caregiver-header {
+    min-height: 64px;
+    padding: 0 14px;
+  }
+
+  .caregiver-header-actions {
+    gap: 3px;
+  }
+
+  .caregiver-new-chat {
+    min-height: 40px;
+    padding: 7px 9px;
+    font-size: 12px;
+  }
+
+  .caregiver-root.is-chatting .caregiver-back-link {
+    padding: 7px 6px;
+  }
+
+  .caregiver-thread {
+    width: min(100% - 28px, 620px);
+    gap: 42px;
+    padding: 30px 0 44px;
+  }
+
+  .caregiver-turn {
+    gap: 28px;
+  }
+
+  .caregiver-user-message {
+    max-width: 88%;
+    padding: 12px 16px;
+    font-size: 15px;
+  }
+
+  .caregiver-assistant-message {
+    gap: 16px;
+  }
+
+  .caregiver-answer-body {
+    font-size: 16px;
+    line-height: 1.7;
+  }
+
+  .caregiver-chat-dock {
+    padding: 6px 10px max(10px, env(safe-area-inset-bottom));
+  }
+
+  .caregiver-chat-note {
+    max-width: 340px;
+    font-size: 10px;
+    line-height: 1.4;
+  }
+
+  .caregiver-composer-dock .caregiver-composer-inner {
+    min-height: 66px;
+    grid-template-columns: 40px minmax(0, 1fr) 40px 50px;
+    gap: 1px;
+    padding: 6px 7px 6px 10px;
+    border-radius: 33px;
+  }
+
+  .caregiver-composer-dock .caregiver-tool-button,
+  .caregiver-composer-dock .caregiver-mic-button {
+    width: 40px;
+    height: 40px;
+  }
+
+  .caregiver-composer-dock .caregiver-submit-button {
+    width: 50px;
+    height: 50px;
+  }
+}
+
+@media (max-width: 430px) {
+  .caregiver-root.is-chatting .caregiver-brand > span:nth-child(2) {
+    display: none;
+  }
+
+  .caregiver-root.is-chatting .caregiver-back-link {
+    max-width: 82px;
+    line-height: 1.2;
+    text-align: center;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caregiver-answer-loading > span {
+    animation: none;
+    opacity: .72;
+  }
+}

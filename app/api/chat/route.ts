@@ -128,6 +128,7 @@ function cleanHealthIds(value: unknown): string[] | undefined {
 function cleanProfile(value: unknown): UserProfile {
   if (!value || typeof value !== "object") return {};
   const profile = value as UserProfile & {
+    audience?: unknown;
     healthNotes?: unknown;
     gender?: unknown;
     allergyIds?: unknown;
@@ -137,6 +138,7 @@ function cleanProfile(value: unknown): UserProfile {
   const conditionIds = cleanHealthIds(profile.conditionIds);
   return {
     ...profile,
+    audience: profile.audience === "caregiver" ? "caregiver" : "senior",
     // 성별은 프롬프트에 그대로 들어가므로 정해진 두 값만 통과시킨다.
     gender: GENDERS.includes(profile.gender as UserGender)
       ? (profile.gender as UserGender)
