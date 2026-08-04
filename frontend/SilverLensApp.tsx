@@ -11,6 +11,7 @@ import {
   useState,
 } from "react";
 import ReactMarkdown from "react-markdown";
+import Link from "next/link";
 import {
   clearPendingPhotos,
   clearStore,
@@ -1004,6 +1005,7 @@ const uiCopy = {
     brand: "실버렌즈",
     service: "서비스",
     about: "서비스 소개",
+    caregiverEntry: "돌봄이 화면",
     sidebarTitle: "어르신을 위한 AI",
     sidebarNote: "말하고, 찍고, 편하게 물어보세요.",
     progressLanguage: "언어",
@@ -1192,6 +1194,7 @@ const uiCopy = {
     brand: "SilverLens",
     service: "Service",
     about: "About",
+    caregiverEntry: "Caregiver view",
     sidebarTitle: "AI for older adults",
     sidebarNote: "Speak, snap a photo, and ask comfortably.",
     progressLanguage: "Language",
@@ -1380,6 +1383,7 @@ const uiCopy = {
     brand: "シルバーレンズ",
     service: "サービス",
     about: "サービス紹介",
+    caregiverEntry: "介護者画面",
     sidebarTitle: "高齢者のためのAI",
     sidebarNote: "話して、撮って、気軽に聞いてください。",
     progressLanguage: "言語",
@@ -2534,6 +2538,10 @@ function Sidebar({
         <strong>{copy.sidebarTitle}</strong>
         <span>{copy.sidebarNote}</span>
       </div>
+      <Link className="caregiver-entry-link" href="/caregiver">
+        <span>{copy.caregiverEntry}</span>
+        <span aria-hidden="true">↗</span>
+      </Link>
     </aside>
   );
 }
@@ -5759,6 +5767,10 @@ export default function SilverLensApp() {
               </button>
             </div>
           )}
+          <Link className="caregiver-mobile-entry-link" href="/caregiver">
+            {activeCopy.caregiverEntry}
+            <span aria-hidden="true">↗</span>
+          </Link>
         </section>
       </main>
     );
@@ -6093,6 +6105,10 @@ export default function SilverLensApp() {
             <ChevronIcon direction="right" />
           </span>
         </button>
+        <Link className="caregiver-mobile-entry-link" href="/caregiver">
+          {activeCopy.caregiverEntry}
+          <span aria-hidden="true">↗</span>
+        </Link>
       </section>
     </main>
   );
