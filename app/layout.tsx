@@ -1,5 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
+import { headers } from "next/headers";
 import "./globals.css";
 
 const geistSans = Geist({
@@ -12,17 +13,36 @@ const geistMono = Geist_Mono({
   subsets: ["latin"],
 });
 
-export const metadata: Metadata = {
-  title: "실버렌즈 | 시니어 맞춤 AI",
-  description: "말하고 찍어서 편하게 확인하는 시니어 맞춤 식재료 AI 서비스",
-  other: {
-    "codex-preview": "development",
-  },
-  icons: {
-    icon: "/favicon.svg",
-    shortcut: "/favicon.svg",
-  },
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const requestHeaders = await headers();
+  const host = requestHeaders.get("x-forwarded-host") ?? requestHeaders.get("host");
+  const protocol = requestHeaders.get("x-forwarded-proto") ?? "https";
+  const origin = host ? `${protocol}://${host}` : "https://silverlens.ogq.workers.dev";
+  const imageUrl = new URL("/og.png", origin).toString();
+  const title = "실버렌즈 | 시니어 식생활 AI";
+  const description = "말하고, 찍고, 편하게 묻는 시니어 맞춤 음식·건강 AI 서비스";
+
+  return {
+    title,
+    description,
+    icons: {
+      icon: "/favicon.svg",
+      shortcut: "/favicon.svg",
+    },
+    openGraph: {
+      title,
+      description,
+      type: "website",
+      images: [{ url: imageUrl, width: 1536, height: 1024, alt: "실버렌즈 시니어 식생활 AI" }],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title,
+      description,
+      images: [imageUrl],
+    },
+  };
+}
 
 /**
  * 이 선언이 없으면 폰이 980px 가상 화면으로 그린 뒤 축소해서 보여 준다.

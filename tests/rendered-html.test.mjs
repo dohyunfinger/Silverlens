@@ -4,7 +4,7 @@ import test from "node:test";
 const developmentPreviewMeta =
   /<meta(?=[^>]*\bname=["']codex-preview["'])(?=[^>]*\bcontent=["']development["'])[^>]*>/i;
 
-test("renders development preview metadata", async () => {
+test("renders production metadata and the simplified senior navigation", async () => {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
@@ -29,7 +29,15 @@ test("renders development preview metadata", async () => {
     response.headers.get("content-type") ?? "",
     /^text\/html\b/i,
   );
-  assert.match(await response.text(), developmentPreviewMeta);
+  const html = await response.text();
+  assert.doesNotMatch(html, developmentPreviewMeta);
+  assert.match(html, /<title>실버렌즈 \| 시니어 식생활 AI<\/title>/);
+  assert.match(html, /<meta property="og:image" content="https:\/\/silverlens\.ogq\.workers\.dev\/og\.png"/);
+  assert.match(html, /기본설정/);
+  assert.match(html, /데이터/);
+  assert.match(html, /내 정보 말하기/);
+  assert.match(html, /내 정보 입력하기/);
+  assert.doesNotMatch(html, /class="chat-quick-row"/);
 });
 
 test("renders the caregiver entry link and authentication screens", async () => {

@@ -34,7 +34,7 @@ import {
 type Language = "ko-KR" | "en-US" | "ja-JP";
 type Gender = "male" | "female";
 type SetupStep = "language" | "gender" | "age" | "complete";
-type PageScreen = "setup" | "chat" | "about";
+type PageScreen = "setup" | "chat" | "data" | "about";
 type RecordingContext = "setup" | "chat" | "allergy" | "condition";
 type NarrationStatus = "preparing" | "ready" | "error";
 type ChatTurn = {
@@ -1004,6 +1004,8 @@ const uiCopy = {
     menuLabel: "서비스 메뉴",
     brand: "실버렌즈",
     service: "서비스",
+    basicSetup: "기본설정",
+    data: "데이터",
     about: "서비스 소개",
     caregiverEntry: "돌봄이 화면",
     sidebarTitle: "어르신을 위한 AI",
@@ -1079,12 +1081,14 @@ const uiCopy = {
     profileDone: "입력 완료, 대화로 돌아가기",
     waitTranscribing: "건강정보를 입력하고 있어요. 잠시만 기다려 주세요.",
     quickProfileTitle: "먼저 알려주시면 더 정확해요",
-    quickProfileHelp: "말씀하시거나 아래 버튼을 눌러 주세요. 넘어가도 대화는 됩니다.",
+    quickProfileHelp: "말로 한 번에 알려주시거나 직접 입력할 수 있어요. 넘어가도 대화는 됩니다.",
     quickProfileSpeak: "내 정보 말하기",
     quickProfileSpeakHelp: "예: 나이는 일흔이고 복숭아 알레르기가 있어요",
     quickProfileMore: "알레르기 · 건강 상태까지 자세히 입력하기",
     quickProfileDone: "알려주신 정보로 답변합니다",
     backupTitle: "내 정보 저장",
+    dataTitle: "내 데이터 관리",
+    dataDescription: "이 기기에 저장된 건강 정보와 대화 기록을 확인하고 안전하게 옮길 수 있어요.",
     backupHelp: "이 기기에만 저장됩니다. 로그인은 필요하지 않아요.",
     backupSavedAt: "{time}에 저장했어요.",
     backupNever: "아직 저장된 내용이 없어요.",
@@ -1112,8 +1116,8 @@ const uiCopy = {
     foodCheck: "먹기 전 확인",
     attachmentLabel: "함께 보낸 첨부",
     quickAskTitle: "이런 것도 물어보실 수 있어요",
-    emptyAnswerTitle: "질문을 보내면 답변을 큰 글자로 보여드려요.",
-    emptyAnswerHelp: "답변이 길면 오른쪽 카드로 이어지고, 왼쪽으로 넘기면 이전 답변을 다시 볼 수 있어요.",
+    emptyAnswerTitle: "실버렌즈 AI는 어르신의 음식·건강 질문을 쉽게 풀어드려요.",
+    emptyAnswerHelp: "사진·음성·글 질문과 입력해 둔 건강 정보를 함께 참고해, 주의할 점을 큰 글자와 음성으로 안내합니다.",
     previousCards: "← 이전 답변",
     nextCards: "이어지는 답변 →",
     pageBadge: "{total}장 중 {current}장",
@@ -1193,6 +1197,8 @@ const uiCopy = {
     menuLabel: "Service menu",
     brand: "SilverLens",
     service: "Service",
+    basicSetup: "Basic setup",
+    data: "Data",
     about: "About",
     caregiverEntry: "Caregiver view",
     sidebarTitle: "AI for older adults",
@@ -1268,12 +1274,14 @@ const uiCopy = {
     profileDone: "Done, back to the conversation",
     waitTranscribing: "I'm saving your health information. One moment please.",
     quickProfileTitle: "Tell me a little and answers get sharper",
-    quickProfileHelp: "Speak it or tap the buttons below. You can skip this and still chat.",
+    quickProfileHelp: "Tell me all at once by voice or enter it yourself. You can also skip this and chat.",
     quickProfileSpeak: "Say my details",
     quickProfileSpeakHelp: "Example: I'm in my seventies and allergic to peaches",
     quickProfileMore: "Add allergies and conditions in detail",
     quickProfileDone: "I'll answer using what you shared",
     backupTitle: "Saved on this device",
+    dataTitle: "Manage my data",
+    dataDescription: "Review the health information and conversations saved on this device, or move them safely.",
     backupHelp: "Everything stays on this device. No sign-in needed.",
     backupSavedAt: "Saved at {time}.",
     backupNever: "Nothing saved yet.",
@@ -1301,8 +1309,8 @@ const uiCopy = {
     foodCheck: "Check before eating",
     attachmentLabel: "Sent attachments",
     quickAskTitle: "You can also ask things like these",
-    emptyAnswerTitle: "Send a question and I’ll show the answer in large text.",
-    emptyAnswerHelp: "Long answers continue on the next card. Swipe left to revisit previous answers.",
+    emptyAnswerTitle: "SilverLens AI makes food and health questions easier for older adults.",
+    emptyAnswerHelp: "It considers your photos, voice, text, and saved health information, then explains important cautions in large text and voice.",
     previousCards: "← Previous answers",
     nextCards: "More answers →",
     pageBadge: "Page {current} of {total}",
@@ -1382,6 +1390,8 @@ const uiCopy = {
     menuLabel: "サービスメニュー",
     brand: "シルバーレンズ",
     service: "サービス",
+    basicSetup: "基本設定",
+    data: "データ",
     about: "サービス紹介",
     caregiverEntry: "介護者画面",
     sidebarTitle: "高齢者のためのAI",
@@ -1457,12 +1467,14 @@ const uiCopy = {
     profileDone: "入力完了、会話に戻る",
     waitTranscribing: "健康情報を保存しています。少しお待ちください。",
     quickProfileTitle: "先に教えていただくとより正確です",
-    quickProfileHelp: "お話しになるか、下のボタンを押してください。飛ばしても会話できます。",
+    quickProfileHelp: "音声でまとめて伝えるか、ご自身で入力できます。飛ばしても会話できます。",
     quickProfileSpeak: "自分の情報を話す",
     quickProfileSpeakHelp: "例：年齢は七十で、桃のアレルギーがあります",
     quickProfileMore: "アレルギー・健康状態まで詳しく入力する",
     quickProfileDone: "教えていただいた情報でお答えします",
     backupTitle: "この端末に保存",
+    dataTitle: "自分のデータを管理",
+    dataDescription: "この端末に保存された健康情報と会話履歴を確認し、安全に移すことができます。",
     backupHelp: "この端末だけに保存されます。ログインは不要です。",
     backupSavedAt: "{time}に保存しました。",
     backupNever: "まだ保存された内容がありません。",
@@ -1490,8 +1502,8 @@ const uiCopy = {
     foodCheck: "食べる前に確認",
     attachmentLabel: "一緒に送った添付",
     quickAskTitle: "こんなことも聞けます",
-    emptyAnswerTitle: "質問を送ると、回答を大きな文字で表示します。",
-    emptyAnswerHelp: "回答が長い場合は次のカードに続きます。左へ戻ると前の回答を見られます。",
+    emptyAnswerTitle: "シルバーレンズAIは、高齢者の食事・健康の質問をわかりやすく説明します。",
+    emptyAnswerHelp: "写真・音声・文字の質問と登録した健康情報を参考にし、注意点を大きな文字と音声で案内します。",
     previousCards: "← 前の回答",
     nextCards: "続きの回答 →",
     pageBadge: "全{total}枚中 {current}枚目",
@@ -2520,11 +2532,25 @@ function Sidebar({
       </div>
       <nav>
         <button
-          className={active === "setup" || active === "chat" ? "nav-item active" : "nav-item"}
-          onClick={() => onNavigate(active === "chat" ? "chat" : "setup")}
+          className={active === "chat" ? "nav-item active" : "nav-item"}
+          onClick={() => onNavigate("chat")}
         >
           <span aria-hidden="true">⌂</span>
           {copy.service}
+        </button>
+        <button
+          className={active === "setup" ? "nav-item active" : "nav-item"}
+          onClick={() => onNavigate("setup")}
+        >
+          <span aria-hidden="true">⚙</span>
+          {copy.basicSetup}
+        </button>
+        <button
+          className={active === "data" ? "nav-item active" : "nav-item"}
+          onClick={() => onNavigate("data")}
+        >
+          <span aria-hidden="true">▦</span>
+          {copy.data}
         </button>
         <button
           className={active === "about" ? "nav-item active" : "nav-item"}
@@ -2876,6 +2902,7 @@ export default function SilverLensApp() {
   const nextStep = getNextStep(language, gender, ageConfirmed);
   const activeLanguage = language ?? "ko-KR";
   const activeCopy = uiCopy[activeLanguage];
+  const basicSetupComplete = Boolean(language && gender && ageConfirmed);
   const narrationRate = narrationRateOptions[narrationRateIndex].value;
   const narrationRateLabel = narrationRateOptions[narrationRateIndex].label[activeLanguage];
   const allergyOptions = useMemo(
@@ -4993,6 +5020,112 @@ export default function SilverLensApp() {
     );
   }
 
+  if (screen === "data") {
+    return (
+      <main className="app-shell">
+        <Sidebar active="data" onNavigate={setScreen} copy={activeCopy} />
+        <section className="data-screen">
+          <header className="data-screen-header">
+            <span aria-hidden="true">▦</span>
+            <div>
+              <h1>{activeCopy.dataTitle}</h1>
+              <p>{activeCopy.dataDescription}</p>
+            </div>
+          </header>
+
+          <section className="health-notes" aria-label={activeCopy.notesTitle}>
+            <div className="health-notes-head">
+              <strong>{activeCopy.notesTitle}</strong>
+              <small>{activeCopy.notesHelp}</small>
+            </div>
+            {healthNotes.length === 0 ? (
+              <p className="health-notes-empty">
+                {activeCopy.notesEmpty}
+                <span>{activeCopy.notesExample}</span>
+              </p>
+            ) : (
+              <ul>
+                {healthNotes.map((note) => (
+                  <li key={note.id}>
+                    <span className={`health-note-kind ${note.kind}`}>
+                      {note.kind === "allergy"
+                        ? activeCopy.noteKindAllergy
+                        : note.kind === "condition"
+                          ? activeCopy.noteKindCondition
+                          : activeCopy.noteKindSetup}
+                    </span>
+                    <p>{note.text}</p>
+                    <button
+                      type="button"
+                      onClick={() => removeHealthNote(note.id)}
+                      aria-label={activeCopy.noteRemove}
+                    >
+                      ×
+                    </button>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </section>
+
+          <section className="data-backup" aria-label={activeCopy.backupTitle}>
+            <div className="data-backup-head">
+              <strong>{activeCopy.backupTitle}</strong>
+              <small>
+                {storeKind === "none"
+                  ? activeCopy.backupStoreNone
+                  : storeKind === "localstorage"
+                    ? activeCopy.backupStoreLocal
+                    : activeCopy.backupHelp}
+              </small>
+              <small className="data-backup-time">
+                {storeSavedAt
+                  ? activeCopy.backupSavedAt.replace(
+                      "{time}",
+                      new Date(storeSavedAt).toLocaleString(activeLanguage),
+                    )
+                  : activeCopy.backupNever}
+              </small>
+            </div>
+            <div className="data-backup-actions">
+              <button type="button" onClick={exportBackup}>
+                {activeCopy.backupExport}
+              </button>
+              <button type="button" onClick={() => backupInputRef.current?.click()}>
+                {activeCopy.backupImport}
+              </button>
+              <input
+                ref={backupInputRef}
+                className="visually-hidden"
+                type="file"
+                accept="application/json,.json"
+                onChange={(event) => {
+                  const file = event.target.files?.[0];
+                  if (file) void importBackup(file);
+                  event.target.value = "";
+                }}
+                aria-label={activeCopy.backupImport}
+              />
+              <button type="button" className="danger" onClick={() => void clearSavedData()}>
+                {activeCopy.backupClear}
+              </button>
+            </div>
+            {backupNotice && (
+              <p className="data-backup-notice" role="status">
+                {backupNotice}
+              </p>
+            )}
+          </section>
+
+          <Link className="caregiver-mobile-entry-link" href="/caregiver">
+            {activeCopy.caregiverEntry}
+            <span aria-hidden="true">↗</span>
+          </Link>
+        </section>
+      </main>
+    );
+  }
+
   if (screen === "chat") {
     const isRecording = recordingContext === "chat";
     // 등록 질병에 맞는 버튼을 하나만 덧붙인다. 여러 개면 화면이 길어진다.
@@ -5125,91 +5258,57 @@ export default function SilverLensApp() {
 
           <section className="answer-section" aria-live="polite">
             {/*
-              첫 화면에서 설정 화면으로 넘어가지 않고도 기본 정보를 넣을 수 있게 한다.
-              말로 한 번에 말하거나, 성별·나이 버튼을 바로 눌러도 된다.
-              답변이 하나라도 생기면 감춰서 답변 볼 자리를 넓힌다.
+              첫 화면에서는 말로 알려 주기와 직접 입력하기, 두 경로만 크게 보여 준다.
+              기본설정을 마쳤거나 답변이 하나라도 생기면 감춰서 답변 볼 자리를 넓힌다.
             */}
-            {answerCards.length === 0 && (
+            {answerCards.length === 0 && !basicSetupComplete && (
               <div className="chat-quick-profile">
                 <div className="chat-quick-profile-head">
                   <strong>{activeCopy.quickProfileTitle}</strong>
-                  <small>
-                    {hasProfileInfo
-                      ? activeCopy.quickProfileDone
-                      : activeCopy.quickProfileHelp}
-                  </small>
+                  <small>{activeCopy.quickProfileHelp}</small>
                 </div>
 
-                <button
-                  type="button"
-                  className={
-                    recordingContext === "setup"
-                      ? "chat-quick-speak recording"
-                      : "chat-quick-speak"
-                  }
-                  onClick={() => toggleRecording("setup")}
-                  disabled={isTranscribingVoice}
-                  aria-pressed={recordingContext === "setup"}
-                >
-                  <span aria-hidden="true">
-                    {recordingContext === "setup" ? "●" : "🎙️"}
-                  </span>
-                  <span>
-                    <strong>
-                      {recordingContext === "setup"
-                        ? activeCopy.recording
-                        : activeCopy.quickProfileSpeak}
-                    </strong>
-                    <small>
-                      {recordingContext === "setup"
-                        ? activeCopy.recordingHelp
-                        : activeCopy.quickProfileSpeakHelp}
-                    </small>
-                  </span>
-                </button>
+                <div className="chat-quick-actions">
+                  <button
+                    type="button"
+                    className={
+                      recordingContext === "setup"
+                        ? "chat-quick-speak recording"
+                        : "chat-quick-speak"
+                    }
+                    onClick={() => toggleRecording("setup")}
+                    disabled={isTranscribingVoice}
+                    aria-pressed={recordingContext === "setup"}
+                  >
+                    <span aria-hidden="true">
+                      {recordingContext === "setup" ? "●" : "🎙️"}
+                    </span>
+                    <span>
+                      <strong>
+                        {recordingContext === "setup"
+                          ? activeCopy.recording
+                          : activeCopy.quickProfileSpeak}
+                      </strong>
+                      <small>
+                        {recordingContext === "setup"
+                          ? activeCopy.recordingHelp
+                          : activeCopy.quickProfileSpeakHelp}
+                      </small>
+                    </span>
+                  </button>
 
-                <div className="chat-quick-row" role="group" aria-label={activeCopy.genderLegend}>
-                  <span className="chat-quick-legend">{activeCopy.genderLegend}</span>
-                  <div className="chat-quick-choices">
-                    {(["male", "female"] as Gender[]).map((id) => (
-                      <button
-                        key={id}
-                        type="button"
-                        className={gender === id ? "chat-quick-chip selected" : "chat-quick-chip"}
-                        onClick={() => toggleGender(id)}
-                        aria-pressed={gender === id}
-                      >
-                        {id === "male" ? activeCopy.male : activeCopy.female}
-                      </button>
-                    ))}
-                  </div>
+                  <button
+                    type="button"
+                    className="chat-quick-open-profile"
+                    onClick={openProfileSetup}
+                  >
+                    <span aria-hidden="true">✎</span>
+                    <span>
+                      <strong>{activeCopy.openProfile}</strong>
+                      <small>{activeCopy.openProfileHelp}</small>
+                    </span>
+                  </button>
                 </div>
-
-                <div className="chat-quick-row" role="group" aria-label={activeCopy.ageLegend}>
-                  <span className="chat-quick-legend">{activeCopy.ageLegend}</span>
-                  <div className="chat-quick-choices">
-                    {ageChoices.map((age) => (
-                      <button
-                        key={age}
-                        type="button"
-                        className={
-                          ageConfirmed && ageBand === age
-                            ? "chat-quick-chip selected"
-                            : "chat-quick-chip"
-                        }
-                        onClick={() => selectAge(age)}
-                        aria-pressed={ageConfirmed && ageBand === age}
-                      >
-                        {age}
-                        {activeCopy.years}
-                      </button>
-                    ))}
-                  </div>
-                </div>
-
-                <button type="button" className="chat-quick-more" onClick={openProfileSetup}>
-                  {activeCopy.quickProfileMore}
-                </button>
               </div>
             )}
 
@@ -5916,6 +6015,40 @@ export default function SilverLensApp() {
           </p>
         </fieldset>
 
+        <div className="voice-row">
+          <button
+            className={setupRecording ? "voice-control recording" : "voice-control"}
+            onClick={() => toggleRecording("setup")}
+          >
+            <span>{setupRecording ? "●" : "🎙️"}</span>
+            <div>
+              <strong>{setupRecording ? activeCopy.recording : activeCopy.voiceProfile}</strong>
+              <small>{setupRecording ? activeCopy.recordingHelp : activeCopy.voiceProfileHelp}</small>
+            </div>
+          </button>
+          <button className="replay-control" onClick={replayCurrentGuide}>
+            <span>🔊</span>
+            <div>
+              <strong>{activeCopy.replayGuide}</strong>
+              <small>{activeCopy.replayGuideHelp}</small>
+            </div>
+          </button>
+        </div>
+
+        {recordedUrl && (
+          <div className="saved-recording compact">
+            <span>✓ {activeCopy.savedRecording}</span>
+            <audio controls src={recordedUrl}>
+              <track kind="captions" />
+            </audio>
+          </div>
+        )}
+        {transcript && <p className="transcript-box">{activeCopy.transcript}: {transcript}</p>}
+        {profileVoiceNotice && (
+          <p className="profile-voice-notice" role="status">{profileVoiceNotice}</p>
+        )}
+        {recordingError && <p className="error-message" role="alert">{recordingError}</p>}
+
         <div className="health-grid">
           <HealthPickerCard
             kind="allergy"
@@ -5968,128 +6101,6 @@ export default function SilverLensApp() {
         <p className="health-language-note">
           {activeCopy.healthLanguageNote}
         </p>
-
-        <section className="health-notes" aria-label={activeCopy.notesTitle}>
-          <div className="health-notes-head">
-            <strong>{activeCopy.notesTitle}</strong>
-            <small>{activeCopy.notesHelp}</small>
-          </div>
-          {healthNotes.length === 0 ? (
-            <p className="health-notes-empty">
-              {activeCopy.notesEmpty}
-              <span>{activeCopy.notesExample}</span>
-            </p>
-          ) : (
-            <ul>
-              {healthNotes.map((note) => (
-                <li key={note.id}>
-                  <span className={`health-note-kind ${note.kind}`}>
-                    {note.kind === "allergy"
-                      ? activeCopy.noteKindAllergy
-                      : note.kind === "condition"
-                        ? activeCopy.noteKindCondition
-                        : activeCopy.noteKindSetup}
-                  </span>
-                  <p>{note.text}</p>
-                  <button
-                    type="button"
-                    onClick={() => removeHealthNote(note.id)}
-                    aria-label={activeCopy.noteRemove}
-                  >
-                    ×
-                  </button>
-                </li>
-              ))}
-            </ul>
-          )}
-        </section>
-
-        {/*
-          기기 저장 안내와 백업.
-          로그인·서버 없이 이 기기에만 두므로, 기기를 바꿀 때는 파일로 옮긴다.
-        */}
-        <section className="data-backup" aria-label={activeCopy.backupTitle}>
-          <div className="data-backup-head">
-            <strong>{activeCopy.backupTitle}</strong>
-            <small>
-              {storeKind === "none"
-                ? activeCopy.backupStoreNone
-                : storeKind === "localstorage"
-                  ? activeCopy.backupStoreLocal
-                  : activeCopy.backupHelp}
-            </small>
-            <small className="data-backup-time">
-              {storeSavedAt
-                ? activeCopy.backupSavedAt.replace(
-                    "{time}",
-                    new Date(storeSavedAt).toLocaleString(activeLanguage),
-                  )
-                : activeCopy.backupNever}
-            </small>
-          </div>
-          <div className="data-backup-actions">
-            <button type="button" onClick={exportBackup}>
-              {activeCopy.backupExport}
-            </button>
-            <button type="button" onClick={() => backupInputRef.current?.click()}>
-              {activeCopy.backupImport}
-            </button>
-            <input
-              ref={backupInputRef}
-              className="visually-hidden"
-              type="file"
-              accept="application/json,.json"
-              onChange={(event) => {
-                const file = event.target.files?.[0];
-                if (file) void importBackup(file);
-                event.target.value = "";
-              }}
-              aria-label={activeCopy.backupImport}
-            />
-            <button type="button" className="danger" onClick={() => void clearSavedData()}>
-              {activeCopy.backupClear}
-            </button>
-          </div>
-          {backupNotice && (
-            <p className="data-backup-notice" role="status">
-              {backupNotice}
-            </p>
-          )}
-        </section>
-
-        <div className="voice-row">
-          <button
-            className={setupRecording ? "voice-control recording" : "voice-control"}
-            onClick={() => toggleRecording("setup")}
-          >
-            <span>{setupRecording ? "●" : "🎙️"}</span>
-            <div>
-              <strong>{setupRecording ? activeCopy.recording : activeCopy.voiceProfile}</strong>
-              <small>{setupRecording ? activeCopy.recordingHelp : activeCopy.voiceProfileHelp}</small>
-            </div>
-          </button>
-          <button className="replay-control" onClick={replayCurrentGuide}>
-            <span>🔊</span>
-            <div>
-              <strong>{activeCopy.replayGuide}</strong>
-              <small>{activeCopy.replayGuideHelp}</small>
-            </div>
-          </button>
-        </div>
-
-        {recordedUrl && (
-          <div className="saved-recording compact">
-            <span>✓ {activeCopy.savedRecording}</span>
-            <audio controls src={recordedUrl}>
-              <track kind="captions" />
-            </audio>
-          </div>
-        )}
-        {transcript && <p className="transcript-box">{activeCopy.transcript}: {transcript}</p>}
-        {profileVoiceNotice && (
-          <p className="profile-voice-notice" role="status">{profileVoiceNotice}</p>
-        )}
-        {recordingError && <p className="error-message" role="alert">{recordingError}</p>}
 
         {/*
           정보 입력은 선택이므로 미완성이어도 항상 대화로 돌아갈 수 있다.
