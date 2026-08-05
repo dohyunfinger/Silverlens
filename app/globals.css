@@ -1904,15 +1904,29 @@ textarea:focus-visible {
 }
 
 .quick-ask > span {
+  flex: 0 0 auto;
   font-size: 24px;
   line-height: 1;
 }
 
 .quick-ask strong {
+  min-width: 0;
+  max-width: 100%;
   font-size: 17px;
   font-weight: 900;
   line-height: 1.35;
   word-break: keep-all;
+}
+
+/*
+ * 일본어는 단어 사이에 공백이 거의 없어 keep-all을 쓰면 문장 전체가 한 줄로
+ * 계산된다. 일본어를 선택했을 때만 문자 경계에서 자연스럽게 줄을 바꾸고,
+ * 긴 문장도 버튼 안에서 반드시 접히도록 한다.
+ */
+html[lang="ja-JP"] .quick-ask strong {
+  overflow-wrap: anywhere;
+  word-break: normal;
+  line-break: strict;
 }
 
 .quick-ask:hover:not(:disabled) {
@@ -4578,6 +4592,7 @@ textarea:focus-visible {
 
 .about-workflow-card {
   position: relative;
+  min-width: 0;
   padding: 28px;
   border: 1px solid var(--about-line);
   border-radius: var(--about-radius-lg);
@@ -4614,6 +4629,14 @@ textarea:focus-visible {
 .about-workflow-card h3 {
   font-size: 30px;
   line-height: 1.2;
+}
+
+html[lang="ja-JP"] .about-workflow-card h3,
+html[lang="ja-JP"] .about-workflow-card p {
+  max-width: 100%;
+  overflow-wrap: anywhere;
+  word-break: normal;
+  line-break: strict;
 }
 
 .about-line {
