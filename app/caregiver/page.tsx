@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
-import CaregiverApp from "../../frontend/CaregiverApp";
+import CaregiverLogin from "../../frontend/CaregiverLogin";
 
 export const metadata: Metadata = {
-  title: "돌봄이 화면 | 실버렌즈",
-  description: "시니어 돌봄이를 위한 실버렌즈 전용 화면",
+  title: "돌봄이 로그인 | SilverLens",
+  description: "연결된 어르신을 안전하게 돌보기 위한 SilverLens 돌봄이 로그인",
 };
 
 export default function CaregiverPage() {
-  return <CaregiverApp />;
+  return <CaregiverLogin />;
 }

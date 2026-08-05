@@ -6155,3 +6155,536 @@ textarea:focus-visible {
     opacity: .72;
   }
 }
+
+/* 돌봄이 로그인 ----------------------------------------------------------- */
+
+.caregiver-login-root {
+  --care-login-ink: #18211e;
+  --care-login-muted: #66716d;
+  --care-login-green: #183f36;
+  display: grid;
+  min-height: 100svh;
+  grid-template-rows: auto 1fr auto;
+  color: var(--care-login-ink);
+  background:
+    radial-gradient(circle at 13% 18%, rgba(211, 229, 220, .58), transparent 31rem),
+    radial-gradient(circle at 87% 80%, rgba(232, 222, 198, .45), transparent 27rem),
+    #f7f8f5;
+  animation: screenEnter .28s ease backwards;
+}
+
+.caregiver-login-header {
+  display: flex;
+  width: min(100% - 48px, 1240px);
+  min-height: 76px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 0 auto;
+}
+
+.caregiver-login-layout {
+  display: grid;
+  width: min(100% - 48px, 1120px);
+  grid-template-columns: minmax(0, 1fr) minmax(360px, 430px);
+  align-items: center;
+  gap: clamp(64px, 10vw, 132px);
+  justify-self: center;
+  padding: 52px 0 72px;
+}
+
+.caregiver-login-intro {
+  max-width: 560px;
+}
+
+.caregiver-login-eyebrow {
+  margin: 0 0 18px;
+  color: #3d6e60;
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: .14em;
+}
+
+.caregiver-login-intro h1 {
+  margin: 0;
+  font-size: clamp(38px, 4.1vw, 58px);
+  font-weight: 600;
+  letter-spacing: -.052em;
+  line-height: 1.18;
+  word-break: keep-all;
+}
+
+.caregiver-login-description {
+  max-width: 510px;
+  margin: 24px 0 0;
+  color: var(--care-login-muted);
+  font-size: 17px;
+  line-height: 1.75;
+  word-break: keep-all;
+}
+
+.caregiver-login-benefits {
+  display: grid;
+  gap: 18px;
+  margin: 42px 0 0;
+  padding: 0;
+  list-style: none;
+}
+
+.caregiver-login-benefits li {
+  display: flex;
+  align-items: flex-start;
+  gap: 14px;
+}
+
+.caregiver-login-benefits li > span {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  flex: 0 0 auto;
+  place-items: center;
+  border: 1px solid #cad8d2;
+  border-radius: 12px;
+  color: #376457;
+  background: rgba(255, 255, 255, .64);
+  font-size: 10px;
+  font-weight: 850;
+}
+
+.caregiver-login-benefits strong {
+  display: block;
+  margin-top: 1px;
+  color: #26342f;
+  font-size: 14px;
+}
+
+.caregiver-login-benefits p {
+  margin: 4px 0 0;
+  color: #76807c;
+  font-size: 13px;
+  line-height: 1.55;
+  word-break: keep-all;
+}
+
+.caregiver-login-card {
+  padding: 34px;
+  border: 1px solid rgba(210, 216, 212, .9);
+  border-radius: 28px;
+  background: rgba(255, 255, 255, .94);
+  box-shadow: 0 24px 60px rgba(40, 52, 47, .1), 0 2px 6px rgba(40, 52, 47, .04);
+  backdrop-filter: blur(16px);
+}
+
+.caregiver-login-card-heading {
+  display: flex;
+  align-items: center;
+  gap: 13px;
+}
+
+.caregiver-login-card-mark {
+  display: grid;
+  width: 46px;
+  height: 46px;
+  place-items: center;
+  border-radius: 14px;
+  color: #fff;
+  background: var(--care-login-green);
+  font-size: 12px;
+  font-weight: 850;
+  letter-spacing: .03em;
+}
+
+.caregiver-login-card-heading p {
+  margin: 0 0 2px;
+  color: #548073;
+  font-size: 11px;
+  font-weight: 800;
+  letter-spacing: .08em;
+}
+
+.caregiver-login-card-heading h2 {
+  margin: 0;
+  font-size: 26px;
+  letter-spacing: -.03em;
+}
+
+.caregiver-login-card-copy {
+  margin: 20px 0 26px;
+  color: #6a7470;
+  font-size: 14px;
+  line-height: 1.6;
+  word-break: keep-all;
+}
+
+.caregiver-google-button,
+.caregiver-email-submit {
+  width: 100%;
+  min-height: 52px;
+  border-radius: 13px;
+  font-size: 15px;
+  font-weight: 750;
+  cursor: pointer;
+  transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+}
+
+.caregiver-google-button {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid #d7dcda;
+  color: #28312e;
+  background: #fff;
+}
+
+.caregiver-google-button:hover {
+  border-color: #b7c2be;
+  background: #fafbfa;
+  box-shadow: 0 5px 14px rgba(32, 44, 39, .06);
+}
+
+.caregiver-google-mark {
+  position: absolute;
+  left: 18px;
+  color: #4285f4;
+  font-family: Arial, sans-serif;
+  font-size: 20px;
+  font-weight: 800;
+}
+
+.caregiver-login-divider {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  gap: 12px;
+  margin: 23px 0;
+}
+
+.caregiver-login-divider span {
+  height: 1px;
+  background: #e3e6e4;
+}
+
+.caregiver-login-divider em {
+  color: #959b98;
+  font-size: 11px;
+  font-style: normal;
+}
+
+.caregiver-email-login {
+  display: grid;
+}
+
+.caregiver-email-login > label,
+.caregiver-password-label label {
+  color: #39433f;
+  font-size: 13px;
+  font-weight: 750;
+}
+
+.caregiver-email-login > input,
+.caregiver-password-field {
+  margin-top: 8px;
+}
+
+.caregiver-email-login > input,
+.caregiver-password-field input {
+  width: 100%;
+  min-height: 50px;
+  border: 1px solid #d8ddda;
+  border-radius: 12px;
+  outline: 0;
+  color: #202925;
+  background: #fff;
+  font-size: 15px;
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+
+.caregiver-email-login > input {
+  padding: 0 15px;
+}
+
+.caregiver-email-login > input:focus,
+.caregiver-password-field:focus-within {
+  border-color: #6c9287;
+  box-shadow: 0 0 0 4px rgba(57, 112, 99, .1);
+}
+
+.caregiver-password-label {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-top: 19px;
+}
+
+.caregiver-password-label button,
+.caregiver-signup-prompt button {
+  padding: 2px;
+  border: 0;
+  color: #376a5c;
+  background: transparent;
+  font: inherit;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.caregiver-password-label button {
+  font-size: 12px;
+}
+
+.caregiver-password-field {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  border: 1px solid #d8ddda;
+  border-radius: 12px;
+  background: #fff;
+  transition: border-color .18s ease, box-shadow .18s ease;
+}
+
+.caregiver-password-field input {
+  min-width: 0;
+  padding: 0 8px 0 15px;
+  border: 0;
+  background: transparent;
+}
+
+.caregiver-password-field input:focus {
+  outline: 0;
+}
+
+.caregiver-password-field button {
+  min-width: 56px;
+  min-height: 38px;
+  margin-right: 6px;
+  border: 0;
+  border-radius: 9px;
+  color: #5d6964;
+  background: transparent;
+  font-size: 12px;
+  font-weight: 750;
+  cursor: pointer;
+}
+
+.caregiver-password-field button:hover {
+  background: #f1f4f2;
+}
+
+.caregiver-remember-option {
+  display: inline-flex;
+  width: fit-content;
+  align-items: center;
+  gap: 9px;
+  margin-top: 17px;
+  color: #5e6964;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.caregiver-remember-option input {
+  width: 17px;
+  height: 17px;
+  margin: 0;
+  accent-color: var(--care-login-green);
+}
+
+.caregiver-email-submit {
+  margin-top: 22px;
+  border: 1px solid var(--care-login-green);
+  color: #fff;
+  background: var(--care-login-green);
+  box-shadow: 0 7px 18px rgba(24, 63, 54, .18);
+}
+
+.caregiver-email-submit:hover {
+  transform: translateY(-1px);
+  background: #204e43;
+  box-shadow: 0 10px 23px rgba(24, 63, 54, .22);
+}
+
+.caregiver-login-status {
+  min-height: 0;
+  margin: 0;
+  padding: 0;
+  overflow: hidden;
+  color: #53655f;
+  background: #f1f6f3;
+  font-size: 12px;
+  line-height: 1.55;
+}
+
+.caregiver-login-status.is-visible {
+  min-height: 44px;
+  margin-top: 16px;
+  padding: 11px 13px;
+  border-radius: 10px;
+}
+
+.caregiver-signup-prompt {
+  margin: 22px 0 0;
+  color: #7a827f;
+  font-size: 13px;
+  text-align: center;
+}
+
+.caregiver-signup-prompt button {
+  margin-left: 7px;
+  font-size: 13px;
+}
+
+.caregiver-password-label button:hover,
+.caregiver-signup-prompt button:hover {
+  color: #183f36;
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.caregiver-login-footer {
+  display: flex;
+  width: min(100% - 48px, 1240px);
+  min-height: 62px;
+  align-items: center;
+  justify-content: space-between;
+  gap: 24px;
+  margin: 0 auto;
+  color: #7b8480;
+  font-size: 12px;
+}
+
+.caregiver-login-footer span {
+  color: #40504a;
+  font-weight: 800;
+}
+
+.caregiver-login-footer p {
+  margin: 0;
+}
+
+@media (max-width: 880px) {
+  .caregiver-login-layout {
+    width: min(100% - 32px, 580px);
+    grid-template-columns: 1fr;
+    gap: 38px;
+    padding: 48px 0 60px;
+  }
+
+  .caregiver-login-intro {
+    max-width: none;
+    text-align: center;
+  }
+
+  .caregiver-login-intro h1 br {
+    display: none;
+  }
+
+  .caregiver-login-description {
+    margin-right: auto;
+    margin-left: auto;
+  }
+
+  .caregiver-login-benefits {
+    display: none;
+  }
+
+  .caregiver-login-card {
+    width: min(100%, 430px);
+    justify-self: center;
+  }
+}
+
+@media (max-width: 600px) {
+  .caregiver-login-root {
+    overflow-y: auto;
+  }
+
+  .caregiver-login-header {
+    width: min(100% - 28px, 560px);
+    min-height: 64px;
+  }
+
+  .caregiver-login-header .caregiver-brand {
+    gap: 7px;
+    font-size: 15px;
+  }
+
+  .caregiver-login-header .caregiver-brand-mark {
+    width: 31px;
+    height: 31px;
+  }
+
+  .caregiver-login-header .caregiver-mode-badge {
+    display: none;
+  }
+
+  .caregiver-login-header .caregiver-back-link {
+    max-width: 96px;
+    padding: 7px 4px;
+    font-size: 11px;
+    line-height: 1.25;
+    text-align: right;
+  }
+
+  .caregiver-login-header .caregiver-back-link span {
+    display: none;
+  }
+
+  .caregiver-login-layout {
+    width: min(100% - 24px, 500px);
+    gap: 30px;
+    padding: 34px 0 46px;
+  }
+
+  .caregiver-login-eyebrow {
+    margin-bottom: 13px;
+    font-size: 10px;
+  }
+
+  .caregiver-login-intro h1 {
+    font-size: clamp(31px, 9.5vw, 41px);
+  }
+
+  .caregiver-login-description {
+    margin-top: 17px;
+    font-size: 14px;
+    line-height: 1.65;
+  }
+
+  .caregiver-login-card {
+    padding: 26px 20px;
+    border-radius: 22px;
+  }
+
+  .caregiver-login-card-heading h2 {
+    font-size: 23px;
+  }
+
+  .caregiver-login-card-copy {
+    margin: 17px 0 23px;
+    font-size: 13px;
+  }
+
+  .caregiver-login-footer {
+    width: min(100% - 28px, 560px);
+    min-height: 70px;
+    justify-content: center;
+    text-align: center;
+  }
+
+  .caregiver-login-footer span {
+    display: none;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .caregiver-login-root {
+    animation: none;
+  }
+
+  .caregiver-google-button,
+  .caregiver-email-submit,
+  .caregiver-email-login > input,
+  .caregiver-password-field {
+    transition: none;
+  }
+}
