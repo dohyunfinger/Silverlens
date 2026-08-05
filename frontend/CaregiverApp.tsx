@@ -9,6 +9,7 @@ import {
   useState,
 } from "react";
 import ReactMarkdown from "react-markdown";
+import type { CaregiverSessionUser } from "../backend/services/caregiverAuth";
 import { readStore } from "./localStore";
 
 type RiskLevel = "danger" | "caution" | "safe";
@@ -132,7 +133,12 @@ function StopIcon() {
   );
 }
 
-export default function CaregiverApp() {
+type CaregiverAppProps = {
+  caregiver?: CaregiverSessionUser;
+  onLogout?: () => void | Promise<void>;
+};
+
+export default function CaregiverApp({ caregiver, onLogout }: CaregiverAppProps) {
   const [question, setQuestion] = useState("");
   const [turns, setTurns] = useState<CaregiverTurn[]>([]);
   const [profile, setProfile] = useState<CaregiverProfile>(EMPTY_PROFILE);
@@ -421,6 +427,14 @@ export default function CaregiverApp() {
           <span className="caregiver-mode-badge">돌봄이</span>
         </Link>
         <div className="caregiver-header-actions">
+          {caregiver && (
+            <div className="caregiver-account">
+              <span title={caregiver.email}>{caregiver.name}</span>
+              <button type="button" onClick={() => void onLogout?.()}>
+                로그아웃
+              </button>
+            </div>
+          )}
           {hasConversation && (
             <button
               type="button"
