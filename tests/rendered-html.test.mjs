@@ -32,7 +32,7 @@ test("renders development preview metadata", async () => {
   assert.match(await response.text(), developmentPreviewMeta);
 });
 
-test("renders the caregiver entry link and dedicated caregiver screen", async () => {
+test("renders the caregiver entry link and authentication screens", async () => {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("caregiver-test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
@@ -67,7 +67,21 @@ test("renders the caregiver entry link and dedicated caregiver screen", async ()
   const caregiverHtml = await caregiverResponse.text();
 
   assert.equal(caregiverResponse.status, 200);
-  assert.match(caregiverHtml, /오늘 어떤 돌봄이 필요하신가요\?/);
-  assert.match(caregiverHtml, /돌봄에 관해 무엇이든 물어보세요/);
+  assert.match(caregiverHtml, /Google로 계속하기/);
+  assert.match(caregiverHtml, /href=["']\/caregiver\/signup["']/);
   assert.match(caregiverHtml, /시니어 화면으로 돌아가기/);
+
+  const signupResponse = await worker.fetch(
+    new Request("http://localhost/caregiver/signup", {
+      headers: { accept: "text/html" },
+    }),
+    environment,
+    context,
+  );
+  const signupHtml = await signupResponse.text();
+
+  assert.equal(signupResponse.status, 200);
+  assert.match(signupHtml, /돌봄이 계정을 만든 뒤/);
+  assert.match(signupHtml, /개인정보 수집 및 이용에 동의합니다/);
+  assert.match(signupHtml, /로그인으로 돌아가기/);
 });
