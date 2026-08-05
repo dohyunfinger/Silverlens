@@ -1,0 +1,20 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SilverLens">
+  <title>SilverLens — 돋보기 렌즈 안의 밥그릇</title>
+  <!--
+    김을 두 줄로 두면 눈처럼 읽혀 그릇이 입이 된다.
+    그래서 김은 한 줄만, 가운데에서 비켜 세웠다.
+    그릇은 테두리 선을 넣고 얕게 그려 반원이 아니라 그릇으로 보이게 했다.
+  -->
+  <circle cx="27" cy="27" r="22" fill="#f6c9a5" opacity="0.35"/>
+  <path d="M41 41 L54 54" stroke="#173f35" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="27" cy="27" r="17" fill="#e7f2ec"/>
+  <!-- 김 한 줄 -->
+  <path d="M30.5 21.5 C28.8 19 32 17.4 30.3 14.6" stroke="#317463" stroke-width="1.9" stroke-linecap="round"/>
+  <!-- 밥 (그릇 위로 봉긋하게) -->
+  <path d="M18.6 27 C19.8 22.4 23.2 20.6 27 20.6 C30.8 20.6 34.2 22.4 35.4 27 Z" fill="#fff5df"/>
+  <!-- 그릇 몸통 -->
+  <path d="M16.6 27 C17.6 33.6 21.6 37.4 27 37.4 C32.4 37.4 36.4 33.6 37.4 27 Z" fill="#235b4c"/>
+  <!-- 그릇 아가리. 이 선 하나가 그릇이라는 신호를 만든다. -->
+  <rect x="15.4" y="25.4" width="23.2" height="3.4" rx="1.7" fill="#173f35"/>
+  <circle cx="27" cy="27" r="17" stroke="#173f35" stroke-width="5"/>
+</svg>

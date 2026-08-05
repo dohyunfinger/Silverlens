@@ -5,29 +5,70 @@
     "labels": {
       "ko-KR": "복숭아",
       "en-US": "Peach",
-      "zh-CN": "桃"
+      "ja-JP": "桃"
     },
-    "aliases": ["복숭아 알레르기", "peach allergy", "桃子", "桃过敏"]
+    "aliases": [
+      "桃アレルギー",
+      "桃",
+      "peach allergy",
+      "peach",
+      "ももアレルギー",
+      "もも"
+    ]
   },
   {
-    "id": "allergy_peanut",
+    "id": "allergy_kiwi",
     "kind": "allergy",
     "labels": {
-      "ko-KR": "땅콩",
-      "en-US": "Peanut",
-      "zh-CN": "花生"
+      "ko-KR": "키위",
+      "en-US": "Kiwi",
+      "ja-JP": "キウイ"
     },
-    "aliases": ["땅콩 알레르기", "peanut allergy", "花生过敏"]
+    "aliases": [
+      "キウイアレルギー",
+      "キウイ",
+      "kiwi allergy",
+      "kiwi"
+    ]
   },
   {
-    "id": "allergy_tree_nuts",
+    "id": "allergy_nuts_and_peanuts",
     "kind": "allergy",
     "labels": {
-      "ko-KR": "견과류",
-      "en-US": "Tree nuts",
-      "zh-CN": "坚果"
+      "ko-KR": "견과류 및 땅콩",
+      "en-US": "Tree nuts and Peanuts",
+      "ja-JP": "木の実・ピーナッツ"
     },
-    "aliases": ["견과 알레르기", "tree nut allergy", "坚果过敏"]
+    "aliases": [
+      "ピーナッツアレルギー",
+      "ピーナッツ",
+      "peanut allergy",
+      "peanut",
+      "落花生",
+      "木の実アレルギー",
+      "木の実",
+      "tree nut allergy",
+      "tree nuts",
+      "ナッツアレルギー",
+      "견과류",
+      "땅콩"
+    ]
+  },
+  {
+    "id": "allergy_walnut",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "호두",
+      "en-US": "Walnut",
+      "ja-JP": "くるみ"
+    },
+    "aliases": [
+      "くるみアレルギー",
+      "くるみ",
+      "胡桃",
+      "walnut allergy",
+      "walnut"
+    ]
   },
   {
     "id": "allergy_milk",
@@ -35,9 +76,16 @@
     "labels": {
       "ko-KR": "우유",
       "en-US": "Milk",
-      "zh-CN": "牛奶"
+      "ja-JP": "牛乳"
     },
-    "aliases": ["우유 알레르기", "milk allergy", "牛奶过敏"]
+    "aliases": [
+      "牛乳アレルギー",
+      "牛乳",
+      "milk allergy",
+      "milk",
+      "ミルクアレルギー",
+      "ミルク"
+    ]
   },
   {
     "id": "allergy_egg",
@@ -45,9 +93,16 @@
     "labels": {
       "ko-KR": "달걀",
       "en-US": "Egg",
-      "zh-CN": "鸡蛋"
+      "ja-JP": "卵"
     },
-    "aliases": ["계란", "달걀 알레르기", "egg allergy", "鸡蛋过敏"]
+    "aliases": [
+      "卵アレルギー",
+      "卵",
+      "egg allergy",
+      "egg",
+      "たまごアレルギー",
+      "たまご"
+    ]
   },
   {
     "id": "allergy_wheat",
@@ -55,9 +110,30 @@
     "labels": {
       "ko-KR": "밀",
       "en-US": "Wheat",
-      "zh-CN": "小麦"
+      "ja-JP": "小麦"
     },
-    "aliases": ["밀 알레르기", "wheat allergy", "小麦过敏"]
+    "aliases": [
+      "小麦アレルギー",
+      "小麦",
+      "wheat allergy",
+      "wheat"
+    ]
+  },
+  {
+    "id": "allergy_buckwheat",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "메밀",
+      "en-US": "Buckwheat",
+      "ja-JP": "そば"
+    },
+    "aliases": [
+      "そばアレルギー",
+      "そば",
+      "蕎麦",
+      "buckwheat allergy",
+      "buckwheat"
+    ]
   },
   {
     "id": "allergy_soy",
@@ -65,9 +141,16 @@
     "labels": {
       "ko-KR": "대두",
       "en-US": "Soy",
-      "zh-CN": "大豆"
+      "ja-JP": "大豆"
     },
-    "aliases": ["콩 알레르기", "대두 알레르기", "soy allergy", "大豆过敏"]
+    "aliases": [
+      "大豆アレルギー",
+      "大豆",
+      "豆アレルギー",
+      "豆",
+      "soy allergy",
+      "soy"
+    ]
   },
   {
     "id": "allergy_fish",
@@ -75,19 +158,33 @@
     "labels": {
       "ko-KR": "생선",
       "en-US": "Fish",
-      "zh-CN": "鱼类"
+      "ja-JP": "魚"
     },
-    "aliases": ["생선 알레르기", "fish allergy", "鱼类过敏"]
+    "aliases": [
+      "魚アレルギー",
+      "魚",
+      "fish allergy",
+      "fish",
+      "さかな"
+    ]
   },
   {
     "id": "allergy_shellfish",
     "kind": "allergy",
     "labels": {
-      "ko-KR": "갑각류",
+      "ko-KR": "갑각류 및 해산물",
       "en-US": "Shellfish",
-      "zh-CN": "甲壳类"
+      "ja-JP": "甲殻類"
     },
-    "aliases": ["새우 알레르기", "게 알레르기", "shellfish allergy", "甲壳类过敏"]
+    "aliases": [
+      "甲殻類アレルギー",
+      "甲殻類",
+      "海鮮アレルギー",
+      "貝アレルギー",
+      "shellfish allergy",
+      "shellfish",
+      "海鮮"
+    ]
   },
   {
     "id": "allergy_sesame",
@@ -95,29 +192,116 @@
     "labels": {
       "ko-KR": "참깨",
       "en-US": "Sesame",
-      "zh-CN": "芝麻"
+      "ja-JP": "ごま"
     },
-    "aliases": ["깨 알레르기", "참깨 알레르기", "sesame allergy", "芝麻过敏"]
+    "aliases": [
+      "ごまアレルギー",
+      "ごま",
+      "胡麻アレルギー",
+      "胡麻",
+      "sesame allergy",
+      "sesame"
+    ]
   },
   {
-    "id": "condition_dementia",
-    "kind": "condition",
+    "id": "allergy_beef",
+    "kind": "allergy",
     "labels": {
-      "ko-KR": "치매",
-      "en-US": "Dementia",
-      "zh-CN": "痴呆症"
+      "ko-KR": "쇠고기",
+      "en-US": "Beef",
+      "ja-JP": "牛肉"
     },
-    "aliases": ["dementia", "老年痴呆症", "노인성 치매"]
+    "aliases": [
+      "牛肉アレルギー",
+      "牛肉",
+      "beef allergy",
+      "beef",
+      "소고기"
+    ]
   },
   {
-    "id": "condition_alzheimers",
+    "id": "allergy_pork",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "돼지고기",
+      "en-US": "Pork",
+      "ja-JP": "豚肉"
+    },
+    "aliases": [
+      "豚肉アレルギー",
+      "豚肉",
+      "pork allergy",
+      "pork"
+    ]
+  },
+  {
+    "id": "allergy_chicken",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "닭고기",
+      "en-US": "Chicken",
+      "ja-JP": "鶏肉"
+    },
+    "aliases": [
+      "鶏肉アレルギー",
+      "鶏肉",
+      "chicken allergy",
+      "chicken"
+    ]
+  },
+  {
+    "id": "allergy_sulfites",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "아황산류 (보존제)",
+      "en-US": "Sulfites",
+      "ja-JP": "亜硫酸塩"
+    },
+    "aliases": [
+      "亜硫酸塩",
+      "亜硫酸塩アレルギー",
+      "sulfite allergy",
+      "sulfites",
+      "아황산염"
+    ]
+  },
+  {
+    "id": "allergy_medication",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "약물 알레르기",
+      "en-US": "Drug/Medication allergy",
+      "ja-JP": "薬物アレルギー"
+    },
+    "aliases": [
+      "薬物アレルギー",
+      "薬アレルギー",
+      "drug allergy",
+      "medication allergy",
+      "약 알레르기",
+      "항생제 알레르기"
+    ]
+  },
+  {
+    "id": "condition_dementia_alzheimers",
     "kind": "condition",
     "labels": {
-      "ko-KR": "알츠하이머병",
-      "en-US": "Alzheimer's disease",
-      "zh-CN": "阿尔茨海默病"
+      "ko-KR": "치매 / 알츠하이머병",
+      "en-US": "Dementia / Alzheimer's disease",
+      "ja-JP": "認知症・アルツハイマー病"
     },
-    "aliases": ["알츠하이머", "alzheimer", "alzheimer's", "阿尔茨海默症"]
+    "aliases": [
+      "認知症",
+      "dementia",
+      "アルツハイマー",
+      "アルツハイマー病",
+      "alzheimer",
+      "alzheimer's",
+      "Alzheimer disease",
+      "アルツハイマー型認知症",
+      "치매",
+      "알츠하이머"
+    ]
   },
   {
     "id": "condition_diabetes",
@@ -125,9 +309,14 @@
     "labels": {
       "ko-KR": "당뇨병",
       "en-US": "Diabetes",
-      "zh-CN": "糖尿病"
+      "ja-JP": "糖尿病"
     },
-    "aliases": ["당뇨", "diabetes mellitus", "糖尿病"]
+    "aliases": [
+      "糖尿病",
+      "diabetes",
+      "diabetes mellitus",
+      "당뇨"
+    ]
   },
   {
     "id": "condition_hypertension",
@@ -135,9 +324,132 @@
     "labels": {
       "ko-KR": "고혈압",
       "en-US": "Hypertension",
-      "zh-CN": "高血压"
+      "ja-JP": "高血圧"
     },
-    "aliases": ["high blood pressure", "高血压"]
+    "aliases": [
+      "高血圧",
+      "high blood pressure",
+      "hypertension"
+    ]
+  },
+  {
+    "id": "condition_hyperlipidemia",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "고지혈증 (이상지질혈증)",
+      "en-US": "Hyperlipidemia",
+      "ja-JP": "脂質異常症"
+    },
+    "aliases": [
+      "脂質異常症",
+      "高脂血症",
+      "hyperlipidemia",
+      "high cholesterol",
+      "이상지질혈증"
+    ]
+  },
+  {
+    "id": "condition_osteoporosis",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "골다공증",
+      "en-US": "Osteoporosis",
+      "ja-JP": "骨粗鬆症"
+    },
+    "aliases": [
+      "骨粗鬆症",
+      "こつそしょうしょう",
+      "osteoporosis"
+    ]
+  },
+  {
+    "id": "condition_osteoarthritis",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "퇴행성 관절염",
+      "en-US": "Osteoarthritis",
+      "ja-JP": "変形性関節症"
+    },
+    "aliases": [
+      "変形性関節症",
+      "関節炎",
+      "osteoarthritis",
+      "arthritis",
+      "관절염"
+    ]
+  },
+  {
+    "id": "condition_stroke",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "뇌졸중 / 뇌혈관 질환",
+      "en-US": "Stroke",
+      "ja-JP": "脳卒中"
+    },
+    "aliases": [
+      "脳卒中",
+      "脳梗塞",
+      "stroke",
+      "cerebrovascular disease",
+      "뇌경색",
+      "뇌출혈"
+    ]
+  },
+  {
+    "id": "condition_parkinsons",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "파킨슨병",
+      "en-US": "Parkinson's disease",
+      "ja-JP": "パーキンソン病"
+    },
+    "aliases": [
+      "パーキンソン病",
+      "パーキンソン",
+      "parkinson",
+      "parkinson's disease"
+    ]
+  },
+  {
+    "id": "condition_cataract",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "백내장",
+      "en-US": "Cataract",
+      "ja-JP": "白内障"
+    },
+    "aliases": [
+      "白内障",
+      "cataract"
+    ]
+  },
+  {
+    "id": "condition_glaucoma",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "녹내장",
+      "en-US": "Glaucoma",
+      "ja-JP": "緑内障"
+    },
+    "aliases": [
+      "緑内障",
+      "glaucoma"
+    ]
+  },
+  {
+    "id": "condition_benign_prostatic_hyperplasia",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "전립선 비대증",
+      "en-US": "Benign prostatic hyperplasia",
+      "ja-JP": "前立腺肥大症"
+    },
+    "aliases": [
+      "前立腺肥大症",
+      "前立腺肥大",
+      "BPH",
+      "enlarged prostate"
+    ]
   },
   {
     "id": "condition_kidney_disease",
@@ -145,9 +457,14 @@
     "labels": {
       "ko-KR": "신장질환",
       "en-US": "Kidney disease",
-      "zh-CN": "肾脏疾病"
+      "ja-JP": "腎臓病"
     },
-    "aliases": ["콩팥병", "신장병", "renal disease", "肾病"]
+    "aliases": [
+      "腎臓病",
+      "renal disease",
+      "kidney disease",
+      "신부전"
+    ]
   },
   {
     "id": "condition_heart_disease",
@@ -155,9 +472,13 @@
     "labels": {
       "ko-KR": "심장질환",
       "en-US": "Heart disease",
-      "zh-CN": "心脏病"
+      "ja-JP": "心臓病"
     },
-    "aliases": ["심장병", "cardiovascular disease", "心脏疾病"]
+    "aliases": [
+      "心臓病",
+      "cardiovascular disease",
+      "heart disease"
+    ]
   },
   {
     "id": "condition_gout",
@@ -165,9 +486,12 @@
     "labels": {
       "ko-KR": "통풍",
       "en-US": "Gout",
-      "zh-CN": "痛风"
+      "ja-JP": "痛風"
     },
-    "aliases": ["gout", "痛风"]
+    "aliases": [
+      "痛風",
+      "gout"
+    ]
   },
   {
     "id": "condition_gastric_ulcer",
@@ -175,9 +499,13 @@
     "labels": {
       "ko-KR": "위궤양",
       "en-US": "Stomach ulcer",
-      "zh-CN": "胃溃疡"
+      "ja-JP": "胃潰瘍"
     },
-    "aliases": ["gastric ulcer", "peptic ulcer", "胃溃疡"]
+    "aliases": [
+      "胃潰瘍",
+      "gastric ulcer",
+      "peptic ulcer"
+    ]
   },
   {
     "id": "condition_gerd",
@@ -185,9 +513,14 @@
     "labels": {
       "ko-KR": "위식도 역류질환",
       "en-US": "Gastroesophageal reflux disease",
-      "zh-CN": "胃食管反流病"
+      "ja-JP": "逆流性食道炎"
     },
-    "aliases": ["역류성 식도염", "GERD", "acid reflux", "胃食管反流"]
+    "aliases": [
+      "逆流性食道炎",
+      "胃食道逆流症",
+      "GERD",
+      "acid reflux"
+    ]
   },
   {
     "id": "condition_liver_disease",
@@ -195,8 +528,1128 @@
     "labels": {
       "ko-KR": "간질환",
       "en-US": "Liver disease",
-      "zh-CN": "肝病"
+      "ja-JP": "肝疾患"
     },
-    "aliases": ["간질환", "hepatic disease", "肝脏疾病"]
+    "aliases": [
+      "肝疾患",
+      "hepatic disease",
+      "liver disease"
+    ]
+  },
+  {
+    "id": "allergy_shrimp",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "새우",
+      "en-US": "Shrimp",
+      "ja-JP": "えび"
+    },
+    "aliases": [
+      "새우알레르기",
+      "대하",
+      "shrimp",
+      "prawn",
+      "shrimp allergy",
+      "えび",
+      "海老",
+      "エビアレルギー"
+    ]
+  },
+  {
+    "id": "allergy_crab",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "게",
+      "en-US": "Crab",
+      "ja-JP": "かに"
+    },
+    "aliases": [
+      "꽃게",
+      "대게",
+      "게알레르기",
+      "crab",
+      "crab allergy",
+      "かに",
+      "蟹",
+      "カニアレルギー"
+    ]
+  },
+  {
+    "id": "allergy_squid",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "오징어",
+      "en-US": "Squid",
+      "ja-JP": "いか"
+    },
+    "aliases": [
+      "한치",
+      "오징어알레르기",
+      "squid",
+      "calamari",
+      "いか",
+      "烏賊",
+      "イカアレルギー"
+    ]
+  },
+  {
+    "id": "allergy_octopus",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "문어 · 낙지",
+      "en-US": "Octopus",
+      "ja-JP": "たこ"
+    },
+    "aliases": [
+      "문어",
+      "낙지",
+      "쭈꾸미",
+      "주꾸미",
+      "octopus",
+      "たこ",
+      "蛸",
+      "タコアレルギー"
+    ]
+  },
+  {
+    "id": "allergy_clam",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "조개류",
+      "en-US": "Clams",
+      "ja-JP": "貝類"
+    },
+    "aliases": [
+      "조개",
+      "바지락",
+      "가리비",
+      "꼬막",
+      "clam",
+      "clams",
+      "scallop",
+      "貝",
+      "貝類",
+      "あさり",
+      "ホタテ"
+    ]
+  },
+  {
+    "id": "allergy_oyster",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "굴",
+      "en-US": "Oyster",
+      "ja-JP": "牡蠣"
+    },
+    "aliases": [
+      "생굴",
+      "굴알레르기",
+      "oyster",
+      "oysters",
+      "牡蠣",
+      "かき",
+      "カキアレルギー"
+    ]
+  },
+  {
+    "id": "allergy_abalone",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "전복",
+      "en-US": "Abalone",
+      "ja-JP": "あわび"
+    },
+    "aliases": [
+      "전복",
+      "abalone",
+      "あわび",
+      "鮑"
+    ]
+  },
+  {
+    "id": "allergy_mussel",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "홍합",
+      "en-US": "Mussel",
+      "ja-JP": "ムール貝"
+    },
+    "aliases": [
+      "홍합",
+      "섭",
+      "mussel",
+      "mussels",
+      "ムール貝",
+      "ムラサキイガイ"
+    ]
+  },
+  {
+    "id": "allergy_mackerel",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "고등어",
+      "en-US": "Mackerel",
+      "ja-JP": "さば"
+    },
+    "aliases": [
+      "고등어",
+      "mackerel",
+      "さば",
+      "鯖",
+      "サバアレルギー"
+    ]
+  },
+  {
+    "id": "allergy_tuna",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "참치",
+      "en-US": "Tuna",
+      "ja-JP": "まぐろ"
+    },
+    "aliases": [
+      "참치",
+      "다랑어",
+      "tuna",
+      "まぐろ",
+      "鮪"
+    ]
+  },
+  {
+    "id": "allergy_salmon",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "연어",
+      "en-US": "Salmon",
+      "ja-JP": "さけ"
+    },
+    "aliases": [
+      "연어",
+      "salmon",
+      "さけ",
+      "鮭",
+      "サーモン"
+    ]
+  },
+  {
+    "id": "allergy_seaweed",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "해조류 (김 · 미역)",
+      "en-US": "Seaweed",
+      "ja-JP": "海藻"
+    },
+    "aliases": [
+      "김",
+      "미역",
+      "다시마",
+      "파래",
+      "해조류",
+      "seaweed",
+      "kelp",
+      "laver",
+      "海藻",
+      "のり",
+      "わかめ",
+      "昆布"
+    ]
+  },
+  {
+    "id": "allergy_lactose_intolerance",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "유당 불내증",
+      "en-US": "Lactose intolerance",
+      "ja-JP": "乳糖不耐症"
+    },
+    "aliases": [
+      "유당불내증",
+      "락토스",
+      "우유 소화 못함",
+      "lactose",
+      "lactose intolerance",
+      "乳糖不耐症",
+      "乳糖"
+    ]
+  },
+  {
+    "id": "allergy_gluten",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "글루텐",
+      "en-US": "Gluten",
+      "ja-JP": "グルテン"
+    },
+    "aliases": [
+      "글루텐",
+      "gluten",
+      "gluten intolerance",
+      "グルテン",
+      "グルテンアレルギー"
+    ]
+  },
+  {
+    "id": "allergy_tomato",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "토마토",
+      "en-US": "Tomato",
+      "ja-JP": "トマト"
+    },
+    "aliases": [
+      "토마토",
+      "tomato",
+      "トマト",
+      "トマトアレルギー"
+    ]
+  },
+  {
+    "id": "allergy_apple",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "사과",
+      "en-US": "Apple",
+      "ja-JP": "りんご"
+    },
+    "aliases": [
+      "사과",
+      "apple",
+      "りんご",
+      "林檎"
+    ]
+  },
+  {
+    "id": "allergy_banana",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "바나나",
+      "en-US": "Banana",
+      "ja-JP": "バナナ"
+    },
+    "aliases": [
+      "바나나",
+      "banana",
+      "バナナ"
+    ]
+  },
+  {
+    "id": "allergy_strawberry",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "딸기",
+      "en-US": "Strawberry",
+      "ja-JP": "いちご"
+    },
+    "aliases": [
+      "딸기",
+      "strawberry",
+      "いちご",
+      "苺"
+    ]
+  },
+  {
+    "id": "allergy_mango",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "망고",
+      "en-US": "Mango",
+      "ja-JP": "マンゴー"
+    },
+    "aliases": [
+      "망고",
+      "mango",
+      "マンゴー"
+    ]
+  },
+  {
+    "id": "allergy_pineapple",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "파인애플",
+      "en-US": "Pineapple",
+      "ja-JP": "パイナップル"
+    },
+    "aliases": [
+      "파인애플",
+      "pineapple",
+      "パイナップル"
+    ]
+  },
+  {
+    "id": "allergy_avocado",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "아보카도",
+      "en-US": "Avocado",
+      "ja-JP": "アボカド"
+    },
+    "aliases": [
+      "아보카도",
+      "avocado",
+      "アボカド"
+    ]
+  },
+  {
+    "id": "allergy_almond",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "아몬드",
+      "en-US": "Almond",
+      "ja-JP": "アーモンド"
+    },
+    "aliases": [
+      "아몬드",
+      "almond",
+      "アーモンド"
+    ]
+  },
+  {
+    "id": "allergy_pine_nut",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "잣",
+      "en-US": "Pine nut",
+      "ja-JP": "松の実"
+    },
+    "aliases": [
+      "잣",
+      "pine nut",
+      "松の実"
+    ]
+  },
+  {
+    "id": "allergy_mushroom",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "버섯",
+      "en-US": "Mushroom",
+      "ja-JP": "きのこ"
+    },
+    "aliases": [
+      "버섯",
+      "송이",
+      "mushroom",
+      "きのこ",
+      "茸"
+    ]
+  },
+  {
+    "id": "allergy_celery",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "셀러리",
+      "en-US": "Celery",
+      "ja-JP": "セロリ"
+    },
+    "aliases": [
+      "셀러리",
+      "celery",
+      "セロリ"
+    ]
+  },
+  {
+    "id": "allergy_garlic",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "마늘 · 양파",
+      "en-US": "Garlic and onion",
+      "ja-JP": "にんにく・玉ねぎ"
+    },
+    "aliases": [
+      "마늘",
+      "양파",
+      "garlic",
+      "onion",
+      "にんにく",
+      "玉ねぎ"
+    ]
+  },
+  {
+    "id": "allergy_alcohol",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "알코올 (술)",
+      "en-US": "Alcohol",
+      "ja-JP": "アルコール"
+    },
+    "aliases": [
+      "알코올",
+      "술",
+      "주류",
+      "alcohol",
+      "アルコール",
+      "お酒"
+    ]
+  },
+  {
+    "id": "allergy_caffeine",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "카페인 (커피)",
+      "en-US": "Caffeine",
+      "ja-JP": "カフェイン"
+    },
+    "aliases": [
+      "카페인",
+      "커피",
+      "caffeine",
+      "coffee",
+      "カフェイン",
+      "コーヒー"
+    ]
+  },
+  {
+    "id": "allergy_msg",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "MSG (조미료)",
+      "en-US": "MSG",
+      "ja-JP": "うま味調味料 (MSG)"
+    },
+    "aliases": [
+      "msg",
+      "글루탐산나트륨",
+      "미원",
+      "조미료",
+      "monosodium glutamate",
+      "グルタミン酸ナトリウム"
+    ]
+  },
+  {
+    "id": "condition_asthma",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "천식",
+      "en-US": "Asthma",
+      "ja-JP": "喘息"
+    },
+    "aliases": [
+      "천식",
+      "asthma",
+      "喘息",
+      "ぜんそく"
+    ]
+  },
+  {
+    "id": "condition_copd",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "만성폐쇄성폐질환 (COPD)",
+      "en-US": "COPD",
+      "ja-JP": "COPD (慢性閉塞性肺疾患)"
+    },
+    "aliases": [
+      "copd",
+      "폐질환",
+      "만성폐쇄성폐질환",
+      "chronic obstructive pulmonary disease",
+      "慢性閉塞性肺疾患"
+    ]
+  },
+  {
+    "id": "condition_anemia",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "빈혈",
+      "en-US": "Anemia",
+      "ja-JP": "貧血"
+    },
+    "aliases": [
+      "빈혈",
+      "철분부족",
+      "anemia",
+      "anaemia",
+      "貧血"
+    ]
+  },
+  {
+    "id": "condition_hypothyroidism",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "갑상선 기능저하증",
+      "en-US": "Hypothyroidism",
+      "ja-JP": "甲状腺機能低下症"
+    },
+    "aliases": [
+      "갑상선저하",
+      "갑상선 기능저하",
+      "hypothyroidism",
+      "甲状腺機能低下症"
+    ]
+  },
+  {
+    "id": "condition_hyperthyroidism",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "갑상선 기능항진증",
+      "en-US": "Hyperthyroidism",
+      "ja-JP": "甲状腺機能亢進症"
+    },
+    "aliases": [
+      "갑상선항진",
+      "갑상선 기능항진",
+      "hyperthyroidism",
+      "甲状腺機能亢進症"
+    ]
+  },
+  {
+    "id": "condition_anticoagulant",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "항응고제 (와파린) 복용",
+      "en-US": "Taking anticoagulants (warfarin)",
+      "ja-JP": "抗凝固薬 (ワルファリン) 服用"
+    },
+    "aliases": [
+      "와파린",
+      "항응고제",
+      "피 묽게 하는 약",
+      "warfarin",
+      "anticoagulant",
+      "ワルファリン",
+      "抗凝固薬"
+    ]
+  },
+  {
+    "id": "condition_dysphagia",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "삼킴 곤란 (연하장애)",
+      "en-US": "Swallowing difficulty",
+      "ja-JP": "嚥下障害"
+    },
+    "aliases": [
+      "연하장애",
+      "삼킴장애",
+      "사레",
+      "dysphagia",
+      "swallowing difficulty",
+      "嚥下障害"
+    ]
+  },
+  {
+    "id": "condition_denture",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "치아 상실 · 틀니",
+      "en-US": "Tooth loss / Dentures",
+      "ja-JP": "歯の欠損・入れ歯"
+    },
+    "aliases": [
+      "틀니",
+      "치아상실",
+      "임플란트",
+      "denture",
+      "dentures",
+      "入れ歯",
+      "義歯"
+    ]
+  },
+  {
+    "id": "condition_sarcopenia",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "근감소증",
+      "en-US": "Sarcopenia",
+      "ja-JP": "サルコペニア"
+    },
+    "aliases": [
+      "근감소증",
+      "근육감소",
+      "sarcopenia",
+      "サルコペニア",
+      "筋肉減少"
+    ]
+  },
+  {
+    "id": "condition_malnutrition",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "영양 부족 · 저체중",
+      "en-US": "Malnutrition / Underweight",
+      "ja-JP": "低栄養・低体重"
+    },
+    "aliases": [
+      "영양부족",
+      "저체중",
+      "malnutrition",
+      "underweight",
+      "低栄養",
+      "低体重"
+    ]
+  },
+  {
+    "id": "condition_obesity",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "비만",
+      "en-US": "Obesity",
+      "ja-JP": "肥満"
+    },
+    "aliases": [
+      "비만",
+      "과체중",
+      "obesity",
+      "overweight",
+      "肥満"
+    ]
+  },
+  {
+    "id": "condition_constipation",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "변비",
+      "en-US": "Constipation",
+      "ja-JP": "便秘"
+    },
+    "aliases": [
+      "변비",
+      "constipation",
+      "便秘"
+    ]
+  },
+  {
+    "id": "condition_ibs",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "과민성 대장증후군",
+      "en-US": "Irritable bowel syndrome",
+      "ja-JP": "過敏性腸症候群"
+    },
+    "aliases": [
+      "과민성대장",
+      "장이 예민",
+      "ibs",
+      "irritable bowel syndrome",
+      "過敏性腸症候群"
+    ]
+  },
+  {
+    "id": "condition_pancreatitis",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "췌장염",
+      "en-US": "Pancreatitis",
+      "ja-JP": "膵炎"
+    },
+    "aliases": [
+      "췌장염",
+      "pancreatitis",
+      "膵炎"
+    ]
+  },
+  {
+    "id": "condition_gallstone",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "담석증 · 담낭질환",
+      "en-US": "Gallstones",
+      "ja-JP": "胆石症"
+    },
+    "aliases": [
+      "담석",
+      "담낭",
+      "gallstone",
+      "gallstones",
+      "胆石症"
+    ]
+  },
+  {
+    "id": "condition_atrial_fibrillation",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "부정맥 · 심방세동",
+      "en-US": "Arrhythmia / Atrial fibrillation",
+      "ja-JP": "不整脈・心房細動"
+    },
+    "aliases": [
+      "부정맥",
+      "심방세동",
+      "arrhythmia",
+      "atrial fibrillation",
+      "不整脈",
+      "心房細動"
+    ]
+  },
+  {
+    "id": "condition_heart_failure",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "심부전",
+      "en-US": "Heart failure",
+      "ja-JP": "心不全"
+    },
+    "aliases": [
+      "심부전",
+      "heart failure",
+      "心不全"
+    ]
+  },
+  {
+    "id": "condition_dialysis",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "투석 치료 중",
+      "en-US": "On dialysis",
+      "ja-JP": "透析中"
+    },
+    "aliases": [
+      "투석",
+      "혈액투석",
+      "복막투석",
+      "dialysis",
+      "透析"
+    ]
+  },
+  {
+    "id": "condition_cancer_treatment",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "암 치료 중",
+      "en-US": "Cancer treatment",
+      "ja-JP": "がん治療中"
+    },
+    "aliases": [
+      "암",
+      "항암치료",
+      "방사선치료",
+      "cancer",
+      "chemotherapy",
+      "がん",
+      "抗がん剤"
+    ]
+  },
+  {
+    "id": "condition_macular_degeneration",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "노인성 황반변성",
+      "en-US": "Macular degeneration",
+      "ja-JP": "加齢性マクラ変性"
+    },
+    "aliases": [
+      "황반변성",
+      "macular degeneration",
+      "AMD",
+      "加齢黄斑変性"
+    ]
+  },
+  {
+    "id": "condition_hearing_loss",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "난청",
+      "en-US": "Hearing loss",
+      "ja-JP": "難聴"
+    },
+    "aliases": [
+      "난청",
+      "귀가 안 들림",
+      "보청기",
+      "hearing loss",
+      "難聴"
+    ]
+  },
+  {
+    "id": "condition_insomnia",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "불면증",
+      "en-US": "Insomnia",
+      "ja-JP": "不眠症"
+    },
+    "aliases": [
+      "불면증",
+      "잠이 안 옴",
+      "insomnia",
+      "不眠症"
+    ]
+  },
+  {
+    "id": "condition_depression",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "우울증",
+      "en-US": "Depression",
+      "ja-JP": "うつ病"
+    },
+    "aliases": [
+      "우울증",
+      "우울",
+      "depression",
+      "うつ病"
+    ]
+  },
+  {
+    "id": "condition_incontinence",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "요실금",
+      "en-US": "Urinary incontinence",
+      "ja-JP": "尿失禁"
+    },
+    "aliases": [
+      "요실금",
+      "소변 조절",
+      "incontinence",
+      "尿失禁"
+    ]
+  },
+  {
+    "id": "condition_menopause",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "폐경 전후 · 폐경 후",
+      "en-US": "Menopause / Postmenopause",
+      "ja-JP": "更年期・閉経後"
+    },
+    "aliases": [
+      "폐경",
+      "완경",
+      "갱년기",
+      "폐경기",
+      "폐경 후",
+      "폐경 및 여성의 기타 중년기 장애",
+      "menopause",
+      "perimenopause",
+      "postmenopause",
+      "climacteric",
+      "閉経",
+      "更年期",
+      "閉経後"
+    ]
+  },
+  {
+    "id": "condition_prediabetes",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "당뇨 전단계 · 혈당 상승",
+      "en-US": "Prediabetes / Elevated blood sugar",
+      "ja-JP": "境界型糖尿病・血糖値上昇"
+    },
+    "aliases": [
+      "당뇨 전단계",
+      "당뇨병 전단계",
+      "혈당 상승",
+      "혈당치 상승",
+      "공복혈당장애",
+      "내당능장애",
+      "prediabetes",
+      "impaired fasting glucose",
+      "impaired glucose tolerance",
+      "境界型糖尿病",
+      "糖尿病予備群",
+      "血糖値上昇"
+    ]
+  },
+  {
+    "id": "condition_coronary_artery_disease",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "관상동맥질환 · 협심증",
+      "en-US": "Coronary artery disease / Angina",
+      "ja-JP": "冠動脈疾患・狭心症"
+    },
+    "aliases": [
+      "관상동맥질환",
+      "관상동맥병",
+      "협심증",
+      "심근경색",
+      "허혈성 심장질환",
+      "coronary artery disease",
+      "coronary heart disease",
+      "angina",
+      "heart attack",
+      "myocardial infarction",
+      "ischemic heart disease",
+      "冠動脈疾患",
+      "狭心症",
+      "心筋梗塞",
+      "虚血性心疾患"
+    ]
+  },
+  {
+    "id": "condition_gastritis_dyspepsia",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "위염 · 기능성 소화불량",
+      "en-US": "Gastritis / Functional dyspepsia",
+      "ja-JP": "胃炎・機能性ディスペプシア"
+    },
+    "aliases": [
+      "위염",
+      "십이지장염",
+      "위염 및 십이지장염",
+      "기능성 소화불량",
+      "소화불량",
+      "gastritis",
+      "duodenitis",
+      "functional dyspepsia",
+      "dyspepsia",
+      "胃炎",
+      "十二指腸炎",
+      "機能性ディスペプシア",
+      "消化不良"
+    ]
+  },
+  {
+    "id": "condition_fatty_liver",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "지방간",
+      "en-US": "Fatty liver disease",
+      "ja-JP": "脂肪肝"
+    },
+    "aliases": [
+      "지방간",
+      "비알코올성 지방간",
+      "대사이상 지방간",
+      "fatty liver",
+      "fatty liver disease",
+      "NAFLD",
+      "MASLD",
+      "脂肪肝",
+      "非アルコール性脂肪性肝疾患"
+    ]
+  },
+  {
+    "id": "condition_kidney_stones",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "신장 · 요로결석",
+      "en-US": "Kidney / Urinary stones",
+      "ja-JP": "腎・尿路結石"
+    },
+    "aliases": [
+      "신장결석",
+      "신장 결석",
+      "요로결석",
+      "요로결석증",
+      "요관결석",
+      "방광결석",
+      "kidney stones",
+      "renal stones",
+      "urolithiasis",
+      "nephrolithiasis",
+      "腎結石",
+      "尿路結石",
+      "尿管結石"
+    ]
+  },
+  {
+    "id": "condition_rheumatoid_arthritis",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "류마티스 관절염",
+      "en-US": "Rheumatoid arthritis",
+      "ja-JP": "関節リウマチ"
+    },
+    "aliases": [
+      "류마티스 관절염",
+      "류머티즘 관절염",
+      "류마티스",
+      "rheumatoid arthritis",
+      "RA",
+      "関節リウマチ",
+      "リウマチ"
+    ]
+  },
+  {
+    "id": "condition_periodontal_disease",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "치주질환 · 잇몸병",
+      "en-US": "Gum disease / Periodontitis",
+      "ja-JP": "歯周病・歯周炎"
+    },
+    "aliases": [
+      "치주질환",
+      "치주염",
+      "치은염",
+      "잇몸병",
+      "잇몸 질환",
+      "gum disease",
+      "periodontal disease",
+      "periodontitis",
+      "gingivitis",
+      "歯周病",
+      "歯周炎",
+      "歯肉炎"
+    ]
+  },
+  {
+    "id": "condition_peripheral_neuropathy",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "말초신경병증",
+      "en-US": "Peripheral neuropathy",
+      "ja-JP": "末梢神経障害"
+    },
+    "aliases": [
+      "말초신경병증",
+      "말초 신경병증",
+      "말초신경장애",
+      "손발 저림",
+      "peripheral neuropathy",
+      "neuropathy",
+      "末梢神経障害"
+    ]
+  },
+  {
+    "id": "condition_sleep_apnea",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "수면무호흡증",
+      "en-US": "Sleep apnea",
+      "ja-JP": "睡眠時無呼吸症候群"
+    },
+    "aliases": [
+      "수면무호흡",
+      "수면무호흡증",
+      "수면무호흡 증후군",
+      "코골이 무호흡",
+      "sleep apnea",
+      "sleep apnoea",
+      "OSA",
+      "睡眠時無呼吸症候群",
+      "睡眠時無呼吸"
+    ]
+  },
+  {
+    "id": "condition_anxiety",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "불안장애",
+      "en-US": "Anxiety disorder",
+      "ja-JP": "不安障害"
+    },
+    "aliases": [
+      "불안장애",
+      "불안 장애",
+      "불안증",
+      "anxiety disorder",
+      "anxiety",
+      "不安障害",
+      "不安症"
+    ]
+  },
+  {
+    "id": "condition_vitamin_d_deficiency",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "비타민 D 결핍",
+      "en-US": "Vitamin D deficiency",
+      "ja-JP": "ビタミンD欠乏症"
+    },
+    "aliases": [
+      "비타민 D 결핍",
+      "비타민D 결핍",
+      "비타민 D 결핍증",
+      "비타민D결핍증",
+      "vitamin D deficiency",
+      "low vitamin D",
+      "ビタミンD欠乏症",
+      "ビタミンD不足"
+    ]
   }
 ]

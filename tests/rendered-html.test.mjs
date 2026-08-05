@@ -4,32 +4,24 @@ import test from "node:test";
 const developmentPreviewMeta =
   /<meta(?=[^>]*\bname=["']codex-preview["'])(?=[^>]*\bcontent=["']development["'])[^>]*>/i;
 
-async function loadWorker() {
+test("renders development preview metadata", async () => {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
-  return worker;
-}
 
-const workerEnvironment = {
-  ASSETS: {
-    fetch: async () => new Response("Not found", { status: 404 }),
-  },
-};
-
-const workerContext = {
-  waitUntil() {},
-  passThroughOnException() {},
-};
-
-test("renders development preview metadata", async () => {
-  const worker = await loadWorker();
   const response = await worker.fetch(
     new Request("http://localhost/", {
       headers: { accept: "text/html" },
     }),
-    workerEnvironment,
-    workerContext,
+    {
+      ASSETS: {
+        fetch: async () => new Response("Not found", { status: 404 }),
+      },
+    },
+    {
+      waitUntil() {},
+      passThroughOnException() {},
+    },
   );
 
   assert.equal(response.status, 200);
@@ -40,46 +32,42 @@ test("renders development preview metadata", async () => {
   assert.match(await response.text(), developmentPreviewMeta);
 });
 
-test("redirects a Korean racing question without answering it", async () => {
-  const worker = await loadWorker();
-  const response = await worker.fetch(
-    new Request("http://localhost/api/chat", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        message: "지금 레드불 레이싱 선수가 누구야?",
-        profile: { language: "ko-KR" },
-      }),
-    }),
-    workerEnvironment,
-    workerContext,
+test("renders the caregiver entry link and dedicated caregiver screen", async () => {
+  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
+  workerUrl.searchParams.set("caregiver-test", `${process.pid}-${Date.now()}`);
+  const { default: worker } = await import(workerUrl.href);
+  const environment = {
+    ASSETS: {
+      fetch: async () => new Response("Not found", { status: 404 }),
+    },
+  };
+  const context = {
+    waitUntil() {},
+    passThroughOnException() {},
+  };
+
+  const seniorResponse = await worker.fetch(
+    new Request("http://localhost/", { headers: { accept: "text/html" } }),
+    environment,
+    context,
   );
-  const payload = await response.json();
+  const seniorHtml = await seniorResponse.text();
 
-  assert.equal(response.status, 200);
-  assert.equal(payload.riskLevel, "safe");
-  assert.equal(payload.warningMessage, "");
-  assert.match(payload.answer, /시니어 식품 관련 정보 AI/);
-  assert.doesNotMatch(payload.answer, /막스|베르스타펜|드라이버|선수는/);
-});
+  assert.equal(seniorResponse.status, 200);
+  assert.match(seniorHtml, /href=["']\/caregiver["']/);
+  assert.match(seniorHtml, /돌봄이 화면/);
 
-test("localizes the off-topic redirect to the selected language", async () => {
-  const worker = await loadWorker();
-  const response = await worker.fetch(
-    new Request("http://localhost/api/chat", {
-      method: "POST",
-      headers: { "content-type": "application/json" },
-      body: JSON.stringify({
-        message: "Who is the Red Bull Racing driver?",
-        profile: { language: "en-US" },
-      }),
+  const caregiverResponse = await worker.fetch(
+    new Request("http://localhost/caregiver", {
+      headers: { accept: "text/html" },
     }),
-    workerEnvironment,
-    workerContext,
+    environment,
+    context,
   );
-  const payload = await response.json();
+  const caregiverHtml = await caregiverResponse.text();
 
-  assert.equal(response.status, 200);
-  assert.match(payload.answer, /senior food information/i);
-  assert.doesNotMatch(payload.answer, /Verstappen|driver is/i);
+  assert.equal(caregiverResponse.status, 200);
+  assert.match(caregiverHtml, /오늘 어떤 돌봄이 필요하신가요\?/);
+  assert.match(caregiverHtml, /돌봄에 관해 무엇이든 물어보세요/);
+  assert.match(caregiverHtml, /시니어 화면으로 돌아가기/);
 });

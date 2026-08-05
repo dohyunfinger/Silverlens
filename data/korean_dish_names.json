@@ -1,0 +1,8096 @@
+[
+  {
+    "name": "가래떡",
+    "variants": [
+      "흑미"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "가오리찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "가오리콩나물찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "가오리회무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "가자미 매운탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "가자미구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "가자미식해",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "가자미조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "가자미찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "가자미튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "가죽나물무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "가지김치",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "가지나물",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "가지냉국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "가지볶음",
+    "variants": [
+      "가지",
+      "고추",
+      "당근"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "가지전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "가지찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "가지탕수",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "간자장",
+    "variants": [
+      "해물"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "간재미회무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "갈매기살구이",
+    "variants": [
+      "돼지고기"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "갈비구이",
+    "variants": [
+      "양념",
+      "소고기",
+      "왕갈비",
+      "돼지고기"
+    ],
+    "variant_count": 4
+  },
+  {
+    "name": "갈비찜",
+    "variants": [
+      "소고기",
+      "고춧가루"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "갈비탕",
+    "variants": [
+      "소금제외"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "갈치구이",
+    "variants": [
+      "기름"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "갈치젓",
+    "variants": [
+      "양념"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "갈치조림",
+    "variants": [
+      "무"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "갈치찌개",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "갈치튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "감바스",
+    "variants": [
+      "간편조리세트",
+      "감바스 알 아히요"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "감자",
+    "variants": [
+      "찐감자"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "감자 된장국",
+    "variants": [
+      "두부"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "감자 소고기찌개",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "감자 호박된장국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "감자구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "감자국",
+    "variants": [
+      "소고기"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "감자그라탕",
+    "variants": [
+      "바질감자그라탕",
+      "치즈만난감자 그라탕"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "감자밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "감자범벅",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "감자볶음",
+    "variants": [
+      "햄",
+      "감자",
+      "당근",
+      "양파",
+      "채소",
+      "감자만"
+    ],
+    "variant_count": 9
+  },
+  {
+    "name": "감자빵",
+    "variants": [
+      "감자쫀득볼",
+      "진짜감자빵",
+      "쫀득 감자빵",
+      "찐찐 감자빵",
+      "강원도알감자빵",
+      "포슬쫀득감자빵"
+    ],
+    "variant_count": 10
+  },
+  {
+    "name": "감자샐러드",
+    "variants": [
+      "당근",
+      "오이"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "감자샐러드 샌드위치",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "감자스프",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "감자연근튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "감자전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "감자조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "감자탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "감자튀김",
+    "variants": [
+      "웨지감자",
+      "포테이토",
+      "감자볼튀김",
+      "해쉬라운즈",
+      "간편조리세트",
+      "갈릭포테이토"
+    ],
+    "variant_count": 18
+  },
+  {
+    "name": "갑오징어무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "갓김치",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "강낭콩밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "개고기 수육",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "개고기무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "개고기전골",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "개피떡(바람떡)",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "건갈치조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "건꼴뚜기조림",
+    "variants": [
+      "풋고추"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "건새우 미역국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "건새우볶음",
+    "variants": [
+      "건새우",
+      "풋고추",
+      "꽈리고추"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "건포도빵",
+    "variants": [
+      "건포도빵 (대)",
+      "건포도빵 (소)",
+      "우리쌀건포도브레드"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "검정콩밥",
+    "variants": [
+      "보리"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "겉절이",
+    "variants": [
+      "배추",
+      "상추",
+      "열무",
+      "치커리"
+    ],
+    "variant_count": 4
+  },
+  {
+    "name": "게국지",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "게맛살튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "게살죽",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "게장",
+    "variants": [
+      "간장",
+      "양념"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "게조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "겨자채",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "견과",
+    "variants": [
+      "넛츠앤푸르츠"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "경단",
+    "variants": [
+      "깨",
+      "콩",
+      "찹쌀",
+      "카스텔라"
+    ],
+    "variant_count": 4
+  },
+  {
+    "name": "계란 덮밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "계란빵",
+    "variants": [
+      "쌀계란빵",
+      "콘치즈 계란빵",
+      "트윈에그 브레드"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "고구마",
+    "variants": [
+      "삶은것",
+      "밤고구마",
+      "찐고구마"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "고구마깻잎튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "고구마맛탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "고구마밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "고구마전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "고구마조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "고구마줄기나물",
+    "variants": [
+      "들깨",
+      "고춧가루"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "고구마튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "고기만두",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "고들빼기김치",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "고등어구이",
+    "variants": [
+      "기름",
+      "석쇠",
+      "카레"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "고등어조림",
+    "variants": [
+      "무",
+      "모듬채소",
+      "배추김치"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "고등어찌개",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "고등어찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "고등어튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "고디국(다슬기맑은국)",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "고사리나물",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "고사리나물무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "고추잡채",
+    "variants": [
+      "간편조리세트",
+      "고추잡채 꽃빵키트"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "고추장볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "고추장아찌",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "고추장아찌 무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "고추장찌개",
+    "variants": [
+      "두부"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "고추전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "고추조림",
+    "variants": [
+      "멸치"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "고추튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "고춧가루 양념장",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "고춧잎나물",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "고춧잎나물무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "곤드레나물밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "곤드레밥",
+    "variants": [
+      "양념장"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "곤약무침",
+    "variants": [
+      "마요네즈"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "곤약조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "골뱅이무침",
+    "variants": [
+      "소면",
+      "채소"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "곰치국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "곰탕",
+    "variants": [
+      "우거지"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "곱창구이",
+    "variants": [
+      "소고기"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "곱창볶음",
+    "variants": [
+      "돼지고기",
+      "돼지껍데기"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "곱창전골",
+    "variants": [
+      "소고기",
+      "간편조리세트",
+      "소곱창순대전골",
+      "대한곱창 곱창전골"
+    ],
+    "variant_count": 4
+  },
+  {
+    "name": "과ㆍ채주스",
+    "variants": [
+      "당근",
+      "딸기",
+      "사과",
+      "망플단",
+      "바나나",
+      "사딸비"
+    ],
+    "variant_count": 189
+  },
+  {
+    "name": "과일",
+    "variants": [
+      "하루 한 컵 RED"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "과일샐러드",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "광어 매운탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "국밥",
+    "variants": [
+      "굴",
+      "소고기",
+      "콩나물",
+      "돼지고기",
+      "돼지머리",
+      "순대국밥"
+    ],
+    "variant_count": 6
+  },
+  {
+    "name": "국수",
+    "variants": [
+      "막국수",
+      "비빔국수",
+      "열무김치",
+      "잔치국수",
+      "쟁반막국수",
+      "김치말이국수"
+    ],
+    "variant_count": 6
+  },
+  {
+    "name": "국수전골",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "군만두",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "굴 국밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "굴 두부찌개",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "굴 미역국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "굴국",
+    "variants": [
+      "무",
+      "두부"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "굴무침",
+    "variants": [
+      "무",
+      "채소"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "굴밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "굴비구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "굴전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "굴죽",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "굴찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "귀리밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "귤차",
+    "variants": [
+      "제주청귤차",
+      "청귤티 핫(HOT)",
+      "청귤 티 핫(HOT)",
+      "제주청귤티 핫(HOT)",
+      "청귤티 아이스(ICED)",
+      "탐라는감귤티 핫(HOT)"
+    ],
+    "variant_count": 23
+  },
+  {
+    "name": "그라탕",
+    "variants": [
+      "오지치즈그라탕",
+      "콘치즈그라탕 (L)",
+      "콘치즈그라탕 (R)"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "근대 된장국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "근대나물",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "기름장",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "기스면",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "기장밥",
+    "variants": [
+      "찹쌀"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "기타빵",
+    "variants": [
+      "까눌레",
+      "고구마빵",
+      "롤링넛츠",
+      "통밀스틱",
+      "고구마스틱",
+      "별님고구마"
+    ],
+    "variant_count": 38
+  },
+  {
+    "name": "기타음료",
+    "variants": [
+      "라임 모히또",
+      "자몽 모히또",
+      "논알콜 하이볼",
+      "청포도 모히또",
+      "딸기요거트드링크",
+      "사고 피치 YO"
+    ],
+    "variant_count": 32
+  },
+  {
+    "name": "기타차",
+    "variants": [
+      "작설차",
+      "깔라만시",
+      "한라봉차",
+      "상그리아티",
+      "카페오르조",
+      "딸기둥둥상큼티"
+    ],
+    "variant_count": 185
+  },
+  {
+    "name": "기피편",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "김구이",
+    "variants": [
+      "조미김"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "김국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "김말이튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "김무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "김밥",
+    "variants": [
+      "계란",
+      "고추",
+      "김치",
+      "멸치",
+      "참치",
+      "채소"
+    ],
+    "variant_count": 13
+  },
+  {
+    "name": "김부각",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "김치 고기만두",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "김치 돼지고기볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "김치 된장국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "김치 볶음밥",
+    "variants": [
+      "모듬",
+      "치즈오븐김치볶음밥"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "김치 청국장찌개",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "김치 콩나물국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "김치국",
+    "variants": [
+      "김치",
+      "두부",
+      "콩나물"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "김치만두",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "김치볶음",
+    "variants": [
+      "햄",
+      "김치",
+      "참치",
+      "김치만",
+      "돼지고기"
+    ],
+    "variant_count": 5
+  },
+  {
+    "name": "김치순두부",
+    "variants": [
+      "해물",
+      "바지락",
+      "돼지고기"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "김치전",
+    "variants": [
+      "해물",
+      "오징어"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "김치전골",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "김치찌개",
+    "variants": [
+      "햄",
+      "꽁치",
+      "두부",
+      "어묵",
+      "참치",
+      "김치만"
+    ],
+    "variant_count": 8
+  },
+  {
+    "name": "김치찜",
+    "variants": [
+      "두부",
+      "돼지고기",
+      "간편조리세트",
+      "돼지고기 김치찜",
+      "돼지고기 묵은지찜"
+    ],
+    "variant_count": 5
+  },
+  {
+    "name": "김튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "깍두기",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "깐쇼새우",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "깐풍기",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "깐풍새우",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "깨죽",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "깨찰빵",
+    "variants": [
+      "깨찰빵",
+      "씨앗찰빵",
+      "쫀득쫀득한찰깨빵",
+      "쫀득한모카찰깨빵",
+      "우리찹쌀모카찰떡빵",
+      "쫀득고소한 추억의 찰깨빵"
+    ],
+    "variant_count": 7
+  },
+  {
+    "name": "깻잎김치",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "깻잎나물",
+    "variants": [
+      "깻잎"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "깻잎나물볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "깻잎장아찌",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "깻잎전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "깻잎찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "깻잎튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "껍질콩볶음",
+    "variants": [
+      "맛살"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "꼬리곰탕",
+    "variants": [
+      "당면"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "꼬막무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "꼬막찜",
+    "variants": [
+      "참꼬막"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "꼬치구이",
+    "variants": [
+      "간장",
+      "대파",
+      "고추장",
+      "닭고기",
+      "닭모래집"
+    ],
+    "variant_count": 5
+  },
+  {
+    "name": "꼬치구치",
+    "variants": [
+      "낙지"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "꽁치구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "꽁치조림",
+    "variants": [
+      "무",
+      "김치",
+      "채소",
+      "배추김치"
+    ],
+    "variant_count": 4
+  },
+  {
+    "name": "꽁치찌개",
+    "variants": [
+      "김치"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "꽁치튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "꽃게 매운탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "꽃게장",
+    "variants": [
+      "간장",
+      "양념"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "꽃게찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "꽃게콩나물찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "꽃게탕",
+    "variants": [
+      "3마리꽃게탕",
+      "간편조리세트"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "꽈리고추 오징어조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "꽈리고추볶음",
+    "variants": [
+      "멸치",
+      "호두",
+      "잔멸치"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "꽈리고추조림",
+    "variants": [
+      "멸치"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "꽈리고추찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "꿀떡",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "꿀차",
+    "variants": [
+      "꿀과실차 대추",
+      "꿀과실차 레몬",
+      "꿀과실차 모과",
+      "꿀과실차 생강",
+      "꿀과실차 유자",
+      "꿀과실차 자몽"
+    ],
+    "variant_count": 6
+  },
+  {
+    "name": "꿩불고기",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "나박김치",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "나베",
+    "variants": [
+      "간편조리세트",
+      "통등심가스나베"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "나폴리탄 스파게티",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "낙지 덮밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "낙지 비빔밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "낙지 삼겹살 볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "낙지무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "낙지볶음",
+    "variants": [
+      "떡",
+      "채소"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "낙지전골",
+    "variants": [
+      "낙곱새",
+      "간편조리세트"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "낙지찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "낙지탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "낙지탕(맑은탕)",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "난자완스",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "내장전골",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "내장탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "냉국",
+    "variants": [
+      "미역",
+      "오이"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "냉면",
+    "variants": [
+      "홍어",
+      "물냉면",
+      "회냉면",
+      "비빔냉면",
+      "열무냉면"
+    ],
+    "variant_count": 5
+  },
+  {
+    "name": "냉이 된장국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "냉이나물",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "냉이초나물",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "냉채",
+    "variants": [
+      "닭고기",
+      "해파리"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "넙치(광어)회덮밥",
+    "variants": [
+      "양념장"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "넙치구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "노각무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "녹두빈대떡",
+    "variants": [
+      "채소",
+      "해물",
+      "돼지고기"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "녹두전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "녹차",
+    "variants": [
+      "녹차",
+      "그린티",
+      "녹차 핫(HOT)",
+      "녹차 아이스(ICED)",
+      "하동 녹차 핫(HOT)",
+      "해남 녹차 핫(HOT)"
+    ],
+    "variant_count": 25
+  },
+  {
+    "name": "누룽지",
+    "variants": [
+      "뜨거운물첨가"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "느타리버섯 구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "느타리버섯볶음",
+    "variants": [
+      "채소",
+      "느타리버섯"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "느타리버섯튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "다슬기 된장국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "다시마무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "다시마조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "다시마튀각",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "다식",
+    "variants": [
+      "송화"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "다쿠아즈",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "단무지",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "단무지무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "단호박 샐러드",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "단호박조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "단호박찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "달걀",
+    "variants": [
+      "흰자",
+      "노른자",
+      "삶은것"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "달걀 샐러드",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "달걀국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "달걀말이",
+    "variants": [
+      "김",
+      "햄",
+      "부추",
+      "채소",
+      "달걀만"
+    ],
+    "variant_count": 5
+  },
+  {
+    "name": "달걀부침(달걀후라이)",
+    "variants": [
+      "햄"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "달걀조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "달걀찜",
+    "variants": [
+      "당근",
+      "두부",
+      "우유",
+      "채소",
+      "달걀만",
+      "새우젓"
+    ],
+    "variant_count": 6
+  },
+  {
+    "name": "달걀탕",
+    "variants": [
+      "순두부"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "달걀튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "달걀후라이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "달래 된장국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "달래무침",
+    "variants": [
+      "오이"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "닭가슴살 샐러드",
+    "variants": [
+      "드레싱",
+      "마요네즈"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "닭강정",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "닭고기 덮밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "닭고기 미역국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "닭고기 샐러드",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "닭고기 탕수",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "닭고기냉채",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "닭고기육개장",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "닭곰탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "닭구이",
+    "variants": [
+      "바베큐치킨스테이크"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "닭껍데기튀김",
+    "variants": [
+      "BBQ 닭껍데기"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "닭꼬치구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "닭날개구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "닭다리구이",
+    "variants": [
+      "자메이카 통다리구이",
+      "자메이카 통다리구이 반마리"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "닭다리조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "닭다리튀김",
+    "variants": [
+      "간장",
+      "다리 스틱",
+      "봉 (5조각)",
+      "치킨다리 (1조각)",
+      "황금올리브치킨 닭다리",
+      "황올 반+양념 반 닭다리 치킨"
+    ],
+    "variant_count": 6
+  },
+  {
+    "name": "닭도리탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "닭모래집볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "닭모래집튀김",
+    "variants": [
+      "매콤똥집튀김"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "닭발구이",
+    "variants": [
+      "불닭발",
+      "무뼈닭발",
+      "참숯닭발",
+      "마닭 불닭발",
+      "한입쏙직화 닭발"
+    ],
+    "variant_count": 5
+  },
+  {
+    "name": "닭발볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "닭발튀김",
+    "variants": [
+      "황올한 닭발튀김"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "닭백숙",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "닭볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "닭볶음(닭갈비)",
+    "variants": [
+      "치즈",
+      "피망",
+      "닭가슴살",
+      "매운양념",
+      "간편조리세트",
+      "치즈이불 닭갈비"
+    ],
+    "variant_count": 8
+  },
+  {
+    "name": "닭볶음탕",
+    "variants": [
+      "곱도리탕",
+      "간편조리세트"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "닭조림",
+    "variants": [
+      "고추장"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "닭죽",
+    "variants": [
+      "채소"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "닭찜",
+    "variants": [
+      "간장",
+      "매운양념",
+      "안동찜닭",
+      "간편조리세트",
+      "안동식 찜닭"
+    ],
+    "variant_count": 5
+  },
+  {
+    "name": "닭튀김",
+    "variants": [
+      "목",
+      "날개",
+      "너겟",
+      "양념",
+      "살코기",
+      "닭가슴살"
+    ],
+    "variant_count": 188
+  },
+  {
+    "name": "닭튀김 샐러드",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "당근볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "대구 매운탕",
+    "variants": [
+      "알",
+      "내장"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "대구볼찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "대구지리",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "대구찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "대구탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "대구튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "대구포",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "대창구이",
+    "variants": [
+      "소고기"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "대추차",
+    "variants": [
+      "사과 대추차",
+      "대추차 핫(HOT)",
+      "대추차 아이스(ICED)",
+      "대추차 핫(HOT) (L)",
+      "대추차 핫(HOT) (M)",
+      "대추차 아이스(ICED) (L)"
+    ],
+    "variant_count": 7
+  },
+  {
+    "name": "대합 미역국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "대합죽",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "더덕구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "더덕무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "더덕장아찌",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "덮밥",
+    "variants": [
+      "낙지",
+      "장어",
+      "참치",
+      "해물",
+      "닭고기",
+      "불고기"
+    ],
+    "variant_count": 10
+  },
+  {
+    "name": "도가니탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "도넛",
+    "variants": [
+      "찹쌀",
+      "링도넛",
+      "마이볼",
+      "생도넛",
+      "팥도넛",
+      "래번클로"
+    ],
+    "variant_count": 278
+  },
+  {
+    "name": "도다리구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "도라지나물",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "도라지나물무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "도라지생채",
+    "variants": [
+      "북어",
+      "오이",
+      "오징어채"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "도라지튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "도루묵조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "도루묵찌개",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "도미 매운탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "도미찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "도미튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "도토리묵무침",
+    "variants": [
+      "채소"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "돈가스",
+    "variants": [
+      "치즈",
+      "고구마",
+      "돼지등심",
+      "돼지안심",
+      "제주카츠볼",
+      "간편조리세트"
+    ],
+    "variant_count": 7
+  },
+  {
+    "name": "돌나물",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "돌나물무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "돌솥 비빔밥",
+    "variants": [
+      "양념장"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "동치미",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "동태 매운탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "동태국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "동태까스",
+    "variants": [
+      "소스"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "동태양념구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "동태전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "동태조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "동태찌개",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "동태찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "동태튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "동파육",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "돼지갈비강정",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "돼지갈비구이",
+    "variants": [
+      "간장",
+      "폭립"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "돼지갈비전골",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "돼지갈비찜",
+    "variants": [
+      "떡",
+      "채소",
+      "매운양념",
+      "배추김치",
+      "간편조리세트",
+      "국내산순살돼지갈비찜"
+    ],
+    "variant_count": 6
+  },
+  {
+    "name": "돼지고기",
+    "variants": [
+      "간",
+      "허파",
+      "머리고기"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "돼지고기 꼬치구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "돼지고기 덮밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "돼지고기 스테이크",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "돼지고기 장조림",
+    "variants": [
+      "메추리알"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "돼지고기 피망잡채",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "돼지고기강정",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "돼지고기볶음",
+    "variants": [
+      "김치",
+      "버섯",
+      "짜장",
+      "채소",
+      "케찹",
+      "오징어"
+    ],
+    "variant_count": 10
+  },
+  {
+    "name": "돼지고기볶음(제육볶음)",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "돼지고기찌개",
+    "variants": [
+      "간편조리세트",
+      "돼지고기 짜글이",
+      "돼지고기고추장찌개"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "돼지고기찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "돼지고기튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "돼지껍데기구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "돼지등갈비찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "돼지등심 장조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "돼지머리국밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "돼지불고기",
+    "variants": [
+      "간장",
+      "버섯",
+      "고추장",
+      "삼겹살",
+      "오징어",
+      "간편조리세트"
+    ],
+    "variant_count": 9
+  },
+  {
+    "name": "돼지사태찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "된장국",
+    "variants": [
+      "무",
+      "쑥",
+      "감자",
+      "근대",
+      "냉이",
+      "두부"
+    ],
+    "variant_count": 19
+  },
+  {
+    "name": "된장찌개",
+    "variants": [
+      "냉이",
+      "달래",
+      "두부",
+      "우렁",
+      "호박",
+      "강된장"
+    ],
+    "variant_count": 15
+  },
+  {
+    "name": "두릅무침",
+    "variants": [
+      "초고추장"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "두부 달걀찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "두부 달걀탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "두부 된장국",
+    "variants": [
+      "유부",
+      "바지락"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "두부 명란찌개",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "두부 애호박찌개",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "두부 청국장찌개",
+    "variants": [
+      "김치"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "두부 탕수",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "두부국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "두부김치",
+    "variants": [
+      "돼지고기"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "두부냉채",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "두부볶음",
+    "variants": [
+      "돼지고기"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "두부부침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "두부전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "두부전골",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "두부조림",
+    "variants": [
+      "돼지고기"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "두부찌개",
+    "variants": [
+      "굴",
+      "된장",
+      "고추장",
+      "바지락",
+      "새우젓",
+      "소고기"
+    ],
+    "variant_count": 6
+  },
+  {
+    "name": "두부튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "두유 카페라떼",
+    "variants": [
+      "시럽"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "들깨국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "들깨죽",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "들깻잎장아찌",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "등심돈가스",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "딸기넥타",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "딸기바나나 스무디",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "땅콩조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "땅콩죽",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "떡갈비",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "떡강정",
+    "variants": [
+      "BBQ 소떡",
+      "매콤 떡강정",
+      "못난이소떡소떡",
+      "매콤치즈 소떡소떡"
+    ],
+    "variant_count": 4
+  },
+  {
+    "name": "떡국",
+    "variants": [
+      "굴",
+      "달걀",
+      "모듬",
+      "소고기"
+    ],
+    "variant_count": 4
+  },
+  {
+    "name": "떡만두국",
+    "variants": [
+      "고기만두",
+      "김치만두"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "떡볶이",
+    "variants": [
+      "간장",
+      "마떡",
+      "모듬",
+      "버섯",
+      "어묵",
+      "채소"
+    ],
+    "variant_count": 31
+  },
+  {
+    "name": "떡산적",
+    "variants": [
+      "소고기"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "또띠아",
+    "variants": [
+      "트위스터",
+      "매콤치킨랩",
+      "크리스퍼랩",
+      "김치 부리또",
+      "불닭 베이크",
+      "치킨 브리또"
+    ],
+    "variant_count": 23
+  },
+  {
+    "name": "라떼",
+    "variants": [
+      "그린티",
+      "밀크티",
+      "바닐라",
+      "망고라떼",
+      "폭탄초코",
+      "홍차라떼"
+    ],
+    "variant_count": 792
+  },
+  {
+    "name": "라멘",
+    "variants": [
+      "미소라멘",
+      "소유라멘",
+      "시오라멘",
+      "돈코츠라멘",
+      "간편조리세트",
+      "매운돈코츠라멘"
+    ],
+    "variant_count": 6
+  },
+  {
+    "name": "라면",
+    "variants": [
+      "떡",
+      "면",
+      "국물",
+      "김치",
+      "달걀",
+      "만두"
+    ],
+    "variant_count": 18
+  },
+  {
+    "name": "라볶이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "라조기",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "런천미트구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "레몬차",
+    "variants": [
+      "레몬차",
+      "레몬티",
+      "레몬민트티",
+      "레몬차 (L)",
+      "레몬차 (R)",
+      "레몬차 핫(HOT)"
+    ],
+    "variant_count": 32
+  },
+  {
+    "name": "레몬청차",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "레몬홍차",
+    "variants": [
+      "레몬얼그레이티 핫(HOT)",
+      "레몬 얼그레이티 핫(HOT)",
+      "레몬 얼그레이 티 핫(HOT)",
+      "레몬얼그레이티 아이스(ICED)",
+      "레몬 얼그레이 티 아이스(ICED)"
+    ],
+    "variant_count": 5
+  },
+  {
+    "name": "롤빵",
+    "variants": [
+      "카멜크림롤",
+      "달달연유롤빵",
+      "우유 생크림롤",
+      "클래식시나몬롤",
+      "목장의아침우유롤",
+      "녹차 도쿄롤 (L)"
+    ],
+    "variant_count": 17
+  },
+  {
+    "name": "리소토/리조또",
+    "variants": [
+      "간편조리세트",
+      "베이컨크림리조또",
+      "쉬림프로제리조또",
+      "치킨 크림 리조또",
+      "베이컨버섯크림리조또",
+      "스파이시 씨푸드 리조또"
+    ],
+    "variant_count": 6
+  },
+  {
+    "name": "마늘빵",
+    "variants": [
+      "프렌치마늘빵",
+      "마늘빵(5개입)",
+      "부드러운갈릭브레드",
+      "바삭마늘빵(5개입)",
+      "프렌치마늘빵 (5개입)"
+    ],
+    "variant_count": 5
+  },
+  {
+    "name": "마늘장아찌",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "마늘장아찌무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "마늘쫑무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "마늘쫑볶음",
+    "variants": [
+      "간장",
+      "멸치",
+      "건새우",
+      "건어물",
+      "잔멸치"
+    ],
+    "variant_count": 5
+  },
+  {
+    "name": "마늘쫑장아찌",
+    "variants": [
+      "간장",
+      "고추장"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "마늘쫑장아찌무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "마늘쫑조림",
+    "variants": [
+      "멸치"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "마라탕",
+    "variants": [
+      "마라탕",
+      "간편조리세트"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "마카로니 샐러드",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "마카롱",
+    "variants": [
+      "마카롱",
+      "흑마크론",
+      "녹차마카롱",
+      "레몬마카롱",
+      "초코떡카롱",
+      "초코마카롱"
+    ],
+    "variant_count": 158
+  },
+  {
+    "name": "마테차",
+    "variants": [
+      "베리마테",
+      "베리 마테",
+      "스위트마테",
+      "메리베리마테 핫(HOT) (L)",
+      "메리베리마테 핫(HOT) (M)",
+      "메리베리마테 아이스(ICED) (L)"
+    ],
+    "variant_count": 7
+  },
+  {
+    "name": "마파두부",
+    "variants": [
+      "간편조리세트",
+      "백리향 마파두부"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "막국수",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "막창구이",
+    "variants": [
+      "소고기"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "만두",
+    "variants": [
+      "군만두",
+      "물만두",
+      "고기만두",
+      "김치만두"
+    ],
+    "variant_count": 4
+  },
+  {
+    "name": "만두국",
+    "variants": [
+      "사골",
+      "고기만두",
+      "김치만두"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "만두전골",
+    "variants": [
+      "간편조리세트",
+      "얼큰왕만두전골"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "만두탕수",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "맛살전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "망둥어찌개",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "망둥어찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "매생이국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "매실장아찌",
+    "variants": [
+      "우메보시(일본)"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "매운 어묵볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "매운탕",
+    "variants": [
+      "광어",
+      "대구",
+      "동태",
+      "메기",
+      "아귀",
+      "우럭"
+    ],
+    "variant_count": 10
+  },
+  {
+    "name": "매작과",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "머위나물",
+    "variants": [
+      "소금"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "머위나물무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "머위나물볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "머위대나물무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "머핀",
+    "variants": [
+      "머핀",
+      "까놀레",
+      "마드렌",
+      "마들렌",
+      "초코범벅",
+      "피낭시에"
+    ],
+    "variant_count": 47
+  },
+  {
+    "name": "메기 매운탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "메기찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "메밀국수",
+    "variants": [
+      "온면"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "메밀묵 무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "메밀묵국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "메밀소바",
+    "variants": [
+      "간편조리세트",
+      "부타이 마제소바"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "메밀전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "메추리알 돼지고기장조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "메추리알 어묵조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "메추리알장조림",
+    "variants": [
+      "꽈리고추"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "멕시컨샐러드",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "멘보샤",
+    "variants": [
+      "멘보샤",
+      "텃만꿍멘보샤 (4개)",
+      "통새우 멘보샤 (5개)"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "멸치 미역국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "멸치볶음",
+    "variants": [
+      "견과류",
+      "마늘쫑",
+      "풋고추",
+      "꽈리고추"
+    ],
+    "variant_count": 4
+  },
+  {
+    "name": "멸치볶음(멸치만)",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "멸치젓",
+    "variants": [
+      "양념"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "멸치조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "명란젓",
+    "variants": [
+      "양념"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "명란찌개",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "명란찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "명태 매운탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "모닝빵",
+    "variants": [
+      "굿모닝브리오슈",
+      "진한초코브레드",
+      "슬로우오트모닝롤",
+      "초코아몬드브레드",
+      "부드러운연유브레드",
+      "우유듬뿍연유브레드"
+    ],
+    "variant_count": 25
+  },
+  {
+    "name": "모듬 김밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "모듬 초밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "모듬 콩조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "모듬배추나물",
+    "variants": [
+      "된장"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "모듬버섯볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "모듬찰떡",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "모듬채소전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "모듬채소전골",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "모듬회",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "모밀국수",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "모싯잎송편",
+    "variants": [
+      "동부",
+      "동부(국내산)",
+      "동부(수입산)"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "모카빵",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "몸국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "무 된장국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "무 북어국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "무 어묵조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "무 파래무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "무국",
+    "variants": [
+      "당면",
+      "두부",
+      "들깨",
+      "어묵",
+      "홍합",
+      "느타리"
+    ],
+    "variant_count": 8
+  },
+  {
+    "name": "무국물",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "무나물",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "무나물무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "무말랭이무침",
+    "variants": [
+      "오징어"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "무말랭이장아찌",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "무밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "무생채",
+    "variants": [
+      "굴",
+      "미역",
+      "식초",
+      "액젓",
+      "미나리"
+    ],
+    "variant_count": 5
+  },
+  {
+    "name": "무생채(무만)",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "무숙장아찌",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "무장아찌",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "무조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "무지개떡",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "무짠지",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "무청나물",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "무초절임(치킨무)",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "묵국",
+    "variants": [
+      "메밀묵"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "묵말이",
+    "variants": [
+      "도토리묵"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "묵무침",
+    "variants": [
+      "청포묵",
+      "도토리묵"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "묵밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "문어무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "문어볶음",
+    "variants": [
+      "고추장"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "물김치",
+    "variants": [
+      "돌나물"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "물냉면",
+    "variants": [
+      "열무"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "물만두",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "물회",
+    "variants": [
+      "생선",
+      "오징어"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "미꾸라지튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "미나리 초무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "미나리나물",
+    "variants": [
+      "모듬",
+      "소금",
+      "고추장",
+      "팽이버섯"
+    ],
+    "variant_count": 4
+  },
+  {
+    "name": "미나리무침",
+    "variants": [
+      "고추장"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "미나리전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "미더덕찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "미소된장국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "미숫가루",
+    "variants": [
+      "미숫가루",
+      "오곡 미숫가루",
+      "미숫가루 아이스(ICED)",
+      "제주 미숫가루 핫(HOT)",
+      "제주 보리개역 핫(HOT)",
+      "제주 미숫가루 아이스(ICED)"
+    ],
+    "variant_count": 12
+  },
+  {
+    "name": "미숫가루(선식)음료",
+    "variants": [
+      "정말 맛있는 프로틴 17곡 영양 선식 (Venti)"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "미역 된장국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "미역 오이무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "미역국",
+    "variants": [
+      "굴",
+      "대합",
+      "들깨",
+      "북어",
+      "새우",
+      "참치"
+    ],
+    "variant_count": 9
+  },
+  {
+    "name": "미역냉국",
+    "variants": [
+      "고추",
+      "오이"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "미역줄기볶음",
+    "variants": [
+      "채소",
+      "미역줄기"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "미역초무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "미역튀각",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "미음",
+    "variants": [
+      "현미",
+      "칠분도미"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "미트 스파게티",
+    "variants": [
+      "미트스파게티"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "미트볼조림",
+    "variants": [
+      "샤샤삭슈카"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "민들레무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "민들레잎무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "민어 매운탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "민어구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "밀면",
+    "variants": [
+      "물밀면"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "밀크쉐이크",
+    "variants": [
+      "바닐라"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "밀크티",
+    "variants": [
+      "블랙",
+      "타로",
+      "흑당",
+      "초콜릿",
+      "흑당밀크 아이스(ICED)"
+    ],
+    "variant_count": 5
+  },
+  {
+    "name": "밀크티/버블티",
+    "variants": [
+      "밀크티",
+      "딸기 버블티",
+      "레몬 버블티",
+      "로얄 밀크티",
+      "말차 버블티",
+      "망고 버블티"
+    ],
+    "variant_count": 282
+  },
+  {
+    "name": "밀푀유나베",
+    "variants": [
+      "밀푀유나베",
+      "간편조리세트",
+      "매콤 밀푀유나베"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "바게트",
+    "variants": [
+      "바게트볼",
+      "갈릭바게뜨",
+      "마늘바게뜨",
+      "마롱깜파뉴",
+      "명란바게뜨",
+      "모닝바게뜨"
+    ],
+    "variant_count": 52
+  },
+  {
+    "name": "바지락 된장국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "바지락 미역국",
+    "variants": [
+      "떡"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "바지락 수제비",
+    "variants": [
+      "감자"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "바지락국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "바지락찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "밤밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "방풍나물",
+    "variants": [
+      "된장",
+      "소금",
+      "고추장"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "방풍나물무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "배추 겉절이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "배추 된장국",
+    "variants": [
+      "바지락",
+      "소고기"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "배추국",
+    "variants": [
+      "들깨",
+      "소고기"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "배추김치",
+    "variants": [
+      "봄재배",
+      "가을재배",
+      "여름재배"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "배추나물",
+    "variants": [
+      "간장",
+      "된장",
+      "소금"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "배추숙주나물",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "배추전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "백김치",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "백설기",
+    "variants": [
+      "검정콩"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "백합죽",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "밴댕이무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "뱅쇼",
+    "variants": [
+      "뱅쇼",
+      "화이트 뱅쇼",
+      "뱅쇼 핫(HOT)",
+      "뱅쇼 티 (ICED)",
+      "뱅쇼 티 핫(HOT)",
+      "뱅쇼 아이스(ICED)"
+    ],
+    "variant_count": 34
+  },
+  {
+    "name": "뱅어포구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "뱅어포무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "뱅어포튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "버거",
+    "variants": [
+      "치킨킹",
+      "햄버거",
+      "싸이버거",
+      "오찡버거",
+      "징거버거",
+      "치킨버거"
+    ],
+    "variant_count": 280
+  },
+  {
+    "name": "버섯 덮밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "버섯 매운탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "버섯 샤브샤브",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "버섯 잡채",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "버섯구이",
+    "variants": [
+      "새송이버섯"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "버섯구이표고버섯",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "버섯국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "버섯무침",
+    "variants": [
+      "느타리버섯"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "버섯볶음",
+    "variants": [
+      "느타리",
+      "표고버섯",
+      "새송이버섯",
+      "양송이버섯"
+    ],
+    "variant_count": 4
+  },
+  {
+    "name": "버섯전",
+    "variants": [
+      "표고버섯"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "버섯전골",
+    "variants": [
+      "소고기",
+      "간편조리세트",
+      "남도식 들깨 버섯전골"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "버섯조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "버섯찌개",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "버터빵",
+    "variants": [
+      "버터롤",
+      "소금빵",
+      "고메소금빵",
+      "뺑오플레르",
+      "소금버터롤",
+      "버터 소금빵"
+    ],
+    "variant_count": 10
+  },
+  {
+    "name": "버터크림빵",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "번",
+    "variants": [
+      "딸기번",
+      "로띠번",
+      "모카번",
+      "모카빵",
+      "초코번",
+      "치즈번"
+    ],
+    "variant_count": 37
+  },
+  {
+    "name": "번데기탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "베이글",
+    "variants": [
+      "뺑오레젱",
+      "호두베이글",
+      "데일리베이글",
+      "바질 베이글",
+      "버터 베이글",
+      "씨앗 베이글"
+    ],
+    "variant_count": 90
+  },
+  {
+    "name": "베이컨떡말이구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "베이컨채소볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "병어구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "병어조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "병어찌개",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "보리밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "보신탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "보쌈김치",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "복 매운탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "복숭아홍차",
+    "variants": [
+      "피치얼그레이 핫(HOT)",
+      "피치얼그레이티 핫(HOT)",
+      "복숭아 얼그레이 핫(HOT)",
+      "피치얼그레이 아이스(ICED)",
+      "피치얼그레이티 아이스(ICED)",
+      "복숭아 얼그레이 아이스(ICED)"
+    ],
+    "variant_count": 6
+  },
+  {
+    "name": "복어튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "복죽",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "복지리",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "복찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "볶음 우동",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "볶음면",
+    "variants": [
+      "간편조리세트",
+      "소고기 야끼소바"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "볶음밥",
+    "variants": [
+      "햄",
+      "계란",
+      "김치",
+      "맛살",
+      "삼선",
+      "새우"
+    ],
+    "variant_count": 24
+  },
+  {
+    "name": "볼락 매운탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "부대찌개",
+    "variants": [
+      "간편조리세트",
+      "햄듬뿍부대찌개",
+      "의정부식부대찌개",
+      "오뎅식당 부대찌개"
+    ],
+    "variant_count": 4
+  },
+  {
+    "name": "부추 겉절이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "부추 채소무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "부추 초무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "부추김치",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "부추나물",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "부추무침",
+    "variants": [
+      "부추",
+      "양파",
+      "채소",
+      "부추만"
+    ],
+    "variant_count": 4
+  },
+  {
+    "name": "부추잡채",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "부추전",
+    "variants": [
+      "해물"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "북어강정",
+    "variants": [
+      "고추장양념"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "북어구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "북어국",
+    "variants": [
+      "무",
+      "달걀",
+      "두부",
+      "콩나물"
+    ],
+    "variant_count": 4
+  },
+  {
+    "name": "북어양념구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "북어조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "북어찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "북어채 고추장 무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "북어채무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "북어튀김",
+    "variants": [
+      "아, 귀한 먹태"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "분짜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "불고기전골",
+    "variants": [
+      "간편조리세트",
+      "서울식불고기전골",
+      "서울식 육수불고기",
+      "서울식 소불고기전골"
+    ],
+    "variant_count": 4
+  },
+  {
+    "name": "불낙전골",
+    "variants": [
+      "해물",
+      "간편조리세트",
+      "이게불낙이야"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "붕어 매운탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "붕어찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "브로콜리 두부무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "브로콜리 버섯볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "브로콜리 채소무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "브로콜리무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "브로콜리볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "비름나물",
+    "variants": [
+      "간장",
+      "된장",
+      "소금",
+      "고추장"
+    ],
+    "variant_count": 4
+  },
+  {
+    "name": "비름나물무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "비빔 잡곡밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "비빔국수",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "비빔냉면",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "비빔막국수",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "비빔면",
+    "variants": [
+      "간편조리세트",
+      "매콤제육비빔면"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "비빔밥",
+    "variants": [
+      "묵",
+      "돌솥",
+      "멍게",
+      "약초",
+      "열무",
+      "육회"
+    ],
+    "variant_count": 12
+  },
+  {
+    "name": "비스킷/쿠키/크래커",
+    "variants": [
+      "꿀오란다",
+      "알콘칩스",
+      "칩카사바",
+      "마카다미아",
+      "마카롱꼬끄",
+      "아몬드튀일"
+    ],
+    "variant_count": 101
+  },
+  {
+    "name": "비프까스",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "빙떡(메밀전병)",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "빙수",
+    "variants": [
+      "팥",
+      "인절미",
+      "컵빙수",
+      "팥빙수",
+      "애플망고",
+      "우유얼음"
+    ],
+    "variant_count": 150
+  },
+  {
+    "name": "뼈다귀해장국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "사골국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "사과차",
+    "variants": [
+      "석류 애플라임",
+      "애플 히비스커스티",
+      "애플 그린티 핫(HOT)",
+      "사과차 핫(HOT) (L)",
+      "사과차 핫(HOT) (M)",
+      "석류애플라임 아이스(ICED)"
+    ],
+    "variant_count": 13
+  },
+  {
+    "name": "사태찜",
+    "variants": [
+      "소고기"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "산자",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "산적",
+    "variants": [
+      "돼지고기"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "삶은 땅콩 조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "삼각김밥",
+    "variants": [
+      "숯불갈비",
+      "고추장불고기",
+      "참치마요네즈"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "삼겹살구이",
+    "variants": [
+      "고추장"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "삼겹살볶음",
+    "variants": [
+      "낙지",
+      "세발낙지",
+      "묵은지김치"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "삼계탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "삼색 오이냉국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "삼색냉채",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "삼치 양념구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "삼치 카레구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "삼치구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "삼치조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "삼치찌개",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "삼치튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "상추 겉절이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "새송이버섯 구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "새송이버섯볶음",
+    "variants": [
+      "채소",
+      "새송이버섯"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "새송이버섯전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "새싹 샐러드",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "새우 탕수",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "새우구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "새우무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "새우볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "새우전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "새우젓",
+    "variants": [
+      "양념"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "새우젓국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "새우조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "새우탕",
+    "variants": [
+      "간편조리세트",
+      "전복민물새우탕"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "새우튀김",
+    "variants": [
+      "새우링",
+      "새우링(2조각)",
+      "새우링(4조각)",
+      "새우링(8조각)",
+      "새우스틱 (2개)",
+      "타르타르 새우튀김 (5개)"
+    ],
+    "variant_count": 6
+  },
+  {
+    "name": "새우튀김롤",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "샌드위치",
+    "variants": [
+      "햄",
+      "달걀",
+      "모듬",
+      "생선",
+      "참치",
+      "채소"
+    ],
+    "variant_count": 211
+  },
+  {
+    "name": "샐러드",
+    "variants": [
+      "감자",
+      "새싹",
+      "참치",
+      "채소",
+      "고구마",
+      "단호박"
+    ],
+    "variant_count": 55
+  },
+  {
+    "name": "생강차",
+    "variants": [
+      "생강차",
+      "유자 생강차",
+      "생강차 핫(HOT)",
+      "진저티 핫(HOT)",
+      "대추 생강차 핫(HOT)",
+      "레몬 생강차 핫(HOT)"
+    ],
+    "variant_count": 16
+  },
+  {
+    "name": "생선까스",
+    "variants": [
+      "소스"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "생선전",
+    "variants": [
+      "동태",
+      "가자미"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "샤베트",
+    "variants": [
+      "와인 샤베트",
+      "메론코코샤베트",
+      "블루파인 샤베트"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "샤브샤브",
+    "variants": [
+      "버섯",
+      "소고기",
+      "간편조리세트",
+      "소고기스키야키",
+      "소고기 샤브샤브",
+      "일호식 스키야키"
+    ],
+    "variant_count": 6
+  },
+  {
+    "name": "서대구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "섞박지",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "섞어찌개(모듬찌개)",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "선지해장국",
+    "variants": [
+      "내장"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "선짓국",
+    "variants": [
+      "내장"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "설렁탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "세발나물무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "세발낙지볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "세발낙지찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "소간 채소볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "소갈비 구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "소갈비찜",
+    "variants": [
+      "해물"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "소고기 감자죽",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "소고기 국밥",
+    "variants": [
+      "내장"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "소고기 덮밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "소고기 두부국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "소고기 떡찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "소고기 무국",
+    "variants": [
+      "콩나물"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "소고기 미역국",
+    "variants": [
+      "떡",
+      "바지락"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "소고기 샌드위치",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "소고기 샤브샤브",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "소고기 완자전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "소고기 장조림",
+    "variants": [
+      "꽈리고추",
+      "메추리알"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "소고기국",
+    "variants": [
+      "무",
+      "당면"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "소고기버섯죽",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "소고기볶음",
+    "variants": [
+      "버섯",
+      "채소",
+      "고추장",
+      "간편조리세트",
+      "차돌박이숙주볶음"
+    ],
+    "variant_count": 5
+  },
+  {
+    "name": "소고기산적",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "소고기스튜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "소고기육개장",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "소고기전골",
+    "variants": [
+      "어복쟁반",
+      "간편조리세트",
+      "평양식 어복쟁반",
+      "파빌리온 얼큰 소고기 전골"
+    ],
+    "variant_count": 4
+  },
+  {
+    "name": "소고기찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "소고기채소볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "소고기튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "소곱창 구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "소곱창 볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "소금빵",
+    "variants": [
+      "소금빵",
+      "고메 소금빵",
+      "갈릭버터소금빵",
+      "버터리 소금빵",
+      "앙버터 소금빵",
+      "핫치킨 소금빵"
+    ],
+    "variant_count": 20
+  },
+  {
+    "name": "소내장구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "소등심 스테이크",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "소등심구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "소라무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "소라산적",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "소보로빵",
+    "variants": [
+      "맘모스빵",
+      "소보로빵",
+      "소보루빵",
+      "단팥소보루",
+      "밤롤브레드",
+      "맘모스 딸기"
+    ],
+    "variant_count": 40
+  },
+  {
+    "name": "소불고기",
+    "variants": [
+      "버섯"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "소사태찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "소세지빵",
+    "variants": [
+      "소세지빵",
+      "소시지빵",
+      "오징어깨임",
+      "소시지조리빵",
+      "추억의소시지빵",
+      "낙엽소시지브레드"
+    ],
+    "variant_count": 24
+  },
+  {
+    "name": "소스/드레싱",
+    "variants": [
+      "간편조리세트",
+      "오야꼬동 (밥제외)",
+      "이디야초콜릿디핑소스"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "소시지",
+    "variants": [
+      "그릴소시지"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "소시지 케첩볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "소시지볶음",
+    "variants": [
+      "채소"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "소시지조림",
+    "variants": [
+      "어묵"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "소시지튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "소안심스테이크",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "소탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "송어 매운탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "송편",
+    "variants": [
+      "깨",
+      "콩",
+      "팥",
+      "검정콩"
+    ],
+    "variant_count": 4
+  },
+  {
+    "name": "수란",
+    "variants": [
+      "중탕"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "수박화채",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "수수경단",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "수수밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "수수부꾸미",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "수수팥떡",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "수육",
+    "variants": [
+      "꼬리",
+      "소고기"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "수제비",
+    "variants": [
+      "감자",
+      "김치",
+      "간편조리세트",
+      "들깨버섯 수제비",
+      "우삼겹 짬뽕 수제비",
+      "해물 백짬뽕 수제비"
+    ],
+    "variant_count": 6
+  },
+  {
+    "name": "숙주나물",
+    "variants": [
+      "숙주",
+      "채소",
+      "게맛살",
+      "미나리"
+    ],
+    "variant_count": 4
+  },
+  {
+    "name": "숙주미나리나물",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "순 현미밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "순대",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "순대국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "순대볶음",
+    "variants": [
+      "떡",
+      "곱창",
+      "채소",
+      "백순대",
+      "간편조리세트",
+      "신림동 백순대볶음"
+    ],
+    "variant_count": 7
+  },
+  {
+    "name": "순대전골",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "순두부찌개",
+    "variants": [
+      "김치",
+      "모듬",
+      "해물",
+      "돼지고기",
+      "배추김치",
+      "간편조리세트"
+    ],
+    "variant_count": 10
+  },
+  {
+    "name": "숭어 매운탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "스무디",
+    "variants": [
+      "구구쉑",
+      "체리츄",
+      "메리뉴욕",
+      "메리딸기",
+      "메리망고",
+      "메리베리"
+    ],
+    "variant_count": 1013
+  },
+  {
+    "name": "스콘",
+    "variants": [
+      "레몬 스콘",
+      "무화과스콘",
+      "밀크 스콘",
+      "바질 스콘",
+      "초코 스콘",
+      "초코칩스콘"
+    ],
+    "variant_count": 42
+  },
+  {
+    "name": "스크램블드에그",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "스테이크",
+    "variants": [
+      "소등심",
+      "소안심",
+      "간편조리세트",
+      "비프찹스테이크",
+      "부채살 찹스테이크",
+      "시그니처찹스테이크"
+    ],
+    "variant_count": 14
+  },
+  {
+    "name": "스파게티",
+    "variants": [
+      "뇨끼",
+      "해물",
+      "미트볼",
+      "로제소스",
+      "미트소스",
+      "스파게티"
+    ],
+    "variant_count": 48
+  },
+  {
+    "name": "스프",
+    "variants": [
+      "감자",
+      "크림",
+      "소고기",
+      "옥수수",
+      "콘 수프",
+      "콘 스프"
+    ],
+    "variant_count": 15
+  },
+  {
+    "name": "시금치 겉절이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "시금치 된장국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "시금치나물",
+    "variants": [
+      "간장",
+      "당근",
+      "소금",
+      "고추장"
+    ],
+    "variant_count": 4
+  },
+  {
+    "name": "시래기 된장국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "시래기나물",
+    "variants": [
+      "간장",
+      "소금"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "시래기나물무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "시루떡",
+    "variants": [
+      "녹두"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "시리얼",
+    "variants": [
+      "우유",
+      "무슬리"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "식빵",
+    "variants": [
+      "러스크",
+      "밤식빵",
+      "통밀식빵",
+      "데니쉬식빵",
+      "롤치즈식빵",
+      "모닝토스트"
+    ],
+    "variant_count": 104
+  },
+  {
+    "name": "식빵튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "식혜",
+    "variants": [
+      "단호박 식혜",
+      "얼음동동 식혜",
+      "빅바나 얼음동동 식혜",
+      "식혜 아이스(ICED)",
+      "식혜 아이스(ICED) (L)",
+      "살얼음 식혜 아이스(ICED) (R)"
+    ],
+    "variant_count": 7
+  },
+  {
+    "name": "쌀국수",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "쌀밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "쌀죽(흰죽)",
+    "variants": [
+      "삼광",
+      "오대",
+      "새일미",
+      "신동진",
+      "칠분도미"
+    ],
+    "variant_count": 5
+  },
+  {
+    "name": "쌈장",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "쌍화차",
+    "variants": [
+      "쌍화차 핫(HOT)",
+      "대추쌍화차 핫(HOT)",
+      "쌍화차 아이스(ICED)",
+      "대추쌍화차 아이스(ICED)",
+      "대추 쌍화차 핫(HOT) (R)",
+      "대추 쌍화차 아이스(ICED) (R)"
+    ],
+    "variant_count": 6
+  },
+  {
+    "name": "쑥 된장국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "쑥갓나물",
+    "variants": [
+      "두부",
+      "소금",
+      "고춧가루",
+      "모듬채소"
+    ],
+    "variant_count": 4
+  },
+  {
+    "name": "쑥갓나물무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "쑥갓무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "쑥갓오이무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "쑥떡",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "쑥전(부침개)",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "쑥튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "씀바귀나물",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "씀바귀나물무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "아구탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "아귀 매운탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "아귀지리",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "아귀찜",
+    "variants": [
+      "간편조리세트",
+      "쫀득쫀득아귀찜"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "아욱 된장국",
+    "variants": [
+      "건새우"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "아이스 카페라떼",
+    "variants": [
+      "시럽",
+      "카라멜"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "아이스 카페모카",
+    "variants": [
+      "카라멜",
+      "휘핑크림"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "아이스크림",
+    "variants": [
+      "썬대",
+      "월넛",
+      "그린티",
+      "러브미",
+      "바닐라",
+      "애망빙"
+    ],
+    "variant_count": 452
+  },
+  {
+    "name": "아이스티",
+    "variants": [
+      "아망추",
+      "아샷추",
+      "아샷망추",
+      "아이스티",
+      "달콤아이스티",
+      "레몬아이스티"
+    ],
+    "variant_count": 93
+  },
+  {
+    "name": "알밥",
+    "variants": [
+      "간편조리세트",
+      "갑오징어알뚝밥"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "알탕",
+    "variants": [
+      "해물"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "앙금빵",
+    "variants": [
+      "앙버터빵",
+      "완두앙금빵",
+      "찹쌀앙금빵",
+      "고구마앙금빵",
+      "앙버터라우겐",
+      "완두 앙금빵"
+    ],
+    "variant_count": 14
+  },
+  {
+    "name": "애호박 감자된장국",
+    "variants": [
+      "바지락"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "애호박 된장국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "애호박 볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "애호박나물",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "애호박부침개",
+    "variants": [
+      "새우"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "애호박전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "애호박죽",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "애호박찌개",
+    "variants": [
+      "감자",
+      "두부"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "애호박찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "액상커피",
+    "variants": [
+      "설탕",
+      "커피가루",
+      "크림(중량12g)",
+      "설탕(중량2.7g)",
+      "커피가루(중량1g)"
+    ],
+    "variant_count": 5
+  },
+  {
+    "name": "야채빵",
+    "variants": [
+      "야채 샐러드",
+      "야채넣은 롤빵",
+      "맛살크림 샐러드",
+      "에그마요 샐러드",
+      "양파꽃이피었습니다",
+      "올리브야채 브레드"
+    ],
+    "variant_count": 9
+  },
+  {
+    "name": "약과",
+    "variants": [
+      "아카시아 허니 글레이즈드"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "약식",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "양념 도토리묵",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "양념 돼지고기튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "양념 바지락젓",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "양념 새우젓",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "양념 오징어젓",
+    "variants": [
+      "낙지"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "양념두부",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "양념채김치",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "양념초장",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "양미리조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "양배추 겉절이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "양배추 된장국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "양배추 사과 샐러드",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "양배추 샐러드",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "양배추 초나물",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "양배추김치",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "양배추나물",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "양배추부추무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "양배추오이  샐러드",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "양상추 샐러드",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "양송이 덮밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "양송이버섯볶음",
+    "variants": [
+      "소고기"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "양장피",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "양태구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "양파 소고기전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "양파링튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "양파볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "양파장아찌",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "어묵 감자볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "어묵 매운탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "어묵 오이무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "어묵 우동",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "어묵국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "어묵국(어묵탕)",
+    "variants": [
+      "고춧가루",
+      "간편조리세트",
+      "고춧가루 제외",
+      "츠쿠네 어묵탕",
+      "프리미엄 이자카야어묵탕"
+    ],
+    "variant_count": 5
+  },
+  {
+    "name": "어묵국물",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "어묵볶음",
+    "variants": [
+      "어묵",
+      "채소"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "어묵잡채",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "어묵전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "어묵조림",
+    "variants": [
+      "풋고추"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "어묵탕",
+    "variants": [
+      "고춧가루"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "어묵튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "어육소시지전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "어죽",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "어탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "얼갈이 겉절이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "얼갈이 나물",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "얼갈이 된장국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "얼갈이배추김치",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "에이드",
+    "variants": [
+      "체리콕",
+      "러브 미",
+      "멜론소다",
+      "체리콕콕",
+      "라임에이드",
+      "레모네이드"
+    ],
+    "variant_count": 180
+  },
+  {
+    "name": "연근전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "연근조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "연근튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "연두부찌개",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "연두부찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "연어구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "연어롤",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "연어튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "연잎밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "연포탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "열무 겉절이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "열무 된장국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "열무 비빔밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "열무김치",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "열무나물",
+    "variants": [
+      "간장",
+      "된장"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "열무물김치",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "열무얼갈이김치",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "영양돌솥밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오겹살구이",
+    "variants": [
+      "돼지고기"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "오곡밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오리 간장불고기",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오리감자죽",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오리고기구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오리고기로스",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오리백숙",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오리볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오리불고기",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오리죽",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오리탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오므라이스",
+    "variants": [
+      "수플레 오믈렛 라이스"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "오믈렛",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오미자차",
+    "variants": [
+      "문경오미자차",
+      "오미자차 핫(HOT)",
+      "문경오미자티 핫(HOT)",
+      "오미자차아이스(ICED)",
+      "감귤 오미자차 핫(HOT)",
+      "우리 오미자차 핫(HOT)"
+    ],
+    "variant_count": 9
+  },
+  {
+    "name": "오븐스파게티",
+    "variants": [
+      "치즈오븐스파게티",
+      "로제치즈오븐스파게티",
+      "점보치즈오븐스파게티",
+      "치즈오븐크림스파게티"
+    ],
+    "variant_count": 4
+  },
+  {
+    "name": "오이 도라지 생채",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오이 물김치",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오이 미역냉국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오이고추 된장무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오이김치",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오이나물",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오이냉국",
+    "variants": [
+      "미역"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "오이모듬무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오이무침",
+    "variants": [
+      "달래",
+      "부추",
+      "양파"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "오이부추무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오이생채",
+    "variants": [
+      "달래",
+      "부추",
+      "양파",
+      "오이",
+      "고추장",
+      "오이만"
+    ],
+    "variant_count": 6
+  },
+  {
+    "name": "오이소박이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오이장아찌",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오이지",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오이지무침",
+    "variants": [
+      "고추"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "오징어 덮밥",
+    "variants": [
+      "채소"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "오징어국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오징어무침",
+    "variants": [
+      "채소",
+      "미나리"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "오징어미역초무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오징어볶음",
+    "variants": [
+      "채소"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "오징어불고기",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오징어산적",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오징어순대",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오징어젓",
+    "variants": [
+      "양념"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "오징어조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오징어찌개",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오징어찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오징어채무침",
+    "variants": [
+      "채소"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "오징어채볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오징어채조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오징어탕수",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "오징어튀김",
+    "variants": [
+      "오감볼",
+      "통오징어링",
+      "통오징어튀김",
+      "오징어튀김 (3개)"
+    ],
+    "variant_count": 4
+  },
+  {
+    "name": "오징어포조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "옥돔구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "옥수수",
+    "variants": [
+      "찐옥수수"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "옥수수구이",
+    "variants": [
+      "치즈"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "옥수수밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "옥수수부침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "옥수수샐러드",
+    "variants": [
+      "햄",
+      "마요옥수수"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "올갱이국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "올갱이국수",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "올갱이해장국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "와플",
+    "variants": [
+      "와플",
+      "크로플",
+      "딸기 와플",
+      "미니 와플",
+      "사과 와플",
+      "초코 와플"
+    ],
+    "variant_count": 170
+  },
+  {
+    "name": "완두콩밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "완자전",
+    "variants": [
+      "참치",
+      "해물",
+      "소고기",
+      "돼지고기",
+      "소고기(동그랑땡/육원전)"
+    ],
+    "variant_count": 5
+  },
+  {
+    "name": "완자조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "요구르트(액상)",
+    "variants": [
+      "그릭요거트",
+      "딸기요거트",
+      "망고요거트",
+      "플레인요거트",
+      "그래놀라 요거트",
+      "블루베리 요거트"
+    ],
+    "variant_count": 23
+  },
+  {
+    "name": "요구르트(호상)",
+    "variants": [
+      "플레인그릭요거트",
+      "그릭요거 망고놀라",
+      "허니바나나그릭요거트",
+      "오가닉 프로틴 그릭 요거트 & 그래놀라"
+    ],
+    "variant_count": 4
+  },
+  {
+    "name": "우거지나물무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "우동",
+    "variants": [
+      "김치",
+      "삼선",
+      "일식",
+      "중식",
+      "해물",
+      "쫄우동"
+    ],
+    "variant_count": 8
+  },
+  {
+    "name": "우동볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "우럭 매운탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "우럭구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "우럭튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "우럭회덮밥",
+    "variants": [
+      "양념장"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "우롱차",
+    "variants": [
+      "우롱티 핫(HOT)",
+      "백도우롱 핫(HOT)",
+      "피치우롱 핫(HOT)",
+      "우롱티 아이스(ICED)",
+      "백도우롱 아이스(ICED)",
+      "우롱티 핫(HOT) (J)"
+    ],
+    "variant_count": 13
+  },
+  {
+    "name": "우엉 양념구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "우엉볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "우엉조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "우유",
+    "variants": [
+      "딸기",
+      "우유 (Tall)",
+      "스팀 우유 (Tall)"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "우유튀김",
+    "variants": [
+      "우유튀김"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "울면",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "월남쌈",
+    "variants": [
+      "간편조리세트",
+      "불고기월남쌈",
+      "소고기야채말이",
+      "훈제오리월남쌈"
+    ],
+    "variant_count": 4
+  },
+  {
+    "name": "웨이퍼",
+    "variants": [
+      "크리스피초콜릿웨이퍼"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "유과",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "유부 된장국",
+    "variants": [
+      "무"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "유부 초밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "유부국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "유부조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "유산슬",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "유자차",
+    "variants": [
+      "유자차",
+      "유자티",
+      "사과유자차",
+      "상그리아 유자티",
+      "유자 피나콜라다",
+      "고흥유자차 (L)"
+    ],
+    "variant_count": 43
+  },
+  {
+    "name": "유채김치",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "유채나물",
+    "variants": [
+      "간장",
+      "된장",
+      "소금"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "유채무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "유채물김치",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "육개장",
+    "variants": [
+      "닭고기",
+      "소고기",
+      "돼지고기"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "육회",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "육회비빔밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "율무밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "율무죽",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "율무차",
+    "variants": [
+      "당 걱정 없는 율무차 (Grande)"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "은대구구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "인절미",
+    "variants": [
+      "콩고물",
+      "팥고물"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "임연수구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "임연수조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "임연수튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "잉어 매운탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "자몽차",
+    "variants": [
+      "자몽차",
+      "자몽티",
+      "꿀자몽티",
+      "자몽블랙티",
+      "허니 자몽티",
+      "자몽차 (L)"
+    ],
+    "variant_count": 40
+  },
+  {
+    "name": "자몽홍차",
+    "variants": [
+      "허니자몽블랙티",
+      "꿀 자몽 블랙티",
+      "허니 자몽 블랙티",
+      "자몽허니블랙티 핫(HOT)",
+      "허니자몽블랙티 핫(HOT)",
+      "오렌지자몽블랙티 핫(HOT)"
+    ],
+    "variant_count": 21
+  },
+  {
+    "name": "자장면",
+    "variants": [
+      "삼선"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "자장밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "잔멸치 튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "잔멸치볶음",
+    "variants": [
+      "간장",
+      "모듬",
+      "견과류",
+      "고추장",
+      "잔멸치",
+      "풋고추"
+    ],
+    "variant_count": 8
+  },
+  {
+    "name": "잔치국수",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "잡곡밥",
+    "variants": [
+      "보리",
+      "현미",
+      "흑미",
+      "서리태"
+    ],
+    "variant_count": 4
+  },
+  {
+    "name": "잡곡죽",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "잡채",
+    "variants": [
+      "고추",
+      "버섯",
+      "부추",
+      "어묵",
+      "소고기",
+      "콩나물"
+    ],
+    "variant_count": 9
+  },
+  {
+    "name": "잡채밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "잡탕밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "잡탕전골",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "잣죽",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "장국국수",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "장떡",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "장어 덮밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "장어 양념구이",
+    "variants": [
+      "들깨"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "장어 초밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "장어구이",
+    "variants": [
+      "소금",
+      "양념",
+      "고추장",
+      "붕장어"
+    ],
+    "variant_count": 4
+  },
+  {
+    "name": "장어매운탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "장어탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "장어튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "장조림",
+    "variants": [
+      "달걀",
+      "우엉",
+      "소고기",
+      "돼지고기",
+      "메추리알"
+    ],
+    "variant_count": 5
+  },
+  {
+    "name": "재첩국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "쟁반국수",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "쟁반짜장",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "적어구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "적어조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "전갱이구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "전복죽",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "전복탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "전어구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "전어조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "절편",
+    "variants": [
+      "쑥"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "제육(돼지고기 수육)",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "제육볶음",
+    "variants": [
+      "채소",
+      "오징어"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "젤리",
+    "variants": [
+      "트로피컬원더젤리",
+      "베어리스타 오가닉 젤리"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "조개 미역국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "조개구이",
+    "variants": [
+      "키조개"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "조개국",
+    "variants": [
+      "바지락"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "조개젓",
+    "variants": [
+      "양념"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "조개탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "조기 양념구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "조기 오븐구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "조기구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "조기조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "조기찌개",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "조기찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "조기튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "조미 김구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "족발",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "주꾸미볶음",
+    "variants": [
+      "채소"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "주꾸미삼겹살",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "주먹밥",
+    "variants": [
+      "멸치",
+      "참치",
+      "소고기",
+      "배추김치",
+      "전주비빔라이스버거",
+      "까르보나라 구운주먹밥"
+    ],
+    "variant_count": 7
+  },
+  {
+    "name": "죽순볶음",
+    "variants": [
+      "소고기"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "중식우동",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "중식잡채",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "쥐포무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "쥐포조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "쥐포튀김",
+    "variants": [
+      "쥐포튀김"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "증편",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "지리탕",
+    "variants": [
+      "복",
+      "대구"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "짜사이무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "짜장면",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "짜장밥",
+    "variants": [
+      "오징어"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "짜장소스",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "짬뽕",
+    "variants": [
+      "굴",
+      "삼선",
+      "백짬뽕",
+      "차돌박이",
+      "간편조리세트",
+      "통오징어짬뽕탕"
+    ],
+    "variant_count": 7
+  },
+  {
+    "name": "짬뽕라면",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "짬뽕밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "쫄면",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "쫄볶이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "차돌박이구이",
+    "variants": [
+      "소고기"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "차조밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "찰떡빵",
+    "variants": [
+      "연유콩떡빵",
+      "찹쌀고구마",
+      "쑥떡쑥떡콩쑥이",
+      "쫀득찹쌀 브레드",
+      "블루베리 크림치즈 찰떡",
+      "울퉁불퉁왕찰떡빵 (대)"
+    ],
+    "variant_count": 9
+  },
+  {
+    "name": "찰밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "찰시루떡",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "참깨죽",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "참나물",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "참나물 겉절이",
+    "variants": [
+      "간장",
+      "단감",
+      "고춧가루"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "참나물 무침",
+    "variants": [
+      "된장"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "참치 미역국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "참치 샐러드",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "참치 완자전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "참치강정",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "참치구이",
+    "variants": [
+      "머리"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "참치덮밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "참치죽",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "참치찌개",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "참치회덮밥",
+    "variants": [
+      "양념장"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "찹쌀떡",
+    "variants": [
+      "팥",
+      "요아정 쑥팥크림 찹쌀떡",
+      "요아정 고구마크림 찹쌀떡",
+      "요아정 딸기요거트크림 찹쌀떡",
+      "요아정 카스테라 생크림 찹쌀떡"
+    ],
+    "variant_count": 5
+  },
+  {
+    "name": "찹쌀죽",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "채소 꼬치구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "채소밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "채소전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "채소죽",
+    "variants": [
+      "달걀"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "채소튀김",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "천사채무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "청경채나물",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "청국장찌개",
+    "variants": [
+      "두부",
+      "모듬",
+      "채소",
+      "해물",
+      "배추김치",
+      "간편조리세트"
+    ],
+    "variant_count": 8
+  },
+  {
+    "name": "청어구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "청포묵 무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "청포묵국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "초간장",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "초당순두부",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "초밥",
+    "variants": [
+      "광어",
+      "농어",
+      "모듬",
+      "문어",
+      "새우",
+      "연어"
+    ],
+    "variant_count": 9
+  },
+  {
+    "name": "초코소라빵",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "초콜릿",
+    "variants": [
+      "마이 스위티 까페",
+      "리저브 초콜릿 세트",
+      "마이 스위티 브라운",
+      "로스티드 헤이즐넛 초콜릿",
+      "로스티드 아몬드 앤 초콜릿",
+      "로아커 초콜릿 클래식 다크"
+    ],
+    "variant_count": 9
+  },
+  {
+    "name": "총각김치",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "추어탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "충무김밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "취나물",
+    "variants": [
+      "간장",
+      "된장",
+      "소금",
+      "취나물(마른것)"
+    ],
+    "variant_count": 4
+  },
+  {
+    "name": "취나물무침",
+    "variants": [
+      "간장",
+      "소금"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "츄러스",
+    "variants": [
+      "스틱츄",
+      "쫀듸기",
+      "츄러스",
+      "츄로독",
+      "컵츄볶이",
+      "초코필링츄"
+    ],
+    "variant_count": 40
+  },
+  {
+    "name": "치아바타",
+    "variants": [
+      "감자 치아바타",
+      "미니 치아바타",
+      "데일리 치아바타",
+      "시금치 치아바타",
+      "올리브 치아바타",
+      "치즈감자치아바타"
+    ],
+    "variant_count": 11
+  },
+  {
+    "name": "치즈",
+    "variants": [
+      "플레인 크림치즈",
+      "메이플피칸크림치즈",
+      "블루베리 크림치즈",
+      "초코청크 크림치즈",
+      "허브갈릭 크림치즈",
+      "쪽파&베이컨크림치즈"
+    ],
+    "variant_count": 6
+  },
+  {
+    "name": "치즈 스파게티",
+    "variants": [
+      "해물"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "치즈볼",
+    "variants": [
+      "밀크치즈볼",
+      "치즈쫀득볼",
+      "크림치즈볼",
+      "치즈볼 6개",
+      "퐁듀 치즈볼",
+      "고르곤 치즈볼"
+    ],
+    "variant_count": 10
+  },
+  {
+    "name": "치즈빵",
+    "variants": [
+      "치즈빵빵",
+      "치즈퐁듀",
+      "파르메산",
+      "미니치즈롤",
+      "치즈 퐁듀",
+      "치즈감자봉"
+    ],
+    "variant_count": 66
+  },
+  {
+    "name": "치즈스틱",
+    "variants": [
+      "치즈스틱",
+      "롱치즈스틱",
+      "순수치즈스틱",
+      "롱치즈스틱 (1개)",
+      "치즈 스틱 (2개)",
+      "치즈 스틱 (4개)"
+    ],
+    "variant_count": 8
+  },
+  {
+    "name": "치커리 겉절이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "치커리무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "치킨가스",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "치킨데리야끼",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "칠면조구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "카레라이스",
+    "variants": [
+      "두부",
+      "채소",
+      "소고기",
+      "오징어",
+      "돼지고기",
+      "모듬채소"
+    ],
+    "variant_count": 6
+  },
+  {
+    "name": "카레소스",
+    "variants": [
+      "간편조리세트",
+      "치킨마크니 찍먹커리",
+      "키마카레&치즈키마카레"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "카스텔라",
+    "variants": [
+      "카스테라구마",
+      "폭탄 카스테라",
+      "후레쉬카스텔라",
+      "난리난 카스텔라",
+      "생크림 카스테라",
+      "생크림 카스텔라"
+    ],
+    "variant_count": 24
+  },
+  {
+    "name": "카페라떼",
+    "variants": [
+      "시럽",
+      "카라멜"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "카페모카",
+    "variants": [
+      "카라멜",
+      "휘핑크림"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "칼국수",
+    "variants": [
+      "들깨",
+      "해물",
+      "닭고기",
+      "바지락",
+      "소고기",
+      "장칼국수"
+    ],
+    "variant_count": 10
+  },
+  {
+    "name": "캔디",
+    "variants": [
+      "씨프렌즈 캔디",
+      "아몬드 토피넛 캔디"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "캘리포니아롤",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "커피",
+    "variants": [
+      "아포가토",
+      "아포카토",
+      "어른커피",
+      "카페라떼",
+      "카페모카",
+      "카푸치노"
+    ],
+    "variant_count": 1306
+  },
+  {
+    "name": "커피(타먹는커피)",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "케이크",
+    "variants": [
+      "롤케이크",
+      "브라우니",
+      "클래식롤",
+      "티라미수",
+      "레몬케이크",
+      "마이넘버원"
+    ],
+    "variant_count": 608
+  },
+  {
+    "name": "코다리조림",
+    "variants": [
+      "무",
+      "간장"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "코다리찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "코코아",
+    "variants": [
+      "핫 초콜릿 (L)",
+      "핫 초콜릿 (R)",
+      "핫초코 핫(HOT)",
+      "아이스 초콜릿 (L)",
+      "아이스 초콜릿 (R)",
+      "핫 초코 핫(HOT)"
+    ],
+    "variant_count": 15
+  },
+  {
+    "name": "콘치즈구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "콤부차",
+    "variants": [
+      "청포도 콤부차 (L)",
+      "청포도 콤부차 (V)",
+      "플레인 콤부차 (L)",
+      "플레인 콤부차 (V)",
+      "애플망고 콤부차 (L)",
+      "애플망고 콤부차 (V)"
+    ],
+    "variant_count": 10
+  },
+  {
+    "name": "콩국수",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "콩나물 국밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "콩나물 느타리무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "콩나물 된장국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "콩나물 선짓국",
+    "variants": [
+      "낙지"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "콩나물 황태국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "콩나물국",
+    "variants": [
+      "무",
+      "고추",
+      "김치",
+      "바지락",
+      "소고기",
+      "콩나물"
+    ],
+    "variant_count": 9
+  },
+  {
+    "name": "콩나물냉채",
+    "variants": [
+      "오이"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "콩나물무침",
+    "variants": [
+      "고추",
+      "당근",
+      "부추",
+      "소금",
+      "시금치",
+      "콩나물"
+    ],
+    "variant_count": 8
+  },
+  {
+    "name": "콩나물밥",
+    "variants": [
+      "소고기",
+      "양념장",
+      "돼지고기"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "콩나물잡채",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "콩나물찌개",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "콩나물찜",
+    "variants": [
+      "해물"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "콩밥",
+    "variants": [
+      "강낭콩",
+      "검정콩",
+      "완두콩"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "콩비지찌개",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "콩조림",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "콩조림(콩자반)",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "크로와상",
+    "variants": [
+      "크룽지",
+      "로띠크로",
+      "사과크로",
+      "크루아상",
+      "통팥크로",
+      "고구마크로"
+    ],
+    "variant_count": 92
+  },
+  {
+    "name": "크로켓(고로케)",
+    "variants": [
+      "채소",
+      "감자고로케",
+      "게살고로케",
+      "김치고로게",
+      "야채고로케",
+      "피자고로케"
+    ],
+    "variant_count": 62
+  },
+  {
+    "name": "크로플",
+    "variants": [
+      "크로플",
+      "누텔라크로플",
+      "딸기 크로플",
+      "망고 크로플",
+      "버터 크로플",
+      "초코 크로플"
+    ],
+    "variant_count": 143
+  },
+  {
+    "name": "크림빵",
+    "variants": [
+      "초코슈",
+      "까까웨뜨",
+      "바닐라슈",
+      "베이비슈",
+      "생크림빵",
+      "슈크림빵"
+    ],
+    "variant_count": 108
+  },
+  {
+    "name": "키조개구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "타르트",
+    "variants": [
+      "씨앗타르트",
+      "에그타르트",
+      "호두타르트",
+      "무화과타르트",
+      "아몬드타르트",
+      "에그 타르트"
+    ],
+    "variant_count": 20
+  },
+  {
+    "name": "탄산음료",
+    "variants": [
+      "슬림 청포도 탄산수",
+      "슬림 깔라만시 탄산수",
+      "체리콕콕 아이스(ICED)",
+      "쿨 라임 피지오 (Tall)",
+      "블루캔디소다 아이스(ICED)",
+      "유자 패션 피지오 (Tall)"
+    ],
+    "variant_count": 10
+  },
+  {
+    "name": "탄탄면",
+    "variants": [
+      "간편조리세트",
+      "마라 탄탄면"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "탕수어",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "탕수육",
+    "variants": [
+      "새우",
+      "간편조리세트",
+      "김치피자탕수육"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "탕평채",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "토란국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "토란대나물",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "토란대나물무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "토스트",
+    "variants": [
+      "마늘토스트",
+      "쏙쏙토스트",
+      "피자토스트",
+      "스위트토스트",
+      "오믈렛토스트",
+      "카야 토스트"
+    ],
+    "variant_count": 33
+  },
+  {
+    "name": "토스트(식빵)",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "톳나물",
+    "variants": [
+      "두부"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "톳나물무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "트위스터 샌드위치",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "파강회",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "파김치",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "파래무침",
+    "variants": [
+      "무",
+      "액젓",
+      "파래"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "파래볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "파래전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "파무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "파운드케이크",
+    "variants": [
+      "호두 파운드",
+      "소보로쑥파운드",
+      "초코청크파운드",
+      "레몬 아이싱 파운드",
+      "콰트로 치즈 파운드",
+      "티타임레몬슈가파운드"
+    ],
+    "variant_count": 8
+  },
+  {
+    "name": "파이/만주",
+    "variants": [
+      "만주",
+      "파이콘",
+      "리프파이",
+      "링고파이",
+      "사과파이",
+      "스틱파이"
+    ],
+    "variant_count": 48
+  },
+  {
+    "name": "파전",
+    "variants": [
+      "굴",
+      "감자",
+      "김치",
+      "해물",
+      "돼지고기"
+    ],
+    "variant_count": 5
+  },
+  {
+    "name": "팔보채",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "팝콘",
+    "variants": [
+      "카라멜"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "팟타이",
+    "variants": [
+      "간편조리세트",
+      "비프 팟타이"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "팥밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "팥빙수",
+    "variants": [
+      "팥빙수"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "팥빵",
+    "variants": [
+      "단팥빵",
+      "미강빵",
+      "호두과자",
+      "호두통팥",
+      "팥 붕어빵",
+      "호두단팥빵"
+    ],
+    "variant_count": 41
+  },
+  {
+    "name": "팥죽",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "페이스트리",
+    "variants": [
+      "퀸아망",
+      "허니볼",
+      "쿠인아망",
+      "바통쉬크레",
+      "밤패스트리",
+      "뺑오쇼콜라"
+    ],
+    "variant_count": 76
+  },
+  {
+    "name": "폭찹",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "표고버섯볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "풋고추된장무침",
+    "variants": [
+      "풋고추"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "풋고추볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "풋고추찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "풋마늘무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "프레즐",
+    "variants": [
+      "프레즐",
+      "갈릭스틱",
+      "갈릭 스틱",
+      "아몬드스틱",
+      "어니언스틱",
+      "콘 프레즐"
+    ],
+    "variant_count": 50
+  },
+  {
+    "name": "피망볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "피자",
+    "variants": [
+      "콘콘콘",
+      "맵퍼로니",
+      "목동피자",
+      "미트러버",
+      "불새피자",
+      "야채피자"
+    ],
+    "variant_count": 4443
+  },
+  {
+    "name": "피자빵",
+    "variants": [
+      "베이글",
+      "사각피자빵",
+      "치킨치즈롤",
+      "소시지피자빵",
+      "쫄깃한피자빵",
+      "와앙 보름달빵"
+    ],
+    "variant_count": 17
+  },
+  {
+    "name": "피조개무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "하이라이스",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "함박스테이크",
+    "variants": [
+      "간편조리세트",
+      "더블체다 함박스테이크"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "핫도그",
+    "variants": [
+      "감자",
+      "치즈덕",
+      "칠리덕",
+      "핫도그",
+      "롤핫도그",
+      "모짜렐라"
+    ],
+    "variant_count": 57
+  },
+  {
+    "name": "핫케이크",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "해물 덮밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "해물 된장국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "해물 매운탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "해물 스파게티",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "해물 완자전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "해물 채소전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "해물볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "해물전골",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "해물찜",
+    "variants": [
+      "간편조리세트",
+      "낙지한마리해물찜",
+      "백합&바지락통찜"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "해물칼국수",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "해물콩나물찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "해물탕",
+    "variants": [
+      "간편조리세트",
+      "바다를 품은 해물탕"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "해물파전",
+    "variants": [
+      "간편조리세트",
+      "모둠해물파전"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "해신탕",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "해장국",
+    "variants": [
+      "선지",
+      "뼈다귀",
+      "우거지"
+    ],
+    "variant_count": 3
+  },
+  {
+    "name": "해초무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "해파리냉채",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "햄구이",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "햄버거",
+    "variants": [
+      "와퍼",
+      "치즈",
+      "치킨",
+      "양상추",
+      "토마토",
+      "뉴욕버거"
+    ],
+    "variant_count": 100
+  },
+  {
+    "name": "햄볶음",
+    "variants": [
+      "채소"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "햄부침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "햄샌드위치",
+    "variants": [
+      "치즈"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "햄샐러드",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "햄전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "햄채소볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "허니브레드",
+    "variants": [
+      "허니브래드",
+      "허니브레드",
+      "베리 브레드",
+      "카라멜브레드",
+      "허니 버터볼",
+      "허니브레드볼"
+    ],
+    "variant_count": 45
+  },
+  {
+    "name": "허브차",
+    "variants": [
+      "레몬밤",
+      "캐모마일",
+      "페퍼민트",
+      "오렌지 보스",
+      "루이보스 레몬",
+      "시나몬 진저티"
+    ],
+    "variant_count": 120
+  },
+  {
+    "name": "현미밥",
+    "variants": [
+      "쌀"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "현미죽",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "호떡",
+    "variants": [
+      "견과류",
+      "꿀호떡",
+      "순꿀호떡",
+      "쫀득흑당호떡",
+      "아이스크림 호떡",
+      "흑당가득품은호떡"
+    ],
+    "variant_count": 7
+  },
+  {
+    "name": "호밀빵",
+    "variants": [
+      "행복드림",
+      "호두호밀브레드",
+      "무화과 통밀 로프",
+      "멀티그레인 호밀브레드",
+      "파란라벨 멀티그레인호밀빵"
+    ],
+    "variant_count": 5
+  },
+  {
+    "name": "호박 된장국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "호박고지볶음",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "호박나물",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "호박볶음",
+    "variants": [
+      "채소",
+      "호박"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "호박오가리나물무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "호박잎 된장국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "호박전",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "호박죽",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "호박찌개",
+    "variants": [
+      "고추장"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "혼합잡곡밥",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "홍어무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "홍어찌개",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "홍어찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "홍어회무침",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "홍차",
+    "variants": [
+      "머스캣",
+      "얼그레이",
+      "아쌈오렌지",
+      "얼그레이티",
+      "얼그레이 클래식",
+      "잉글리쉬브렉퍼스트"
+    ],
+    "variant_count": 53
+  },
+  {
+    "name": "홍합 무국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "홍합 미나리죽",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "홍합 미역국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "홍합 소고기죽",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "홍합국(홍합탕)",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "홍합산적",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "홍합탕",
+    "variants": [
+      "홍합만"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "화양적",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "황태구이",
+    "variants": [
+      "양념"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "황태콩나물찜",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "황태해장국",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "회냉면",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "회덮밥",
+    "variants": [
+      "모듬",
+      "참치"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "회무침",
+    "variants": [
+      "서대",
+      "가오리"
+    ],
+    "variant_count": 2
+  },
+  {
+    "name": "효모빵",
+    "variants": [
+      "착한빵식통밀빵",
+      "건포도천연효모빵",
+      "건포도 토종효모빵",
+      "쫄깃한 천연효모빵",
+      "쫄깃담백 토종효모빵",
+      "건포도 천연효모빵 (H)"
+    ],
+    "variant_count": 10
+  },
+  {
+    "name": "훈제오리",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "훠궈",
+    "variants": [
+      "소고기"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "흑미밥",
+    "variants": [
+      "찹쌀"
+    ],
+    "variant_count": 1
+  },
+  {
+    "name": "흑임자 죽",
+    "variants": [],
+    "variant_count": 0
+  },
+  {
+    "name": "흰죽",
+    "variants": [],
+    "variant_count": 0
+  }
+]

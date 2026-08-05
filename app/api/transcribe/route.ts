@@ -6,6 +6,7 @@ import {
   transcribeAudio,
   type TranscriptionPurpose,
 } from "../../../backend/services/transcriptionService";
+import { isGeminiQuotaError } from "../../../backend/services/geminiQuota";
 
 const MAX_AUDIO_DATA_LENGTH = 14 * 1024 * 1024;
 
@@ -51,8 +52,16 @@ export async function POST(request: Request) {
       text: result.transcript,
       allergies: result.allergies,
       conditions: result.conditions,
+      gender: result.gender,
+      ageBand: result.ageBand,
     });
   } catch (error) {
+    if (isGeminiQuotaError(error)) {
+      return NextResponse.json(
+        { error: error.message, retryAfterSeconds: error.retryAfterSeconds },
+        { status: 429, headers: { "Retry-After": String(error.retryAfterSeconds) } },
+      );
+    }
     const message =
       error instanceof Error ? error.message : "음성을 글자로 바꾸지 못했습니다.";
     const status = message.includes("GEMINI_API_KEY") ? 503 : 500;

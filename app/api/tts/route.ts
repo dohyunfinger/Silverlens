@@ -1,6 +1,7 @@
 import { NextResponse } from "next/server";
 import { isMeaningfulText } from "../../../backend/services/geminiService";
 import { generateNarration } from "../../../backend/services/ttsService";
+import { isGeminiQuotaError } from "../../../backend/services/geminiQuota";
 
 export async function POST(request: Request) {
   try {
@@ -23,10 +24,20 @@ export async function POST(request: Request) {
     return new Response(wav, {
       headers: {
         "Content-Type": "audio/wav",
-        "Cache-Control": "no-store",
+        /*
+         * 같은 문장을 다시 들을 때 서버까지 가지 않도록 브라우저 캐시를 허용한다.
+         * 건강 정보가 담긴 음성이라 공용 캐시(CDN)에는 저장하지 않는다.
+         */
+        "Cache-Control": "private, max-age=1800",
       },
     });
   } catch (error) {
+    if (isGeminiQuotaError(error)) {
+      return NextResponse.json(
+        { error: error.message, retryAfterSeconds: error.retryAfterSeconds },
+        { status: 429, headers: { "Retry-After": String(error.retryAfterSeconds) } },
+      );
+    }
     const message =
       error instanceof Error ? error.message : "음성을 만들지 못했습니다.";
     const status = message.includes("GEMINI_API_KEY") ? 503 : 500;

@@ -1,0 +1,18 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SilverLens">
+  <title>SilverLens — 앱 아이콘 (작은 크기에서도 형태가 남는 판)</title>
+  <!--
+    작은 크기에서는 안쪽 그림이 뭉개진다.
+    그래서 아이콘판은 요소를 둘로만 줄였다. 딥그린 바탕과 크림색 돋보기.
+  -->
+  <defs>
+    <linearGradient id="silverlensIconBg" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#24584e"/>
+      <stop offset="1" stop-color="#153d34"/>
+    </linearGradient>
+  </defs>
+  <rect x="2" y="2" width="60" height="60" rx="16" fill="url(#silverlensIconBg)"/>
+  <path d="M40.5 40.5 L51 51" stroke="#fff5df" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="27.5" cy="27.5" r="14.5" fill="none" stroke="#fff5df" stroke-width="6"/>
+  <!-- 렌즈 안의 밥알 하나. 식품이라는 최소 신호. -->
+  <circle cx="27.5" cy="27.5" r="6" fill="#f6c9a5"/>
+</svg>

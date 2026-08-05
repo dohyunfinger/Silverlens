@@ -1,0 +1,20 @@
+<svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="SilverLens">
+  <title>SilverLens — 렌즈 안에서 웃는 얼굴</title>
+  <!--
+    밥그릇 안을 그리다 얻은 형태를 의도로 바꾼 판.
+    돋보기로 들여다보면 다정한 얼굴이 있다는 뜻이다.
+    "기술이 사람을 닮아간다"는 문장과 맞고, 작은 크기에서도 표정이 남는다.
+  -->
+  <circle cx="27" cy="27" r="22" fill="#f6c9a5" opacity="0.35"/>
+  <path d="M41 41 L54 54" stroke="#173f35" stroke-width="7" stroke-linecap="round"/>
+  <circle cx="27" cy="27" r="17" fill="#e7f2ec"/>
+  <!-- 볼 홍조. 따뜻한 색을 한 군데만 얹는다. -->
+  <circle cx="19.4" cy="29.4" r="3" fill="#f6c9a5"/>
+  <circle cx="34.6" cy="29.4" r="3" fill="#f6c9a5"/>
+  <!-- 눈 -->
+  <circle cx="22" cy="23.4" r="2.3" fill="#173f35"/>
+  <circle cx="32" cy="23.4" r="2.3" fill="#173f35"/>
+  <!-- 웃음 -->
+  <path d="M20.6 29.6 C22.4 34 31.6 34 33.4 29.6" stroke="#173f35" stroke-width="3.1" stroke-linecap="round" fill="none"/>
+  <circle cx="27" cy="27" r="17" stroke="#173f35" stroke-width="5"/>
+</svg>

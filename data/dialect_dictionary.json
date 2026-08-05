@@ -1,1027 +1,1544 @@
 [
   {
-    "dialect": "와이라노",
-    "standard": "우리 아이",
-    "region": "경남"
+    "dialect": "정구지",
+    "standard": "부추",
+    "region": "경상",
+    "category": "식재료"
   },
   {
-    "dialect": "와이노",
-    "standard": "우리",
-    "region": "전남"
+    "dialect": "소풀",
+    "standard": "부추",
+    "region": "경상",
+    "category": "식재료"
   },
   {
-    "dialect": "마이",
-    "standard": "많이",
-    "region": "전남"
+    "dialect": "분추",
+    "standard": "부추",
+    "region": "강원",
+    "category": "식재료"
   },
   {
-    "dialect": "다",
-    "standard": "이제",
-    "region": "전남"
+    "dialect": "무시",
+    "standard": "무",
+    "region": "경상",
+    "category": "식재료"
   },
   {
-    "dialect": "마니",
-    "standard": "매우",
-    "region": "제주"
+    "dialect": "무수",
+    "standard": "무",
+    "region": "전라",
+    "category": "식재료"
   },
   {
-    "dialect": "디다",
-    "standard": "있다",
-    "region": "경북"
+    "dialect": "배차",
+    "standard": "배추",
+    "region": "경상",
+    "category": "식재료"
   },
   {
-    "dialect": "시껑",
-    "standard": "시끄럽다",
-    "region": "충청"
+    "dialect": "배채",
+    "standard": "배추",
+    "region": "전라",
+    "category": "식재료"
   },
   {
-    "dialect": "가마이",
-    "standard": "아무것도",
-    "region": "경남"
+    "dialect": "부루",
+    "standard": "상추",
+    "region": "경상",
+    "category": "식재료"
   },
   {
-    "dialect": "아이고",
-    "standard": "아이고",
-    "region": "전국"
+    "dialect": "상치",
+    "standard": "상추",
+    "region": "전국",
+    "category": "식재료"
   },
   {
-    "dialect": "안코아",
-    "standard": "안 좋아",
-    "region": "제주"
+    "dialect": "지슬",
+    "standard": "감자",
+    "region": "제주",
+    "category": "식재료"
   },
   {
-    "dialect": "이잉씨",
-    "standard": "아니",
-    "region": "경북"
+    "dialect": "지실",
+    "standard": "감자",
+    "region": "전라",
+    "category": "식재료"
   },
   {
-    "dialect": "되는기",
-    "standard": "되겠네",
-    "region": "전북"
+    "dialect": "하지감자",
+    "standard": "감자",
+    "region": "경상",
+    "category": "식재료"
   },
   {
-    "dialect": "되제",
-    "standard": "되겠지",
-    "region": "전북"
+    "dialect": "북감자",
+    "standard": "감자",
+    "region": "강원",
+    "category": "식재료"
   },
   {
-    "dialect": "고마워",
-    "standard": "감사합니다",
-    "region": "전국"
+    "dialect": "감저",
+    "standard": "고구마",
+    "region": "제주",
+    "category": "식재료"
   },
   {
-    "dialect": "워매",
-    "standard": "아",
-    "region": "전북"
+    "dialect": "고매",
+    "standard": "고구마",
+    "region": "전라",
+    "category": "식재료"
   },
   {
-    "dialect": "인디",
-    "standard": "이러하다",
-    "region": "전북"
+    "dialect": "물외",
+    "standard": "오이",
+    "region": "경상",
+    "category": "식재료"
   },
   {
-    "dialect": "괜이나",
-    "standard": "괜찮아",
-    "region": "전남"
+    "dialect": "물꾸",
+    "standard": "오이",
+    "region": "전라",
+    "category": "식재료"
   },
   {
-    "dialect": "그라",
-    "standard": "그래",
-    "region": "전남"
+    "dialect": "호박새이",
+    "standard": "애호박",
+    "region": "경상",
+    "category": "식재료"
   },
   {
-    "dialect": "레예",
-    "standard": "해서",
-    "region": "제주"
+    "dialect": "마널",
+    "standard": "마늘",
+    "region": "전라",
+    "category": "식재료"
   },
   {
-    "dialect": "노",
-    "standard": "너",
-    "region": "제주"
+    "dialect": "마눌",
+    "standard": "마늘",
+    "region": "경상",
+    "category": "식재료"
   },
   {
-    "dialect": "우리덜",
-    "standard": "우리 아이들",
-    "region": "전북"
+    "dialect": "새앙",
+    "standard": "생강",
+    "region": "전국",
+    "category": "식재료"
   },
   {
-    "dialect": "영감",
-    "standard": "남편",
-    "region": "전국"
+    "dialect": "고치",
+    "standard": "고추",
+    "region": "경상",
+    "category": "식재료"
   },
   {
-    "dialect": "임자",
-    "standard": "이 사람",
-    "region": "전국"
+    "dialect": "꼬추",
+    "standard": "고추",
+    "region": "전라",
+    "category": "식재료"
   },
   {
-    "dialect": "손아",
-    "standard": "언니",
-    "region": "전남"
+    "dialect": "깨잎",
+    "standard": "깻잎",
+    "region": "전국",
+    "category": "식재료"
   },
   {
-    "dialect": "효자",
-    "standard": "아들",
-    "region": "전국"
+    "dialect": "남새",
+    "standard": "채소",
+    "region": "전라",
+    "category": "식재료"
   },
   {
-    "dialect": "새옹",
-    "standard": "아빠",
-    "region": "전남"
+    "dialect": "나새이",
+    "standard": "냉이",
+    "region": "경상",
+    "category": "식재료"
   },
   {
-    "dialect": "어멍",
-    "standard": "어머니",
-    "region": "전국"
+    "dialect": "나상구",
+    "standard": "냉이",
+    "region": "전라",
+    "category": "식재료"
   },
   {
-    "dialect": "으야",
-    "standard": "어머니",
-    "region": "경북"
+    "dialect": "꼬장",
+    "standard": "고추장",
+    "region": "경상",
+    "category": "식재료"
   },
   {
-    "dialect": "편디",
+    "dialect": "딘장",
+    "standard": "된장",
+    "region": "경상",
+    "category": "식재료"
+  },
+  {
+    "dialect": "지렁",
+    "standard": "간장",
+    "region": "경상",
+    "category": "식재료"
+  },
+  {
+    "dialect": "장물",
+    "standard": "간장",
+    "region": "전라",
+    "category": "식재료"
+  },
+  {
+    "dialect": "참지름",
+    "standard": "참기름",
+    "region": "전국",
+    "category": "식재료"
+  },
+  {
+    "dialect": "들지름",
+    "standard": "들기름",
+    "region": "전국",
+    "category": "식재료"
+  },
+  {
+    "dialect": "지름",
+    "standard": "기름",
+    "region": "전국",
+    "category": "식재료"
+  },
+  {
+    "dialect": "진가루",
+    "standard": "밀가루",
+    "region": "경상",
+    "category": "식재료"
+  },
+  {
+    "dialect": "사탕",
+    "standard": "설탕",
+    "region": "경상",
+    "category": "식재료"
+  },
+  {
+    "dialect": "소캐",
+    "standard": "소금",
+    "region": "강원",
+    "category": "식재료"
+  },
+  {
+    "dialect": "콩지름",
+    "standard": "콩나물",
+    "region": "전라",
+    "category": "식재료"
+  },
+  {
+    "dialect": "콩질금",
+    "standard": "콩나물",
+    "region": "경상",
+    "category": "식재료"
+  },
+  {
+    "dialect": "강냉이",
+    "standard": "옥수수",
+    "region": "강원",
+    "category": "식재료"
+  },
+  {
+    "dialect": "수꾸",
+    "standard": "옥수수",
+    "region": "경상",
+    "category": "식재료"
+  },
+  {
+    "dialect": "딸구",
+    "standard": "딸기",
+    "region": "경상",
+    "category": "식재료"
+  },
+  {
+    "dialect": "복숭",
+    "standard": "복숭아",
+    "region": "경상",
+    "category": "식재료"
+  },
+  {
+    "dialect": "복상",
+    "standard": "복숭아",
+    "region": "전라",
+    "category": "식재료"
+  },
+  {
+    "dialect": "풍개",
+    "standard": "자두",
+    "region": "경상",
+    "category": "식재료"
+  },
+  {
+    "dialect": "호도",
+    "standard": "호두",
+    "region": "전국",
+    "category": "식재료"
+  },
+  {
+    "dialect": "일년감",
+    "standard": "토마토",
+    "region": "전국",
+    "category": "식재료"
+  },
+  {
+    "dialect": "땅감",
+    "standard": "토마토",
+    "region": "전라",
+    "category": "식재료"
+  },
+  {
+    "dialect": "왜콩",
+    "standard": "땅콩",
+    "region": "전라",
+    "category": "식재료"
+  },
+  {
+    "dialect": "푸성귀",
+    "standard": "잎채소",
+    "region": "전국",
+    "category": "식재료"
+  },
+  {
+    "dialect": "시금추",
+    "standard": "시금치",
+    "region": "경상",
+    "category": "식재료"
+  },
+  {
+    "dialect": "파뿌리",
+    "standard": "대파 뿌리",
+    "region": "전국",
+    "category": "식재료"
+  },
+  {
+    "dialect": "쪽파",
+    "standard": "실파",
+    "region": "전국",
+    "category": "식재료"
+  },
+  {
+    "dialect": "양파때기",
+    "standard": "양파",
+    "region": "전국",
+    "category": "식재료"
+  },
+  {
+    "dialect": "서양배추",
+    "standard": "양배추",
+    "region": "전국",
+    "category": "식재료"
+  },
+  {
+    "dialect": "고수나물",
+    "standard": "고수",
+    "region": "전국",
+    "category": "식재료"
+  },
+  {
+    "dialect": "도라지꼬장",
+    "standard": "도라지",
+    "region": "강원",
+    "category": "식재료"
+  },
+  {
+    "dialect": "더덕뿌리",
+    "standard": "더덕",
+    "region": "전국",
+    "category": "식재료"
+  },
+  {
+    "dialect": "고사리대",
+    "standard": "고사리",
+    "region": "전국",
+    "category": "식재료"
+  },
+  {
+    "dialect": "취나물",
+    "standard": "참취",
+    "region": "전국",
+    "category": "식재료"
+  },
+  {
+    "dialect": "방구지",
+    "standard": "방아잎",
+    "region": "경상",
+    "category": "식재료"
+  },
+  {
+    "dialect": "방아풀",
+    "standard": "배초향",
+    "region": "경상",
+    "category": "식재료"
+  },
+  {
+    "dialect": "질경이",
+    "standard": "차전초",
+    "region": "전국",
+    "category": "식재료"
+  },
+  {
+    "dialect": "쇠고기",
+    "standard": "소고기",
+    "region": "전국",
+    "category": "식재료"
+  },
+  {
+    "dialect": "도야지",
+    "standard": "돼지",
+    "region": "경상",
+    "category": "식재료"
+  },
+  {
+    "dialect": "도새기",
+    "standard": "돼지",
+    "region": "제주",
+    "category": "식재료"
+  },
+  {
+    "dialect": "되지고기",
+    "standard": "돼지고기",
+    "region": "충청",
+    "category": "식재료"
+  },
+  {
+    "dialect": "달구",
+    "standard": "닭",
+    "region": "경상",
+    "category": "식재료"
+  },
+  {
+    "dialect": "닥고기",
+    "standard": "닭고기",
+    "region": "전라",
+    "category": "식재료"
+  },
+  {
+    "dialect": "닥알",
+    "standard": "달걀",
+    "region": "전라",
+    "category": "식재료"
+  },
+  {
+    "dialect": "달갈",
+    "standard": "달걀",
+    "region": "경상",
+    "category": "식재료"
+  },
+  {
+    "dialect": "기랄",
+    "standard": "달걀",
+    "region": "경상",
+    "category": "식재료"
+  },
+  {
+    "dialect": "괴기",
+    "standard": "고기",
+    "region": "전라",
+    "category": "식재료"
+  },
+  {
+    "dialect": "물괴기",
+    "standard": "생선",
+    "region": "경상",
+    "category": "식재료"
+  },
+  {
+    "dialect": "메르치",
+    "standard": "멸치",
+    "region": "경상",
+    "category": "식재료"
+  },
+  {
+    "dialect": "칼치",
+    "standard": "갈치",
+    "region": "경상",
+    "category": "식재료"
+  },
+  {
+    "dialect": "고도리",
+    "standard": "어린 고등어",
+    "region": "제주",
+    "category": "식재료"
+  },
+  {
+    "dialect": "오징에",
+    "standard": "오징어",
+    "region": "경상",
+    "category": "식재료"
+  },
+  {
+    "dialect": "문에",
+    "standard": "문어",
+    "region": "경상",
+    "category": "식재료"
+  },
+  {
+    "dialect": "메역",
+    "standard": "미역",
+    "region": "제주",
+    "category": "식재료"
+  },
+  {
+    "dialect": "새비",
+    "standard": "새우",
+    "region": "전라",
+    "category": "식재료"
+  },
+  {
+    "dialect": "조갑지",
+    "standard": "조개",
+    "region": "전국",
+    "category": "식재료"
+  },
+  {
+    "dialect": "꼬막살",
+    "standard": "꼬막",
+    "region": "전라",
+    "category": "식재료"
+  },
+  {
+    "dialect": "바지락살",
+    "standard": "바지락",
+    "region": "전국",
+    "category": "식재료"
+  },
+  {
+    "dialect": "갱이",
+    "standard": "게",
+    "region": "전라",
+    "category": "식재료"
+  },
+  {
+    "dialect": "낙제",
+    "standard": "낙지",
+    "region": "전라",
+    "category": "식재료"
+  },
+  {
+    "dialect": "소젖",
+    "standard": "우유",
+    "region": "전국",
+    "category": "식재료"
+  },
+  {
+    "dialect": "조포",
+    "standard": "두부",
+    "region": "충청",
+    "category": "식재료"
+  },
+  {
+    "dialect": "짐치",
+    "standard": "김치",
+    "region": "경상",
+    "category": "음식"
+  },
+  {
+    "dialect": "지짐이",
+    "standard": "부침개",
+    "region": "경상",
+    "category": "음식"
+  },
+  {
+    "dialect": "찌짐",
+    "standard": "부침개",
+    "region": "경상",
+    "category": "음식"
+  },
+  {
+    "dialect": "부치미",
+    "standard": "부침개",
+    "region": "충청",
+    "category": "음식"
+  },
+  {
+    "dialect": "지지미",
+    "standard": "부침개",
+    "region": "전라",
+    "category": "음식"
+  },
+  {
+    "dialect": "국시",
+    "standard": "국수",
+    "region": "경상",
+    "category": "음식"
+  },
+  {
+    "dialect": "갱국",
+    "standard": "국",
+    "region": "경상",
+    "category": "음식"
+  },
+  {
+    "dialect": "시락국",
+    "standard": "시래기된장국",
+    "region": "경상",
+    "category": "음식"
+  },
+  {
+    "dialect": "지갱이",
+    "standard": "된장국",
+    "region": "제주",
+    "category": "음식"
+  },
+  {
+    "dialect": "토장국",
+    "standard": "된장국",
+    "region": "전라",
+    "category": "음식"
+  },
+  {
+    "dialect": "정종",
+    "standard": "청주",
+    "region": "전국",
+    "category": "음식"
+  },
+  {
+    "dialect": "탁배기",
+    "standard": "막걸리",
+    "region": "전국",
+    "category": "음식"
+  },
+  {
+    "dialect": "꼬치안주",
+    "standard": "꼬치",
+    "region": "전국",
+    "category": "음식"
+  },
+  {
+    "dialect": "비지밥",
+    "standard": "콩비지찌개",
+    "region": "전라",
+    "category": "음식"
+  },
+  {
+    "dialect": "개장국",
+    "standard": "보신탕",
+    "region": "전국",
+    "category": "음식"
+  },
+  {
+    "dialect": "호박범벅",
+    "standard": "호박죽",
+    "region": "강원",
+    "category": "음식"
+  },
+  {
+    "dialect": "감자옹심이",
+    "standard": "감자수제비",
+    "region": "강원",
+    "category": "음식"
+  },
+  {
+    "dialect": "멍석떡",
+    "standard": "시루떡",
+    "region": "전라",
+    "category": "음식"
+  },
+  {
+    "dialect": "꼬장떡",
+    "standard": "고추장떡",
+    "region": "전라",
+    "category": "음식"
+  },
+  {
+    "dialect": "빙떡",
+    "standard": "무전병",
+    "region": "제주",
+    "category": "음식"
+  },
+  {
+    "dialect": "몸국",
+    "standard": "모자반국",
+    "region": "제주",
+    "category": "음식"
+  },
+  {
+    "dialect": "자리물회",
+    "standard": "자리돔물회",
+    "region": "제주",
+    "category": "음식"
+  },
+  {
+    "dialect": "콩국",
+    "standard": "콩국수 국물",
+    "region": "전라",
+    "category": "음식"
+  },
+  {
+    "dialect": "푸데기",
+    "standard": "물김치",
+    "region": "경상",
+    "category": "음식"
+  },
+  {
+    "dialect": "짜다리",
+    "standard": "싱거운 음식",
+    "region": "경상",
+    "category": "음식"
+  },
+  {
+    "dialect": "간간하다",
+    "standard": "조금 짜다",
+    "region": "전국",
+    "category": "음식"
+  },
+  {
+    "dialect": "개미지다",
+    "standard": "감칠맛이 좋다",
+    "region": "전라",
+    "category": "음식"
+  },
+  {
+    "dialect": "맛나다",
+    "standard": "맛있다",
+    "region": "전라",
+    "category": "음식"
+  },
+  {
+    "dialect": "맛있다이",
+    "standard": "맛있다",
+    "region": "경상",
+    "category": "음식"
+  },
+  {
+    "dialect": "지지다",
+    "standard": "조리다",
+    "region": "전국",
+    "category": "음식"
+  },
+  {
+    "dialect": "뽂다",
+    "standard": "볶다",
+    "region": "경상",
+    "category": "음식"
+  },
+  {
+    "dialect": "삶기다",
+    "standard": "삶다",
+    "region": "전국",
+    "category": "음식"
+  },
+  {
+    "dialect": "데치다",
+    "standard": "살짝 삶다",
+    "region": "전국",
+    "category": "음식"
+  },
+  {
+    "dialect": "꼬독꼬독",
+    "standard": "꼬들꼬들",
+    "region": "전국",
+    "category": "음식"
+  },
+  {
+    "dialect": "푸실푸실",
+    "standard": "퍼석퍼석",
+    "region": "전국",
+    "category": "음식"
+  },
+  {
+    "dialect": "간보다",
+    "standard": "맛을 보다",
+    "region": "전국",
+    "category": "음식"
+  },
+  {
+    "dialect": "편찮다",
     "standard": "아프다",
-    "region": "경남"
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "놀라언께",
-    "standard": "조금 놀랐다",
-    "region": "전북"
+    "dialect": "아푸다",
+    "standard": "아프다",
+    "region": "경상",
+    "category": "신체증상"
   },
   {
-    "dialect": "시운",
-    "standard": "불쌍하다",
-    "region": "경상"
+    "dialect": "아프요",
+    "standard": "아파요",
+    "region": "전라",
+    "category": "신체증상"
   },
   {
-    "dialect": "다래",
-    "standard": "그래",
-    "region": "전남"
+    "dialect": "애리다",
+    "standard": "쓰라리다",
+    "region": "경상",
+    "category": "신체증상"
   },
   {
-    "dialect": "나가마이",
-    "standard": "놀라지 마",
-    "region": "전남"
+    "dialect": "재리다",
+    "standard": "저리다",
+    "region": "경상",
+    "category": "신체증상"
   },
   {
-    "dialect": "님이",
-    "standard": "당신이",
-    "region": "전국"
+    "dialect": "절리다",
+    "standard": "결리다",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "이잉嘿",
-    "standard": "아니",
-    "region": "경북"
+    "dialect": "쑤신다",
+    "standard": "쑤시다",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "아잣",
-    "standard": "아이고",
-    "region": "전북"
+    "dialect": "숨가뿌다",
+    "standard": "숨이 차다",
+    "region": "경상",
+    "category": "신체증상"
   },
   {
-    "dialect": "흐어럭",
-    "standard": "말끔히",
-    "region": "전북"
+    "dialect": "숨차요",
+    "standard": "숨이 차다",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "허허",
-    "standard": "하하",
-    "region": "경상"
+    "dialect": "어지럽다",
+    "standard": "현기증이 나다",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "마우나",
-    "standard": "많아",
-    "region": "경북"
+    "dialect": "아찔하다",
+    "standard": "어지럽다",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "누름",
-    "standard": "불러라",
-    "region": "전남"
+    "dialect": "심없다",
+    "standard": "힘이 없다",
+    "region": "경상",
+    "category": "신체증상"
   },
   {
-    "dialect": "가빠다",
-    "standard": "게으르다",
-    "region": "전남"
+    "dialect": "기운없다",
+    "standard": "기력이 없다",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "까르다",
-    "standard": "까다롭다",
-    "region": "전국"
+    "dialect": "기운차리다",
+    "standard": "기력을 회복하다",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "으니다",
-    "standard": "이러하다",
-    "region": "경상"
+    "dialect": "얹히다",
+    "standard": "체하다",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "바람이",
-    "standard": "바람",
-    "region": "전국"
+    "dialect": "체했다",
+    "standard": "소화가 안 되다",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "낮싸",
-    "standard": "마지막",
-    "region": "조선"
+    "dialect": "배앓이",
+    "standard": "복통",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "주야",
-    "standard": "낮이나 밤이나",
-    "region": "전국"
+    "dialect": "배탈",
+    "standard": "장염 증상",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "깨달닭깨달닭",
-    "standard": "꿋꿋",
-    "region": "전국"
+    "dialect": "물찌똥",
+    "standard": "설사",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "소오",
-    "standard": "소",
-    "region": "조선"
+    "dialect": "고뿔",
+    "standard": "감기",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "가만이",
-    "standard": "가만히",
-    "region": "조선"
+    "dialect": "지침",
+    "standard": "기침",
+    "region": "경상",
+    "category": "신체증상"
   },
   {
-    "dialect": "금댕",
-    "standard": "금방",
-    "region": "조선"
+    "dialect": "개기침",
+    "standard": "잔기침",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "무놰",
-    "standard": "뭐라고",
-    "region": "전남"
+    "dialect": "가심",
+    "standard": "가슴",
+    "region": "경상",
+    "category": "신체증상"
   },
   {
-    "dialect": "하시는",
-    "standard": "하시는",
-    "region": "전국"
+    "dialect": "배때기",
+    "standard": "배",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "고를다",
-    "standard": "고르다",
-    "region": "전국"
+    "dialect": "모가지",
+    "standard": "목",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "가벼이",
-    "standard": "가벼이",
-    "region": "전국"
+    "dialect": "무루팍",
+    "standard": "무릎",
+    "region": "경상",
+    "category": "신체증상"
   },
   {
-    "dialect": "조타",
-    "standard": "좋다",
-    "region": "경남"
+    "dialect": "무럽",
+    "standard": "무릎",
+    "region": "전라",
+    "category": "신체증상"
   },
   {
-    "dialect": "안 코다다",
-    "standard": "안 좋아",
-    "region": "제주"
+    "dialect": "어께",
+    "standard": "어깨",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "나이",
-    "standard": "나도",
-    "region": "제주"
+    "dialect": "이빠디",
+    "standard": "치아",
+    "region": "경상",
+    "category": "신체증상"
   },
   {
-    "dialect": "아리가",
-    "standard": "진짜",
-    "region": "경남"
+    "dialect": "이빨",
+    "standard": "치아",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "음다",
-    "standard": "음",
-    "region": "전북"
+    "dialect": "이몸",
+    "standard": "잇몸",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "아잣아하나",
-    "standard": "아무튼",
-    "region": "전북"
+    "dialect": "눈까리",
+    "standard": "눈",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "재벌잇당",
-    "standard": "까칠하다",
-    "region": "경남"
+    "dialect": "귀때기",
+    "standard": "귀",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "마파리",
-    "standard": "말이 많아",
-    "region": "전남"
+    "dialect": "대가리",
+    "standard": "머리",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "IIIKE",
-    "standard": "그래도",
-    "region": "전남"
+    "dialect": "디딜다리",
+    "standard": "다리",
+    "region": "전라",
+    "category": "신체증상"
   },
   {
-    "dialect": "바뽑다",
-    "standard": "일이 많다",
-    "region": "전남"
+    "dialect": "살가죽",
+    "standard": "피부",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "마레",
-    "standard": "그래",
-    "region": "조선"
+    "dialect": "부었다",
+    "standard": "부종이 생기다",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "제라",
-    "standard": "그래",
-    "region": "전북"
+    "dialect": "피가지다",
+    "standard": "멍이 들다",
+    "region": "전라",
+    "category": "신체증상"
   },
   {
-    "dialect": "마흐아",
-    "standard": "몸",
-    "region": "조선"
+    "dialect": "어루러기",
+    "standard": "피부 반점",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "으레",
-    "standard": "이렇게",
-    "region": "경북"
+    "dialect": "땀띠",
+    "standard": "땀 발진",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "머라그네",
-    "standard": "뭐라고",
-    "region": "전북"
+    "dialect": "지리다",
+    "standard": "소변을 참지 못하다",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "어케",
-    "standard": "어떻게",
-    "region": "전국"
+    "dialect": "오줌",
+    "standard": "소변",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "디워",
-    "standard": "되어라",
-    "region": "경북"
+    "dialect": "소갈증",
+    "standard": "당뇨 증상",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "됐제",
-    "standard": "됐지",
-    "region": "전북"
+    "dialect": "혈압약",
+    "standard": "고혈압약",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "게명",
-    "standard": "그래",
-    "region": "전북"
+    "dialect": "당약",
+    "standard": "당뇨약",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "노라",
-    "standard": "너",
-    "region": "전남"
+    "dialect": "약사발",
+    "standard": "약",
+    "region": "전국",
+    "category": "신체증상"
   },
   {
-    "dialect": "돼마",
-    "standard": "되겠네",
-    "region": "전북"
+    "dialect": "와이라노",
+    "standard": "왜 그러니",
+    "region": "경상",
+    "category": "생활"
   },
   {
-    "dialect": "아닌다",
-    "standard": "아니다",
-    "region": "전북"
-  },
-  {
-    "dialect": "패로",
-    "standard": "그럼",
-    "region": "경북"
-  },
-  {
-    "dialect": "어디행",
-    "standard": "어디 가",
-    "region": "서울"
-  },
-  {
-    "dialect": "어따가",
-    "standard": "어디로 가",
-    "region": "서울"
-  },
-  {
-    "dialect": "마이노",
-    "standard": "좀 더",
-    "region": "전남"
-  },
-  {
-    "dialect": "돼매",
-    "standard": "되겠네",
-    "region": "전북"
-  },
-  {
-    "dialect": "마라",
-    "standard": "아니라",
-    "region": "전북"
-  },
-  {
-    "dialect": "입에 모도다",
-    "standard": "입으로 뭐라 하다",
-    "region": "전북"
-  },
-  {
-    "dialect": "마우",
-    "standard": "많아",
-    "region": "전북"
-  },
-  {
-    "dialect": "아멘다",
-    "standard": "아무렇다",
-    "region": "전북"
+    "dialect": "뭐라카노",
+    "standard": "뭐라고 하니",
+    "region": "경상",
+    "category": "생활"
   },
   {
     "dialect": "머라카드래",
     "standard": "뭐라고 하더라",
-    "region": "전북"
+    "region": "경상",
+    "category": "생활"
   },
   {
-    "dialect": "다래요",
-    "standard": "그래요",
-    "region": "전남"
+    "dialect": "뭐시당가",
+    "standard": "뭐라고",
+    "region": "전라",
+    "category": "생활"
   },
   {
-    "dialect": "인마",
-    "standard": "이놈",
-    "region": "전국"
+    "dialect": "뭣땜시",
+    "standard": "왜",
+    "region": "전라",
+    "category": "생활"
   },
   {
-    "dialect": "자식",
-    "standard": "아이",
-    "region": "전국"
+    "dialect": "어짜스까",
+    "standard": "어떻게 할까",
+    "region": "전라",
+    "category": "생활"
   },
   {
-    "dialect": "으깨끼",
-    "standard": "이 모양",
-    "region": "경북"
+    "dialect": "어케",
+    "standard": "어떻게",
+    "region": "전국",
+    "category": "생활"
   },
   {
-    "dialect": "허겁지겁되는",
-    "standard": "성급하게",
-    "region": "전국"
+    "dialect": "오데",
+    "standard": "어디",
+    "region": "경상",
+    "category": "생활"
   },
   {
-    "dialect": "되거든",
-    "standard": "되겠지",
-    "region": "전북"
+    "dialect": "어디가노",
+    "standard": "어디 가니",
+    "region": "경상",
+    "category": "생활"
   },
   {
-    "dialect": "무조",
-    "standard": "무조건",
-    "region": "전국"
-  },
-  {
-    "dialect": "진짜모",
-    "standard": "진짜",
-    "region": "전국"
-  },
-  {
-    "dialect": "너바",
-    "standard": "너",
-    "region": "전북"
-  },
-  {
-    "dialect": "머구",
-    "standard": "뭐",
-    "region": "경북"
-  },
-  {
-    "dialect": "가다",
-    "standard": "가다",
-    "region": "전국"
-  },
-  {
-    "dialect": "됐제",
-    "standard": "됐지",
-    "region": "경북"
-  },
-  {
-    "dialect": "례",
-    "standard": "그래",
-    "region": "경남"
-  },
-  {
-    "dialect": "아조",
-    "standard": "하자",
-    "region": "조선"
-  },
-  {
-    "dialect": "되언교",
-    "standard": "되었어",
-    "region": "전남"
-  },
-  {
-    "dialect": "있고",
-    "standard": "있어",
-    "region": "전국"
-  },
-  {
-    "dialect": "마나",
-    "standard": "좋은 날",
-    "region": "전북"
-  },
-  {
-    "dialect": "되겠나",
-    "standard": "되겠나요",
-    "region": "전북"
-  },
-  {
-    "dialect": "흠잡다",
-    "standard": "흠 잡다",
-    "region": "전국"
-  },
-  {
-    "dialect": "되지",
-    "standard": "되지",
-    "region": "전국"
-  },
-  {
-    "dialect": "됐나",
-    "standard": "됐었나",
-    "region": "전북"
-  },
-  {
-    "dialect": "아래",
-    "standard": "아래",
-    "region": "전국"
-  },
-  {
-    "dialect": "제그네",
-    "standard": "저렇게",
-    "region": "경북"
-  },
-  {
-    "dialect": "인제",
-    "standard": "이제",
-    "region": "전국"
-  },
-  {
-    "dialect": "되겠네",
-    "standard": "되겠네",
-    "region": "전북"
-  },
-  {
-    "dialect": "적되로",
-    "standard": "적도",
-    "region": "전국"
-  },
-  {
-    "dialect": "어",
-    "standard": "어",
-    "region": "전국"
-  },
-  {
-    "dialect": "되겠제",
-    "standard": "되겠지",
-    "region": "전북"
-  },
-  {
-    "dialect": "제래",
-    "standard": "그래",
-    "region": "전북"
-  },
-  {
-    "dialect": "가짜",
-    "standard": "거짓",
-    "region": "전국"
-  },
-  {
-    "dialect": "남이",
-    "standard": "다른",
-    "region": "경상"
-  },
-  {
-    "dialect": "그려",
-    "standard": "그래요",
-    "region": "전북"
-  },
-  {
-    "dialect": "마",
-    "standard": "나",
-    "region": "조선"
-  },
-  {
-    "dialect": "돼는고",
-    "standard": "되는고",
-    "region": "전북"
-  },
-  {
-    "dialect": "허떠",
-    "standard": "나타나다",
-    "region": "전국"
-  },
-  {
-    "dialect": "됨다",
-    "standard": "됩니다",
-    "region": "경북"
-  },
-  {
-    "dialect": "안계",
-    "standard": "없어",
-    "region": "경남"
-  },
-  {
-    "dialect": "Maurice",
-    "standard": "모리",
-    "region": "전북"
-  },
-  {
-    "dialect": "마나",
-    "standard": "만나",
-    "region": "전북"
-  },
-  {
-    "dialect": "줘",
-    "standard": "줘",
-    "region": "전국"
-  },
-  {
-    "dialect": "아진짜",
-    "standard": "아 진짜",
-    "region": "전국"
-  },
-  {
-    "dialect": "아무래",
-    "standard": "아무렇게",
-    "region": "전국"
-  },
-  {
-    "dialect": "됐거든",
-    "standard": "됐었지",
-    "region": "전북"
-  },
-  {
-    "dialect": "IIIke",
-    "standard": "그래도",
-    "region": "전남"
-  },
-  {
-    "dialect": "마웨",
-    "standard": "많이",
-    "region": "전북"
-  },
-  {
-    "dialect": "아러",
-    "standard": "하는",
-    "region": "전국"
-  },
-  {
-    "dialect": "며칠",
-    "standard": "며칠",
-    "region": "전국"
-  },
-  {
-    "dialect": "나",
-    "standard": "나",
-    "region": "전국"
-  },
-  {
-    "dialect": "으다",
-    "standard": "이다",
-    "region": "경상"
-  },
-  {
-    "dialect": "되먼",
-    "standard": "되면",
-    "region": "전북"
-  },
-  {
-    "dialect": "제레",
-    "standard": "저렇게",
-    "region": "전남"
-  },
-  {
-    "dialect": "된다운다",
-    "standard": "되었다",
-    "region": "전남"
-  },
-  {
-    "dialect": "아재",
-    "standard": "아저씨",
-    "region": "전남"
+    "dialect": "어디가요",
+    "standard": "어디 가세요",
+    "region": "전라",
+    "category": "생활"
   },
   {
     "dialect": "시방",
     "standard": "지금",
-    "region": "전북"
+    "region": "전라",
+    "category": "생활"
   },
   {
-    "dialect": "이제시방",
-    "standard": "이제 지금",
-    "region": "전북"
+    "dialect": "인자",
+    "standard": "이제",
+    "region": "전라",
+    "category": "생활"
+  },
+  {
+    "dialect": "인제",
+    "standard": "이제",
+    "region": "전국",
+    "category": "생활"
+  },
+  {
+    "dialect": "아까침에",
+    "standard": "아까",
+    "region": "경상",
+    "category": "생활"
+  },
+  {
+    "dialect": "어제밤",
+    "standard": "어젯밤",
+    "region": "전국",
+    "category": "생활"
+  },
+  {
+    "dialect": "그저께",
+    "standard": "이틀 전",
+    "region": "전국",
+    "category": "생활"
+  },
+  {
+    "dialect": "아침나절",
+    "standard": "아침 무렵",
+    "region": "전국",
+    "category": "생활"
+  },
+  {
+    "dialect": "저물녘",
+    "standard": "해질 무렵",
+    "region": "전국",
+    "category": "생활"
+  },
+  {
+    "dialect": "억수로",
+    "standard": "매우",
+    "region": "경상",
+    "category": "생활"
+  },
+  {
+    "dialect": "겁나게",
+    "standard": "매우",
+    "region": "전라",
+    "category": "생활"
+  },
+  {
+    "dialect": "디게",
+    "standard": "매우",
+    "region": "경상",
+    "category": "생활"
+  },
+  {
+    "dialect": "숭악하게",
+    "standard": "심하게",
+    "region": "전라",
+    "category": "생활"
+  },
+  {
+    "dialect": "쪼매",
+    "standard": "조금",
+    "region": "경상",
+    "category": "생활"
+  },
+  {
+    "dialect": "째까",
+    "standard": "조금",
+    "region": "전라",
+    "category": "생활"
+  },
+  {
+    "dialect": "쬐끔",
+    "standard": "조금",
+    "region": "전국",
+    "category": "생활"
+  },
+  {
+    "dialect": "한나도",
+    "standard": "하나도",
+    "region": "전라",
+    "category": "생활"
+  },
+  {
+    "dialect": "찬찬히",
+    "standard": "천천히",
+    "region": "전국",
+    "category": "생활"
+  },
+  {
+    "dialect": "얼릉",
+    "standard": "얼른",
+    "region": "전국",
+    "category": "생활"
+  },
+  {
+    "dialect": "묵다",
+    "standard": "먹다",
+    "region": "경상",
+    "category": "생활"
+  },
+  {
+    "dialect": "무웠나",
+    "standard": "먹었니",
+    "region": "경상",
+    "category": "생활"
+  },
+  {
+    "dialect": "드시소",
+    "standard": "드세요",
+    "region": "경상",
+    "category": "생활"
+  },
+  {
+    "dialect": "드시씨요",
+    "standard": "드세요",
+    "region": "전라",
+    "category": "생활"
+  },
+  {
+    "dialect": "자시다",
+    "standard": "드시다",
+    "region": "전국",
+    "category": "생활"
+  },
+  {
+    "dialect": "잡숴",
+    "standard": "드세요",
+    "region": "전국",
+    "category": "생활"
+  },
+  {
+    "dialect": "개안타",
+    "standard": "괜찮다",
+    "region": "경상",
+    "category": "생활"
+  },
+  {
+    "dialect": "갠찮다",
+    "standard": "괜찮다",
+    "region": "전국",
+    "category": "생활"
+  },
+  {
+    "dialect": "됐다마",
+    "standard": "됐다",
+    "region": "경상",
+    "category": "생활"
+  },
+  {
+    "dialect": "그라제",
+    "standard": "그렇지",
+    "region": "전라",
+    "category": "생활"
   },
   {
     "dialect": "그라요",
     "standard": "그래요",
-    "region": "전남"
+    "region": "전라",
+    "category": "생활"
   },
   {
-    "dialect": "원",
-    "standard": "아니",
-    "region": "전남"
+    "dialect": "그렇구마",
+    "standard": "그렇군요",
+    "region": "경상",
+    "category": "생활"
   },
   {
-    "dialect": "그마",
-    "standard": "그렇게",
-    "region": "전남"
+    "dialect": "아니라예",
+    "standard": "아닙니다",
+    "region": "경상",
+    "category": "생활"
   },
   {
-    "dialect": "듯",
-    "standard": "듯",
-    "region": "전국"
+    "dialect": "아니어라",
+    "standard": "아닙니다",
+    "region": "전라",
+    "category": "생활"
   },
   {
-    "dialect": "을",
-    "standard": "물건",
-    "region": "전국"
+    "dialect": "참말로",
+    "standard": "정말로",
+    "region": "전라",
+    "category": "생활"
   },
   {
-    "dialect": "머",
-    "standard": "뭐",
-    "region": "전국"
+    "dialect": "진짜로",
+    "standard": "정말로",
+    "region": "전국",
+    "category": "생활"
   },
   {
-    "dialect": "으노",
-    "standard": "으노",
-    "region": "경북"
+    "dialect": "엄따",
+    "standard": "없다",
+    "region": "경상",
+    "category": "생활"
   },
   {
-    "dialect": "주간",
-    "standard": "이럼",
-    "region": "전남"
+    "dialect": "읎다",
+    "standard": "없다",
+    "region": "충청",
+    "category": "생활"
   },
   {
-    "dialect": "나가는데",
-    "standard": "나가는데",
-    "region": "전남"
+    "dialect": "있는교",
+    "standard": "있습니까",
+    "region": "경상",
+    "category": "생활"
   },
   {
-    "dialect": "잔치놓다",
-    "standard": "잔치하다",
-    "region": "조선"
+    "dialect": "합디다",
+    "standard": "하더군요",
+    "region": "전라",
+    "category": "생활"
   },
   {
-    "dialect": "마렵다",
-    "standard": "마렵다",
-    "region": "전북"
+    "dialect": "하이소",
+    "standard": "하세요",
+    "region": "경상",
+    "category": "생활"
   },
   {
-    "dialect": "귀팅",
-    "standard": "귀가",
-    "region": "경상"
+    "dialect": "해보소",
+    "standard": "해보세요",
+    "region": "전국",
+    "category": "생활"
   },
   {
-    "dialect": "가만",
-    "standard": "가만히",
-    "region": "전국"
+    "dialect": "아재",
+    "standard": "아저씨",
+    "region": "전라",
+    "category": "생활"
   },
   {
-    "dialect": "사로",
-    "standard": "새로",
-    "region": "전북"
+    "dialect": "아지매",
+    "standard": "아주머니",
+    "region": "경상",
+    "category": "생활"
   },
   {
-    "dialect": "제가",
-    "standard": "저게",
-    "region": "전남"
+    "dialect": "아주매",
+    "standard": "아주머니",
+    "region": "전라",
+    "category": "생활"
   },
   {
-    "dialect": "고치다",
-    "standard": "고치다",
-    "region": "대게"
+    "dialect": "어멍",
+    "standard": "어머니",
+    "region": "제주",
+    "category": "생활"
   },
   {
-    "dialect": "가뿐",
-    "standard": "가볍다",
-    "region": "전국"
+    "dialect": "아방",
+    "standard": "아버지",
+    "region": "제주",
+    "category": "생활"
   },
   {
-    "dialect": "하노",
-    "standard": "하노",
-    "region": "전북"
+    "dialect": "하르방",
+    "standard": "할아버지",
+    "region": "제주",
+    "category": "생활"
   },
   {
-    "dialect": "가고라우",
-    "standard": "가는구려",
-    "region": "경남"
+    "dialect": "할망",
+    "standard": "할머니",
+    "region": "제주",
+    "category": "생활"
   },
   {
-    "dialect": "어가",
-    "standard": "내일",
-    "region": "전북"
+    "dialect": "오라방",
+    "standard": "오빠",
+    "region": "제주",
+    "category": "생활"
   },
   {
-    "dialect": "오셀",
-    "standard": "오늘",
-    "region": "전북"
+    "dialect": "할부지",
+    "standard": "할아버지",
+    "region": "경상",
+    "category": "생활"
   },
   {
-    "dialect": "옹",
-    "standard": "저",
-    "region": "전국"
+    "dialect": "할무이",
+    "standard": "할머니",
+    "region": "경상",
+    "category": "생활"
   },
   {
-    "dialect": "잠조",
-    "standard": "네가",
-    "region": "전남"
+    "dialect": "어무이",
+    "standard": "어머니",
+    "region": "경상",
+    "category": "생활"
   },
   {
-    "dialect": "예가",
-    "standard": "저게",
-    "region": "전남"
+    "dialect": "아부지",
+    "standard": "아버지",
+    "region": "전국",
+    "category": "생활"
   },
   {
-    "dialect": "씀다",
-    "standard": "씁니다",
-    "region": "경북"
+    "dialect": "지집아",
+    "standard": "여자아이",
+    "region": "경상",
+    "category": "생활"
   },
   {
-    "dialect": "빼빼로",
-    "standard": "빼빼로",
-    "region": "전국"
+    "dialect": "머스마",
+    "standard": "남자아이",
+    "region": "경상",
+    "category": "생활"
   },
   {
-    "dialect": "조례",
-    "standard": "조례",
-    "region": "전남"
+    "dialect": "손지",
+    "standard": "손자",
+    "region": "전국",
+    "category": "생활"
   },
   {
-    "dialect": "으는",
-    "standard": "이 떼",
-    "region": "전북"
+    "dialect": "영감쟁이",
+    "standard": "남편",
+    "region": "전국",
+    "category": "생활"
   },
   {
-    "dialect": "가",
-    "standard": "가",
-    "region": "전국"
+    "dialect": "임자",
+    "standard": "당신",
+    "region": "전국",
+    "category": "생활"
   },
   {
-    "dialect": "으",
-    "standard": "으",
-    "region": "전남"
+    "dialect": "자네",
+    "standard": "당신",
+    "region": "전국",
+    "category": "생활"
   },
   {
-    "dialect": "허",
-    "standard": "허",
-    "region": "전국"
+    "dialect": "워매",
+    "standard": "어머나",
+    "region": "전라",
+    "category": "생활"
   },
   {
-    "dialect": "아리다",
-    "standard": "추다",
-    "region": "전국"
+    "dialect": "아이고나",
+    "standard": "아이고",
+    "region": "전국",
+    "category": "생활"
   },
   {
-    "dialect": "잉뎅",
-    "standard": "아니",
-    "region": "경북"
+    "dialect": "아이쿠나",
+    "standard": "아이고",
+    "region": "전국",
+    "category": "생활"
   },
   {
-    "dialect": "마치",
-    "standard": "마치",
-    "region": "전북"
+    "dialect": "징하다",
+    "standard": "지겹다",
+    "region": "전라",
+    "category": "생활"
   },
   {
-    "dialect": "진짜",
-    "standard": "진짜",
-    "region": "전국"
+    "dialect": "개갈안난다",
+    "standard": "시원치 않다",
+    "region": "충청",
+    "category": "생활"
   },
   {
-    "dialect": "안",
-    "standard": "안",
-    "region": "전국"
+    "dialect": "성가시다",
+    "standard": "귀찮다",
+    "region": "전국",
+    "category": "생활"
+  },
+  {
+    "dialect": "수다떨다",
+    "standard": "이야기를 나누다",
+    "region": "제주",
+    "category": "생활"
+  },
+  {
+    "dialect": "욜로",
+    "standard": "여기로",
+    "region": "전라",
+    "category": "생활"
   },
   {
     "dialect": "일루",
     "standard": "여기로",
-    "region": "전북"
+    "region": "충청",
+    "category": "생활"
   },
   {
-    "dialect": "일러",
-    "standard": "여기로",
-    "region": "전남"
+    "dialect": "저짝",
+    "standard": "저쪽",
+    "region": "전라",
+    "category": "생활"
   },
   {
-    "dialect": "예기",
-    "standard": "저기",
-    "region": "경남"
+    "dialect": "이짝",
+    "standard": "이쪽",
+    "region": "전라",
+    "category": "생활"
   },
   {
-    "dialect": "노새",
-    "standard": "너야",
-    "region": "전북"
+    "dialect": "요래",
+    "standard": "이렇게",
+    "region": "경상",
+    "category": "생활"
   },
   {
-    "dialect": "잔디기",
-    "standard": "잔디를",
-    "region": "전국"
+    "dialect": "그래가꼬",
+    "standard": "그래서",
+    "region": "경상",
+    "category": "생활"
   },
   {
-    "dialect": "고마",
-    "standard": "고마워",
-    "region": "조선"
+    "dialect": "그랑께",
+    "standard": "그러니까",
+    "region": "전라",
+    "category": "생활"
   },
   {
-    "dialect": "마럽고",
-    "standard": "끊임없이",
-    "region": "전남"
+    "dialect": "헝게",
+    "standard": "하니까",
+    "region": "전라",
+    "category": "생활"
   },
   {
-    "dialect": "써",
-    "standard": "써라",
-    "region": "경상"
+    "dialect": "잘묵었다",
+    "standard": "잘 먹었다",
+    "region": "경상",
+    "category": "생활"
   },
   {
-    "dialect": "어서",
-    "standard": "빨리",
-    "region": "전국"
+    "dialect": "고맙구마",
+    "standard": "고맙습니다",
+    "region": "경상",
+    "category": "생활"
   },
   {
-    "dialect": "마스왈",
-    "standard": "많이",
-    "region": "전북"
+    "dialect": "고맙습니더",
+    "standard": "고맙습니다",
+    "region": "경상",
+    "category": "생활"
   },
   {
-    "dialect": "마레",
-    "standard": "여기",
-    "region": "조선"
-  },
-  {
-    "dialect": "주시",
-    "standard": "주세요",
-    "region": "전국"
-  },
-  {
-    "dialect": "IV 나레기",
-    "standard": "무엇",
-    "region": "조선"
-  },
-  {
-    "dialect": "흐으리",
-    "standard": "아름답다",
-    "region": "전국"
-  },
-  {
-    "dialect": "아이쿠나",
-    "standard": "힘들다",
-    "region": "전국"
-  },
-  {
-    "dialect": "헐레벌떡",
-    "standard": "갑자기",
-    "region": "전국"
-  },
-  {
-    "dialect": "웃치다",
-    "standard": "웃기다",
-    "region": "전북"
-  },
-  {
-    "dialect": "수다",
-    "standard": "재잘거리다",
-    "region": "제주"
-  },
-  {
-    "dialect": "이지마",
-    "standard": "어서",
-    "region": "조선"
-  },
-  {
-    "dialect": "마세",
-    "standard": "주세요",
-    "region": "조선"
-  },
-  {
-    "dialect": "게메",
-    "standard": "그랬어",
-    "region": "경북"
-  },
-  {
-    "dialect": "되마",
-    "standard": "되겠네",
-    "region": "전북"
-  },
-  {
-    "dialect": "돼다",
-    "standard": "되다",
-    "region": "전국"
-  },
-  {
-    "dialect": "에석",
-    "standard": "어차피",
-    "region": "경남"
-  },
-  {
-    "dialect": "세상",
-    "standard": "세상",
-    "region": "전국"
-  },
-  {
-    "dialect": "죽고",
-    "standard": "죽어",
-    "region": "전국"
-  },
-  {
-    "dialect": "고간다",
-    "standard": "고고",
-    "region": "전국"
-  },
-  {
-    "dialect": "IKA",
-    "standard": "콩글",
-    "region": "조사"
+    "dialect": "반갑구마",
+    "standard": "반갑습니다",
+    "region": "경상",
+    "category": "생활"
   }
 ]

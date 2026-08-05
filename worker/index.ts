@@ -2,9 +2,13 @@
 import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
 
+// @cloudflare/workers-types 를 설치하지 않아 Fetcher 전역 타입이 없다.
+// 여기서 쓰는 것은 fetch 하나뿐이라 필요한 만큼만 직접 선언한다.
+type AssetFetcher = { fetch(request: Request): Promise<Response> };
+
+// D1 바인딩은 두지 않는다. 건강 정보는 서버가 아니라 브라우저(IndexedDB)에만 저장한다.
 interface Env {
-  ASSETS: Fetcher;
-  DB: D1Database;
+  ASSETS: AssetFetcher;
   IMAGES: {
     input(stream: ReadableStream): {
       transform(options: Record<string, unknown>): {
