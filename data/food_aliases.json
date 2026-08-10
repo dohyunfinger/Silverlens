@@ -503,5 +503,1001 @@
     "alias": "흑당",
     "standard": "흑설탕",
     "kind": "별칭"
+  },
+  {
+    "alias": "가쓰오부시",
+    "standard": "가다랑어포",
+    "kind": "외래어"
+  },
+  {
+    "alias": "갈매기살",
+    "standard": "돼지 갈매기살",
+    "kind": "별칭"
+  },
+  {
+    "alias": "감자전분",
+    "standard": "감자 녹말",
+    "kind": "별칭"
+  },
+  {
+    "alias": "과메기",
+    "standard": "말린 청어 꽁치",
+    "kind": "별칭"
+  },
+  {
+    "alias": "구기자",
+    "standard": "한방 약재 과실",
+    "kind": "별칭"
+  },
+  {
+    "alias": "굴소스",
+    "standard": "굴 추출 조미료",
+    "kind": "별칭"
+  },
+  {
+    "alias": "굴비",
+    "standard": "말린 조기",
+    "kind": "별칭"
+  },
+  {
+    "alias": "궁채",
+    "standard": "줄기상추",
+    "kind": "별칭"
+  },
+  {
+    "alias": "귀리가루",
+    "standard": "귀리 분말",
+    "kind": "별칭"
+  },
+  {
+    "alias": "귤피",
+    "standard": "말린 귤껍질",
+    "kind": "별칭"
+  },
+  {
+    "alias": "까망베르",
+    "standard": "카망베르치즈",
+    "kind": "외래어"
+  },
+  {
+    "alias": "까나리액젓",
+    "standard": "까나리 어간장",
+    "kind": "별칭"
+  },
+  {
+    "alias": "꼬막",
+    "standard": "피조개류",
+    "kind": "별칭"
+  },
+  {
+    "alias": "꽃게",
+    "standard": "게류",
+    "kind": "별칭"
+  },
+  {
+    "alias": "나초치즈",
+    "standard": "치즈 소스",
+    "kind": "외래어"
+  },
+  {
+    "alias": "날치알",
+    "standard": "날치 어류 알",
+    "kind": "별칭"
+  },
+  {
+    "alias": "남프라",
+    "standard": "태국식 피시소스",
+    "kind": "외래어"
+  },
+  {
+    "alias": "대패삼겹살",
+    "standard": "얇은 삼겹살",
+    "kind": "별칭"
+  },
+  {
+    "alias": "도가니",
+    "standard": "소 무릎 연골",
+    "kind": "별칭"
+  },
+  {
+    "alias": "도토리묵",
+    "standard": "도토리 녹말 묵",
+    "kind": "별칭"
+  },
+  {
+    "alias": "동치미",
+    "standard": "무 물김치",
+    "kind": "별칭"
+  },
+  {
+    "alias": "두반장",
+    "standard": "매운 콩장 소스",
+    "kind": "외래어"
+  },
+  {
+    "alias": "두유",
+    "standard": "콩즙 음료",
+    "kind": "별칭"
+  },
+  {
+    "alias": "디종머스타드",
+    "standard": "디종 겨자 소스",
+    "kind": "외래어"
+  },
+  {
+    "alias": "또띠아",
+    "standard": "토르티야",
+    "kind": "외래어"
+  },
+  {
+    "alias": "라이스페이퍼",
+    "standard": "쌀종이",
+    "kind": "외래어"
+  },
+  {
+    "alias": "랍스터",
+    "standard": "바닷가재",
+    "kind": "외래어"
+  },
+  {
+    "alias": "로즈마리",
+    "standard": "로즈메리",
+    "kind": "외래어"
+  },
+  {
+    "alias": "마라소스",
+    "standard": "매운 얼얼한 소스",
+    "kind": "외래어"
+  },
+  {
+    "alias": "마스카포네",
+    "standard": "마스카포네치즈",
+    "kind": "외래어"
+  },
+  {
+    "alias": "말차",
+    "standard": "가루녹차",
+    "kind": "외래어"
+  },
+  {
+    "alias": "매실청",
+    "standard": "매실 발효액",
+    "kind": "별칭"
+  },
+  {
+    "alias": "머스타드",
+    "standard": "머스터드",
+    "kind": "외래어"
+  },
+  {
+    "alias": "먹태",
+    "standard": "건조 명태",
+    "kind": "별칭"
+  },
+  {
+    "alias": "명란",
+    "standard": "명태알",
+    "kind": "별칭"
+  },
+  {
+    "alias": "모과청",
+    "standard": "모과 당절임",
+    "kind": "별칭"
+  },
+  {
+    "alias": "목살",
+    "standard": "돼지 목심",
+    "kind": "별칭"
+  },
+  {
+    "alias": "바질페스토",
+    "standard": "바질 소스",
+    "kind": "외래어"
+  },
+  {
+    "alias": "바닐라빈",
+    "standard": "바닐라 향신료",
+    "kind": "외래어"
+  },
+  {
+    "alias": "발사믹글레이즈",
+    "standard": "농축 발사믹",
+    "kind": "외래어"
+  },
+  {
+    "alias": "밤호박",
+    "standard": "단호박",
+    "kind": "별칭"
+  },
+  {
+    "alias": "백향과",
+    "standard": "패션후르츠",
+    "kind": "별칭"
+  },
+  {
+    "alias": "버섯가루",
+    "standard": "건버섯 분말",
+    "kind": "별칭"
+  },
+  {
+    "alias": "보리차",
+    "standard": "볶은 보리 음료",
+    "kind": "별칭"
+  },
+  {
+    "alias": "북어",
+    "standard": "건조 명태",
+    "kind": "별칭"
+  },
+  {
+    "alias": "브리치즈",
+    "standard": "브리치즈",
+    "kind": "외래어"
+  },
+  {
+    "alias": "샤인머스캣",
+    "standard": "청포도",
+    "kind": "외래어"
+  },
+  {
+    "alias": "살라미",
+    "standard": "건조 소시지",
+    "kind": "외래어"
+  },
+  {
+    "alias": "샤브용소고기",
+    "standard": "얇은 소고기",
+    "kind": "별칭"
+  },
+  {
+    "alias": "성게알",
+    "standard": "성게 생식소",
+    "kind": "별칭"
+  },
+  {
+    "alias": "스리라차",
+    "standard": "매운 칠리소스",
+    "kind": "외래어"
+  },
+  {
+    "alias": "스노우치즈",
+    "standard": "치즈 시즈닝",
+    "kind": "외래어"
+  },
+  {
+    "alias": "아몬드유",
+    "standard": "아몬드 음료",
+    "kind": "외래어"
+  },
+  {
+    "alias": "아질산나트륨",
+    "standard": "보존제 발색제",
+    "kind": "별칭"
+  },
+  {
+    "alias": "애플망고",
+    "standard": "망고",
+    "kind": "외래어"
+  },
+  {
+    "alias": "얼그레이",
+    "standard": "홍차",
+    "kind": "외래어"
+  },
+  {
+    "alias": "에스프레소",
+    "standard": "농축 커피",
+    "kind": "외래어"
+  },
+  {
+    "alias": "연유",
+    "standard": "농축 우유",
+    "kind": "별칭"
+  },
+  {
+    "alias": "오트밀크",
+    "standard": "귀리 음료",
+    "kind": "외래어"
+  },
+  {
+    "alias": "와사비",
+    "standard": "고추냉이",
+    "kind": "외래어"
+  },
+  {
+    "alias": "용과",
+    "standard": "드래곤후르츠",
+    "kind": "별칭"
+  },
+  {
+    "alias": "우삼겹",
+    "standard": "소 삼겹살",
+    "kind": "별칭"
+  },
+  {
+    "alias": "우스터소스",
+    "standard": "서양식 간장 소스",
+    "kind": "외래어"
+  },
+  {
+    "alias": "원두커피",
+    "standard": "볶은 원두",
+    "kind": "별칭"
+  },
+  {
+    "alias": "월계수잎",
+    "standard": "서양 향신료 잎",
+    "kind": "별칭"
+  },
+  {
+    "alias": "유자청",
+    "standard": "유자 당절임",
+    "kind": "별칭"
+  },
+  {
+    "alias": "자숙문어",
+    "standard": "삶은 문어",
+    "kind": "별칭"
+  },
+  {
+    "alias": "자숙새우",
+    "standard": "삶은 새우",
+    "kind": "별칭"
+  },
+  {
+    "alias": "잔멸치",
+    "standard": "세멸치",
+    "kind": "별칭"
+  },
+  {
+    "alias": "장조림용소고기",
+    "standard": "소고기 우둔살",
+    "kind": "별칭"
+  },
+  {
+    "alias": "전복내장",
+    "standard": "전복 게우",
+    "kind": "별칭"
+  },
+  {
+    "alias": "조청",
+    "standard": "곡물 엿",
+    "kind": "별칭"
+  },
+  {
+    "alias": "진미채",
+    "standard": "조미 오징어채",
+    "kind": "별칭"
+  },
+  {
+    "alias": "차돌박이",
+    "standard": "소 차돌박이",
+    "kind": "별칭"
+  },
+  {
+    "alias": "창란젓",
+    "standard": "명태 창자 젓갈",
+    "kind": "별칭"
+  },
+  {
+    "alias": "청국장가루",
+    "standard": "청국장 분말",
+    "kind": "별칭"
+  },
+  {
+    "alias": "청양고추가루",
+    "standard": "매운 고춧가루",
+    "kind": "별칭"
+  },
+  {
+    "alias": "체다치즈",
+    "standard": "체더치즈",
+    "kind": "외래어"
+  },
+  {
+    "alias": "초고추장",
+    "standard": "초장",
+    "kind": "별칭"
+  },
+  {
+    "alias": "춘장",
+    "standard": "중화 볶음 콩장",
+    "kind": "외래어"
+  },
+  {
+    "alias": "츠유",
+    "standard": "일본식 간장 소스",
+    "kind": "외래어"
+  },
+  {
+    "alias": "칠리소스",
+    "standard": "매콤 달콤 소스",
+    "kind": "외래어"
+  },
+  {
+    "alias": "카레가루",
+    "standard": "카레 분말",
+    "kind": "외래어"
+  },
+  {
+    "alias": "카카오닙스",
+    "standard": "카카오 쇄편",
+    "kind": "외래어"
+  },
+  {
+    "alias": "칵테일새우",
+    "standard": "자숙 새우",
+    "kind": "외래어"
+  },
+  {
+    "alias": "코코넛밀크",
+    "standard": "코코넛 음료",
+    "kind": "외래어"
+  },
+  {
+    "alias": "콤부차",
+    "standard": "발효 음료",
+    "kind": "외래어"
+  },
+  {
+    "alias": "타바스코",
+    "standard": "핫소스",
+    "kind": "외래어"
+  },
+  {
+    "alias": "타코야끼소스",
+    "standard": "돈가스계 소스",
+    "kind": "외래어"
+  },
+  {
+    "alias": "타타르소스",
+    "standard": "타르타르소스",
+    "kind": "외래어"
+  },
+  {
+    "alias": "탄산수",
+    "standard": "탄산 음료수",
+    "kind": "별칭"
+  },
+  {
+    "alias": "파르메산치즈",
+    "standard": "파르메산",
+    "kind": "외래어"
+  },
+  {
+    "alias": "페타치즈",
+    "standard": "염소 양유 치즈",
+    "kind": "외래어"
+  },
+  {
+    "alias": "페퍼로니",
+    "standard": "건제 소시지",
+    "kind": "외래어"
+  },
+  {
+    "alias": "하몽",
+    "standard": "생햄",
+    "kind": "외래어"
+  },
+  {
+    "alias": "항정살",
+    "standard": "돼지 항정살",
+    "kind": "별칭"
+  },
+  {
+    "alias": "해초가루",
+    "standard": "해조류 분말",
+    "kind": "별칭"
+  },
+  {
+    "alias": "허니머스타드",
+    "standard": "꿀 겨자 소스",
+    "kind": "외래어"
+  },
+  {
+    "alias": "홍게",
+    "standard": "붉은대게",
+    "kind": "별칭"
+  },
+  {
+    "alias": "황태",
+    "standard": "말린 명태",
+    "kind": "별칭"
+  },
+  {
+  "alias": "골뱅이통조림",
+  "standard": "골뱅이 가공품",
+  "kind": "별칭"
+  },
+  {
+  "alias": "곰탕육수",
+  "standard": "사골 육수",
+  "kind": "별칭"
+  },
+  {
+  "alias": "구운김",
+  "standard": "조미김",
+  "kind": "별칭"
+  },
+  {
+  "alias": "국간장",
+  "standard": "조선간장",
+  "kind": "별칭"
+  },
+  {
+  "alias": "그레이비소스",
+  "standard": "고기 육수 소스",
+  "kind": "외래어"
+  },
+  {
+  "alias": "기버터",
+  "standard": "정제 버터",
+  "kind": "외래어"
+  },
+  {
+  "alias": "김치찌개용돼지고기",
+  "standard": "돼지고기 앞다리살",
+  "kind": "별칭"
+  },
+  {
+  "alias": "꽁치캔",
+  "standard": "꽁치 통조림",
+  "kind": "별칭"
+  },
+  {
+  "alias": "낙지젓",
+  "standard": "낙지 젓갈",
+  "kind": "별칭"
+  },
+  {
+  "alias": "다진마늘",
+  "standard": "간 마늘",
+  "kind": "별칭"
+  },
+  {
+  "alias": "달맞이꽃씨유",
+  "standard": "달맞이꽃 종자유",
+  "kind": "별칭"
+  },
+  {
+  "alias": "당면",
+  "standard": "전분 국수",
+  "kind": "별칭"
+  },
+  {
+  "alias": "대구살",
+  "standard": "대구 생선살",
+  "kind": "별칭"
+  },
+  {
+  "alias": "대파가루",
+  "standard": "건대파 분말",
+  "kind": "별칭"
+  },
+  {
+  "alias": "데리야끼소스",
+  "standard": "데리야키 소스",
+  "kind": "외래어"
+  },
+  {
+  "alias": "돈가스소스",
+  "standard": "돈까스 소스",
+  "kind": "외래어"
+  },
+  {
+  "alias": "돼지등갈비",
+  "standard": "돼지 갈비",
+  "kind": "별칭"
+  },
+  {
+  "alias": "돼지안심",
+  "standard": "돼지고기 안심",
+  "kind": "별칭"
+  },
+  {
+  "alias": "돼지족발",
+  "standard": "돼지 족",
+  "kind": "별칭"
+  },
+  {
+  "alias": "드라이이스트",
+  "standard": "건조 효모",
+  "kind": "외래어"
+  },
+  {
+  "alias": "들기름",
+  "standard": "들깨 기름",
+  "kind": "별칭"
+  },
+  {
+  "alias": "들깨가루",
+  "standard": "거피 들깨 분말",
+  "kind": "별칭"
+  },
+  {
+  "alias": "떡국떡",
+  "standard": "가래떡 슬라이스",
+  "kind": "별칭"
+  },
+  {
+  "alias": "떡볶이떡",
+  "standard": "밀떡 쌀떡",
+  "kind": "별칭"
+  },
+  {
+  "alias": "땅콩버터",
+  "standard": "피넛버터",
+  "kind": "외래어"
+  },
+  {
+  "alias": "람부탄",
+  "standard": "열대 과일 람부탄",
+  "kind": "외래어"
+  },
+  {
+  "alias": "락교",
+  "standard": "염교 절임",
+  "kind": "외래어"
+  },
+  {
+  "alias": "레몬딜버터",
+  "standard": "허브 버터",
+  "kind": "외래어"
+  },
+  {
+  "alias": "렌틸콩",
+  "standard": "렌즈콩",
+  "kind": "외래어"
+  },
+  {
+  "alias": "로제소스",
+  "standard": "토마토 크림 소스",
+  "kind": "외래어"
+  },
+  {
+  "alias": "마라샹궈소스",
+  "standard": "마라 볶음 소스",
+  "kind": "외래어"
+  },
+  {
+  "alias": "마늘종",
+  "standard": "마늘 줄기",
+  "kind": "별칭"
+  },
+  {
+  "alias": "마른오징어",
+  "standard": "건오징어",
+  "kind": "별칭"
+  },
+  {
+  "alias": "만능간장",
+  "standard": "맛간장",
+  "kind": "별칭"
+  },
+  {
+  "alias": "맛술",
+  "standard": "조리용 미림",
+  "kind": "별칭"
+  },
+  {
+  "alias": "맛소금",
+  "standard": "조미 소금",
+  "kind": "별칭"
+  },
+  {
+  "alias": "메이플시럽",
+  "standard": "단풍나무 시럽",
+  "kind": "외래어"
+  },
+  {
+  "alias": "명란마요",
+  "standard": "명란 마요네즈 소스",
+  "kind": "별칭"
+  },
+  {
+  "alias": "무말랭이",
+  "standard": "말린 무",
+  "kind": "별칭"
+  },
+  {
+  "alias": "미림",
+  "standard": "맛술",
+  "kind": "외래어"
+  },
+  {
+  "alias": "미역귀",
+  "standard": "미역 포자엽",
+  "kind": "별칭"
+  },
+  {
+  "alias": "바질가루",
+  "standard": "건바질 분말",
+  "kind": "외래어"
+  },
+  {
+  "alias": "바비큐소스",
+  "standard": "바베큐 소스",
+  "kind": "외래어"
+  },
+  {
+  "alias": "방아잎",
+  "standard": "배초향 잎",
+  "kind": "별칭"
+  },
+  {
+  "alias": "백설탕",
+  "standard": "정제당",
+  "kind": "별칭"
+  },
+  {
+  "alias": "보리새우",
+  "standard": "꽃새우",
+  "kind": "별칭"
+  },
+  {
+  "alias": "부침가루",
+  "standard": "부침용 혼합 밀가루",
+  "kind": "별칭"
+  },
+  {
+  "alias": "분모자",
+  "standard": "감자 당면",
+  "kind": "외래어"
+  },
+  {
+  "alias": "불고기양념",
+  "standard": "간장 불고기 소스",
+  "kind": "별칭"
+  },
+  {
+  "alias": "브라운소스",
+  "standard": "데미글라스 소스",
+  "kind": "외래어"
+  },
+  {
+  "alias": "블랙올리브",
+  "standard": "절임 올리브",
+  "kind": "외래어"
+  },
+  {
+  "alias": "사골육수",
+  "standard": "소사골 추출액",
+  "kind": "별칭"
+  },
+  {
+  "alias": "산초가루",
+  "standard": "초피 향신료",
+  "kind": "별칭"
+  },
+  {
+  "alias": "살구잼",
+  "standard": "살구 프리저브",
+  "kind": "별칭"
+  },
+  {
+  "alias": "새우젓",
+  "standard": "염장 새우",
+  "kind": "별칭"
+  },
+  {
+  "alias": "생강청",
+  "standard": "생강 당절임",
+  "kind": "별칭"
+  },
+  {
+  "alias": "서리태",
+  "standard": "검은콩",
+  "kind": "별칭"
+  },
+  {
+  "alias": "석류청",
+  "standard": "석류 발효액",
+  "kind": "별칭"
+  },
+  {
+  "alias": "성게소",
+  "standard": "성게 알",
+  "kind": "별칭"
+  },
+  {
+  "alias": "소갈비",
+  "standard": "소 갈비살",
+  "kind": "별칭"
+  },
+  {
+  "alias": "소양지",
+  "standard": "소 양지머리",
+  "kind": "별칭"
+  },
+  {
+  "alias": "소우둔살",
+  "standard": "소 엉덩이살",
+  "kind": "별칭"
+  },
+  {
+  "alias": "속배추",
+  "standard": "알배기 배추",
+  "kind": "별칭"
+  },
+  {
+  "alias": "수제비반죽",
+  "standard": "밀가루 반죽",
+  "kind": "별칭"
+  },
+  {
+  "alias": "순두부",
+  "standard": "비응고 두부",
+  "kind": "별칭"
+  },
+  {
+  "alias": "스위트콘",
+  "standard": "옥수수 통조림",
+  "kind": "외래어"
+  },
+  {
+  "alias": "시치미",
+  "standard": "일본식 혼합 향신료",
+  "kind": "외래어"
+  },
+  {
+  "alias": "신김치",
+  "standard": "묵은지",
+  "kind": "별칭"
+  },
+  {
+  "alias": "아몬드가루",
+  "standard": "아몬드 분말",
+  "kind": "외래어"
+  },
+  {
+  "alias": "아몬드슬라이스",
+  "standard": "편 아몬드",
+  "kind": "외래어"
+  },
+  {
+  "alias": "아보카도오일",
+  "standard": "아보카도유",
+  "kind": "외래어"
+  },
+  {
+  "alias": "아귀살",
+  "standard": "아귀 생선살",
+  "kind": "별칭"
+  },
+  {
+  "alias": "안심돈가스",
+  "standard": "돼지 안심 튀김",
+  "kind": "외래어"
+  },
+  {
+  "alias": "알배기배추",
+  "standard": "쌈배추",
+  "kind": "별칭"
+  },
+  {
+  "alias": "양상추",
+  "standard": "결구상추",
+  "kind": "별칭"
+  },
+  {
+  "alias": "양송이버섯",
+  "standard": "양송이",
+  "kind": "별칭"
+  },
+  {
+  "alias": "어간장",
+  "standard": "생선 발효 간장",
+  "kind": "별칭"
+  },
+  {
+  "alias": "연두부",
+  "standard": "부드러운 두부",
+  "kind": "별칭"
+  },
+  {
+  "alias": "열무",
+  "standard": "어린 무",
+  "kind": "별칭"
+  },
+  {
+  "alias": "옥수수전분",
+  "standard": "옥수수 녹말",
+  "kind": "별칭"
+  },
+  {
+  "alias": "와인비네거",
+  "standard": "포도 식초",
+  "kind": "외래어"
+  },
+  {
+  "alias": "우엉채",
+  "standard": "우엉",
+  "kind": "별칭"
+  },
+  {
+  "alias": "육수팩",
+  "standard": "다시팩",
+  "kind": "별칭"
+  },
+  {
+  "alias": "의성마늘",
+  "standard": "마늘",
+  "kind": "별칭"
+  },
+  {
+  "alias": "이탈리안시즈닝",
+  "standard": "혼합 허브 향신료",
+  "kind": "외래어"
+  },
+  {
+  "alias": "자두청",
+  "standard": "자두 당절임",
+  "kind": "별칭"
+  },
+  {
+  "alias": "잣가루",
+  "standard": "잣 분말",
+  "kind": "별칭"
+  },
+  {
+  "alias": "전포도",
+  "standard": "청포도",
+  "kind": "별칭"
+  },
+  {
+  "alias": "정종",
+  "standard": "청주",
+  "kind": "외래어"
+  },
+  {
+  "alias": "제육용돼지고기",
+  "standard": "돼지고기 목심",
+  "kind": "별칭"
+  },
+  {
+  "alias": "족발",
+  "standard": "돼지 족 요리",
+  "kind": "별칭"
+  },
+  {
+  "alias": "주꾸미",
+  "standard": "쭈꾸미",
+  "kind": "별칭"
+  },
+  {
+  "alias": "쥐포",
+  "standard": "쥐치포",
+  "kind": "별칭"
+  },
+  {
+  "alias": "차이브",
+  "standard": "서양 파",
+  "kind": "외래어"
+  },
+  {
+  "alias": "참기름",
+  "standard": "참깨 기름",
+  "kind": "별칭"
+  },
+  {
+  "alias": "찹쌀가루",
+  "standard": "찹쌀 분말",
+  "kind": "별칭"
+  },
+  {
+  "alias": "천일염",
+  "standard": "굵은 소금",
+  "kind": "별칭"
+  },
+  {
+  "alias": "초콜릿칩",
+  "standard": "초코칩",
+  "kind": "외래어"
+  },
+  {
+  "alias": "튀김가루",
+  "standard": "튀김용 혼합 밀가루",
+  "kind": "별칭"
   }
-]
+
+  ]
