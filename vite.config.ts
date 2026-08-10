@@ -11,7 +11,7 @@ const localBindingConfig = {
   // 기존 공개 주소(silverlens.ogq.workers.dev)의 Worker를 정확히 갱신한다.
   name: "silverlens",
   main: "./worker/index.ts",
-  compatibility_flags: ["nodejs_compat"],
+  compatibility_flags: ["nodejs_compat", "nodejs_compat_populate_process_env"],
   // Firebase와 인증 관련 값을 Dashboard에서 관리하므로 재배포 때 보존한다.
   keep_vars: true,
   d1_databases: [],

@@ -37,6 +37,9 @@ export async function validateArtifact(projectRoot = defaultProjectRoot) {
   if (wrangler.name !== "silverlens") {
     throw new Error("Generated Wrangler configuration must target the existing silverlens Worker.");
   }
+  if (!wrangler.compatibility_flags?.includes("nodejs_compat_populate_process_env")) {
+    throw new Error("Generated Wrangler configuration must expose Worker bindings through process.env.");
+  }
   if (configuredWorker !== workerPath) {
     throw new Error("Generated Wrangler configuration does not point to dist/server/index.js.");
   }
