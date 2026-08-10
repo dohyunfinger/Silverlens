@@ -10,6 +10,8 @@ const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === "seatbelt";
 const localBindingConfig = {
   main: "./worker/index.ts",
   compatibility_flags: ["nodejs_compat"],
+  // Firebase와 인증 관련 값을 Dashboard에서 관리하므로 재배포 때 보존한다.
+  keep_vars: true,
   d1_databases: [],
   r2_buckets: [],
 };

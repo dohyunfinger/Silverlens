@@ -229,8 +229,10 @@ SilverLens/
 │   └── sites-vite-plugin.ts            # 배포 산출물 생성 플러그인
 ├── scripts/
 │   ├── prepare_knowledge_data.py       # data/sources → data/*.json 변환 및 검증
-│   ├── build-verified.sh               # 빌드 후 산출물까지 확인
-│   ├── validate-artifact.sh            # Worker 진입점 · 배포 설정 확인
+│   ├── build-verified.mjs              # Windows/Linux 공용 빌드와 시간 제한
+│   ├── build-verified.sh               # 기존 Linux 호출용 Node 래퍼
+│   ├── validate-artifact.mjs           # Worker 진입점 · 배포 설정 확인
+│   ├── validate-artifact.sh            # 기존 Linux 호출용 Node 래퍼
 │   ├── install-ci.sh
 │   └── sites-env.sh
 ├── tests/
