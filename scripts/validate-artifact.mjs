@@ -34,6 +34,9 @@ export async function validateArtifact(projectRoot = defaultProjectRoot) {
   const wrangler = JSON.parse(await readFile(wranglerPath, "utf8"));
   const configuredWorker = resolve(dirname(wranglerPath), wrangler.main || "");
   const configuredAssets = resolve(dirname(wranglerPath), wrangler.assets?.directory || "");
+  if (wrangler.name !== "silverlens") {
+    throw new Error("Generated Wrangler configuration must target the existing silverlens Worker.");
+  }
   if (configuredWorker !== workerPath) {
     throw new Error("Generated Wrangler configuration does not point to dist/server/index.js.");
   }

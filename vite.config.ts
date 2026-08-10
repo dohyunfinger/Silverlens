@@ -8,6 +8,8 @@ const isCodexSeatbeltSandbox = process.env.CODEX_SANDBOX === "seatbelt";
 // SilverLens는 건강 정보를 서버에 저장하지 않고 브라우저(IndexedDB)에만 두므로
 // D1·R2 바인딩을 쓰지 않는다. hosting.json에도 해당 항목이 없다.
 const localBindingConfig = {
+  // 기존 공개 주소(silverlens.ogq.workers.dev)의 Worker를 정확히 갱신한다.
+  name: "silverlens",
   main: "./worker/index.ts",
   compatibility_flags: ["nodejs_compat"],
   // Firebase와 인증 관련 값을 Dashboard에서 관리하므로 재배포 때 보존한다.
