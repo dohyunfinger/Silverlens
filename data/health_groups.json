@@ -603,6 +603,298 @@
       "condition_tinnitus",
       "condition_otitis_media"
     ]
+  },
+  {
+    "id": "group_allergy_berries",
+    "kind": "allergy",
+    "icon": "🫐",
+    "labels": {
+      "ko-KR": "베리류",
+      "en-US": "Berries",
+      "ja-JP": "ベリー類"
+    },
+    "members": [
+      "allergy_blueberry",
+      "allergy_raspberry",
+      "allergy_blackberry",
+      "allergy_cranberry",
+      "allergy_mulberry",
+      "allergy_goji_berry",
+      "allergy_elderberry"
+    ]
+  },
+  {
+    "id": "group_allergy_stone_fruits",
+    "kind": "allergy",
+    "icon": "🍒",
+    "labels": {
+      "ko-KR": "핵과류",
+      "en-US": "Stone fruits",
+      "ja-JP": "核果類"
+    },
+    "members": [
+      "allergy_cherry",
+      "allergy_plum",
+      "allergy_apricot",
+      "allergy_nectarine",
+      "allergy_date",
+      "allergy_fig"
+    ]
+  },
+  {
+    "id": "group_allergy_nightshades",
+    "kind": "allergy",
+    "icon": "🍆",
+    "labels": {
+      "ko-KR": "가지과 채소",
+      "en-US": "Nightshades",
+      "ja-JP": "ナス科野菜"
+    },
+    "members": [
+      "allergy_eggplant",
+      "allergy_paprika",
+      "allergy_bell_pepper",
+      "allergy_potato",
+      "allergy_goji",
+      "allergy_tomatillo"
+    ]
+  },
+  {
+    "id": "group_allergy_meats_extra",
+    "kind": "allergy",
+    "icon": "🥩",
+    "labels": {
+      "ko-KR": "기타 육류",
+      "en-US": "Other meats",
+      "ja-JP": "その他肉類"
+    },
+    "members": [
+      "allergy_lamb",
+      "allergy_duck",
+      "allergy_turkey",
+      "allergy_venison",
+      "allergy_horse_meat",
+      "allergy_goat"
+    ]
+  },
+  {
+    "id": "group_allergy_herbs",
+    "kind": "allergy",
+    "icon": "🌿",
+    "labels": {
+      "ko-KR": "허브류",
+      "en-US": "Herbs",
+      "ja-JP": "ハーブ類"
+    },
+    "members": [
+      "allergy_mint",
+      "allergy_basil",
+      "allergy_rosemary",
+      "allergy_thyme",
+      "allergy_oregano",
+      "allergy_cilantro"
+    ]
+  },
+  {
+    "id": "group_condition_sleep_disorders",
+    "kind": "condition",
+    "icon": "🌙",
+    "labels": {
+      "ko-KR": "수면 장애",
+      "en-US": "Sleep disorders",
+      "ja-JP": "睡眠障害"
+    },
+    "members": [
+      "condition_narcolepsy",
+      "condition_restless_legs_syndrome",
+      "condition_circadian_rhythm_disorder",
+      "condition_hypersomnia",
+      "condition_sleepwalking",
+      "condition_nightmare_disorder"
+    ]
+  },
+  {
+    "id": "group_condition_cardiovascular_extra",
+    "kind": "condition",
+    "icon": "🫀",
+    "labels": {
+      "ko-KR": "심장 · 혈관질환 확장",
+      "en-US": "Cardiovascular diseases extended",
+      "ja-JP": "心臓・血管疾患拡張"
+    },
+    "members": [
+      "condition_arrhythmia",
+      "condition_aortic_aneurysm",
+      "condition_peripheral_artery_disease",
+      "condition_myocarditis",
+      "condition_pericarditis",
+      "condition_endocarditis"
+    ]
+  },
+  {
+    "id": "group_condition_respiratory_extra",
+    "kind": "condition",
+    "icon": "🫁",
+    "labels": {
+      "ko-KR": "호흡기 질환 확장",
+      "en-US": "Respiratory diseases extended",
+      "ja-JP": "呼吸器疾患拡張"
+    },
+    "members": [
+      "condition_pneumonia",
+      "condition_bronchitis",
+      "condition_pulmonary_fibrosis",
+      "condition_pulmonary_hypertension",
+      "condition_bronchiectasis",
+      "condition_pneumothorax"
+    ]
+  },
+  {
+    "id": "group_condition_pediatric_congenital",
+    "kind": "condition",
+    "icon": "👶",
+    "labels": {
+      "ko-KR": "소아 · 선천성 질환",
+      "en-US": "Pediatric and congenital conditions",
+      "ja-JP": "小児・先天性疾患"
+    },
+    "members": [
+      "condition_down_syndrome",
+      "condition_autism_spectrum",
+      "condition_cerebral_palsy",
+      "condition_cystic_fibrosis",
+      "condition_congenital_heart_defect",
+      "condition_spina_bifida"
+    ]
+  },
+  {
+    "id": "group_condition_urology_mens_health",
+    "kind": "condition",
+    "icon": "🚽",
+    "labels": {
+      "ko-KR": "비뇨기 · 남성건강",
+      "en-US": "Urology and men's health",
+      "ja-JP": "泌尿器・男性健康"
+    },
+    "members": [
+      "condition_prostatitis",
+      "condition_erectile_dysfunction",
+      "condition_overactive_bladder",
+      "condition_cystitis",
+      "condition_urethritis",
+      "condition_hypogonadism"
+    ]
+  },
+  {
+    "id": "group_condition_musculoskeletal_extra",
+    "kind": "condition",
+    "icon": "🩻",
+    "labels": {
+      "ko-KR": "근골격계 · 척추 질환",
+      "en-US": "Musculoskeletal and spinal disorders",
+      "ja-JP": "筋骨格・脊椎疾患"
+    },
+    "members": [
+      "condition_fibromyalgia",
+      "condition_gouty_arthritis",
+      "condition_tendonitis",
+      "condition_bursitis",
+      "condition_herniated_disc",
+      "condition_spinal_stenosis",
+      "condition_scoliosis"
+    ]
+  },
+  {
+    "id": "group_condition_eye_extra",
+    "kind": "condition",
+    "icon": "👁️",
+    "labels": {
+      "ko-KR": "안과 질환 확장",
+      "en-US": "Eye conditions extended",
+      "ja-JP": "眼科疾患拡張"
+    },
+    "members": [
+      "condition_dry_eye_syndrome",
+      "condition_diabetic_retinopathy",
+      "condition_strabismus",
+      "condition_keratoconus",
+      "condition_blepharitis",
+      "condition_retinal_detachment"
+    ]
+  },
+  {
+    "id": "group_condition_liver_biliary_extra",
+    "kind": "condition",
+    "icon": "🧪",
+    "labels": {
+      "ko-KR": "간 · 담도 질환",
+      "en-US": "Liver and biliary diseases",
+      "ja-JP": "肝臓・胆道疾患"
+    },
+    "members": [
+      "condition_liver_cirrhosis",
+      "condition_cholecystitis",
+      "condition_cholangitis",
+      "condition_gilbert_syndrome",
+      "condition_hemochromatosis",
+      "condition_wilson_disease"
+    ]
+  },
+  {
+    "id": "group_condition_environmental_occupational",
+    "kind": "condition",
+    "icon": "🌡️",
+    "labels": {
+      "ko-KR": "환경 · 직업성 질환",
+      "en-US": "Environmental and occupational conditions",
+      "ja-JP": "環境・職業性疾患"
+    },
+    "members": [
+      "condition_heat_stroke",
+      "condition_hypothermia",
+      "condition_altitude_sickness",
+      "condition_decompression_sickness",
+      "condition_silicosis",
+      "condition_asbestosis"
+    ]
+  },
+  {
+    "id": "group_condition_eating_disorders",
+    "kind": "condition",
+    "icon": "🍽️",
+    "labels": {
+      "ko-KR": "섭식 장애",
+      "en-US": "Eating disorders",
+      "ja-JP": "摂食障害"
+    },
+    "members": [
+      "condition_anorexia_nervosa",
+      "condition_bulimia_nervosa",
+      "condition_binge_eating_disorder",
+      "condition_pica",
+      "condition_rumination_syndrome",
+      "condition_orthorexia"
+    ]
+  },
+  {
+    "id": "group_dietary_lifestyle",
+    "kind": "dietary",
+    "icon": "🥑",
+    "labels": {
+      "ko-KR": "식이 요법 · 라이프스타일",
+      "en-US": "Diets and lifestyle",
+      "ja-JP": "食事療法・ライフスタイル"
+    },
+    "members": [
+      "diet_low_carb",
+      "diet_dash_diet",
+      "diet_mediterranean",
+      "diet_paleo",
+      "diet_carnivore",
+      "diet_intermittent_fasting",
+      "diet_low_purine",
+      "diet_gluten_free"
+    ]
   }
   
 ]
