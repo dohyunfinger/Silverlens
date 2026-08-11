@@ -313,5 +313,296 @@
     "members": [
       "condition_cancer_treatment"
     ]
+  },
+  {
+    "id": "group_allergy_citrus",
+    "kind": "allergy",
+    "icon": "🍊",
+    "labels": {
+      "ko-KR": "감귤류",
+      "en-US": "Citrus fruits",
+      "ja-JP": "柑橘類"
+    },
+    "members": [
+      "allergy_orange",
+      "allergy_lemon",
+      "allergy_lime",
+      "allergy_grapefruit",
+      "allergy_yuzu"
+    ]
+  },
+  {
+    "id": "group_allergy_tree_nuts_extra",
+    "kind": "allergy",
+    "icon": "🌰",
+    "labels": {
+      "ko-KR": "기타 견과류",
+      "en-US": "Other tree nuts",
+      "ja-JP": " 기타ナッツ類"
+    },
+    "members": [
+      "allergy_cashew",
+      "allergy_pistachio",
+      "allergy_hazelnut",
+      "allergy_macadamia",
+      "allergy_brazil_nut"
+    ]
+  },
+  {
+    "id": "group_allergy_spices",
+    "kind": "allergy",
+    "icon": "🌶️",
+    "labels": {
+      "ko-KR": "향신료 · 양념류",
+      "en-US": "Spices and seasonings",
+      "ja-JP": "香辛料・調味料"
+    },
+    "members": [
+      "allergy_chili_pepper",
+      "allergy_black_pepper",
+      "allergy_mustard",
+      "allergy_cinnamon",
+      "allergy_ginger",
+      "allergy_nutmeg",
+      "allergy_turmeric"
+    ]
+  },
+  {
+    "id": "group_allergy_seeds_legumes",
+    "kind": "allergy",
+    "icon": "🫛",
+    "labels": {
+      "ko-KR": "기타 씨앗 · 콩류",
+      "en-US": "Other seeds and legumes",
+      "ja-JP": " 기타種子・豆類"
+    },
+    "members": [
+      "allergy_chickpea",
+      "allergy_lentil",
+      "allergy_pea",
+      "allergy_chia_seed",
+      "allergy_flaxseed",
+      "allergy_sunflower_seed"
+    ]
+  },
+  {
+    "id": "group_allergy_environmental",
+    "kind": "allergy",
+    "icon": "🌿",
+    "labels": {
+      "ko-KR": "환경 · 접촉성 알레르기",
+      "en-US": "Environmental and contact allergies",
+      "ja-JP": "環境・接触アレルギー"
+    },
+    "members": [
+      "allergy_latex",
+      "allergy_dust_mite",
+      "allergy_pollen",
+      "allergy_pet_dander",
+      "allergy_nickel",
+      "allergy_bee_venom"
+    ]
+  },
+  {
+    "id": "group_allergy_additives_extra",
+    "kind": "allergy",
+    "icon": "🧪",
+    "labels": {
+      "ko-KR": "기타 첨가물 · 보존제",
+      "en-US": "Other additives and preservatives",
+      "ja-JP": "その他添加物・保存料"
+    },
+    "members": [
+      "allergy_benzoate",
+      "allergy_nitrites",
+      "allergy_artificial_colors",
+      "allergy_tartrazine",
+      "allergy_aspartame"
+    ]
+  },
+  {
+    "id": "group_condition_autoimmune",
+    "kind": "condition",
+    "icon": "🛡️",
+    "labels": {
+      "ko-KR": "자가면역 질환",
+      "en-US": "Autoimmune diseases",
+      "ja-JP": "自己免疫疾患"
+    },
+    "members": [
+      "condition_celiac_disease",
+      "condition_lupus",
+      "condition_crohns_disease",
+      "condition_ulcerative_colitis",
+      "condition_sjogrens_syndrome",
+      "condition_ankylosing_spondylitis",
+      "condition_hashimoto_thyroiditis"
+    ]
+  },
+  {
+    "id": "group_condition_dermatology",
+    "kind": "condition",
+    "icon": "🧴",
+    "labels": {
+      "ko-KR": "피부 · 두피",
+      "en-US": "Skin and scalp conditions",
+      "ja-JP": "皮膚・頭皮"
+    },
+    "members": [
+      "condition_atopic_dermatitis",
+      "condition_eczema",
+      "condition_acne",
+      "condition_rosacea",
+      "condition_urticaria",
+      "condition_psoriasis",
+      "condition_alopecia"
+    ]
+  },
+  {
+    "id": "group_condition_life_stage",
+    "kind": "condition",
+    "icon": "🤰",
+    "labels": {
+      "ko-KR": "생애주기 · 여성건강",
+      "en-US": "Life stages and women's health",
+      "ja-JP": "ライフステージ・女性健康"
+    },
+    "members": [
+      "condition_pregnancy",
+      "condition_lactation",
+      "condition_postpartum",
+      "condition_infancy",
+      "condition_toddler",
+      "condition_adolescence"
+    ]
+  },
+  {
+    "id": "group_condition_mental_neurological_extra",
+    "kind": "condition",
+    "icon": "🧩",
+    "labels": {
+      "ko-KR": "신경 · 정신건강 확장",
+      "en-US": "Neurological and mental health extended",
+      "ja-JP": "神経・メンタルヘルス拡張"
+    },
+    "members": [
+      "condition_epilepsy",
+      "condition_adhd",
+      "condition_bipolar_disorder",
+      "condition_migraine",
+      "condition_vertigo",
+      "condition_schizophrenia",
+      "condition_panic_disorder"
+    ]
+  },
+  {
+    "id": "group_condition_endocrine_extra",
+    "kind": "condition",
+    "icon": "⚖️",
+    "labels": {
+      "ko-KR": "내분비 · 생식샘",
+      "en-US": "Endocrine and reproductive disorders",
+      "ja-JP": "内分泌・生殖器"
+    },
+    "members": [
+      "condition_pcos",
+      "condition_endometriosis",
+      "condition_addisons_disease",
+      "condition_cushings_syndrome",
+      "condition_hyperparathyroidism",
+      "condition_adrenal_insufficiency"
+    ]
+  },
+  {
+    "id": "group_condition_hematology",
+    "kind": "condition",
+    "icon": "🩸",
+    "labels": {
+      "ko-KR": "혈액 · 혈전 질환",
+      "en-US": "Blood and thrombotic disorders",
+      "ja-JP": "血液・血栓疾患"
+    },
+    "members": [
+      "condition_hemophilia",
+      "condition_deep_vein_thrombosis",
+      "condition_varicose_veins",
+      "condition_thrombocytopenia",
+      "condition_leukopenia",
+      "condition_polycythemia"
+    ]
+  },
+  {
+    "id": "group_condition_infectious",
+    "kind": "condition",
+    "icon": "🦠",
+    "labels": {
+      "ko-KR": "감염성 · 만성 증후군",
+      "en-US": "Infectious and chronic syndromes",
+      "ja-JP": "感染症・慢性症候群"
+    },
+    "members": [
+      "condition_hiv_aids",
+      "condition_hepatitis_b",
+      "condition_hepatitis_c",
+      "condition_tuberculosis",
+      "condition_long_covid",
+      "condition_chronic_fatigue_syndrome"
+    ]
+  },
+  {
+    "id": "group_dietary_preference",
+    "kind": "dietary",
+    "icon": "🥗",
+    "labels": {
+      "ko-KR": "식이 취향 · 식이 요법",
+      "en-US": "Dietary preferences and restrictions",
+      "ja-JP": "食事の preference・食事療法"
+    },
+    "members": [
+      "diet_vegan",
+      "diet_vegetarian",
+      "diet_pescatarian",
+      "diet_halal",
+      "diet_kosher",
+      "diet_low_fodmap",
+      "diet_keto",
+      "diet_low_sodium"
+    ]
+  },
+  {
+    "id": "group_condition_recovery_surgery",
+    "kind": "condition",
+    "icon": "🏥",
+    "labels": {
+      "ko-KR": "수술 후 · 회복기",
+      "en-US": "Post-surgery and recovery",
+      "ja-JP": "術後・回復期"
+    },
+    "members": [
+      "condition_post_surgery",
+      "condition_post_organ_transplant",
+      "condition_bariatric_surgery",
+      "condition_radiation_therapy",
+      "condition_chemotherapy"
+    ]
+  },
+  {
+    "id": "group_condition_ent_oral",
+    "kind": "condition",
+    "icon": "👂",
+    "labels": {
+      "ko-KR": "이비인후과 · 구강 확장",
+      "en-US": "ENT and oral health extended",
+      "ja-JP": "耳鼻咽喉科・口腔拡張"
+    },
+    "members": [
+      "condition_stomatitis",
+      "condition_xerostomia",
+      "condition_allergic_rhinitis",
+      "condition_sinusitis",
+      "condition_tinnitus",
+      "condition_otitis_media"
+    ]
   }
+  
 ]
