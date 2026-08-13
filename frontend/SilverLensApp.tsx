@@ -23,7 +23,11 @@ import {
   writeStore,
 } from "./localStore";
 import { type PhotoIssue, preparePhoto } from "./photoCapture";
-import SeniorCareLinkPanel from "./SeniorCareLinkPanel";
+import SeniorCareLinkPanel, {
+  CARE_LINK_STORE_KEY,
+  isCareLinkState,
+  type CareLinkState,
+} from "./SeniorCareLinkPanel";
 import {
   getHealthGroupOptions,
   getHealthLabel,
@@ -3769,6 +3773,78 @@ export default function SilverLensApp() {
     return () => window.clearTimeout(timer);
   }, [
     storeReady,
+    language,
+    gender,
+    ageBand,
+    ageConfirmed,
+    allergyIds,
+    conditionIds,
+    healthNotes,
+    chatTurns,
+  ]);
+
+  /**
+   * 연결 카드는 데이터 화면에만 있지만, 연결된 뒤의 변경은 어느 화면에서든
+   * 돌봄이에게 전달되어야 한다. 특히 새 답변이 생긴 직후 최신 대화 전체를
+   * 기기 자격 증명으로 동기화한다.
+   */
+  useEffect(() => {
+    // 데이터 화면에서는 연결 카드가 이름과 상태까지 함께 동기화한다.
+    if (!storeReady || screen === "data") return;
+    const controller = new AbortController();
+    const timer = window.setTimeout(() => {
+      void readStore<CareLinkState>(CARE_LINK_STORE_KEY).then(async (link) => {
+        if (!isCareLinkState(link) || controller.signal.aborted) return;
+        const snapshot: StoredState = {
+          version: 1,
+          savedAt: Date.now(),
+          profile: {
+            language,
+            gender,
+            ageBand,
+            ageConfirmed,
+            allergyIds,
+            conditionIds,
+            healthNotes,
+          },
+          chatTurns: chatTurns.slice(-MAX_STORED_TURNS),
+        };
+        try {
+          const response = await fetch("/api/senior/sync", {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            signal: controller.signal,
+            body: JSON.stringify({
+              deviceId: link.deviceId,
+              deviceSecret: link.deviceSecret,
+              displayName: link.displayName,
+              snapshot,
+            }),
+          });
+          if (!response.ok) return;
+          const result = (await response.json()) as {
+            syncedAt: number;
+            linkedCaregiverCount: number;
+          };
+          await writeStore(CARE_LINK_STORE_KEY, {
+            ...link,
+            lastSyncedAt: result.syncedAt,
+            linkedCaregiverCount: result.linkedCaregiverCount,
+          } satisfies CareLinkState);
+        } catch (error) {
+          if (!(error instanceof DOMException && error.name === "AbortError")) {
+            console.warn("[SilverLens] 돌봄이 정보 자동 전달에 실패했습니다.");
+          }
+        }
+      });
+    }, 650);
+    return () => {
+      window.clearTimeout(timer);
+      controller.abort();
+    };
+  }, [
+    storeReady,
+    screen,
     language,
     gender,
     ageBand,

@@ -6,7 +6,7 @@ import { readStore, writeStore } from "./localStore";
 
 type Language = "ko-KR" | "en-US" | "ja-JP";
 
-type CareLinkState = {
+export type CareLinkState = {
   version: 1;
   deviceId: string;
   deviceSecret: string;
@@ -15,7 +15,7 @@ type CareLinkState = {
   linkedCaregiverCount: number;
 };
 
-const CARE_LINK_STORE_KEY = "care-link-v1";
+export const CARE_LINK_STORE_KEY = "care-link-v1";
 
 const copy = {
   "ko-KR": {
@@ -24,9 +24,9 @@ const copy = {
     help: "코드를 돌봄이에게 알려주면 내 건강정보와 최근 대화가 돌봄이 화면에 연결됩니다.",
     name: "돌봄이 화면에 보일 이름",
     placeholder: "예: 김OO 어르신",
-    create: "10분 연결 코드 만들기",
+    create: "한글 연결 코드 만들기",
     creating: "코드 만드는 중…",
-    codeHelp: "이 코드는 한 번만 사용할 수 있어요. 돌봄이에게 지금 알려주세요.",
+    codeHelp: "한글 낱말과 숫자를 차례로 읽어 주세요. 이 코드는 10분 동안 한 번만 사용할 수 있어요.",
     linked: "명의 돌봄이와 연결됨",
     synced: "마지막 전달",
     privacy: "로그인은 필요 없어요. 연결 후 이 기기에서 바뀐 정보만 안전하게 전달합니다.",
@@ -39,9 +39,9 @@ const copy = {
     help: "Give this code to your caregiver to share your health profile and recent chats.",
     name: "Name shown to caregiver",
     placeholder: "Example: Mom",
-    create: "Create 10-minute code",
+    create: "Create Korean word code",
     creating: "Creating code…",
-    codeHelp: "This code works once. Tell it to your caregiver now.",
+    codeHelp: "Read the Korean words and numbers in order. The code works once for 10 minutes.",
     linked: " caregiver(s) connected",
     synced: "Last shared",
     privacy: "No sign-in is needed. Changes made on this device are shared after linking.",
@@ -54,9 +54,9 @@ const copy = {
     help: "このコードを介護者に伝えると、健康情報と最近の会話を共有できます。",
     name: "介護者画面に表示する名前",
     placeholder: "例：母",
-    create: "10分間の連携コードを作る",
+    create: "韓国語の連携コードを作る",
     creating: "コードを作成中…",
-    codeHelp: "このコードは1回だけ使えます。今、介護者に伝えてください。",
+    codeHelp: "韓国語の単語と数字を順番に伝えてください。10分間に1回だけ使えます。",
     linked: "人の介護者と連携中",
     synced: "最終共有",
     privacy: "ログインは不要です。連携後、この端末で変更した情報だけを共有します。",
@@ -65,7 +65,7 @@ const copy = {
   },
 } as const;
 
-function isCareLinkState(value: unknown): value is CareLinkState {
+export function isCareLinkState(value: unknown): value is CareLinkState {
   if (!value || typeof value !== "object") return false;
   const candidate = value as Partial<CareLinkState>;
   return Boolean(candidate.deviceId && candidate.deviceSecret);

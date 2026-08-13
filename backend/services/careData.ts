@@ -94,7 +94,21 @@ const DEFAULT_PROFILE: SeniorProfileSnapshot = {
   healthNotes: [],
 };
 
-const CODE_ALPHABET = "ABCDEFGHJKLMNPQRSTUVWXYZ23456789";
+/**
+ * 어르신이 전화로 읽어도 알아듣기 쉬운 두 글자 낱말만 사용한다.
+ * 세 낱말과 숫자 세 자리의 조합은 약 2억 6천만 가지이며, 코드는 로그인한
+ * 돌봄이만 10분 동안 한 번 사용할 수 있다.
+ */
+const KOREAN_CODE_WORDS = [
+  "하늘", "바다", "구름", "나무", "장미", "햇살", "달빛", "별빛",
+  "노을", "아침", "저녁", "봄날", "여름", "가을", "겨울", "새싹",
+  "열매", "보리", "들꽃", "산길", "물결", "샘물", "시내", "호수",
+  "강물", "돌담", "마을", "공원", "산책", "소풍", "기차", "버스",
+  "우산", "모자", "신발", "가방", "연필", "공책", "책상", "의자",
+  "시계", "거울", "창문", "수저", "접시", "찻잔", "만두", "두부",
+  "사과", "포도", "딸기", "참외", "수박", "자두", "감자", "호박",
+  "멜론", "오이", "당근", "양파", "상추", "가지", "콩밥", "국수",
+] as const;
 const LINK_CODE_TTL_MS = 10 * 60 * 1000;
 let schemaReady: Promise<void> | null = null;
 let databaseBinding: D1Database | null = null;
@@ -227,15 +241,24 @@ function randomToken(bytes = 32) {
 }
 
 function randomCode() {
-  const bytes = crypto.getRandomValues(new Uint8Array(10));
-  const raw = [...bytes]
-    .map((value) => CODE_ALPHABET[value % CODE_ALPHABET.length])
-    .join("");
-  return `${raw.slice(0, 5)}-${raw.slice(5)}`;
+  const values = crypto.getRandomValues(new Uint32Array(4));
+  const words = Array.from(values.slice(0, 3))
+    .map((value) => KOREAN_CODE_WORDS[value % KOREAN_CODE_WORDS.length]);
+  const digits = String(values[3] % 1000).padStart(3, "0");
+  return `${words.join("-")}-${digits}`;
 }
 
 function normalizedCode(value: string) {
-  return value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 10);
+  return value
+    .normalize("NFC")
+    .toUpperCase()
+    .replace(/[^A-Z0-9가-힣]/g, "")
+    .slice(0, 40);
+}
+
+function isValidLinkCode(value: string) {
+  // 배포 직전에 발급된 기존 영문 코드도 남은 10분 동안 사용할 수 있게 한다.
+  return /^[A-Z0-9]{10}$/.test(value) || /^[가-힣]{6}[0-9]{3}$/.test(value);
 }
 
 async function authenticateDevice(deviceId: string, deviceSecret: string) {
@@ -357,7 +380,7 @@ export async function syncSeniorDevice(input: {
 export async function claimLinkCode(caregiverUid: string, codeInput: string, aliasInput?: string) {
   await ensureCareSchema();
   const code = normalizedCode(codeInput);
-  if (code.length !== 10) throw new Error("INVALID_LINK_CODE");
+  if (!isValidLinkCode(code)) throw new Error("INVALID_LINK_CODE");
   const now = Date.now();
   const codeHash = await sha256(code);
   const found = await db()

@@ -185,18 +185,41 @@ export default function CaregiverApp({ caregiver, onLogout }: CaregiverAppProps)
       return;
     }
     let cancelled = false;
-    void fetch(`/api/caregiver/seniors/${encodeURIComponent(selectedSeniorId)}`, {
-      cache: "no-store",
-    })
-      .then((response) => responseJson<SeniorDetail>(response))
-      .then((detail) => {
-        if (!cancelled) setSeniorDetail(detail);
-      })
-      .catch(() => {
-        if (!cancelled) setSeniorDetail(null);
-      });
+    let refreshing = false;
+    const refresh = async () => {
+      if (refreshing || document.visibilityState === "hidden") return;
+      refreshing = true;
+      try {
+        const [overview, detail] = await Promise.all([
+          fetch("/api/caregiver/overview", { cache: "no-store" }).then((response) =>
+            responseJson<{ seniors: CaregiverSenior[]; threads: ThreadSummary[] }>(response),
+          ),
+          fetch(`/api/caregiver/seniors/${encodeURIComponent(selectedSeniorId)}`, {
+            cache: "no-store",
+          }).then((response) => responseJson<SeniorDetail>(response)),
+        ]);
+        if (cancelled) return;
+        setSeniors(overview.seniors);
+        setThreads(overview.threads);
+        setSeniorDetail(detail);
+      } catch {
+        // 일시적인 새로고침 실패는 기존 정보를 유지하고 다음 주기에 다시 시도한다.
+      } finally {
+        refreshing = false;
+      }
+    };
+    const refreshWhenVisible = () => {
+      if (document.visibilityState === "visible") void refresh();
+    };
+    void refresh();
+    const timer = window.setInterval(() => void refresh(), 4_000);
+    window.addEventListener("focus", refreshWhenVisible);
+    document.addEventListener("visibilitychange", refreshWhenVisible);
     return () => {
       cancelled = true;
+      window.clearInterval(timer);
+      window.removeEventListener("focus", refreshWhenVisible);
+      document.removeEventListener("visibilitychange", refreshWhenVisible);
     };
   }, [selectedSeniorId]);
 
@@ -509,7 +532,7 @@ export default function CaregiverApp({ caregiver, onLogout }: CaregiverAppProps)
 
           <form className="care-link-form" onSubmit={registerSenior}>
             <strong>새 시니어 연결</strong>
-            <p>시니어의 데이터 화면에서 받은 10자리 코드를 입력하세요.</p>
+            <p>시니어의 데이터 화면에서 받은 한글 연결 코드를 입력하세요.</p>
             <input
               value={linkAlias}
               onChange={(event) => setLinkAlias(event.target.value.slice(0, 30))}
@@ -519,10 +542,10 @@ export default function CaregiverApp({ caregiver, onLogout }: CaregiverAppProps)
             <div>
               <input
                 value={linkCode}
-                onChange={(event) => setLinkCode(event.target.value.toUpperCase().slice(0, 11))}
-                placeholder="ABCDE-FGHIJ"
+                onChange={(event) => setLinkCode(event.target.value.slice(0, 30))}
+                placeholder="하늘-나무-기차-572"
                 aria-label="연결 코드"
-                autoCapitalize="characters"
+                autoCapitalize="none"
                 autoComplete="off"
               />
               <button type="submit" disabled={isLinking || !linkCode.trim()}>{isLinking ? "연결 중" : "연결"}</button>
