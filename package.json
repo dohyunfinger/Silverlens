@@ -14,7 +14,8 @@
     "test": "npm run build && node --test tests/*.test.mjs",
     "validate:artifact": "node scripts/validate-artifact.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
-    "prepare:data": "python3 scripts/prepare_knowledge_data.py"
+    "prepare:data": "python3 scripts/prepare_knowledge_data.py",
+    "sync:drug-data": "node scripts/sync-mfds-pill-data.mjs"
   },
   "dependencies": {
     "firebase": "^12.17.1",

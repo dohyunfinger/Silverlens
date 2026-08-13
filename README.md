@@ -149,6 +149,7 @@ SilverLens는 단순히 AI 기능을 제공하는 것이 아니라, **어르신�
 | 건강정보 항목 | 87개 | 알레르기 46 · 질병 41, 고유 ID로 3개 언어 표기 연결 |
 | 질병명 다국어 대응 | 454개 | 한국어 → 영어 · 일본어 · 로마자 |
 | 노인 다빈도 상병 | 405개 | 목록에 없는 병명을 직접 입력했을 때 정식 표기로 맞춤 |
+| 의약품 사진 식별 | 관찰 기준 10개 | 제품명·앞뒷면 각인·제형·모양·색·분할선을 확인하고 식약처 공식 품목 데이터와 후보 대조 |
 
 원본은 `data/sources/` 에 두고 변환 스크립트로만 생성물을 만듭니다. 변환 과정에서 한 글자
 사투리, 자기 자신으로 매핑되는 항목, 중복, 정해진 값을 벗어난 지역·분류를 걸러 냅니다.
@@ -222,13 +223,16 @@ SilverLens/
 │   ├── food_aliases.json               # 외래어 · 별칭 데이터
 │   ├── safety_rules.json               # 질병별 안전 원칙
 │   ├── health_groups.json              # 알레르기 · 질병 그룹
-│   └── health_terms.json               # 다국어 건강정보
+│   ├── health_terms.json               # 다국어 건강정보
+│   ├── drug_identification_reference.json # 약 사진 관찰 순서 · 안전 원칙 · 출처
+│   └── mfds_pill_identification.json   # 식약처 낱알식별 API 동기화 결과
 ├── worker/
 │   └── index.ts                        # Cloudflare Worker 진입점 · 이미지 최적화
 ├── build/
 │   └── sites-vite-plugin.ts            # 배포 산출물 생성 플러그인
 ├── scripts/
 │   ├── prepare_knowledge_data.py       # data/sources → data/*.json 변환 및 검증
+│   ├── sync-mfds-pill-data.mjs          # 식약처 공식 의약품 낱알 데이터 동기화
 │   ├── build-verified.mjs              # Windows/Linux 공용 빌드와 시간 제한
 │   ├── build-verified.sh               # 기존 Linux 호출용 Node 래퍼
 │   ├── validate-artifact.mjs           # Worker 진입점 · 배포 설정 확인
@@ -367,6 +371,8 @@ SilverLens/
 | --- | --- | --- |
 | 국립국어원 우리말샘 (개방형 한국어 지식 대사전) | https://opendict.korean.go.kr | 사투리·지역어와 생활 언어 표기 참고 |
 | 공공데이터포털 | https://www.data.go.kr | 노인 다빈도 상병, 식품·영양 관련 공개 데이터 참고 |
+| 식품의약품안전처 의약품 낱알식별 정보 | https://www.data.go.kr/data/15057639/openapi.do | 각인·모양·색·제형·분할선·공식 이미지 URL과 제품 기본정보 동기화 |
+| 약학정보원 의약품 식별검색 | https://health.kr/searchIdentity/search.asp | 서비스 자료를 복제하지 않고 사용자가 직접 최종 확인할 수 있는 외부 확인 경로로만 참고 |
 
 # 디지털 세상의 소외를 지우는 빛, SilverLens
 > **저희가 생각하는 가장 좋은 기술은 인간을 가르치려 들지 않고, 가장 낮은 곳에서 인간을 닮아가는 기술이라고 믿습니다.**

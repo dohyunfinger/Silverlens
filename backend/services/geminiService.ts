@@ -1,5 +1,11 @@
 import { getGeminiConfig } from "../config/env";
-import { findRelevantKnowledge } from "../data/loadData";
+import {
+  findPillCandidates,
+  findRelevantKnowledge,
+  getDrugIdentificationReferenceForPrompt,
+  getPillIdentificationCatalogCount,
+  type PillObservation,
+} from "../data/loadData";
 import { matchFrequentCondition } from "../data/diseaseI18n";
 import { higherRisk, type RiskFloorHit } from "../data/loadData";
 import { callGeminiGenerateContent } from "./geminiClient";
@@ -121,9 +127,10 @@ function imagePurposeInstructions(purpose?: ImagePurpose | null): string[] {
   }
   if (purpose === "medicine") {
     return [
-      "첨부된 사진은 어르신이 '약 봉투나 약 이름을 보고 함께 먹으면 안 되는 음식'을 물어보려고 찍은 것입니다.",
-      "사진에서 약 이름과 복용법(하루 몇 번, 식전·식후)만 읽어 주고, 약효나 진단을 새로 설명하지 마세요.",
-      "약 이름이 흐릿하거나 일부만 보이면 절대 비슷한 약으로 추측하지 말고, 약 이름이 잘 보이게 다시 찍거나 약사에게 확인하도록 안내하세요.",
+      "첨부된 사진은 어르신이 약 봉투·포장·낱알을 확인하거나 함께 먹으면 안 되는 음식을 물어보려고 찍은 것입니다.",
+      "약 봉투나 포장이면 제품명·함량·제조사와 복용법(하루 몇 번, 식전·식후)을 보이는 그대로 읽으세요.",
+      "낱알이면 앞뒷면 각인, 모양, 색, 제형, 분할선을 순서대로 관찰하고, 색과 모양만으로 특정 약 이름을 단정하지 마세요.",
+      "약 이름이나 각인이 흐릿하거나 일부만 보이면 절대 비슷한 약으로 추측하지 말고, 앞면·뒷면·포장을 다시 찍거나 약사에게 실물을 확인하도록 안내하세요.",
       "읽은 약과 관련해 피해야 할 음식(예: 항응고제와 비타민K 많은 채소, 일부 약과 자몽)이 내부 참고 자료에 있으면 그 범위에서만 알려 주세요.",
       "복용량 조절, 복용 중단, 다른 약으로 바꾸기는 절대 안내하지 말고 의사·약사 확인을 권하세요.",
     ];
@@ -144,6 +151,114 @@ type GeminiResponse = {
   }>;
   error?: { message?: string };
 };
+
+type MedicinePhotoObservation = PillObservation & {
+  photoNumbers: number[];
+  confidence: "high" | "medium" | "low";
+  unreadable: string[];
+};
+
+function cleanObservationText(value: unknown) {
+  return typeof value === "string" ? value.trim().slice(0, 120) : "";
+}
+
+function parseMedicinePhotoObservations(raw: string): MedicinePhotoObservation[] {
+  const parsed = JSON.parse(raw) as { observations?: unknown };
+  if (!Array.isArray(parsed.observations)) return [];
+
+  return parsed.observations.slice(0, 8).map((entry, index) => {
+    const value = entry && typeof entry === "object" ? entry as Record<string, unknown> : {};
+    const photoNumbers = Array.isArray(value.photoNumbers)
+      ? value.photoNumbers
+          .map((item) => Number(item))
+          .filter((item) => Number.isInteger(item) && item > 0)
+          .slice(0, 6)
+      : [index + 1];
+    const confidence = value.confidence === "high" || value.confidence === "medium"
+      ? value.confidence
+      : "low";
+    return {
+      photoNumbers,
+      productText: cleanObservationText(value.productText),
+      manufacturerText: cleanObservationText(value.manufacturerText),
+      imprintFront: cleanObservationText(value.imprintFront),
+      imprintBack: cleanObservationText(value.imprintBack),
+      dosageForm: cleanObservationText(value.dosageForm),
+      shape: cleanObservationText(value.shape),
+      colorFront: cleanObservationText(value.colorFront),
+      colorBack: cleanObservationText(value.colorBack),
+      scoreLineFront: cleanObservationText(value.scoreLineFront),
+      scoreLineBack: cleanObservationText(value.scoreLineBack),
+      confidence,
+      unreadable: Array.isArray(value.unreadable)
+        ? value.unreadable.map(cleanObservationText).filter(Boolean).slice(0, 8)
+        : [],
+    };
+  });
+}
+
+/**
+ * 공식 낱알 데이터가 준비된 배포에서만 약 사진을 한 번 구조화한다.
+ * 이 단계는 제품명을 맞히는 모델 호출이 아니라 사진에서 보이는 글자와 외형을
+ * 추출하는 단계이며, 실제 후보명은 findPillCandidates가 공식 데이터에서 고른다.
+ */
+async function inspectMedicinePhotos(
+  images: InlineImage[],
+  apiKey: string,
+  models: string[],
+): Promise<MedicinePhotoObservation[]> {
+  if (images.length === 0 || getPillIdentificationCatalogCount() === 0) return [];
+
+  const content: GeminiContent = {
+    role: "user",
+    parts: [{
+      text: [
+        "당신은 약 이름을 추측하는 사람이 아니라 약 사진의 관찰값을 옮기는 기록자입니다.",
+        `사진은 ${images.length}장입니다. 같은 약의 앞뒷면이면 한 관찰값으로 묶고 photoNumbers에 사진 번호를 모두 적으세요. 서로 다른 약이면 나누세요.`,
+        "포장에 실제로 인쇄된 제품명만 productText에 적으세요. 낱알 외형만 보고 제품명을 만들지 마세요.",
+        "각인은 대소문자, 숫자, 로고 순서를 보이는 그대로 적고 읽을 수 없으면 빈 문자열로 두고 unreadable에 이유를 적으세요.",
+        "색은 조명의 영향을 받으므로 보이는 색만 적고, 정제·경질캡슐·연질캡슐 등 제형을 구분하세요.",
+        "반드시 JSON 하나만 반환하세요.",
+        '{"observations":[{"photoNumbers":[1],"productText":"","manufacturerText":"","imprintFront":"","imprintBack":"","dosageForm":"","shape":"","colorFront":"","colorBack":"","scoreLineFront":"","scoreLineBack":"","confidence":"high|medium|low","unreadable":[]}]}',
+      ].join("\n"),
+    }],
+  };
+  for (const image of images) {
+    content.parts.push({
+      inline_data: {
+        data: image.media.data,
+        mime_type: image.media.mimeType,
+      },
+    });
+  }
+
+  try {
+    const { rawBody } = await callGeminiGenerateContent({
+      apiKey,
+      models,
+      body: {
+        contents: [content],
+        generationConfig: {
+          temperature: 0,
+          maxOutputTokens: 1200,
+          responseMimeType: "application/json",
+        },
+      },
+    });
+    const payload = JSON.parse(rawBody) as GeminiResponse;
+    const generated = payload.candidates?.[0]?.content?.parts
+      ?.map((part) => part.text || "")
+      .join("")
+      .trim();
+    return generated ? parseMedicinePhotoObservations(generated) : [];
+  } catch (error) {
+    console.warn(
+      "[SilverLens] 약 사진 관찰값을 별도로 추출하지 못해 기본 사진 판독으로 계속합니다.",
+      error instanceof Error ? error.message : error,
+    );
+    return [];
+  }
+}
 
 type GeminiPart =
   | { text: string }
@@ -429,6 +544,22 @@ export async function generateSeniorFriendlyAnswer(
   // 첨부 파일이 없고 글로만 질문했는데 시니어 식품·건강 서비스와 무관한 주제이면
   // Gemini API를 호출하지 않고 바로 안내 답변을 돌려줘 토큰 낭비를 막습니다.
   const images = media.images ?? [];
+  const medicineImages = images.filter((image) => image.purpose === "medicine");
+  const isDrugIdentificationRequest =
+    medicineImages.length > 0 ||
+    /(약\s*사진|약\s*봉투|알약|낱알|각인|무슨\s*약|약\s*이름)/u.test(message);
+  const medicinePhotoObservations = await inspectMedicinePhotos(
+    medicineImages,
+    apiKey,
+    textModelChain,
+  );
+  const medicineCandidateGroups = medicinePhotoObservations.map((observation) => ({
+    observation,
+    candidates: findPillCandidates(observation, 5),
+  }));
+  const drugIdentificationReference = isDrugIdentificationRequest
+    ? getDrugIdentificationReferenceForPrompt()
+    : null;
   const hasMedia = Boolean(media.audio || images.length > 0);
   if (
     !isCaregiverAudience &&
@@ -491,6 +622,15 @@ export async function generateSeniorFriendlyAnswer(
     ...[...new Set(images.map((image) => image.purpose).filter(Boolean))].flatMap(
       (purpose) => imagePurposeInstructions(purpose as ImagePurpose),
     ),
+    ...(drugIdentificationReference
+      ? [
+          "약 사진은 아래 식약처 낱알식별 기준에 따라 관찰하되, 외형만으로 제품을 확정하지 마세요.",
+          "식약처 후보가 비어 있으면 특정 제품명을 새로 만들어 말하지 마세요. 포장에 선명하게 인쇄된 제품명은 그대로 읽어 줄 수 있습니다.",
+          "후보가 있어도 '가능한 후보'로만 말하고 사진의 각인·함량·제조사와 공식 정보 또는 약사 확인이 끝나기 전에는 복용해도 된다고 판단하지 마세요.",
+          `약 사진 식별 기준 DATA: ${JSON.stringify(drugIdentificationReference)}`,
+          `약 사진 관찰값과 식약처 후보 DATA: ${JSON.stringify(medicineCandidateGroups)}`,
+        ]
+      : []),
     "사용자 질문에 방언이 있으면 방언 참고 자료를 이용해 표준어 의미로 이해하세요.",
     "이전 대화가 있으면 현재 질문을 가장 최근 대화의 후속 질문으로 먼저 해석하세요.",
     "예를 들어 직전 대화가 토마토주스와 복숭아였고 현재 질문이 '레시피 알려줘'라면, 그 주제의 안전한 레시피를 이어서 답하세요.",

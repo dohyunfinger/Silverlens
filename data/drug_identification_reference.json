@@ -1,0 +1,122 @@
+{
+  "metadata": {
+    "title": "의약품 사진 식별 안전 기준",
+    "reviewed_at": "2026-08-14",
+    "purpose": "약 사진에서 확인할 항목을 빠뜨리지 않고, 외형만으로 약을 오인하지 않기 위한 백엔드 참고 데이터",
+    "sources": [
+      {
+        "publisher": "식품의약품안전처",
+        "dataset": "의약품 낱알식별 정보",
+        "url": "https://www.data.go.kr/data/15057639/openapi.do",
+        "license": "이용허락범위 제한 없음",
+        "usage": "식별 필드, 제품 기본정보 및 공식 이미지 URL"
+      },
+      {
+        "publisher": "약학정보원",
+        "dataset": "의약품 식별검색",
+        "url": "https://health.kr/searchIdentity/search.asp",
+        "license": "사이트 자료의 복제·상업적 이용은 사전 승낙 필요",
+        "usage": "사용자가 직접 최종 확인할 수 있는 외부 검색 경로로만 안내"
+      }
+    ]
+  },
+  "observation_fields": [
+    {
+      "id": "product_text",
+      "label": "포장·약봉투 제품명",
+      "priority": "critical",
+      "instruction": "제품명과 함량이 함께 보이면 글자를 그대로 기록하고 흐린 글자는 추측하지 않는다."
+    },
+    {
+      "id": "imprint_front",
+      "label": "앞면 각인",
+      "priority": "critical",
+      "instruction": "문자·숫자·로고의 대소문자와 순서를 보이는 그대로 기록한다."
+    },
+    {
+      "id": "imprint_back",
+      "label": "뒷면 각인",
+      "priority": "critical",
+      "instruction": "뒷면을 따로 확인하고 아무 표시가 없을 때만 '없음'으로 기록한다."
+    },
+    {
+      "id": "dosage_form",
+      "label": "제형",
+      "priority": "high",
+      "instruction": "정제·경질캡슐·연질캡슐처럼 사진으로 구분 가능한 범위에서만 기록한다."
+    },
+    {
+      "id": "shape",
+      "label": "모양",
+      "priority": "high",
+      "instruction": "원형·타원형·장방형·삼각형·사각형·마름모형·오각형·육각형·팔각형·기타 중 가장 가까운 모양을 기록한다."
+    },
+    {
+      "id": "color_front",
+      "label": "앞면 색",
+      "priority": "high",
+      "instruction": "조명과 카메라 색 보정의 영향을 받을 수 있으므로 관찰값으로만 사용한다."
+    },
+    {
+      "id": "color_back",
+      "label": "뒷면 색",
+      "priority": "high",
+      "instruction": "양면 색이 다르면 각각 기록한다."
+    },
+    {
+      "id": "score_line_front",
+      "label": "앞면 분할선",
+      "priority": "medium",
+      "instruction": "없음·한 줄·십자 형태를 구분하되 흠집을 분할선으로 단정하지 않는다."
+    },
+    {
+      "id": "score_line_back",
+      "label": "뒷면 분할선",
+      "priority": "medium",
+      "instruction": "뒷면 분할선을 별도로 확인한다."
+    },
+    {
+      "id": "dimensions",
+      "label": "크기",
+      "priority": "supporting",
+      "instruction": "자나 동전처럼 크기 기준이 함께 찍힌 경우에만 장축·단축을 보조 정보로 사용한다."
+    }
+  ],
+  "photo_checklist": [
+    "약 한 알을 밝은 단색 바닥에 놓고 초점을 맞춘다.",
+    "앞면과 뒷면을 각각 가까이 찍는다.",
+    "각인 글자와 로고가 가리지 않게 찍는다.",
+    "가능하면 약 봉투나 포장의 제품명·함량·제조사도 함께 찍는다.",
+    "여러 약을 한 사진에 섞지 말고 약마다 나누어 찍는다."
+  ],
+  "decision_rules": [
+    "색과 모양만 같다는 이유로 특정 제품명을 말하지 않는다.",
+    "각인 또는 포장의 정확한 제품명이 없으면 제품 후보를 확정하지 않는다.",
+    "후보가 하나여도 사진, 각인, 함량, 제조사와 공식 정보를 다시 대조한다.",
+    "깨지거나 마모되어 표시가 불분명한 약은 복용하지 말고 약사에게 실물을 확인받도록 안내한다.",
+    "사진으로 복용량 변경, 복용 중단, 대체약 선택을 지시하지 않는다.",
+    "식별하지 못한 약을 증상이나 색상만으로 추측하지 않는다."
+  ],
+  "official_record_fields": [
+    "ITEM_SEQ",
+    "ITEM_NAME",
+    "ENTP_NAME",
+    "CHART",
+    "ITEM_IMAGE",
+    "PRINT_FRONT",
+    "PRINT_BACK",
+    "DRUG_SHAPE",
+    "COLOR_CLASS1",
+    "COLOR_CLASS2",
+    "LINE_FRONT",
+    "LINE_BACK",
+    "LENG_LONG",
+    "LENG_SHORT",
+    "THICK",
+    "CLASS_NAME",
+    "ETC_OTC_NAME",
+    "FORM_CODE_NAME",
+    "ITEM_ENG_NAME",
+    "STD_CD"
+  ]
+}

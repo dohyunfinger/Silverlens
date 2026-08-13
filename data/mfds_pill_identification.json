@@ -1,0 +1,10 @@
+{
+  "metadata": {
+    "source": "식품의약품안전처 의약품 낱알식별 정보 OpenAPI",
+    "source_url": "https://www.data.go.kr/data/15057639/openapi.do",
+    "license": "이용허락범위 제한 없음",
+    "synced_at": null,
+    "note": "MFDS_DATA_API_KEY를 설정하고 npm run sync:drug-data를 실행하면 공식 제품 데이터가 채워집니다."
+  },
+  "records": []
+}

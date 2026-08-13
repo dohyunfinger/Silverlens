@@ -1,7 +1,9 @@
 import dialectDictionary from "../../data/dialect_dictionary.json";
+import drugIdentificationReference from "../../data/drug_identification_reference.json";
 import foodAliases from "../../data/food_aliases.json";
 import globalDishNames from "../../data/global_dish_names.json";
 import koreanDishNames from "../../data/korean_dish_names.json";
+import mfdsPillIdentification from "../../data/mfds_pill_identification.json";
 import recipes from "../../data/recipes.json";
 import safetyRules from "../../data/safety_rules.json";
 import seniorFoodKnowledge from "../../data/senior_food_knowledge.json";
@@ -27,6 +29,60 @@ export type KoreanDishName = {
   /** 프롬프트에 넣을 대표 부재료 예시. 원본 조합 수는 variant_count 로 따로 둔다. */
   variants: string[];
   variant_count: number;
+};
+
+export type PillObservation = {
+  productText?: string;
+  manufacturerText?: string;
+  imprintFront?: string;
+  imprintBack?: string;
+  dosageForm?: string;
+  shape?: string;
+  colorFront?: string;
+  colorBack?: string;
+  scoreLineFront?: string;
+  scoreLineBack?: string;
+};
+
+export type PillIdentificationRecord = {
+  itemSeq: string;
+  itemName: string;
+  manufacturer: string;
+  description: string;
+  imageUrl: string;
+  imprintFront: string;
+  imprintBack: string;
+  shape: string;
+  colorFront: string;
+  colorBack: string;
+  scoreLineFront: string;
+  scoreLineBack: string;
+  lengthLong: string;
+  lengthShort: string;
+  thickness: string;
+  className: string;
+  otcType: string;
+  dosageForm: string;
+  englishName: string;
+  standardCode: string;
+};
+
+type DrugIdentificationReference = typeof drugIdentificationReference;
+
+type PillIdentificationCatalog = {
+  metadata: {
+    source: string;
+    source_url: string;
+    license: string;
+    synced_at: string | null;
+    note: string;
+  };
+  records: PillIdentificationRecord[];
+};
+
+export type PillCandidate = PillIdentificationRecord & {
+  matchScore: number;
+  matchedBy: string[];
 };
 
 export type RiskLevelName = "danger" | "caution" | "safe";
@@ -91,6 +147,8 @@ export type KnowledgeData = {
   safetyRules: SafetyRule[];
   seniorFoodKnowledge: SeniorFoodRecord[];
   koreanDishNames: KoreanDishName[];
+  drugIdentificationReference: DrugIdentificationReference;
+  pillIdentification: PillIdentificationCatalog;
 };
 
 let memoryCache: KnowledgeData | null = null;
@@ -105,9 +163,131 @@ export function loadKnowledgeData(): KnowledgeData {
       safetyRules: safetyRules as SafetyRule[],
       seniorFoodKnowledge: seniorFoodKnowledge as SeniorFoodRecord[],
       koreanDishNames: koreanDishNames as KoreanDishName[],
+      drugIdentificationReference,
+      pillIdentification: mfdsPillIdentification as PillIdentificationCatalog,
     };
   }
   return memoryCache;
+}
+
+function normalizedDrugText(value: string | undefined) {
+  return (value ?? "")
+    .normalize("NFKC")
+    .toLocaleUpperCase("ko-KR")
+    .replace(/[^0-9A-Z가-힣]/g, "");
+}
+
+function scoreDrugText(
+  observed: string | undefined,
+  candidate: string,
+  exactScore: number,
+  partialScore: number,
+) {
+  const left = normalizedDrugText(observed);
+  const right = normalizedDrugText(candidate);
+  if (left.length < 2 || right.length < 2) return 0;
+  if (left === right) return exactScore;
+  if (left.includes(right) || right.includes(left)) return partialScore;
+  return 0;
+}
+
+/**
+ * 사진에서 읽은 글자·각인을 식약처 낱알식별 데이터와 대조한다.
+ * 색과 모양은 서로 다른 약에서도 반복되므로, 제품명 또는 각인이 먼저 맞은
+ * 경우에만 보조 점수로 쓴다. 이 함수의 결과도 확정 판정이 아니라 후보이다.
+ */
+export function findPillCandidates(
+  observation: PillObservation | null | undefined,
+  limit = 5,
+): PillCandidate[] {
+  if (!observation) return [];
+
+  const catalog = loadKnowledgeData().pillIdentification.records;
+  return catalog
+    .map((record) => {
+      const matchedBy: string[] = [];
+      let identityScore = 0;
+
+      const productScore = scoreDrugText(
+        observation.productText,
+        record.itemName,
+        100,
+        72,
+      );
+      if (productScore > 0) {
+        identityScore += productScore;
+        matchedBy.push("제품명");
+      }
+
+      const frontScore = Math.max(
+        scoreDrugText(observation.imprintFront, record.imprintFront, 62, 44),
+        scoreDrugText(observation.imprintFront, record.imprintBack, 48, 34),
+      );
+      if (frontScore > 0) {
+        identityScore += frontScore;
+        matchedBy.push("앞면 각인");
+      }
+
+      const backScore = Math.max(
+        scoreDrugText(observation.imprintBack, record.imprintBack, 58, 42),
+        scoreDrugText(observation.imprintBack, record.imprintFront, 46, 32),
+      );
+      if (backScore > 0) {
+        identityScore += backScore;
+        matchedBy.push("뒷면 각인");
+      }
+
+      // 제품명이나 각인이 전혀 맞지 않으면 색·모양만으로 후보를 만들지 않는다.
+      if (identityScore === 0) return null;
+
+      let supportScore = 0;
+      const supportingFields: Array<[
+        keyof PillObservation,
+        keyof PillIdentificationRecord,
+        string,
+        number,
+      ]> = [
+        ["manufacturerText", "manufacturer", "제조사", 10],
+        ["dosageForm", "dosageForm", "제형", 8],
+        ["shape", "shape", "모양", 8],
+        ["colorFront", "colorFront", "앞면 색", 5],
+        ["colorBack", "colorBack", "뒷면 색", 5],
+        ["scoreLineFront", "scoreLineFront", "앞면 분할선", 3],
+        ["scoreLineBack", "scoreLineBack", "뒷면 분할선", 3],
+      ];
+      for (const [observedKey, recordKey, label, score] of supportingFields) {
+        const observedValue = normalizedDrugText(observation[observedKey]);
+        const recordValue = normalizedDrugText(record[recordKey]);
+        if (observedValue && recordValue && observedValue === recordValue) {
+          supportScore += score;
+          matchedBy.push(label);
+        }
+      }
+
+      return {
+        ...record,
+        matchScore: identityScore + supportScore,
+        matchedBy,
+      };
+    })
+    .filter((candidate): candidate is PillCandidate => candidate !== null)
+    .sort((left, right) => right.matchScore - left.matchScore)
+    .slice(0, limit);
+}
+
+/** 약 사진을 볼 때 모델에 넘길 검증된 관찰 순서와 안전 원칙. */
+export function getDrugIdentificationReferenceForPrompt() {
+  const reference = loadKnowledgeData().drugIdentificationReference;
+  return {
+    source: reference.metadata.sources[0],
+    observationFields: reference.observation_fields,
+    photoChecklist: reference.photo_checklist,
+    decisionRules: reference.decision_rules,
+  };
+}
+
+export function getPillIdentificationCatalogCount() {
+  return loadKnowledgeData().pillIdentification.records.length;
 }
 
 function normalized(value: string) {
@@ -485,6 +665,7 @@ export function getKnowledgeStats() {
       globalDishes: knowledge.globalDishes.length,
       safetyRules: knowledge.safetyRules.length,
       seniorFoodKnowledge: knowledge.seniorFoodKnowledge.length,
+      pillIdentification: knowledge.pillIdentification.records.length,
     },
     dialectByCategory,
     dialectSample: knowledge.dialectDictionary.slice(0, 3),
