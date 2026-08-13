@@ -93,32 +93,6 @@ export async function createServerSession(user: User, remember: boolean) {
   return payload.user;
 }
 
-export async function createTemporaryAdminSession(
-  username: string,
-  password: string,
-  remember: boolean,
-) {
-  const response = await fetch("/api/auth/session", {
-    method: "POST",
-    credentials: "same-origin",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      mode: "temporary-admin",
-      username,
-      password,
-      remember,
-    }),
-  });
-  const payload = (await response.json()) as SessionResponse;
-  if (!response.ok || !payload.authenticated || !payload.user) {
-    throw new CaregiverAuthError(
-      payload.error ?? "TEMP_ADMIN_LOGIN_FAILED",
-      "임시 관리자 로그인에 실패했습니다.",
-    );
-  }
-  return payload.user;
-}
-
 export async function clearServerSession() {
   await fetch("/api/auth/session", {
     method: "DELETE",
