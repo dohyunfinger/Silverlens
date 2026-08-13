@@ -23,6 +23,7 @@ import {
   writeStore,
 } from "./localStore";
 import { type PhotoIssue, preparePhoto } from "./photoCapture";
+import SeniorCareLinkPanel from "./SeniorCareLinkPanel";
 import {
   getHealthGroupOptions,
   getHealthLabel,
@@ -5021,6 +5022,20 @@ export default function SilverLensApp() {
   }
 
   if (screen === "data") {
+    const careSnapshot: StoredState = {
+      version: 1,
+      savedAt: storeSavedAt ?? 0,
+      profile: {
+        language,
+        gender,
+        ageBand,
+        ageConfirmed,
+        allergyIds,
+        conditionIds,
+        healthNotes,
+      },
+      chatTurns: chatTurns.slice(-MAX_STORED_TURNS),
+    };
     return (
       <main className="app-shell">
         <Sidebar active="data" onNavigate={setScreen} copy={activeCopy} />
@@ -5032,6 +5047,11 @@ export default function SilverLensApp() {
               <p>{activeCopy.dataDescription}</p>
             </div>
           </header>
+
+          <SeniorCareLinkPanel
+            language={activeLanguage}
+            snapshot={careSnapshot}
+          />
 
           <section className="health-notes" aria-label={activeCopy.notesTitle}>
             <div className="health-notes-head">

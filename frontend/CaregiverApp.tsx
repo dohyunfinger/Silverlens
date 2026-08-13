@@ -3,6 +3,7 @@
 import Link from "next/link";
 import {
   type FormEvent,
+  type KeyboardEvent,
   useEffect,
   useMemo,
   useRef,
@@ -10,95 +11,66 @@ import {
 } from "react";
 import ReactMarkdown from "react-markdown";
 import type { CaregiverSessionUser } from "../backend/services/caregiverAuth";
-import { readStore } from "./localStore";
+import { getHealthLabel } from "../backend/data/healthTerms";
 
 type RiskLevel = "danger" | "caution" | "safe";
-type TurnStatus = "loading" | "complete" | "error";
 
-type CaregiverTurn = {
+type SeniorProfile = {
+  language: "ko-KR" | "en-US" | "ja-JP" | null;
+  gender: "male" | "female" | null;
+  ageBand: number;
+  ageConfirmed: boolean;
+  allergyIds: string[];
+  conditionIds: string[];
+  healthNotes: Array<{
+    id?: string;
+    kind: "allergy" | "condition" | "setup";
+    text: string;
+    savedAt?: number;
+  }>;
+};
+
+type CaregiverSenior = {
+  id: string;
+  alias: string;
+  linkedAt: number;
+  updatedAt: number;
+  profile: SeniorProfile;
+  recentChatCount: number;
+};
+
+type SeniorChat = {
   id: string;
   question: string;
   answer: string;
   riskLevel: RiskLevel;
   warningMessage: string;
-  status: TurnStatus;
-  errorMessage: string;
 };
 
-type StoredHealthNote = {
-  kind: "allergy" | "condition" | "setup";
-  text: string;
+type SeniorDetail = CaregiverSenior & { chatTurns: SeniorChat[] };
+
+type ThreadSummary = {
+  id: string;
+  title: string;
+  seniorId: string | null;
+  seniorAlias: string | null;
+  updatedAt: number;
 };
 
-type StoredState = {
-  profile?: {
-    gender?: "male" | "female" | null;
-    ageBand?: number;
-    ageConfirmed?: boolean;
-    allergyIds?: string[];
-    conditionIds?: string[];
-    healthNotes?: StoredHealthNote[];
-  };
+type CareMessage = {
+  id: string;
+  role: "user" | "assistant";
+  content: string;
+  riskLevel: RiskLevel;
+  warningMessage: string;
+  createdAt: number;
+  status?: "loading" | "error";
 };
 
-type CaregiverProfile = {
-  audience: "caregiver";
-  language: string;
-  gender?: "male" | "female";
-  ageBand?: number;
-  allergyIds: string[];
-  conditionIds: string[];
-  healthNotes: StoredHealthNote[];
+type CaregiverAppProps = {
+  caregiver?: CaregiverSessionUser;
+  onLogout?: () => void | Promise<void>;
 };
-
-const EMPTY_PROFILE: CaregiverProfile = {
-  audience: "caregiver",
-  language: "ko-KR",
-  allergyIds: [],
-  conditionIds: [],
-  healthNotes: [],
-};
-
-function stringArray(value: unknown): string[] {
-  return Array.isArray(value)
-    ? value.filter((item): item is string => typeof item === "string")
-    : [];
-}
-
-function healthNotes(value: unknown): StoredHealthNote[] {
-  if (!Array.isArray(value)) return [];
-  return value.filter(
-    (item): item is StoredHealthNote =>
-      Boolean(item) &&
-      typeof item === "object" &&
-      typeof (item as StoredHealthNote).text === "string" &&
-      ["allergy", "condition", "setup"].includes(
-        (item as StoredHealthNote).kind,
-      ),
-  );
-}
-
-function profileFromStoredState(state: StoredState | null): CaregiverProfile {
-  const profile = state?.profile;
-  if (!profile) return EMPTY_PROFILE;
-
-  return {
-    audience: "caregiver",
-    // 돌봄이 화면의 현재 UI가 한국어이므로 답변 언어도 한국어로 맞춘다.
-    language: "ko-KR",
-    gender:
-      profile.gender === "male" || profile.gender === "female"
-        ? profile.gender
-        : undefined,
-    ageBand:
-      profile.ageConfirmed && typeof profile.ageBand === "number"
-        ? profile.ageBand
-        : undefined,
-    allergyIds: stringArray(profile.allergyIds),
-    conditionIds: stringArray(profile.conditionIds),
-    healthNotes: healthNotes(profile.healthNotes),
-  };
-}
 
 function PlusIcon() {
   return (
@@ -108,442 +80,505 @@ function PlusIcon() {
   );
 }
 
-function MicrophoneIcon() {
+function SendIcon() {
   return (
     <svg viewBox="0 0 24 24" aria-hidden="true">
-      <rect x="9" y="3" width="6" height="12" rx="3" />
-      <path d="M5.5 11.5a6.5 6.5 0 0 0 13 0M12 18v3M9 21h6" />
-    </svg>
-  );
-}
-
-function WaveformIcon() {
-  return (
-    <svg viewBox="0 0 28 28" aria-hidden="true">
-      <path d="M5 12v4M9.5 8v12M14 5v18M18.5 9v10M23 12v4" />
+      <path d="m5 12 14-7-4 14-3-6-7-1Z" />
+      <path d="m12 13 7-8" />
     </svg>
   );
 }
 
 function StopIcon() {
   return (
-    <svg viewBox="0 0 28 28" aria-hidden="true">
-      <rect x="9" y="9" width="10" height="10" rx="1.5" />
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="7" y="7" width="10" height="10" rx="1.5" />
     </svg>
   );
 }
 
-type CaregiverAppProps = {
-  caregiver?: CaregiverSessionUser;
-  onLogout?: () => void | Promise<void>;
-};
+async function responseJson<T>(response: Response): Promise<T> {
+  const payload = (await response.json()) as T & { error?: string };
+  if (!response.ok) throw new Error(payload.error || "요청을 처리하지 못했습니다.");
+  return payload;
+}
+
+function relativeTime(value: number) {
+  const elapsed = Date.now() - value;
+  if (elapsed < 60_000) return "방금 전";
+  if (elapsed < 3_600_000) return `${Math.floor(elapsed / 60_000)}분 전`;
+  if (elapsed < 86_400_000) return `${Math.floor(elapsed / 3_600_000)}시간 전`;
+  return new Date(value).toLocaleDateString("ko-KR", { month: "short", day: "numeric" });
+}
 
 export default function CaregiverApp({ caregiver, onLogout }: CaregiverAppProps) {
+  const [seniors, setSeniors] = useState<CaregiverSenior[]>([]);
+  const [threads, setThreads] = useState<ThreadSummary[]>([]);
+  const [selectedSeniorId, setSelectedSeniorId] = useState<string | null>(null);
+  const [seniorDetail, setSeniorDetail] = useState<SeniorDetail | null>(null);
+  const [activeThreadId, setActiveThreadId] = useState<string | null>(null);
+  const [messages, setMessages] = useState<CareMessage[]>([]);
   const [question, setQuestion] = useState("");
-  const [turns, setTurns] = useState<CaregiverTurn[]>([]);
-  const [profile, setProfile] = useState<CaregiverProfile>(EMPTY_PROFILE);
-  const [isLoading, setIsLoading] = useState(false);
-  const [isToolMenuOpen, setIsToolMenuOpen] = useState(false);
-  const [notice, setNotice] = useState("");
-  const composerRef = useRef<HTMLDivElement | null>(null);
-  const inputRef = useRef<HTMLInputElement | null>(null);
-  const chatScrollRef = useRef<HTMLElement | null>(null);
+  const [linkCode, setLinkCode] = useState("");
+  const [linkAlias, setLinkAlias] = useState("");
+  const [seniorSearch, setSeniorSearch] = useState("");
+  const [isLoadingOverview, setIsLoadingOverview] = useState(true);
+  const [isLoadingThread, setIsLoadingThread] = useState(false);
+  const [isAnswering, setIsAnswering] = useState(false);
+  const [isLinking, setIsLinking] = useState(false);
+  const [error, setError] = useState("");
+  const [linkError, setLinkError] = useState("");
+  const [mobilePanel, setMobilePanel] = useState<"chat" | "seniors" | null>(null);
+  const scrollRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLTextAreaElement | null>(null);
   const abortRef = useRef<AbortController | null>(null);
-  const noticeTimerRef = useRef<number | null>(null);
-  const hasConversation = turns.length > 0;
+
+  const selectedSenior = useMemo(
+    () => seniors.find((senior) => senior.id === selectedSeniorId) ?? null,
+    [selectedSeniorId, seniors],
+  );
+  const visibleSeniors = useMemo(() => {
+    const query = seniorSearch.trim().toLocaleLowerCase("ko-KR");
+    return query
+      ? seniors.filter((senior) => senior.alias.toLocaleLowerCase("ko-KR").includes(query))
+      : seniors;
+  }, [seniorSearch, seniors]);
+
+  const loadOverview = async (preferredSeniorId?: string | null) => {
+    const result = await fetch("/api/caregiver/overview", { cache: "no-store" }).then(
+      (response) => responseJson<{ seniors: CaregiverSenior[]; threads: ThreadSummary[] }>(response),
+    );
+    setSeniors(result.seniors);
+    setThreads(result.threads);
+    setSelectedSeniorId((current) => {
+      const preferred = preferredSeniorId === undefined ? current : preferredSeniorId;
+      if (preferred && result.seniors.some((senior) => senior.id === preferred)) return preferred;
+      return result.seniors[0]?.id ?? null;
+    });
+  };
 
   useEffect(() => {
     let cancelled = false;
-    void readStore<StoredState>("state-v1").then((stored) => {
-      if (!cancelled) setProfile(profileFromStoredState(stored));
-    });
+    void fetch("/api/caregiver/overview", { cache: "no-store" })
+      .then((response) => responseJson<{ seniors: CaregiverSenior[]; threads: ThreadSummary[] }>(response))
+      .then((result) => {
+        if (cancelled) return;
+        setSeniors(result.seniors);
+        setThreads(result.threads);
+        setSelectedSeniorId(result.seniors[0]?.id ?? null);
+      })
+      .catch((caught) => {
+        if (!cancelled) setError(caught instanceof Error ? caught.message : "정보를 불러오지 못했습니다.");
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoadingOverview(false);
+      });
     return () => {
       cancelled = true;
+      abortRef.current?.abort();
     };
   }, []);
 
   useEffect(() => {
-    if (!isToolMenuOpen) return;
-
-    const closeOnOutsideClick = (event: PointerEvent) => {
-      if (!composerRef.current?.contains(event.target as Node)) {
-        setIsToolMenuOpen(false);
-      }
+    if (!selectedSeniorId) {
+      setSeniorDetail(null);
+      return;
+    }
+    let cancelled = false;
+    void fetch(`/api/caregiver/seniors/${encodeURIComponent(selectedSeniorId)}`, {
+      cache: "no-store",
+    })
+      .then((response) => responseJson<SeniorDetail>(response))
+      .then((detail) => {
+        if (!cancelled) setSeniorDetail(detail);
+      })
+      .catch(() => {
+        if (!cancelled) setSeniorDetail(null);
+      });
+    return () => {
+      cancelled = true;
     };
-
-    window.addEventListener("pointerdown", closeOnOutsideClick);
-    return () => window.removeEventListener("pointerdown", closeOnOutsideClick);
-  }, [isToolMenuOpen]);
+  }, [selectedSeniorId]);
 
   useEffect(() => {
-    const scroller = chatScrollRef.current;
-    if (!scroller || !hasConversation) return;
-    scroller.scrollTo({
-      top: scroller.scrollHeight,
-      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches
-        ? "auto"
-        : "smooth",
+    scrollRef.current?.scrollTo({
+      top: scrollRef.current.scrollHeight,
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
     });
-  }, [hasConversation, turns]);
+  }, [messages]);
 
-  useEffect(
-    () => () => {
-      abortRef.current?.abort();
-      if (noticeTimerRef.current !== null) {
-        window.clearTimeout(noticeTimerRef.current);
-      }
-    },
-    [],
-  );
-
-  const completedHistory = useMemo(
-    () =>
-      turns
-        .filter((turn) => turn.status === "complete" && turn.answer)
-        .slice(-6)
-        .map((turn) => ({ question: turn.question, answer: turn.answer })),
-    [turns],
-  );
-
-  const showPreparationNotice = (message: string) => {
-    setIsToolMenuOpen(false);
-    setNotice(message);
-    if (noticeTimerRef.current !== null) {
-      window.clearTimeout(noticeTimerRef.current);
-    }
-    noticeTimerRef.current = window.setTimeout(() => setNotice(""), 3200);
-  };
-
-  const stopAnswer = () => {
+  const newChat = (seniorId: string | null = selectedSeniorId) => {
     abortRef.current?.abort();
-  };
-
-  const startNewChat = () => {
-    abortRef.current?.abort();
-    abortRef.current = null;
-    setTurns([]);
+    setActiveThreadId(null);
+    setMessages([]);
     setQuestion("");
-    setNotice("");
-    setIsLoading(false);
+    setError("");
+    setSelectedSeniorId(seniorId);
+    setMobilePanel(null);
     window.setTimeout(() => inputRef.current?.focus(), 0);
   };
 
-  const submitQuestion = async (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    const cleaned = question.trim().slice(0, 1000);
-    if (!cleaned) {
-      inputRef.current?.focus();
-      return;
-    }
-    if (isLoading) return;
+  const chooseSenior = (seniorId: string) => {
+    newChat(seniorId);
+  };
 
-    const turnId = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
-    const nextTurn: CaregiverTurn = {
-      id: turnId,
-      question: cleaned,
-      answer: "",
-      riskLevel: "safe",
-      warningMessage: "",
-      status: "loading",
-      errorMessage: "",
-    };
+  const openThread = async (thread: ThreadSummary) => {
+    if (isLoadingThread) return;
+    setIsLoadingThread(true);
+    setError("");
+    setActiveThreadId(thread.id);
+    setSelectedSeniorId(thread.seniorId);
+    setMobilePanel(null);
+    try {
+      const result = await fetch(`/api/caregiver/threads/${encodeURIComponent(thread.id)}`, {
+        cache: "no-store",
+      }).then((response) =>
+        responseJson<{ thread: ThreadSummary; messages: CareMessage[] }>(response),
+      );
+      setMessages(result.messages);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "대화를 불러오지 못했습니다.");
+    } finally {
+      setIsLoadingThread(false);
+    }
+  };
+
+  const registerSenior = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    if (!linkCode.trim() || isLinking) return;
+    setIsLinking(true);
+    setLinkError("");
+    try {
+      const result = await fetch("/api/caregiver/link", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ code: linkCode, alias: linkAlias }),
+      }).then((response) => responseJson<{ senior: CaregiverSenior }>(response));
+      setLinkCode("");
+      setLinkAlias("");
+      await loadOverview(result.senior.id);
+      newChat(result.senior.id);
+    } catch (caught) {
+      setLinkError(caught instanceof Error ? caught.message : "연결하지 못했습니다.");
+    } finally {
+      setIsLinking(false);
+    }
+  };
+
+  const unlinkSenior = async (senior: CaregiverSenior) => {
+    if (!window.confirm(`${senior.alias} 연결을 이 계정에서 해제할까요?`)) return;
+    try {
+      await fetch(`/api/caregiver/seniors/${encodeURIComponent(senior.id)}`, {
+        method: "DELETE",
+      }).then((response) => responseJson<{ ok: true }>(response));
+      const remaining = seniors.filter((item) => item.id !== senior.id);
+      setSeniors(remaining);
+      if (selectedSeniorId === senior.id) newChat(remaining[0]?.id ?? null);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "연결을 해제하지 못했습니다.");
+    }
+  };
+
+  const submitQuestion = async (event?: FormEvent<HTMLFormElement>) => {
+    event?.preventDefault();
+    const cleaned = question.trim().slice(0, 1600);
+    if (!cleaned || isAnswering) return;
     const controller = new AbortController();
     abortRef.current = controller;
-    setTurns((current) => [...current, nextTurn]);
+    const sentAt = Date.now();
+    const userMessage: CareMessage = {
+      id: `user-${sentAt}`,
+      role: "user",
+      content: cleaned,
+      riskLevel: "safe",
+      warningMessage: "",
+      createdAt: sentAt,
+    };
+    const loadingMessage: CareMessage = {
+      id: `answer-${sentAt}`,
+      role: "assistant",
+      content: "",
+      riskLevel: "safe",
+      warningMessage: "",
+      createdAt: sentAt + 1,
+      status: "loading",
+    };
+    setMessages((current) => [...current, userMessage, loadingMessage]);
     setQuestion("");
-    setNotice("");
-    setIsToolMenuOpen(false);
-    setIsLoading(true);
-
+    setError("");
+    setIsAnswering(true);
     try {
-      const response = await fetch("/api/chat", {
+      const result = await fetch("/api/caregiver/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         signal: controller.signal,
         body: JSON.stringify({
           message: cleaned,
-          profile,
-          history: completedHistory,
+          threadId: activeThreadId,
+          seniorId: selectedSeniorId,
         }),
-      });
-      const payload = (await response.json()) as {
-        answer?: string;
-        riskLevel?: RiskLevel;
-        warningMessage?: string;
-        error?: string;
-        retryAfterSeconds?: number;
-      };
-
-      if (!response.ok || !payload.answer) {
-        const waitSeconds = Number(payload.retryAfterSeconds);
-        const quotaMessage =
-          response.status === 429 && Number.isFinite(waitSeconds)
-            ? `요청이 많습니다. 약 ${Math.ceil(waitSeconds)}초 후 다시 질문해 주세요.`
-            : "";
-        throw new Error(
-          quotaMessage || payload.error || "답변을 가져오지 못했습니다.",
-        );
-      }
-
-      setTurns((current) =>
-        current.map((turn) =>
-          turn.id === turnId
+      }).then((response) =>
+        responseJson<{
+          threadId: string;
+          answer: string;
+          riskLevel: RiskLevel;
+          warningMessage: string;
+        }>(response),
+      );
+      setActiveThreadId(result.threadId);
+      setMessages((current) =>
+        current.map((message) =>
+          message.id === loadingMessage.id
             ? {
-                ...turn,
-                answer: payload.answer ?? "",
-                riskLevel: payload.riskLevel ?? "safe",
-                warningMessage: payload.warningMessage?.trim() ?? "",
-                status: "complete",
+                ...message,
+                content: result.answer,
+                riskLevel: result.riskLevel,
+                warningMessage: result.warningMessage,
+                status: undefined,
               }
-            : turn,
+            : message,
         ),
       );
-    } catch (error) {
-      const stopped = error instanceof DOMException && error.name === "AbortError";
-      setTurns((current) =>
-        current.map((turn) =>
-          turn.id === turnId
+      await loadOverview(selectedSeniorId);
+    } catch (caught) {
+      const stopped = caught instanceof DOMException && caught.name === "AbortError";
+      setMessages((current) =>
+        current.map((message) =>
+          message.id === loadingMessage.id
             ? {
-                ...turn,
+                ...message,
+                content: stopped ? "답변 생성을 중지했습니다." : caught instanceof Error ? caught.message : "답변을 만들지 못했습니다.",
                 status: "error",
-                errorMessage: stopped
-                  ? "답변 생성을 중지했습니다."
-                  : error instanceof Error
-                    ? error.message
-                    : "답변을 가져오지 못했습니다.",
               }
-            : turn,
+            : message,
         ),
       );
     } finally {
       if (abortRef.current === controller) abortRef.current = null;
-      setIsLoading(false);
+      setIsAnswering(false);
     }
   };
 
-  const renderComposer = (placement: "hero" | "dock") => (
-    <form
-      className={`caregiver-composer caregiver-composer-${placement}`}
-      onSubmit={submitQuestion}
-    >
-      <div className="caregiver-composer-inner" ref={composerRef}>
-        <button
-          type="button"
-          className="caregiver-tool-button"
-          aria-label="추가 도구 열기"
-          aria-expanded={isToolMenuOpen}
-          onClick={() => setIsToolMenuOpen((open) => !open)}
-        >
-          <PlusIcon />
-        </button>
+  const handleComposerKey = (event: KeyboardEvent<HTMLTextAreaElement>) => {
+    if (event.key === "Enter" && !event.shiftKey) {
+      event.preventDefault();
+      void submitQuestion();
+    }
+  };
 
-        {isToolMenuOpen && (
-          <div className="caregiver-tool-menu" role="menu">
-            <button
-              type="button"
-              role="menuitem"
-              onClick={() =>
-                showPreparationNotice(
-                  "사진 첨부 기능은 다음 단계에서 연결할 예정입니다.",
-                )
-              }
-            >
-              <span aria-hidden="true">▧</span>
-              사진 첨부
-            </button>
-            <button
-              type="button"
-              role="menuitem"
-              onClick={() =>
-                showPreparationNotice(
-                  "돌봄 기록 기능은 다음 단계에서 연결할 예정입니다.",
-                )
-              }
-            >
-              <span aria-hidden="true">≡</span>
-              돌봄 기록
-            </button>
-          </div>
-        )}
-
-        <input
-          ref={inputRef}
-          value={question}
-          onChange={(event) => setQuestion(event.target.value)}
-          placeholder={
-            hasConversation
-              ? "이어서 무엇이든 물어보세요"
-              : "돌봄에 관해 무엇이든 물어보세요"
-          }
-          aria-label="돌봄 질문"
-          autoComplete="off"
-          disabled={isLoading}
-        />
-
-        <button
-          type="button"
-          className="caregiver-mic-button"
-          aria-label="음성으로 질문하기"
-          onClick={() =>
-            showPreparationNotice(
-              "음성 입력은 다음 단계에서 연결할 예정입니다.",
-            )
-          }
-          disabled={isLoading}
-        >
-          <MicrophoneIcon />
-        </button>
-        <button
-          type={isLoading ? "button" : "submit"}
-          className={
-            isLoading
-              ? "caregiver-submit-button is-loading"
-              : "caregiver-submit-button"
-          }
-          aria-label={isLoading ? "답변 생성 중지" : "질문 보내기"}
-          disabled={!isLoading && !question.trim()}
-          onClick={isLoading ? stopAnswer : undefined}
-        >
-          {isLoading ? <StopIcon /> : <WaveformIcon />}
-        </button>
-      </div>
-    </form>
-  );
+  const profile = seniorDetail?.profile ?? selectedSenior?.profile;
 
   return (
-    <main
-      className={
-        hasConversation ? "caregiver-root is-chatting" : "caregiver-root"
-      }
-    >
-      <header className="caregiver-header">
-        <Link
-          className="caregiver-brand"
-          href="/"
-          aria-label="실버렌즈 시니어 화면으로 이동"
-        >
-          <span className="caregiver-brand-mark">SL</span>
-          <span>SilverLens</span>
-          <span className="caregiver-mode-badge">돌봄이</span>
+    <main className="care-workspace">
+      <header className="care-topbar">
+        <Link className="care-logo" href="/">
+          <span>SL</span>
+          <strong>SilverLens Care</strong>
         </Link>
-        <div className="caregiver-header-actions">
-          {caregiver && (
-            <div className="caregiver-account">
-              <span title={caregiver.email}>{caregiver.name}</span>
-              <button type="button" onClick={() => void onLogout?.()}>
-                로그아웃
-              </button>
-            </div>
-          )}
-          {hasConversation && (
-            <button
-              type="button"
-              className="caregiver-new-chat"
-              onClick={startNewChat}
-            >
-              새 대화
-            </button>
-          )}
-          <Link className="caregiver-back-link" href="/">
-            시니어 화면으로 돌아가기
-            <span aria-hidden="true">↗</span>
-          </Link>
+        <nav className="care-mobile-tabs" aria-label="모바일 패널">
+          <button type="button" onClick={() => setMobilePanel("chat")}>대화 기록</button>
+          <button type="button" onClick={() => setMobilePanel("seniors")}>시니어</button>
+        </nav>
+        <div className="care-account">
+          <span title={caregiver?.email}>{caregiver?.name}</span>
+          <button type="button" onClick={() => void onLogout?.()}>로그아웃</button>
+          <Link href="/">시니어 화면</Link>
         </div>
       </header>
 
-      {!hasConversation ? (
-        <>
-          <section
-            className="caregiver-hero"
-            aria-labelledby="caregiver-heading"
-          >
-            <div className="caregiver-heading-group">
-              <p>돌봄이 전용 도우미</p>
-              <h1 id="caregiver-heading">오늘 어떤 돌봄이 필요하신가요?</h1>
-              <span>
-                식사, 복약, 건강 상태와 돌봄 기록을 편하게 물어보세요.
-              </span>
+      <div className="care-layout">
+        <aside className={`care-history-panel ${mobilePanel === "chat" ? "is-mobile-open" : ""}`}>
+          <div className="care-panel-title">
+            <div>
+              <span>WORKSPACE</span>
+              <h2>대화 기록</h2>
             </div>
-            {renderComposer("hero")}
-            <p className="caregiver-notice" role="status" aria-live="polite">
-              {notice}
-            </p>
-          </section>
-
-          <footer className="caregiver-footer">
-            <span>SilverLens Care</span>
-            <span>
-              돌봄 판단을 돕는 참고 도구이며, 의료진의 진단을 대신하지
-              않습니다.
-            </span>
-          </footer>
-        </>
-      ) : (
-        <>
-          <section
-            className="caregiver-chat"
-            ref={chatScrollRef}
-            aria-label="돌봄 대화"
-            aria-live="polite"
-            aria-busy={isLoading}
-          >
-            <div className="caregiver-thread">
-              {turns.map((turn) => (
-                <section className="caregiver-turn" key={turn.id}>
-                  <p className="caregiver-user-message">{turn.question}</p>
-                  <article className="caregiver-assistant-message">
-                    <header>
-                      <span className="caregiver-answer-mark" aria-hidden="true">
-                        SL
-                      </span>
-                      <strong>돌봄 답변</strong>
-                    </header>
-
-                    {turn.warningMessage && (
-                      <p
-                        className={`caregiver-risk-note ${turn.riskLevel}`}
-                        role={turn.riskLevel === "danger" ? "alert" : "status"}
-                      >
-                        {turn.warningMessage}
-                      </p>
-                    )}
-
-                    {turn.status === "loading" && (
-                      <div className="caregiver-answer-loading" role="status">
-                        <span />
-                        <span />
-                        <span />
-                        <p>등록된 건강정보와 안전 원칙을 확인하고 있어요.</p>
-                      </div>
-                    )}
-
-                    {turn.status === "complete" && (
-                      <div className="caregiver-answer-body">
-                        <ReactMarkdown>{turn.answer}</ReactMarkdown>
-                      </div>
-                    )}
-
-                    {turn.status === "error" && (
-                      <div className="caregiver-answer-error" role="alert">
-                        <strong>답변을 완료하지 못했습니다.</strong>
-                        <p>{turn.errorMessage}</p>
-                      </div>
-                    )}
-                  </article>
-                </section>
-              ))}
-            </div>
-          </section>
-
-          <div className="caregiver-chat-dock">
-            <p className="caregiver-chat-note" role="status" aria-live="polite">
-              {notice ||
-                "실버렌즈의 답변은 돌봄 참고용이며 의료진의 진단을 대신하지 않습니다."}
-            </p>
-            {renderComposer("dock")}
+            <button type="button" className="care-close-mobile" onClick={() => setMobilePanel(null)}>×</button>
           </div>
-        </>
-      )}
+          <button type="button" className="care-new-thread" onClick={() => newChat()}>
+            <PlusIcon /> 새 대화
+          </button>
+          <div className="care-thread-list">
+            {threads.length === 0 && !isLoadingOverview ? (
+              <p className="care-empty-list">아직 저장된 대화가 없습니다.</p>
+            ) : (
+              threads.map((thread) => (
+                <button
+                  key={thread.id}
+                  type="button"
+                  className={activeThreadId === thread.id ? "active" : ""}
+                  onClick={() => void openThread(thread)}
+                >
+                  <strong>{thread.title}</strong>
+                  <span>{thread.seniorAlias || "일반 돌봄 질문"} · {relativeTime(thread.updatedAt)}</span>
+                </button>
+              ))
+            )}
+          </div>
+          <p className="care-history-foot">대화는 로그인한 돌봄이 계정에 안전하게 저장됩니다.</p>
+        </aside>
+
+        <section className="care-main-chat">
+          <header className="care-chat-context">
+            <div>
+              <span>{selectedSenior ? "선택한 시니어" : "일반 돌봄 도우미"}</span>
+              <h1>{selectedSenior?.alias ?? "무엇을 도와드릴까요?"}</h1>
+            </div>
+            <button type="button" onClick={() => newChat()}>새 대화</button>
+          </header>
+
+          <div className="care-message-scroll" ref={scrollRef} aria-live="polite">
+            {isLoadingOverview ? (
+              <div className="care-chat-empty"><p>돌봄 정보를 불러오는 중입니다…</p></div>
+            ) : messages.length === 0 ? (
+              <div className="care-chat-empty">
+                <span className="care-ai-mark">SL</span>
+                <h2>{selectedSenior ? `${selectedSenior.alias}에 대해 무엇이 궁금하신가요?` : "지금 무엇을 도와드릴까요?"}</h2>
+                <p>
+                  {selectedSenior
+                    ? "연결된 건강정보를 참고해 식사, 복약, 생활 관리 질문을 함께 살펴봅니다."
+                    : "시니어를 선택하면 등록된 건강정보를 참고합니다. 일반적인 돌봄 질문도 가능합니다."}
+                </p>
+                <div className="care-suggestions">
+                  {[
+                    "오늘 식사에서 주의할 점을 정리해줘",
+                    "최근 대화에서 반복된 걱정이 있는지 알려줘",
+                    "병원 방문 전에 확인할 질문 목록을 만들어줘",
+                  ].map((suggestion) => (
+                    <button key={suggestion} type="button" onClick={() => { setQuestion(suggestion); inputRef.current?.focus(); }}>
+                      {suggestion}<span>↗</span>
+                    </button>
+                  ))}
+                </div>
+              </div>
+            ) : (
+              <div className="care-messages">
+                {messages.map((message) =>
+                  message.role === "user" ? (
+                    <p key={message.id} className="care-user-bubble">{message.content}</p>
+                  ) : (
+                    <article key={message.id} className={`care-ai-answer ${message.status === "error" ? "is-error" : ""}`}>
+                      <header><span>SL</span><strong>SilverLens AI</strong></header>
+                      {message.warningMessage && (
+                        <p className={`care-risk ${message.riskLevel}`}>{message.warningMessage}</p>
+                      )}
+                      {message.status === "loading" ? (
+                        <div className="care-thinking"><i /><i /><i /><span>연결된 정보와 안전 기준을 확인하고 있어요.</span></div>
+                      ) : (
+                        <div className="care-answer-markdown"><ReactMarkdown>{message.content}</ReactMarkdown></div>
+                      )}
+                    </article>
+                  ),
+                )}
+              </div>
+            )}
+          </div>
+
+          {error && <p className="care-global-error" role="alert">{error}</p>}
+          <form className="care-chat-composer" onSubmit={(event) => void submitQuestion(event)}>
+            <textarea
+              ref={inputRef}
+              value={question}
+              onChange={(event) => setQuestion(event.target.value)}
+              onKeyDown={handleComposerKey}
+              placeholder={selectedSenior ? `${selectedSenior.alias}의 돌봄에 관해 물어보세요` : "무엇이든 물어보세요"}
+              rows={1}
+              maxLength={1600}
+              disabled={isAnswering}
+            />
+            <button
+              type={isAnswering ? "button" : "submit"}
+              aria-label={isAnswering ? "답변 중지" : "질문 보내기"}
+              onClick={isAnswering ? () => abortRef.current?.abort() : undefined}
+              disabled={!isAnswering && !question.trim()}
+            >
+              {isAnswering ? <StopIcon /> : <SendIcon />}
+            </button>
+            <small>AI 답변은 참고용이며 진단이나 처방을 대신하지 않습니다.</small>
+          </form>
+        </section>
+
+        <aside className={`care-senior-panel ${mobilePanel === "seniors" ? "is-mobile-open" : ""}`}>
+          <div className="care-panel-title">
+            <div>
+              <span>CARE LIST</span>
+              <h2>시니어 관리</h2>
+            </div>
+            <button type="button" className="care-close-mobile" onClick={() => setMobilePanel(null)}>×</button>
+          </div>
+
+          <form className="care-link-form" onSubmit={registerSenior}>
+            <strong>새 시니어 연결</strong>
+            <p>시니어의 데이터 화면에서 받은 10자리 코드를 입력하세요.</p>
+            <input
+              value={linkAlias}
+              onChange={(event) => setLinkAlias(event.target.value.slice(0, 30))}
+              placeholder="표시 이름 (선택)"
+              aria-label="시니어 표시 이름"
+            />
+            <div>
+              <input
+                value={linkCode}
+                onChange={(event) => setLinkCode(event.target.value.toUpperCase().slice(0, 11))}
+                placeholder="ABCDE-FGHIJ"
+                aria-label="연결 코드"
+                autoCapitalize="characters"
+                autoComplete="off"
+              />
+              <button type="submit" disabled={isLinking || !linkCode.trim()}>{isLinking ? "연결 중" : "연결"}</button>
+            </div>
+            {linkError && <small role="alert">{linkError}</small>}
+          </form>
+
+          <label className="care-senior-search">
+            <span aria-hidden="true">⌕</span>
+            <input value={seniorSearch} onChange={(event) => setSeniorSearch(event.target.value)} placeholder="시니어 검색" />
+          </label>
+
+          <div className="care-senior-list">
+            {visibleSeniors.length === 0 ? (
+              <p className="care-empty-list">연결된 시니어가 없습니다.<br />연결 코드를 받아 등록해 주세요.</p>
+            ) : (
+              visibleSeniors.map((senior) => (
+                <div key={senior.id} className={selectedSeniorId === senior.id ? "active" : ""}>
+                  <button type="button" onClick={() => chooseSenior(senior.id)}>
+                    <span className="care-avatar">{senior.alias.slice(0, 1)}</span>
+                    <span><strong>{senior.alias}</strong><small>대화 {senior.recentChatCount}개 · {relativeTime(senior.updatedAt)} 동기화</small></span>
+                  </button>
+                  <button type="button" className="care-unlink" onClick={() => void unlinkSenior(senior)} aria-label={`${senior.alias} 연결 해제`}>×</button>
+                </div>
+              ))
+            )}
+          </div>
+
+          {selectedSenior && profile && (
+            <section className="care-profile-card">
+              <header><span>건강정보</span><strong>{selectedSenior.alias}</strong></header>
+              <dl>
+                <div><dt>기본</dt><dd>{profile.ageConfirmed ? `${profile.ageBand}대` : "나이 미입력"}{profile.gender ? ` · ${profile.gender === "male" ? "남성" : "여성"}` : ""}</dd></div>
+                <div><dt>알레르기</dt><dd>{profile.allergyIds.length ? profile.allergyIds.map((id) => getHealthLabel(id, "ko-KR")).join(", ") : "등록 없음"}</dd></div>
+                <div><dt>질병·건강</dt><dd>{profile.conditionIds.length ? profile.conditionIds.map((id) => getHealthLabel(id, "ko-KR")).join(", ") : "등록 없음"}</dd></div>
+              </dl>
+              {profile.healthNotes.length > 0 && (
+                <div className="care-profile-notes">
+                  <strong>상세 메모</strong>
+                  {profile.healthNotes.map((note, index) => <p key={note.id || index}>{note.text}</p>)}
+                </div>
+              )}
+              {seniorDetail?.chatTurns.length ? (
+                <details className="care-senior-recent">
+                  <summary>시니어의 최근 질문 {seniorDetail.chatTurns.length}개</summary>
+                  {seniorDetail.chatTurns.slice(0, 8).map((turn) => (
+                    <div key={turn.id}><strong>{turn.question || "음성·사진 질문"}</strong><p>{turn.answer}</p></div>
+                  ))}
+                </details>
+              ) : null}
+            </section>
+          )}
+        </aside>
+      </div>
+
+      {mobilePanel && <button className="care-mobile-shade" type="button" aria-label="패널 닫기" onClick={() => setMobilePanel(null)} />}
     </main>
   );
 }

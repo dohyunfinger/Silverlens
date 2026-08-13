@@ -54,11 +54,24 @@ export async function validateArtifact(projectRoot = defaultProjectRoot) {
     throw new Error("Wrangler deployment redirect does not point to the generated configuration.");
   }
 
-  const workerUrl = pathToFileURL(workerPath);
-  workerUrl.searchParams.set("artifact-validation", `${process.pid}-${Date.now()}`);
-  const worker = await import(workerUrl.href);
-  if (!worker.default || typeof worker.default.fetch !== "function") {
-    throw new Error("dist/server/index.js must export default.fetch(request, env, ctx).");
+  const workerSource = await readFile(workerPath, "utf8");
+  if (workerSource.includes('from "cloudflare:workers"')) {
+    // A D1-backed Worker legitimately imports Cloudflare's runtime-only env
+    // module. Node's default loader cannot import that protocol, so validate
+    // the generated entry statically while keeping the stronger runtime probe
+    // for artifacts that contain only Node-loadable modules.
+    const hasDefaultExport = /export\s*\{[^}]*\bas\s+default\b[^}]*\}/s.test(workerSource);
+    const hasFetchHandler = /async\s+fetch\s*\(request,\s*env,\s*ctx\)/.test(workerSource);
+    if (!hasDefaultExport || !hasFetchHandler) {
+      throw new Error("dist/server/index.js must export default.fetch(request, env, ctx).");
+    }
+  } else {
+    const workerUrl = pathToFileURL(workerPath);
+    workerUrl.searchParams.set("artifact-validation", `${process.pid}-${Date.now()}`);
+    const worker = await import(workerUrl.href);
+    if (!worker.default || typeof worker.default.fetch !== "function") {
+      throw new Error("dist/server/index.js must export default.fetch(request, env, ctx).");
+    }
   }
 
   console.log("Validated Worker artifact, assets, Sites manifest, and Wrangler deploy configuration.");

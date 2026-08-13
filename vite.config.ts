@@ -14,7 +14,14 @@ const localBindingConfig = {
   compatibility_flags: ["nodejs_compat", "nodejs_compat_populate_process_env"],
   // Firebase와 인증 관련 값을 Dashboard에서 관리하므로 재배포 때 보존한다.
   keep_vars: true,
-  d1_databases: [],
+  d1_databases: [
+    {
+      binding: "DB",
+      database_name: "silverlens-care",
+      database_id: "257ad117-3c31-4076-b430-29a40bbe2428",
+      migrations_dir: "../.openai/drizzle",
+    },
+  ],
   r2_buckets: [],
 };
 
