@@ -14,6 +14,7 @@ import {
 } from "firebase/auth";
 import type { CaregiverSessionUser } from "../backend/services/caregiverAuth";
 import {
+  createTemporaryAdminSession,
   createServerSession,
   getAuthErrorCode,
   getCaregiverAuth,
@@ -47,6 +48,10 @@ function loginErrorMessage(error: unknown) {
       return "이메일 인증이 필요합니다. 받은편지함의 인증 링크를 확인해주세요.";
     case "RECENT_LOGIN_REQUIRED":
       return "안전을 위해 다시 로그인해주세요.";
+    case "TEMP_ADMIN_INVALID_CREDENTIALS":
+      return "임시 관리자 아이디 또는 비밀번호를 확인해주세요.";
+    case "TEMP_ADMIN_NOT_CONFIGURED":
+      return "임시 관리자 로그인이 현재 비활성화되어 있습니다.";
     default:
       return "로그인하지 못했습니다. 잠시 후 다시 시도해주세요.";
   }
@@ -57,12 +62,14 @@ export default function CaregiverLogin({
 }: CaregiverLoginProps) {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [temporaryUsername, setTemporaryUsername] = useState("");
+  const [temporaryPassword, setTemporaryPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
   const [keepSignedIn, setKeepSignedIn] = useState(true);
   const [notice, setNotice] = useState("");
   const [noticeKind, setNoticeKind] = useState<"info" | "error">("info");
   const [pendingAction, setPendingAction] = useState<
-    "google" | "email" | "reset" | null
+    "temporary" | "google" | "email" | "reset" | null
   >(null);
 
   const showNotice = (message: string, kind: "info" | "error" = "info") => {
@@ -98,6 +105,24 @@ export default function CaregiverLogin({
       showNotice(loginErrorMessage(error), "error");
     } finally {
       if (auth?.currentUser) await signOut(auth).catch(() => undefined);
+      setPendingAction(null);
+    }
+  };
+
+  const submitTemporaryLogin = async (event: FormEvent<HTMLFormElement>) => {
+    event.preventDefault();
+    setPendingAction("temporary");
+    setNotice("");
+    try {
+      const sessionUser = await createTemporaryAdminSession(
+        temporaryUsername.trim(),
+        temporaryPassword,
+        keepSignedIn,
+      );
+      onAuthenticated(sessionUser);
+    } catch (error) {
+      showNotice(loginErrorMessage(error), "error");
+    } finally {
       setPendingAction(null);
     }
   };
@@ -224,6 +249,45 @@ export default function CaregiverLogin({
             등록한 계정으로 로그인하면 연결된 어르신을 계속 확인할 수
             있습니다.
           </p>
+
+          <section className="caregiver-temporary-login" aria-labelledby="temporary-login-title">
+            <div>
+              <span>임시 접속</span>
+              <h3 id="temporary-login-title">관리자 계정</h3>
+              <p>Firebase를 사용하지 않는 테스트용 로그인입니다.</p>
+            </div>
+            <form onSubmit={submitTemporaryLogin}>
+              <input
+                value={temporaryUsername}
+                onChange={(event) => setTemporaryUsername(event.target.value)}
+                placeholder="아이디"
+                aria-label="임시 관리자 아이디"
+                autoComplete="username"
+                disabled={isBusy}
+                required
+              />
+              <input
+                type="password"
+                value={temporaryPassword}
+                onChange={(event) => setTemporaryPassword(event.target.value)}
+                placeholder="비밀번호"
+                aria-label="임시 관리자 비밀번호"
+                autoComplete="current-password"
+                disabled={isBusy}
+                required
+              />
+              <button type="submit" disabled={isBusy}>
+                {pendingAction === "temporary" ? "접속 중..." : "임시 관리자 로그인"}
+              </button>
+            </form>
+            <small>보안이 약한 임시 계정입니다. 확인이 끝나면 반드시 비활성화하세요.</small>
+          </section>
+
+          <div className="caregiver-login-divider" aria-hidden="true">
+            <span />
+            <em>Firebase 계정</em>
+            <span />
+          </div>
 
           <button
             className="caregiver-google-button"

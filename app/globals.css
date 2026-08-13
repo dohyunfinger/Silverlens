@@ -7105,6 +7105,86 @@ html[lang="ja-JP"] .about-workflow-card p {
   word-break: keep-all;
 }
 
+.caregiver-temporary-login {
+  display: grid;
+  gap: 12px;
+  padding: 15px;
+  border: 1px solid #e4c878;
+  border-radius: 15px;
+  background: #fffaf0;
+}
+
+.caregiver-temporary-login > div {
+  display: grid;
+  gap: 2px;
+}
+
+.caregiver-temporary-login > div > span {
+  color: #9a6910;
+  font-size: 10px;
+  font-weight: 900;
+  letter-spacing: .08em;
+}
+
+.caregiver-temporary-login h3 {
+  margin: 0;
+  color: #44361b;
+  font-size: 17px;
+}
+
+.caregiver-temporary-login p {
+  margin: 2px 0 0;
+  color: #776747;
+  font-size: 11px;
+}
+
+.caregiver-temporary-login form {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+  gap: 7px;
+}
+
+.caregiver-temporary-login input {
+  min-width: 0;
+  min-height: 42px;
+  padding: 0 11px;
+  border: 1px solid #ddcfaa;
+  border-radius: 9px;
+  outline: 0;
+  color: #302a1e;
+  background: #fff;
+  font-size: 13px;
+}
+
+.caregiver-temporary-login input:focus {
+  border-color: #a9791f;
+  box-shadow: 0 0 0 3px rgba(169, 121, 31, .1);
+}
+
+.caregiver-temporary-login form button {
+  min-height: 42px;
+  grid-column: 1 / -1;
+  border: 0;
+  border-radius: 9px;
+  color: #fff;
+  background: #6f5118;
+  font-size: 13px;
+  font-weight: 850;
+  cursor: pointer;
+}
+
+.caregiver-temporary-login form button:disabled {
+  opacity: .55;
+  cursor: wait;
+}
+
+.caregiver-temporary-login > small {
+  color: #936516;
+  font-size: 10px;
+  font-weight: 750;
+  line-height: 1.45;
+}
+
 .caregiver-google-button,
 .caregiver-email-submit {
   width: 100%;
@@ -7114,6 +7194,12 @@ html[lang="ja-JP"] .about-workflow-card p {
   font-weight: 750;
   cursor: pointer;
   transition: transform .18s ease, border-color .18s ease, background .18s ease, box-shadow .18s ease;
+}
+
+@media (max-width: 430px) {
+  .caregiver-temporary-login form {
+    grid-template-columns: 1fr;
+  }
 }
 
 .caregiver-google-button {

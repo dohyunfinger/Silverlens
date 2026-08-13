@@ -43,6 +43,14 @@ function sessionSecret() {
   return process.env.AUTH_SESSION_SECRET?.trim() ?? "";
 }
 
+function temporaryAdminUsername() {
+  return process.env.TEMP_ADMIN_USERNAME?.trim() ?? "";
+}
+
+function temporaryAdminPassword() {
+  return process.env.TEMP_ADMIN_PASSWORD ?? "";
+}
+
 function encodedSessionSecret() {
   const secret = sessionSecret();
   if (secret.length < 32) {
@@ -53,6 +61,53 @@ function encodedSessionSecret() {
 
 export function isCaregiverServerAuthConfigured() {
   return Boolean(firebaseProjectId() && sessionSecret().length >= 32);
+}
+
+export function isTemporaryAdminLoginConfigured() {
+  return Boolean(
+    process.env.TEMP_ADMIN_LOGIN_ENABLED === "true" &&
+      sessionSecret().length >= 32 &&
+      temporaryAdminUsername() &&
+      temporaryAdminPassword(),
+  );
+}
+
+async function secureTextEquals(left: string, right: string) {
+  const encoder = new TextEncoder();
+  const [leftHash, rightHash] = await Promise.all([
+    crypto.subtle.digest("SHA-256", encoder.encode(left)),
+    crypto.subtle.digest("SHA-256", encoder.encode(right)),
+  ]);
+  const leftBytes = new Uint8Array(leftHash);
+  const rightBytes = new Uint8Array(rightHash);
+  let difference = leftBytes.length ^ rightBytes.length;
+  for (let index = 0; index < leftBytes.length; index += 1) {
+    difference |= leftBytes[index] ^ rightBytes[index];
+  }
+  return difference === 0;
+}
+
+export async function verifyTemporaryAdminCredentials(
+  username: string,
+  password: string,
+): Promise<CaregiverSessionUser> {
+  if (!isTemporaryAdminLoginConfigured()) {
+    throw new Error("TEMP_ADMIN_NOT_CONFIGURED");
+  }
+  const [usernameMatches, passwordMatches] = await Promise.all([
+    secureTextEquals(username, temporaryAdminUsername()),
+    secureTextEquals(password, temporaryAdminPassword()),
+  ]);
+  if (!usernameMatches || !passwordMatches) {
+    throw new Error("TEMP_ADMIN_INVALID_CREDENTIALS");
+  }
+  return {
+    uid: "temporary-admin",
+    email: "admin@temporary.silverlens.local",
+    name: "임시 관리자",
+    picture: "",
+    provider: "temporary_admin",
+  };
 }
 
 function claimsToUser(payload: FirebaseClaims): CaregiverSessionUser {

@@ -1,5 +1,8 @@
 import { NextResponse } from "next/server";
-import { isCaregiverServerAuthConfigured } from "../../../../backend/services/caregiverAuth";
+import {
+  isCaregiverServerAuthConfigured,
+  isTemporaryAdminLoginConfigured,
+} from "../../../../backend/services/caregiverAuth";
 
 export const dynamic = "force-dynamic";
 
@@ -14,7 +17,16 @@ export async function GET() {
     Object.values(config).every(Boolean) && isCaregiverServerAuthConfigured();
 
   return NextResponse.json(
-    configured ? { configured, config } : { configured: false },
+    configured
+      ? {
+          configured,
+          config,
+          temporaryAdminEnabled: isTemporaryAdminLoginConfigured(),
+        }
+      : {
+          configured: false,
+          temporaryAdminEnabled: isTemporaryAdminLoginConfigured(),
+        },
     { headers: { "Cache-Control": "no-store" } },
   );
 }
