@@ -12,6 +12,10 @@ const localBindingConfig = {
   name: "silverlens",
   main: "./worker/index.ts",
   compatibility_flags: ["nodejs_compat", "nodejs_compat_populate_process_env"],
+  // Gemini Developer API rejects requests originating from unsupported regions.
+  // Keep static assets at the edge, but run fetch handlers near a supported US
+  // Google Cloud region so API availability does not depend on the visitor's POP.
+  placement: { region: "gcp:us-west1" },
   // Firebase와 인증 관련 값을 Dashboard에서 관리하므로 재배포 때 보존한다.
   keep_vars: true,
   d1_databases: [
