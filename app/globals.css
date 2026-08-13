@@ -2894,23 +2894,56 @@ html[lang="ja-JP"] .quick-ask strong {
 
 .care-thread-list { padding: 0 9px; }
 
-.care-thread-list > button {
+.care-thread-item {
   display: grid;
+  grid-template-columns: minmax(0, 1fr) 32px;
+  align-items: center;
   width: 100%;
-  gap: 5px;
-  padding: 11px 10px;
-  border: 0;
+  gap: 2px;
+  padding: 3px;
   border-radius: 10px;
   color: #28332f;
+  background: transparent;
+}
+
+.care-thread-open {
+  display: grid;
+  min-width: 0;
+  gap: 5px;
+  padding: 8px 7px;
+  border: 0;
+  color: inherit;
   background: transparent;
   text-align: left;
   cursor: pointer;
 }
 
-.care-thread-list > button:hover,
-.care-thread-list > button.active { background: #e9efec; }
-.care-thread-list strong { overflow: hidden; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
-.care-thread-list span { overflow: hidden; color: #7b8481; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+.care-thread-item:hover,
+.care-thread-item.active { background: #e9efec; }
+.care-thread-open strong { overflow: hidden; font-size: 13px; text-overflow: ellipsis; white-space: nowrap; }
+.care-thread-open span { overflow: hidden; color: #7b8481; font-size: 11px; text-overflow: ellipsis; white-space: nowrap; }
+
+.care-thread-delete {
+  display: grid;
+  width: 30px;
+  height: 30px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 8px;
+  color: #7f8b87;
+  background: transparent;
+  cursor: pointer;
+}
+
+.care-thread-delete:hover,
+.care-thread-delete:focus-visible {
+  color: #a4382d;
+  background: #fff1ef;
+}
+
+.care-thread-delete:disabled { opacity: .35; cursor: not-allowed; }
+.care-thread-delete svg { width: 16px; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 
 .care-empty-list {
   margin: 16px;

@@ -1,5 +1,6 @@
 import { careSchemaStatements } from "../../db/schema";
 import type {
+  CaregiverAnswerContext,
   ConversationTurn,
   HealthNote,
   RiskLevel,
@@ -568,6 +569,25 @@ export async function getCaregiverThread(caregiverUid: string, threadId: string)
   };
 }
 
+export async function deleteCaregiverThread(caregiverUid: string, threadId: string) {
+  await ensureCareSchema();
+  const owner = await db()
+    .prepare("SELECT id FROM caregiver_threads WHERE id = ? AND caregiver_uid = ?")
+    .bind(threadId, caregiverUid)
+    .first();
+  if (!owner) throw new Error("THREAD_NOT_FOUND");
+
+  await db().batch([
+    db()
+      .prepare("DELETE FROM caregiver_messages WHERE thread_id = ?")
+      .bind(threadId),
+    db()
+      .prepare("DELETE FROM caregiver_threads WHERE id = ? AND caregiver_uid = ?")
+      .bind(threadId, caregiverUid),
+  ]);
+  return { ok: true as const };
+}
+
 export async function prepareCaregiverChat(input: {
   caregiverUid: string;
   threadId?: string;
@@ -578,8 +598,21 @@ export async function prepareCaregiverChat(input: {
   let threadId = text(input.threadId, 80);
   let seniorId = text(input.seniorId, 80) || null;
   let profile: UserProfile = { audience: "caregiver", language: "ko-KR" };
+  let caregiverContext: CaregiverAnswerContext = {};
+
+  if (threadId) {
+    const existing = await db()
+      .prepare(
+        "SELECT senior_id FROM caregiver_threads WHERE id = ? AND caregiver_uid = ?",
+      )
+      .bind(threadId, input.caregiverUid)
+      .first<{ senior_id: string | null }>();
+    if (!existing) throw new Error("THREAD_NOT_FOUND");
+    seniorId = existing.senior_id;
+  }
+
   if (seniorId) {
-    const senior = await getCaregiverSenior(input.caregiverUid, seniorId);
+    const senior = await getCaregiverSeniorDetail(input.caregiverUid, seniorId);
     profile = {
       audience: "caregiver",
       language: "ko-KR",
@@ -592,30 +625,17 @@ export async function prepareCaregiverChat(input: {
         text: noteText,
       })),
     };
+    caregiverContext = {
+      seniorAlias: senior.alias,
+      // 상세 조회는 최신순이므로 AI에는 시간 순서대로 전달한다.
+      seniorHistory: [...senior.chatTurns]
+        .reverse()
+        .slice(-12)
+        .map((turn) => ({ question: turn.question, answer: turn.answer })),
+    };
   }
 
-  if (threadId) {
-    const existing = await db()
-      .prepare(
-        "SELECT senior_id FROM caregiver_threads WHERE id = ? AND caregiver_uid = ?",
-      )
-      .bind(threadId, input.caregiverUid)
-      .first<{ senior_id: string | null }>();
-    if (!existing) throw new Error("THREAD_NOT_FOUND");
-    seniorId = existing.senior_id;
-    if (seniorId) {
-      const senior = await getCaregiverSenior(input.caregiverUid, seniorId);
-      profile = {
-        audience: "caregiver",
-        language: "ko-KR",
-        gender: senior.profile.gender ?? undefined,
-        ageBand: senior.profile.ageConfirmed ? senior.profile.ageBand : undefined,
-        allergyIds: senior.profile.allergyIds,
-        conditionIds: senior.profile.conditionIds,
-        healthNotes: senior.profile.healthNotes.map(({ kind, text: noteText }) => ({ kind, text: noteText })),
-      };
-    }
-  } else {
+  if (!threadId) {
     threadId = crypto.randomUUID();
     const now = Date.now();
     await db()
@@ -640,7 +660,13 @@ export async function prepareCaregiverChat(input: {
       index += 1;
     }
   }
-  return { threadId, seniorId, profile, history: history.slice(-6) };
+  return {
+    threadId,
+    seniorId,
+    profile,
+    history: history.slice(-6),
+    caregiverContext,
+  };
 }
 
 export async function saveCaregiverChat(input: {

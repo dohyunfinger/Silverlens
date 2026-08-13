@@ -16,6 +16,11 @@ export type ConversationTurn = {
   answer: string;
 };
 
+export type CaregiverAnswerContext = {
+  seniorAlias?: string;
+  seniorHistory?: ConversationTurn[];
+};
+
 /** 설정 화면에서 음성으로 남긴 상세 설명. 목록으로 고를 수 없는 내용을 담는다. */
 export type HealthNote = {
   kind: "allergy" | "condition" | "setup";
@@ -359,14 +364,14 @@ function normalizedRiskText(value: string) {
     .replace(/[\s'’"“”.,/#!$%^&*;:{}=_`~()]+/g, "");
 }
 
-function sanitizeHistory(history: ConversationTurn[]) {
+function sanitizeHistory(history: ConversationTurn[], maxTurns = 6) {
   return history
     .filter(
       (turn) =>
         isMeaningfulText(turn.question) &&
         isMeaningfulText(turn.answer),
     )
-    .slice(-6)
+    .slice(-maxTurns)
     .map((turn) => ({
       question: turn.question.trim().slice(0, 1000),
       answer: turn.answer.trim().slice(0, 2200),
@@ -382,6 +387,7 @@ export async function generateSeniorFriendlyAnswer(
     images?: InlineImage[];
   } = {},
   history: ConversationTurn[] = [],
+  caregiverContext: CaregiverAnswerContext = {},
 ): Promise<SeniorAnswerResult> {
   const { apiKey, textModelChain } = getGeminiConfig();
   const conversationHistory = sanitizeHistory(history);
@@ -393,6 +399,12 @@ export async function generateSeniorFriendlyAnswer(
     .join("\n");
   const selectedLanguage = toHealthLanguage(profile.language);
   const isCaregiverAudience = profile.audience === "caregiver";
+  const linkedSeniorHistory = isCaregiverAudience
+    ? sanitizeHistory(caregiverContext.seniorHistory ?? [], 12)
+    : [];
+  const linkedSeniorAlias = isCaregiverAudience
+    ? caregiverContext.seniorAlias?.trim().slice(0, 30) || "선택된 시니어 없음"
+    : "";
 
   const profileAllergies =
     profile.allergies ??
@@ -418,7 +430,12 @@ export async function generateSeniorFriendlyAnswer(
   // Gemini API를 호출하지 않고 바로 안내 답변을 돌려줘 토큰 낭비를 막습니다.
   const images = media.images ?? [];
   const hasMedia = Boolean(media.audio || images.length > 0);
-  if (!hasMedia && isMeaningfulText(message) && !isLikelyOnTopic(topicContext, knowledge)) {
+  if (
+    !isCaregiverAudience &&
+    !hasMedia &&
+    isMeaningfulText(message) &&
+    !isLikelyOnTopic(topicContext, knowledge)
+  ) {
     return {
       answer: localizedOffTopicAnswer(selectedLanguage),
       riskLevel: "safe",
@@ -444,9 +461,11 @@ export async function generateSeniorFriendlyAnswer(
 
   const prompt = [
     isCaregiverAudience
-      ? "당신은 시니어를 돌보는 보호자·요양보호사에게 식생활과 건강 주의사항을 명확하게 정리해 주는 돌봄 보조 AI입니다."
+      ? "당신은 시니어를 돌보는 보호자·요양보호사의 실무와 일상 질문을 폭넓게 지원하는 돌봄 보조 AI입니다."
       : "당신은 시니어에게 식재료와 조리 정보를 쉬운 말로 설명하는 보조 AI입니다.",
-    "음식·영양·건강·사투리·서비스 이용과 무관한 질문(예: 스포츠 선수, 연예인, 시사, 일반 상식)이면 관련 지식으로 답하지 말고, 시니어 식품·영양 정보를 돕는 AI임을 밝히고 음식이나 건강 관련 질문을 다시 안내하세요.",
+    isCaregiverAudience
+      ? "돌봄이의 질문은 음식·건강으로 주제를 제한하지 마세요. 일반 지식, 일정 정리, 문장 작성, 요약 등에도 가능한 범위에서 직접 답하세요."
+      : "음식·영양·건강·사투리·서비스 이용과 무관한 질문(예: 스포츠 선수, 연예인, 시사, 일반 상식)이면 관련 지식으로 답하지 말고, 시니어 식품·영양 정보를 돕는 AI임을 밝히고 음식이나 건강 관련 질문을 다시 안내하세요.",
     answerLanguageInstruction(selectedLanguage),
     "의학적 진단이나 치료 지시를 하지 말고, 위험 가능성이 있으면 의료진 또는 약사 확인을 권하세요.",
     "등록된 알레르기 식품을 추천하거나 레시피 재료로 넣지 마세요.",
@@ -490,6 +509,14 @@ export async function generateSeniorFriendlyAnswer(
     "성별만으로 질병을 추정하거나 단정하지 마세요. 성별이 미입력이면 성별과 무관한 일반 기준으로 설명하세요.",
     "성역할을 가정하는 표현을 쓰지 마세요. 조리를 누가 하는지, 가족 중 누가 챙겨주는지 임의로 단정하지 마세요.",
     "사용자 알레르기나 질병·건강 상태와 충돌하거나 불확실하면 안전 원칙을 우선하세요.",
+    ...(isCaregiverAudience
+      ? [
+          "선택한 시니어의 최근 대화는 사실 확인과 반복된 관심사 파악을 위한 읽기 전용 참고자료입니다.",
+          "최근 대화에 없는 사실이나 시니어의 의도·감정·증상을 추측하지 마세요. 자료가 부족하면 확인할 수 없다고 분명히 말하세요.",
+          "최근 대화를 요약하거나 반복된 걱정을 찾을 때는 아래에 제공된 시니어 앱 최근 대화만 근거로 사용하고, 돌봄이와 AI의 이전 대화와 섞지 마세요.",
+          "시니어의 민감한 건강정보는 현재 돌봄 목적의 답변에 필요한 범위에서만 언급하세요.",
+        ]
+      : []),
     "risk_level은 danger, caution, safe 중 하나만 사용하세요.",
     "등록 알레르기와 직접 충돌하거나 섭취하지 말아야 한다고 답할 때는 danger로 표시하세요.",
     "불확실하여 전문가 확인이 필요하지만 명확한 금지는 아닐 때만 caution으로 표시하세요.",
@@ -502,7 +529,17 @@ export async function generateSeniorFriendlyAnswer(
     `어르신이 음성으로 남긴 상세 메모: ${
       healthNoteLines.length > 0 ? JSON.stringify(healthNoteLines) : "없음"
     }`,
-    `이전 대화: ${JSON.stringify(conversationHistory)}`,
+    `${isCaregiverAudience ? "현재 돌봄이 AI 대화의 이전 내용" : "이전 대화"}: ${JSON.stringify(conversationHistory)}`,
+    ...(isCaregiverAudience
+      ? [
+          `선택한 시니어: ${linkedSeniorAlias}`,
+          `시니어 앱 최근 대화: ${
+            linkedSeniorHistory.length > 0
+              ? JSON.stringify(linkedSeniorHistory)
+              : "제공된 대화 없음"
+          }`,
+        ]
+      : []),
     `질문에서 찾은 방언 참고: ${JSON.stringify(knowledge.dialectHints)}`,
     `질문에서 찾은 외래어·별칭 참고: ${JSON.stringify(knowledge.foodAliasHints)}`,
     `질문에서 찾은 한식 메뉴명 참고: ${JSON.stringify(knowledge.dishNameHints)}`,

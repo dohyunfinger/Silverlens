@@ -97,6 +97,14 @@ function StopIcon() {
   );
 }
 
+function TrashIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 7h16M9 7V4h6v3M7 7l1 13h8l1-13M10 11v5M14 11v5" />
+    </svg>
+  );
+}
+
 async function responseJson<T>(response: Response): Promise<T> {
   const payload = (await response.json()) as T & { error?: string };
   if (!response.ok) throw new Error(payload.error || "요청을 처리하지 못했습니다.");
@@ -126,6 +134,7 @@ export default function CaregiverApp({ caregiver, onLogout }: CaregiverAppProps)
   const [isLoadingThread, setIsLoadingThread] = useState(false);
   const [isAnswering, setIsAnswering] = useState(false);
   const [isLinking, setIsLinking] = useState(false);
+  const [deletingThreadId, setDeletingThreadId] = useState<string | null>(null);
   const [error, setError] = useState("");
   const [linkError, setLinkError] = useState("");
   const [mobilePanel, setMobilePanel] = useState<"chat" | "seniors" | null>(null);
@@ -263,6 +272,26 @@ export default function CaregiverApp({ caregiver, onLogout }: CaregiverAppProps)
       setError(caught instanceof Error ? caught.message : "대화를 불러오지 못했습니다.");
     } finally {
       setIsLoadingThread(false);
+    }
+  };
+
+  const deleteThread = async (thread: ThreadSummary) => {
+    if (deletingThreadId || (isAnswering && activeThreadId === thread.id)) return;
+    if (!window.confirm(`“${thread.title}” 대화 기록을 삭제할까요?\n삭제한 기록은 복구할 수 없습니다.`)) {
+      return;
+    }
+    setDeletingThreadId(thread.id);
+    setError("");
+    try {
+      await fetch(`/api/caregiver/threads/${encodeURIComponent(thread.id)}`, {
+        method: "DELETE",
+      }).then((response) => responseJson<{ ok: true }>(response));
+      setThreads((current) => current.filter((item) => item.id !== thread.id));
+      if (activeThreadId === thread.id) newChat(thread.seniorId);
+    } catch (caught) {
+      setError(caught instanceof Error ? caught.message : "대화 기록을 삭제하지 못했습니다.");
+    } finally {
+      setDeletingThreadId(null);
     }
   };
 
@@ -426,15 +455,36 @@ export default function CaregiverApp({ caregiver, onLogout }: CaregiverAppProps)
               <p className="care-empty-list">아직 저장된 대화가 없습니다.</p>
             ) : (
               threads.map((thread) => (
-                <button
+                <div
                   key={thread.id}
-                  type="button"
-                  className={activeThreadId === thread.id ? "active" : ""}
-                  onClick={() => void openThread(thread)}
+                  className={`care-thread-item ${activeThreadId === thread.id ? "active" : ""}`}
                 >
-                  <strong>{thread.title}</strong>
-                  <span>{thread.seniorAlias || "일반 돌봄 질문"} · {relativeTime(thread.updatedAt)}</span>
-                </button>
+                  <button
+                    type="button"
+                    className="care-thread-open"
+                    onClick={() => void openThread(thread)}
+                  >
+                    <strong>{thread.title}</strong>
+                    <span>{thread.seniorAlias || "일반 돌봄 질문"} · {relativeTime(thread.updatedAt)}</span>
+                  </button>
+                  <button
+                    type="button"
+                    className="care-thread-delete"
+                    onClick={() => void deleteThread(thread)}
+                    disabled={
+                      deletingThreadId === thread.id ||
+                      (isAnswering && activeThreadId === thread.id)
+                    }
+                    aria-label={`${thread.title} 대화 기록 삭제`}
+                    title={
+                      isAnswering && activeThreadId === thread.id
+                        ? "답변이 끝난 후 삭제할 수 있습니다."
+                        : "대화 기록 삭제"
+                    }
+                  >
+                    <TrashIcon />
+                  </button>
+                </div>
               ))
             )}
           </div>

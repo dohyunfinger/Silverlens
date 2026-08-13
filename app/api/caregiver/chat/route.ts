@@ -38,6 +38,7 @@ export async function POST(request: NextRequest) {
       prepared.profile,
       { audio: null, images: [] },
       prepared.history,
+      prepared.caregiverContext,
     );
     await saveCaregiverChat({
       caregiverUid: caregiver.uid,
