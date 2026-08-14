@@ -51,6 +51,26 @@ test("selected senior health information expands directly below that profile", a
   assert.match(source, /seniorDetail\?\.id === senior\.id && seniorDetail\.chatTurns\.length/);
 });
 
+test("caregiver chat accepts temporary photo and voice attachments", async () => {
+  const app = await readFile(
+    new URL("../frontend/CaregiverApp.tsx", import.meta.url),
+    "utf8",
+  );
+  const route = await readFile(
+    new URL("../app/api/caregiver/chat/route.ts", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(app, /accept="image\/\*"/);
+  assert.match(app, /navigator\.mediaDevices\.getUserMedia\(\{ audio: true \}\)/);
+  assert.match(app, /pendingImages\.map\(async \(image\)/);
+  assert.match(app, /audio,\s*images,/);
+  assert.match(route, /const audio =\s*isInlineMedia\(body\.audio\)/);
+  assert.match(route, /const images = cleanImages\(body\.images\)/);
+  assert.match(route, /\{ audio, images \}/);
+  assert.match(route, /MAX_INLINE_DATA_LENGTH/);
+});
+
 test("caregiver thread deletion rejects an unauthenticated request", async () => {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("delete-auth-test", `${process.pid}-${Date.now()}`);

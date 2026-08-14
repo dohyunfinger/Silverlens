@@ -161,7 +161,10 @@ export default function CaregiverLogin({
           href="/"
           aria-label="SilverLens 시니어 화면으로 이동"
         >
-          <span className="caregiver-brand-mark">SL</span>
+          <span className="caregiver-brand-mark">
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/brand/silverlens-mark.png" alt="" />
+          </span>
           <span>SilverLens</span>
           <span className="caregiver-mode-badge">돌봄이</span>
         </Link>
@@ -212,7 +215,8 @@ export default function CaregiverLogin({
         >
           <div className="caregiver-login-card-heading">
             <span className="caregiver-login-card-mark" aria-hidden="true">
-              SL
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img src="/brand/silverlens-mark.png" alt="" />
             </span>
             <div>
               <p>돌봄이 전용</p>

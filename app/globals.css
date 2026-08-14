@@ -169,14 +169,20 @@ textarea:focus-visible {
 
 .brand-mark {
   display: grid;
-  width: 36px;
-  height: 36px;
+  width: 46px;
+  height: 46px;
   place-items: center;
-  border-radius: 12px;
-  color: var(--green-900);
+  flex: 0 0 46px;
+  overflow: hidden;
+  border-radius: 50%;
   background: white;
-  font-size: 14px;
-  letter-spacing: 0;
+}
+
+.brand-mark img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .sidebar nav {
@@ -200,8 +206,19 @@ textarea:focus-visible {
 }
 
 .nav-item span {
+  display: grid;
   width: 28px;
-  font-size: 25px;
+  place-items: center;
+}
+
+.nav-item svg {
+  width: 25px;
+  height: 25px;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.7;
+  stroke-linecap: round;
+  stroke-linejoin: round;
 }
 
 .nav-item.active {
@@ -226,16 +243,16 @@ textarea:focus-visible {
 
 .caregiver-entry-link {
   display: flex;
-  min-height: 38px;
+  min-height: 48px;
   align-items: center;
   justify-content: space-between;
   gap: 8px;
-  padding: 8px 10px;
+  padding: 10px 14px;
   border: 1px solid rgba(255, 255, 255, .2);
   border-radius: 12px;
   color: rgba(255, 255, 255, .78);
-  font-size: 12px;
-  font-weight: 700;
+  font-size: 14px;
+  font-weight: 850;
   text-decoration: none;
   transition: color .2s ease, border-color .2s ease, background .2s ease;
 }
@@ -1249,7 +1266,7 @@ textarea:focus-visible {
 .data-screen-header p {
   margin: 7px 0 0;
   color: var(--muted);
-  font-size: 17px;
+  font-size: 19px;
   font-weight: 750;
   line-height: 1.55;
   word-break: keep-all;
@@ -2616,7 +2633,7 @@ html[lang="ja-JP"] .quick-ask strong {
 
 .senior-link-copy > span {
   color: var(--green-800);
-  font-size: 14px;
+  font-size: 16px;
   font-weight: 950;
   letter-spacing: .04em;
 }
@@ -2624,7 +2641,7 @@ html[lang="ja-JP"] .quick-ask strong {
 .senior-link-copy h2 {
   margin: 0;
   color: var(--green-950);
-  font-size: 28px;
+  font-size: 32px;
   line-height: 1.25;
 }
 
@@ -2632,7 +2649,7 @@ html[lang="ja-JP"] .quick-ask strong {
   max-width: 680px;
   margin: 0 0 10px;
   color: var(--muted);
-  font-size: 17px;
+  font-size: 19px;
   font-weight: 750;
   line-height: 1.55;
   word-break: keep-all;
@@ -2641,7 +2658,7 @@ html[lang="ja-JP"] .quick-ask strong {
 .senior-link-copy label {
   margin-top: 4px;
   color: var(--green-950);
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 900;
 }
 
@@ -2676,7 +2693,7 @@ html[lang="ja-JP"] .quick-ask strong {
   border-radius: var(--r-sm);
   color: #fff;
   background: var(--green-800);
-  font-size: 19px;
+  font-size: 21px;
   font-weight: 950;
   cursor: pointer;
 }
@@ -2706,7 +2723,7 @@ html[lang="ja-JP"] .quick-ask strong {
 .senior-link-privacy,
 .senior-link-status span {
   color: var(--muted);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 750;
   line-height: 1.45;
 }
@@ -2721,7 +2738,7 @@ html[lang="ja-JP"] .quick-ask strong {
 
 .senior-link-status strong {
   color: var(--green-900);
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .senior-link-error {
@@ -2788,11 +2805,18 @@ html[lang="ja-JP"] .quick-ask strong {
   width: 34px;
   height: 34px;
   place-items: center;
-  border-radius: 10px;
-  color: #fff;
-  background: var(--cw-green);
-  font-size: 11px;
-  font-weight: 900;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.care-logo img,
+.care-ai-mark img,
+.care-ai-answer > header span img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .care-logo strong { font-size: 15px; }
@@ -3059,7 +3083,7 @@ html[lang="ja-JP"] .quick-ask strong {
 
 .care-ai-answer { display: grid; gap: 14px; }
 .care-ai-answer > header { display: flex; align-items: center; gap: 9px; color: #4b5954; font-size: 12px; }
-.care-ai-answer > header span { display: grid; width: 28px; height: 28px; place-items: center; border-radius: 8px; color: #fff; background: var(--cw-green); font-size: 9px; font-weight: 900; }
+.care-ai-answer > header span { display: grid; width: 30px; height: 30px; place-items: center; overflow: hidden; border-radius: 50%; background: #fff; }
 
 .care-answer-markdown { color: #202825; font-size: 15px; line-height: 1.78; }
 .care-answer-markdown > :first-child { margin-top: 0; }
@@ -3105,11 +3129,9 @@ html[lang="ja-JP"] .quick-ask strong {
   display: grid;
   width: min(100% - 36px, 860px);
   min-height: 66px;
-  grid-template-columns: minmax(0, 1fr) 48px;
-  align-items: center;
-  gap: 8px;
+  gap: 7px;
   margin: 8px auto 18px;
-  padding: 9px 9px 25px 17px;
+  padding: 9px 9px 25px;
   border: 1px solid #d8dedd;
   border-radius: 23px;
   background: #fff;
@@ -3117,11 +3139,83 @@ html[lang="ja-JP"] .quick-ask strong {
 }
 
 .care-chat-composer:focus-within { border-color: #9db2ab; box-shadow: 0 10px 32px rgba(25, 43, 37, .12), 0 0 0 3px rgba(43, 103, 87, .07); }
+.care-hidden-input { display: none; }
+.care-composer-main {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: auto minmax(0, 1fr) 44px;
+  align-items: center;
+  gap: 8px;
+}
+.care-composer-tools { display: flex; align-items: center; gap: 3px; }
+.care-composer-tools button {
+  display: grid;
+  width: 38px;
+  height: 38px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 11px;
+  color: #52645e;
+  background: transparent;
+  cursor: pointer;
+}
+.care-composer-tools button:hover { color: #214b40; background: #edf4f1; }
+.care-composer-tools button.recording { color: #fff; background: #b83e34; animation: caregiverRecord 1.25s ease-in-out infinite; }
+.care-composer-tools button:disabled { opacity: .32; cursor: default; }
 .care-chat-composer textarea { max-height: 150px; resize: none; overflow-y: auto; border: 0; outline: 0; color: #1e2724; background: transparent; font: inherit; font-size: 15px; line-height: 1.5; }
-.care-chat-composer > button { display: grid; width: 44px; height: 44px; place-items: center; border: 0; border-radius: 50%; color: #fff; background: #111; cursor: pointer; }
-.care-chat-composer > button:disabled { opacity: .25; cursor: default; }
+.care-send-button { display: grid; width: 44px; height: 44px; place-items: center; padding: 0; border: 0; border-radius: 50%; color: #fff; background: #111; cursor: pointer; }
+.care-send-button:disabled { opacity: .25; cursor: default; }
 .care-chat-composer svg { width: 21px; fill: none; stroke: currentColor; stroke-width: 1.9; stroke-linecap: round; stroke-linejoin: round; }
 .care-chat-composer small { position: absolute; right: 16px; bottom: 5px; left: 16px; overflow: hidden; color: #959b99; font-size: 9px; text-align: center; text-overflow: ellipsis; white-space: nowrap; }
+
+.care-pending-media {
+  display: flex;
+  gap: 7px;
+  padding: 2px 4px 0;
+  overflow-x: auto;
+  scrollbar-width: thin;
+}
+
+.care-media-chip {
+  position: relative;
+  display: inline-flex;
+  min-width: max-content;
+  height: 48px;
+  align-items: center;
+  gap: 7px;
+  padding: 5px 28px 5px 6px;
+  border: 1px solid #d8e2de;
+  border-radius: 12px;
+  color: #40544d;
+  background: #f6faf8;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.care-photo-chip img { width: 38px; height: 38px; border-radius: 8px; object-fit: cover; }
+.care-audio-chip { padding-left: 11px; }
+.care-audio-chip > svg { width: 19px; color: #2f6c5a; }
+.care-media-chip > button {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  display: grid;
+  width: 20px;
+  height: 20px;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  color: #66736e;
+  background: #e7eeeb;
+  font-size: 15px;
+  cursor: pointer;
+}
+
+@keyframes caregiverRecord {
+  50% { box-shadow: 0 0 0 5px rgba(184, 62, 52, .14); }
+}
 
 .care-link-form {
   display: grid;
@@ -4440,16 +4534,15 @@ html[lang="ja-JP"] .quick-ask strong {
 
 .about-bar-mark {
   display: grid;
-  width: 34px;
-  height: 34px;
+  width: 40px;
+  height: 40px;
   place-items: center;
-  border-radius: 12px;
-  color: #fff;
-  background: linear-gradient(160deg, var(--about-secondary-fill), var(--about-secondary-deep));
-  font-size: 13px;
-  font-weight: 800;
-  letter-spacing: 0;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #fff;
 }
+
+.about-bar-mark img { display: block; width: 100%; height: 100%; object-fit: contain; }
 
 .about-bar-nav {
   display: flex;
@@ -5051,7 +5144,7 @@ html[lang="ja-JP"] .quick-ask strong {
 }
 
 .about-feature-card h3 {
-  font-size: 26px;
+  font-size: clamp(27px, 2.1vw, 32px);
   line-height: 1.28;
 }
 
@@ -5105,7 +5198,7 @@ html[lang="ja-JP"] .quick-ask strong {
 .about-source-card p {
   margin: 0;
   color: var(--about-muted);
-  font-size: var(--fs-300);
+  font-size: clamp(18px, 1.35vw, 20px);
   line-height: 1.72;
   word-break: keep-all;
 }
@@ -5166,37 +5259,59 @@ html[lang="ja-JP"] .quick-ask strong {
 .about-source-card > header {
   display: grid;
   min-width: 0;
-  grid-template-columns: 52px minmax(0, 1fr);
+  grid-template-columns: 120px minmax(0, 1fr);
   align-items: center;
   gap: 14px;
   margin-bottom: 14px;
 }
 
-.about-source-icon {
+.about-source-logo {
+  position: relative;
   display: grid;
-  width: 52px;
-  height: 52px;
+  width: 120px;
+  height: 64px;
   place-items: center;
   border: 1px solid #c7dbd1;
-  border-radius: 16px;
-  color: var(--about-secondary);
-  background: linear-gradient(145deg, #fff, #e8f3ed);
-  font-size: 13px;
-  font-weight: 950;
-  letter-spacing: -.03em;
+  border-radius: 17px;
+  background: #fff;
+}
+
+.about-source-logo > img:first-child {
+  display: block;
+  max-width: calc(100% - 16px);
+  max-height: calc(100% - 16px);
+  object-fit: contain;
+}
+
+.about-source-logo.crest > img:first-child,
+.about-source-logo.brand-symbol > img:first-child {
+  width: 50px;
+  height: 50px;
+}
+
+.about-source-data-go {
+  position: absolute;
+  right: -5px;
+  bottom: -5px;
+  width: 26px;
+  height: 26px;
+  border: 3px solid #fff;
+  border-radius: 9px;
+  box-shadow: 0 4px 10px rgba(24, 63, 54, .16);
 }
 
 .about-source-card h4 {
   min-width: 0;
   margin: 0;
   color: var(--about-primary);
-  font-size: 20px;
+  font-size: 22px;
   line-height: 1.4;
   word-break: keep-all;
 }
 
 .about-source-card p {
   color: var(--about-muted);
+  font-size: 20px;
 }
 
 .about-source-card a {
@@ -5243,6 +5358,20 @@ html[lang="ja-JP"] .about-update-card,
 html[lang="ja-JP"] .about-source-card {
   min-width: 0;
   overflow: hidden;
+}
+
+@media (max-width: 620px) {
+  .about-source-card > header {
+    grid-template-columns: 92px minmax(0, 1fr);
+  }
+
+  .about-source-logo {
+    width: 92px;
+    height: 58px;
+  }
+
+  .about-source-card h4 { font-size: 19px; }
+  .about-source-card p { font-size: 16px; }
 }
 
 /*
@@ -5692,45 +5821,46 @@ html[lang="ja-JP"] .about-workflow-card p {
 
 .about-guide-mock-link {
   display: grid;
-  gap: 10px;
-  padding: 14px;
-  border-radius: 16px;
+  gap: 14px;
+  padding: 20px 18px;
+  border: 7px solid rgba(255, 255, 255, .14);
+  border-radius: 24px;
   color: #173c31;
   background: #fffdf7;
-  box-shadow: 0 0 0 6px rgba(255, 255, 255, .1);
+  box-shadow: 0 10px 24px rgba(0, 0, 0, .22);
 }
 
 .about-guide-mock-link > span {
   color: #527065;
-  font-size: 12px;
+  font-size: 14px;
   font-weight: 850;
 }
 
 .about-guide-mock-link > strong {
-  font-size: 22px;
+  font-size: 27px;
   line-height: 1.3;
 }
 
 .about-guide-mock-link > button {
-  min-height: 54px;
-  padding: 10px 12px;
+  min-height: 68px;
+  padding: 12px 15px;
   border: 0;
   border-radius: 13px;
   color: #fff;
   background: #3f7565;
-  font-size: 16px;
+  font-size: 19px;
   font-weight: 900;
   line-height: 1.35;
 }
 
 .about-guide-mock-link > code {
-  padding: 12px 10px;
+  padding: 15px 10px;
   border: 2px dashed #5c887a;
   border-radius: 12px;
   color: #173c31;
   background: #f4faf6;
   font-family: inherit;
-  font-size: 16px;
+  font-size: 19px;
   font-weight: 950;
   text-align: center;
   overflow-wrap: anywhere;
@@ -5738,9 +5868,31 @@ html[lang="ja-JP"] .about-workflow-card p {
 
 .about-guide-mock-link > small {
   color: #6b746f;
-  font-size: 11px;
+  font-size: 13px;
   font-weight: 750;
   text-align: center;
+}
+
+.about-guide-mock.is-link {
+  border-radius: 26px;
+  background: #17211c;
+}
+
+.about-guide-mock.is-link .about-guide-mock-screen {
+  gap: 16px;
+  padding: 24px 20px 22px;
+  background: linear-gradient(165deg, #24352e, #18231e);
+}
+
+.about-guide-mock.is-link .about-guide-mock-title {
+  color: rgba(255, 255, 255, .68);
+  font-size: 17px;
+}
+
+.about-guide-mock.is-link .about-guide-mock-caption {
+  padding: 24px 20px 28px;
+  font-size: 18px;
+  line-height: 1.65;
 }
 
 /* 어두운 화면 아래에 흰 글씨로 얹는 한 문장. */
@@ -6478,11 +6630,17 @@ html[lang="ja-JP"] .about-workflow-card p {
   width: 34px;
   height: 34px;
   place-items: center;
-  border-radius: 10px;
-  color: #fff;
-  background: #183f36;
-  font-size: 12px;
-  letter-spacing: .02em;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #fff;
+}
+
+.caregiver-brand-mark img,
+.caregiver-login-card-mark img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
 }
 
 .caregiver-mode-badge {
@@ -7346,12 +7504,9 @@ html[lang="ja-JP"] .about-workflow-card p {
   width: 46px;
   height: 46px;
   place-items: center;
-  border-radius: 14px;
-  color: #fff;
-  background: var(--care-login-green);
-  font-size: 12px;
-  font-weight: 850;
-  letter-spacing: .03em;
+  overflow: hidden;
+  border-radius: 50%;
+  background: #fff;
 }
 
 .caregiver-login-card-heading p {

@@ -2,6 +2,7 @@
 
 import Link from "next/link";
 import {
+  type ChangeEvent,
   type FormEvent,
   type KeyboardEvent,
   useEffect,
@@ -12,6 +13,7 @@ import {
 import ReactMarkdown from "react-markdown";
 import type { CaregiverSessionUser } from "../backend/services/caregiverAuth";
 import { getHealthLabel } from "../backend/data/healthTerms";
+import { preparePhoto } from "./photoCapture";
 
 type RiskLevel = "danger" | "caution" | "safe";
 
@@ -67,6 +69,18 @@ type CareMessage = {
   status?: "loading" | "error";
 };
 
+type CarePendingImage = {
+  id: string;
+  file: File;
+  url: string;
+};
+
+type CarePendingAudio = {
+  blob: Blob;
+  url: string;
+  duration: number;
+};
+
 type CaregiverAppProps = {
   caregiver?: CaregiverSessionUser;
   onLogout?: () => void | Promise<void>;
@@ -105,6 +119,102 @@ function TrashIcon() {
   );
 }
 
+function CameraIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 8.5h3l1.5-2h7l1.5 2h3v10H4v-10Z" />
+      <circle cx="12" cy="13.5" r="3.2" />
+    </svg>
+  );
+}
+
+function MicrophoneIcon() {
+  return (
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <rect x="9" y="3" width="6" height="11" rx="3" />
+      <path d="M6.5 11.5a5.5 5.5 0 0 0 11 0M12 17v4M9 21h6" />
+    </svg>
+  );
+}
+
+function formatDuration(totalSeconds: number) {
+  const minutes = Math.floor(totalSeconds / 60);
+  const seconds = totalSeconds % 60;
+  return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+}
+
+function blobToInlineData(blob: Blob): Promise<{ data: string; mimeType: string }> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.addEventListener("load", () => {
+      const value = typeof reader.result === "string" ? reader.result : "";
+      const commaIndex = value.indexOf(",");
+      if (commaIndex < 0) {
+        reject(new Error("첨부 파일을 읽지 못했습니다."));
+        return;
+      }
+      resolve({
+        data: value.slice(commaIndex + 1),
+        mimeType: (blob.type || "application/octet-stream").split(";")[0],
+      });
+    });
+    reader.addEventListener("error", () => reject(new Error("첨부 파일을 읽지 못했습니다.")));
+    reader.readAsDataURL(blob);
+  });
+}
+
+function writeAscii(view: DataView, offset: number, value: string) {
+  for (let index = 0; index < value.length; index += 1) {
+    view.setUint8(offset + index, value.charCodeAt(index));
+  }
+}
+
+function audioBufferToWav(buffer: AudioBuffer) {
+  const bytesPerSample = 2;
+  const wav = new ArrayBuffer(44 + buffer.length * bytesPerSample);
+  const view = new DataView(wav);
+  writeAscii(view, 0, "RIFF");
+  view.setUint32(4, 36 + buffer.length * bytesPerSample, true);
+  writeAscii(view, 8, "WAVE");
+  writeAscii(view, 12, "fmt ");
+  view.setUint32(16, 16, true);
+  view.setUint16(20, 1, true);
+  view.setUint16(22, 1, true);
+  view.setUint32(24, buffer.sampleRate, true);
+  view.setUint32(28, buffer.sampleRate * bytesPerSample, true);
+  view.setUint16(32, bytesPerSample, true);
+  view.setUint16(34, 16, true);
+  writeAscii(view, 36, "data");
+  view.setUint32(40, buffer.length * bytesPerSample, true);
+  const channels = Array.from(
+    { length: buffer.numberOfChannels },
+    (_, index) => buffer.getChannelData(index),
+  );
+  let offset = 44;
+  for (let sample = 0; sample < buffer.length; sample += 1) {
+    const mixed = channels.reduce((sum, channel) => sum + channel[sample], 0) / channels.length;
+    const clamped = Math.max(-1, Math.min(1, mixed));
+    view.setInt16(offset, clamped < 0 ? clamped * 0x8000 : clamped * 0x7fff, true);
+    offset += bytesPerSample;
+  }
+  return wav;
+}
+
+async function recordingToInlineData(blob: Blob) {
+  if (typeof AudioContext === "undefined") return blobToInlineData(blob);
+  const context = new AudioContext();
+  try {
+    const decoded = await context.decodeAudioData(await blob.arrayBuffer());
+    return blobToInlineData(new Blob([audioBufferToWav(decoded)], { type: "audio/wav" }));
+  } catch {
+    return blobToInlineData(blob);
+  } finally {
+    await context.close();
+  }
+}
+
+const CARE_MAX_IMAGES = 4;
+
 async function responseJson<T>(response: Response): Promise<T> {
   const payload = (await response.json()) as T & { error?: string };
   if (!response.ok) throw new Error(payload.error || "요청을 처리하지 못했습니다.");
@@ -133,6 +243,10 @@ export default function CaregiverApp({ caregiver, onLogout }: CaregiverAppProps)
   const [isLoadingOverview, setIsLoadingOverview] = useState(true);
   const [isLoadingThread, setIsLoadingThread] = useState(false);
   const [isAnswering, setIsAnswering] = useState(false);
+  const [pendingImages, setPendingImages] = useState<CarePendingImage[]>([]);
+  const [pendingAudio, setPendingAudio] = useState<CarePendingAudio | null>(null);
+  const [isPreparingMedia, setIsPreparingMedia] = useState(false);
+  const [isRecording, setIsRecording] = useState(false);
   const [isLinking, setIsLinking] = useState(false);
   const [deletingThreadId, setDeletingThreadId] = useState<string | null>(null);
   const [error, setError] = useState("");
@@ -140,6 +254,14 @@ export default function CaregiverApp({ caregiver, onLogout }: CaregiverAppProps)
   const [mobilePanel, setMobilePanel] = useState<"chat" | "seniors" | null>(null);
   const scrollRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLTextAreaElement | null>(null);
+  const photoInputRef = useRef<HTMLInputElement | null>(null);
+  const mediaRecorderRef = useRef<MediaRecorder | null>(null);
+  const mediaStreamRef = useRef<MediaStream | null>(null);
+  const audioChunksRef = useRef<Blob[]>([]);
+  const recordingStartedAtRef = useRef(0);
+  const discardRecordingRef = useRef(false);
+  const pendingImagesRef = useRef<CarePendingImage[]>([]);
+  const pendingAudioRef = useRef<CarePendingAudio | null>(null);
   const abortRef = useRef<AbortController | null>(null);
 
   const selectedSenior = useMemo(
@@ -185,7 +307,25 @@ export default function CaregiverApp({ caregiver, onLogout }: CaregiverAppProps)
     return () => {
       cancelled = true;
       abortRef.current?.abort();
+      if (mediaRecorderRef.current?.state !== "inactive") {
+        discardRecordingRef.current = true;
+        mediaRecorderRef.current?.stop();
+      }
+      mediaStreamRef.current?.getTracks().forEach((track) => track.stop());
     };
+  }, []);
+
+  useEffect(() => {
+    pendingImagesRef.current = pendingImages;
+  }, [pendingImages]);
+
+  useEffect(() => {
+    pendingAudioRef.current = pendingAudio;
+  }, [pendingAudio]);
+
+  useEffect(() => () => {
+    pendingImagesRef.current.forEach((image) => URL.revokeObjectURL(image.url));
+    if (pendingAudioRef.current) URL.revokeObjectURL(pendingAudioRef.current.url);
   }, []);
 
   useEffect(() => {
@@ -239,12 +379,120 @@ export default function CaregiverApp({ caregiver, onLogout }: CaregiverAppProps)
     });
   }, [messages]);
 
+  const clearPendingMedia = () => {
+    pendingImages.forEach((image) => URL.revokeObjectURL(image.url));
+    if (pendingAudio) URL.revokeObjectURL(pendingAudio.url);
+    setPendingImages([]);
+    setPendingAudio(null);
+  };
+
+  const removePendingImage = (id: string) => {
+    setPendingImages((current) => {
+      const target = current.find((image) => image.id === id);
+      if (target) URL.revokeObjectURL(target.url);
+      return current.filter((image) => image.id !== id);
+    });
+  };
+
+  const removePendingAudio = () => {
+    if (pendingAudio) URL.revokeObjectURL(pendingAudio.url);
+    setPendingAudio(null);
+  };
+
+  const choosePhotos = async (event: ChangeEvent<HTMLInputElement>) => {
+    const files = Array.from(event.target.files ?? []);
+    event.target.value = "";
+    if (files.length === 0) return;
+    const slots = CARE_MAX_IMAGES - pendingImages.length;
+    const selected = files.filter((file) => file.type.startsWith("image/")).slice(0, slots);
+    if (selected.length === 0) {
+      setError(slots <= 0 ? `사진은 한 번에 ${CARE_MAX_IMAGES}장까지 첨부할 수 있습니다.` : "이미지 파일을 선택해 주세요.");
+      return;
+    }
+    if (selected.some((file) => file.size > 8 * 1024 * 1024)) {
+      setError("사진 한 장의 크기는 8MB 이하여야 합니다.");
+      return;
+    }
+    setError("");
+    setIsPreparingMedia(true);
+    try {
+      const prepared = await Promise.all(selected.map((file) => preparePhoto(file)));
+      setPendingImages((current) => [
+        ...current,
+        ...prepared.map((photo, index) => ({
+          id: `care-photo-${Date.now()}-${index}`,
+          file: photo.file,
+          url: photo.url,
+        })),
+      ]);
+      if (files.length > selected.length) {
+        setError(`사진은 한 번에 ${CARE_MAX_IMAGES}장까지 첨부할 수 있습니다.`);
+      }
+    } catch {
+      setError("사진을 준비하지 못했습니다. 다른 사진으로 다시 시도해 주세요.");
+    } finally {
+      setIsPreparingMedia(false);
+    }
+  };
+
+  const toggleRecording = async () => {
+    setError("");
+    if (isRecording) {
+      mediaRecorderRef.current?.stop();
+      return;
+    }
+    if (!navigator.mediaDevices?.getUserMedia || typeof MediaRecorder === "undefined") {
+      setError("이 브라우저에서는 음성 녹음을 사용할 수 없습니다.");
+      return;
+    }
+    try {
+      const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+      const recorder = new MediaRecorder(stream);
+      mediaStreamRef.current = stream;
+      mediaRecorderRef.current = recorder;
+      audioChunksRef.current = [];
+      discardRecordingRef.current = false;
+      recordingStartedAtRef.current = Date.now();
+      recorder.addEventListener("dataavailable", (event) => {
+        if (event.data.size > 0) audioChunksRef.current.push(event.data);
+      });
+      recorder.addEventListener("stop", () => {
+        const blob = new Blob(audioChunksRef.current, { type: recorder.mimeType || "audio/webm" });
+        if (discardRecordingRef.current) {
+          discardRecordingRef.current = false;
+          stream.getTracks().forEach((track) => track.stop());
+          mediaStreamRef.current = null;
+          mediaRecorderRef.current = null;
+          setIsRecording(false);
+          return;
+        }
+        const url = URL.createObjectURL(blob);
+        const duration = Math.max(1, Math.round((Date.now() - recordingStartedAtRef.current) / 1000));
+        if (pendingAudioRef.current) URL.revokeObjectURL(pendingAudioRef.current.url);
+        setPendingAudio({ blob, url, duration });
+        stream.getTracks().forEach((track) => track.stop());
+        mediaStreamRef.current = null;
+        mediaRecorderRef.current = null;
+        setIsRecording(false);
+      }, { once: true });
+      recorder.start();
+      setIsRecording(true);
+    } catch {
+      setError("마이크 권한을 허용한 뒤 다시 눌러 주세요.");
+    }
+  };
+
   const newChat = (seniorId: string | null = selectedSeniorId) => {
     abortRef.current?.abort();
+    if (mediaRecorderRef.current?.state !== "inactive") {
+      discardRecordingRef.current = true;
+      mediaRecorderRef.current?.stop();
+    }
     setActiveThreadId(null);
     setMessages([]);
     setQuestion("");
     setError("");
+    clearPendingMedia();
     setSelectedSeniorId(seniorId);
     setMobilePanel(null);
     window.setTimeout(() => inputRef.current?.focus(), 0);
@@ -334,14 +582,21 @@ export default function CaregiverApp({ caregiver, onLogout }: CaregiverAppProps)
   const submitQuestion = async (event?: FormEvent<HTMLFormElement>) => {
     event?.preventDefault();
     const cleaned = question.trim().slice(0, 1600);
-    if (!cleaned || isAnswering) return;
+    const imageCount = pendingImages.length;
+    const hasAudio = Boolean(pendingAudio);
+    if ((!cleaned && imageCount === 0 && !hasAudio) || isAnswering || isRecording) return;
+    const attachmentSummary = [
+      imageCount > 0 ? `📷 사진 ${imageCount}장` : "",
+      hasAudio && pendingAudio ? `🎙 음성 ${formatDuration(pendingAudio.duration)}` : "",
+    ].filter(Boolean).join(" · ");
+    const displayQuestion = cleaned || `${attachmentSummary} 질문`;
     const controller = new AbortController();
     abortRef.current = controller;
     const sentAt = Date.now();
     const userMessage: CareMessage = {
       id: `user-${sentAt}`,
       role: "user",
-      content: cleaned,
+      content: attachmentSummary ? `${displayQuestion}\n${cleaned ? attachmentSummary : ""}`.trim() : displayQuestion,
       riskLevel: "safe",
       warningMessage: "",
       createdAt: sentAt,
@@ -360,6 +615,15 @@ export default function CaregiverApp({ caregiver, onLogout }: CaregiverAppProps)
     setError("");
     setIsAnswering(true);
     try {
+      const [audio, images] = await Promise.all([
+        pendingAudio ? recordingToInlineData(pendingAudio.blob) : null,
+        Promise.all(
+          pendingImages.map(async (image) => ({
+            ...(await blobToInlineData(image.file)),
+            purpose: null,
+          })),
+        ),
+      ]);
       const result = await fetch("/api/caregiver/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -368,6 +632,8 @@ export default function CaregiverApp({ caregiver, onLogout }: CaregiverAppProps)
           message: cleaned,
           threadId: activeThreadId,
           seniorId: selectedSeniorId,
+          audio,
+          images,
         }),
       }).then((response) =>
         responseJson<{
@@ -391,6 +657,7 @@ export default function CaregiverApp({ caregiver, onLogout }: CaregiverAppProps)
             : message,
         ),
       );
+      clearPendingMedia();
       await loadOverview(selectedSeniorId);
     } catch (caught) {
       const stopped = caught instanceof DOMException && caught.name === "AbortError";
@@ -428,7 +695,10 @@ export default function CaregiverApp({ caregiver, onLogout }: CaregiverAppProps)
     <main className="care-workspace">
       <header className="care-topbar">
         <Link className="care-logo" href="/">
-          <span>SL</span>
+          <span>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img src="/brand/silverlens-mark.png" alt="" />
+          </span>
           <strong>SilverLens Care</strong>
         </Link>
         <nav className="care-mobile-tabs" aria-label="모바일 패널">
@@ -509,7 +779,10 @@ export default function CaregiverApp({ caregiver, onLogout }: CaregiverAppProps)
               <div className="care-chat-empty"><p>돌봄 정보를 불러오는 중입니다…</p></div>
             ) : messages.length === 0 ? (
               <div className="care-chat-empty">
-                <span className="care-ai-mark">SL</span>
+                <span className="care-ai-mark">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src="/brand/silverlens-mark.png" alt="" />
+                </span>
                 <h2>{selectedSenior ? `${selectedSenior.alias}에 대해 무엇이 궁금하신가요?` : "지금 무엇을 도와드릴까요?"}</h2>
                 <p>
                   {selectedSenior
@@ -535,7 +808,10 @@ export default function CaregiverApp({ caregiver, onLogout }: CaregiverAppProps)
                     <p key={message.id} className="care-user-bubble">{message.content}</p>
                   ) : (
                     <article key={message.id} className={`care-ai-answer ${message.status === "error" ? "is-error" : ""}`}>
-                      <header><span>SL</span><strong>SilverLens AI</strong></header>
+                      <header><span>
+                        {/* eslint-disable-next-line @next/next/no-img-element */}
+                        <img src="/brand/silverlens-mark.png" alt="" />
+                      </span><strong>SilverLens AI</strong></header>
                       {message.warningMessage && (
                         <p className={`care-risk ${message.riskLevel}`}>{message.warningMessage}</p>
                       )}
@@ -553,24 +829,75 @@ export default function CaregiverApp({ caregiver, onLogout }: CaregiverAppProps)
 
           {error && <p className="care-global-error" role="alert">{error}</p>}
           <form className="care-chat-composer" onSubmit={(event) => void submitQuestion(event)}>
-            <textarea
-              ref={inputRef}
-              value={question}
-              onChange={(event) => setQuestion(event.target.value)}
-              onKeyDown={handleComposerKey}
-              placeholder={selectedSenior ? `${selectedSenior.alias}의 돌봄에 관해 물어보세요` : "무엇이든 물어보세요"}
-              rows={1}
-              maxLength={1600}
-              disabled={isAnswering}
+            <input
+              ref={photoInputRef}
+              className="care-hidden-input"
+              type="file"
+              accept="image/*"
+              multiple
+              onChange={(event) => void choosePhotos(event)}
             />
-            <button
-              type={isAnswering ? "button" : "submit"}
-              aria-label={isAnswering ? "답변 중지" : "질문 보내기"}
-              onClick={isAnswering ? () => abortRef.current?.abort() : undefined}
-              disabled={!isAnswering && !question.trim()}
-            >
-              {isAnswering ? <StopIcon /> : <SendIcon />}
-            </button>
+            {(pendingImages.length > 0 || pendingAudio) && (
+              <div className="care-pending-media" aria-label="보내기 전 첨부 파일">
+                {pendingImages.map((image, index) => (
+                  <div className="care-media-chip care-photo-chip" key={image.id}>
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={image.url} alt={`첨부 사진 ${index + 1}`} />
+                    <span>사진 {index + 1}</span>
+                    <button type="button" onClick={() => removePendingImage(image.id)} aria-label={`첨부 사진 ${index + 1} 삭제`}>×</button>
+                  </div>
+                ))}
+                {pendingAudio && (
+                  <div className="care-media-chip care-audio-chip">
+                    <MicrophoneIcon />
+                    <span>음성 {formatDuration(pendingAudio.duration)}</span>
+                    <button type="button" onClick={removePendingAudio} aria-label="첨부 음성 삭제">×</button>
+                  </div>
+                )}
+              </div>
+            )}
+            <div className="care-composer-main">
+              <div className="care-composer-tools" aria-label="파일 첨부">
+                <button
+                  type="button"
+                  onClick={() => photoInputRef.current?.click()}
+                  disabled={isAnswering || isPreparingMedia || pendingImages.length >= CARE_MAX_IMAGES}
+                  aria-label="사진 첨부"
+                  title="사진 첨부"
+                >
+                  <CameraIcon />
+                </button>
+                <button
+                  type="button"
+                  className={isRecording ? "recording" : ""}
+                  onClick={() => void toggleRecording()}
+                  disabled={isAnswering}
+                  aria-label={isRecording ? "음성 녹음 끝내기" : "음성 녹음"}
+                  title={isRecording ? "녹음 끝내기" : "음성 녹음"}
+                >
+                  {isRecording ? <StopIcon /> : <MicrophoneIcon />}
+                </button>
+              </div>
+              <textarea
+                ref={inputRef}
+                value={question}
+                onChange={(event) => setQuestion(event.target.value)}
+                onKeyDown={handleComposerKey}
+                placeholder={selectedSenior ? `${selectedSenior.alias}의 돌봄에 관해 물어보세요` : "무엇이든 물어보세요"}
+                rows={1}
+                maxLength={1600}
+                disabled={isAnswering}
+              />
+              <button
+                className="care-send-button"
+                type={isAnswering ? "button" : "submit"}
+                aria-label={isAnswering ? "답변 중지" : "질문 보내기"}
+                onClick={isAnswering ? () => abortRef.current?.abort() : undefined}
+                disabled={!isAnswering && (!question.trim() && pendingImages.length === 0 && !pendingAudio)}
+              >
+                {isAnswering ? <StopIcon /> : <SendIcon />}
+              </button>
+            </div>
             <small>AI 답변은 참고용이며 진단이나 처방을 대신하지 않습니다.</small>
           </form>
         </section>

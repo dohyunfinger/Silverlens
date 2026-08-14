@@ -1589,7 +1589,7 @@ const uiCopy = {
 type AboutFeature = { title: string; text: string };
 type AboutStep = { step: string; title: string; text: string };
 type AboutSource = {
-  icon: string;
+  icon: "opendict" | "mfds" | "kpic" | "silverlens";
   name: string;
   text: string;
   url: string;
@@ -1771,7 +1771,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
       },
       {
         title: "돌봄이 AI와 기록 관리",
-        text: "선택한 시니어의 공유 기록을 문맥으로 삼아 일반 AI처럼 폭넓게 질문할 수 있습니다. 새 대화를 만들고 필요 없는 돌봄이 대화는 삭제할 수 있습니다.",
+        text: "선택한 시니어의 공유 기록을 문맥으로 삼아 글·사진·음성으로 폭넓게 질문할 수 있습니다. 새 대화를 만들고 필요 없는 돌봄이 대화는 삭제할 수 있습니다.",
       },
       {
         title: "안전한 약 사진 확인",
@@ -1788,28 +1788,28 @@ const aboutCopy: Record<Language, AboutCopy> = {
       "공식 공개 데이터, 외부 확인 경로, 팀이 직접 정리한 자료를 구분합니다. 출처의 자료를 그대로 의료 판단으로 사용하지 않고 코드 안전 규칙과 AI 설명을 함께 적용합니다.",
     sources: [
       {
-        icon: "말",
+        icon: "opendict",
         name: "국립국어원 우리말샘",
         text: "사투리·지역어와 생활 언어의 표기와 뜻을 확인하는 참고 경로입니다. 서비스용 사투리 목록은 팀이 선별·검증해 별도 파일로 관리합니다.",
         url: "https://opendict.korean.go.kr",
         linkLabel: "우리말샘 열기",
       },
       {
-        icon: "식약처",
+        icon: "mfds",
         name: "식품의약품안전처 의약품 낱알식별 정보",
         text: "공공데이터포털 OpenAPI에서 제품명·각인·제형·모양·색·분할선·공식 이미지 주소를 동기화해 약 사진 후보를 대조합니다.",
         url: "https://www.data.go.kr/data/15057639/openapi.do",
         linkLabel: "공식 데이터 보기",
       },
       {
-        icon: "약",
+        icon: "kpic",
         name: "약학정보원 의약품 식별검색",
         text: "자료를 복제하거나 데이터셋으로 수집하지 않습니다. 사용자가 후보를 직접 최종 확인할 수 있는 외부 검색 경로로만 안내합니다.",
         url: "https://health.kr/searchIdentity/search.asp",
         linkLabel: "식별검색 열기",
       },
       {
-        icon: "SL",
+        icon: "silverlens",
         name: "SilverLens 팀 정리 데이터",
         text: "식품·요리·별칭·건강 항목·안전 규칙은 저장소의 data 폴더에서 원본과 생성물을 나누어 관리합니다. 공식 진단·처방 데이터가 아닌 서비스용 참고 자료입니다.",
         url: "https://github.com/dohyunfinger/-OGQ-/tree/main/data",
@@ -2024,7 +2024,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
       },
       {
         title: "Caregiver AI and chat controls",
-        text: "Caregivers can ask broad, everyday questions in a familiar AI-chat layout using the selected senior's shared history as context. Threads can be created and deleted.",
+        text: "Caregivers can ask broad questions with text, photos, or voice in a familiar AI-chat layout using the selected senior's shared history as context. Threads can be created and deleted.",
       },
       {
         title: "Safer pill-photo checks",
@@ -2041,28 +2041,28 @@ const aboutCopy: Record<Language, AboutCopy> = {
       "Official open data, external verification links, and team-curated material are labelled separately. Source records are combined with code-level safety rules and plain-language AI explanations, not treated as a diagnosis.",
     sources: [
       {
-        icon: "말",
+        icon: "opendict",
         name: "Urimalsam, National Institute of Korean Language",
         text: "A reference for the spelling and meaning of dialect and everyday language. The service dictionary is separately selected and validated by the team.",
         url: "https://opendict.korean.go.kr",
         linkLabel: "Open Urimalsam",
       },
       {
-        icon: "MFDS",
+        icon: "mfds",
         name: "MFDS Pill Identification Information",
         text: "The official OpenAPI supplies product names, imprints, dosage forms, shapes, colours, score lines, and official image URLs for candidate matching.",
         url: "https://www.data.go.kr/data/15057639/openapi.do",
         linkLabel: "View official dataset",
       },
       {
-        icon: "Rx",
+        icon: "kpic",
         name: "Korea Pharmaceutical Information Center identification search",
         text: "Its content is not copied or collected into our dataset. It is linked only as an external route where users can verify candidates themselves.",
         url: "https://health.kr/searchIdentity/search.asp",
         linkLabel: "Open identification search",
       },
       {
-        icon: "SL",
+        icon: "silverlens",
         name: "SilverLens team-curated data",
         text: "Food, dishes, aliases, health terms, and safety rules are maintained as sources and generated files in the repository's data folder. They are service reference material, not clinical standards.",
         url: "https://github.com/dohyunfinger/-OGQ-/tree/main/data",
@@ -2277,7 +2277,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
       },
       {
         title: "介護者AIと会話管理",
-        text: "選んだシニアの共有履歴を文脈にしながら、一般的なAIチャットのように幅広く質問できます。新しい会話を作り、不要な会話を削除できます。",
+        text: "選んだシニアの共有履歴を文脈にしながら、文字・写真・音声で幅広く質問できます。新しい会話を作り、不要な会話を削除できます。",
       },
       {
         title: "安全を優先した薬の写真確認",
@@ -2294,28 +2294,28 @@ const aboutCopy: Record<Language, AboutCopy> = {
       "公的オープンデータ、外部の確認先、チームが整理した資料を分けて示します。資料だけで医療判断をせず、コードの安全規則とAIのやさしい説明を組み合わせます。",
     sources: [
       {
-        icon: "말",
+        icon: "opendict",
         name: "国立国語院 ウリマルセム",
         text: "方言・地域語・生活語の表記と意味を確認する参考先です。サービス用の方言一覧はチームが別に選別・検証しています。",
         url: "https://opendict.korean.go.kr",
         linkLabel: "ウリマルセムを開く",
       },
       {
-        icon: "MFDS",
+        icon: "mfds",
         name: "食品医薬品安全処 医薬品錠剤識別情報",
         text: "公共データポータルのOpenAPIから、製品名・刻印・剤形・形・色・割線・公式画像URLを同期し、薬の候補照合に使います。",
         url: "https://www.data.go.kr/data/15057639/openapi.do",
         linkLabel: "公式データを見る",
       },
       {
-        icon: "薬",
+        icon: "kpic",
         name: "薬学情報院 医薬品識別検索",
         text: "資料を複製したりデータセットとして収集したりしません。利用者が候補を直接最終確認する外部検索先としてのみ案内します。",
         url: "https://health.kr/searchIdentity/search.asp",
         linkLabel: "識別検索を開く",
       },
       {
-        icon: "SL",
+        icon: "silverlens",
         name: "SilverLensチーム整理データ",
         text: "食品・料理・別名・健康項目・安全規則は、リポジトリのdataフォルダーで原本と生成物を分けて管理しています。診断や処方の基準ではなく、サービス用の参考資料です。",
         url: "https://github.com/dohyunfinger/-OGQ-/tree/main/data",
@@ -2465,29 +2465,29 @@ const aboutCopy: Record<Language, AboutCopy> = {
 const aboutFeatureIcons = [
   <svg key="chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
     <path d="M4 7c0-1.1.9-2 2-2h12c1.1 0 2 .9 2 2v7c0 1.1-.9 2-2 2H9l-5 3V7Z" />
-    <path d="M8 10h8M8 13h5" />
+    <path d="M8 11h1M11 9v4M14 10v2M17 8v6" />
   </svg>,
-  <svg key="lines" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-    <path d="M7 7h10M7 12h6M7 17h10" />
-    <rect x="4" y="4" width="16" height="16" rx="3" />
+  <svg key="ingredients" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+    <path d="M4 11h16c-.5 5.2-3.2 8-8 8s-7.5-2.8-8-8Z" />
+    <path d="M8 7c1.1-2 2.6-2.8 4.5-2.5M12 8c1.2-1.8 2.8-2.5 4.8-2" />
+    <path d="M7 19v2M17 19v2" />
   </svg>,
   <svg key="shield" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
     <path d="M12 3l7 4v5c0 4.5-3 7.8-7 9-4-1.2-7-4.5-7-9V7l7-4Z" />
     <path d="m9 12 2 2 4-4" />
   </svg>,
-  <svg key="clock" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-    <circle cx="12" cy="12" r="8" />
-    <path d="M12 8v4l3 2" />
+  <svg key="media" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+    <path d="M3 8h3l1.5-2h6L15 8h3v10H3V8Z" />
+    <circle cx="10.5" cy="13" r="2.8" />
+    <path d="M20 7v6M18.5 11.5A1.5 1.5 0 0 0 21.5 11.5M20 14.5V17" />
   </svg>,
-  <svg key="steps" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-    <path d="M12 20h9" />
-    <path d="M12 4h9" />
-    <path d="M3 6h4v4H3z" />
-    <path d="M3 14h4v4H3z" />
+  <svg key="answer" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+    <rect x="3" y="4" width="13" height="16" rx="2" />
+    <path d="M7 9h5M7 13h5M19 9c1 1 1.5 2 1.5 3s-.5 2-1.5 3M17.5 11c.4.4.6.7.6 1s-.2.7-.6 1" />
   </svg>,
-  <svg key="target" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-    <path d="M12 3v18M3 12h18" />
-    <circle cx="12" cy="12" r="8" />
+  <svg key="sharing" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+    <path d="M8 12.5 6.2 14.3a3.2 3.2 0 0 0 4.5 4.5l2.2-2.2M16 11.5l1.8-1.8a3.2 3.2 0 0 0-4.5-4.5l-2.2 2.2M9.5 14.5l5-5" />
+    <path d="M18 16.5v3.2h-4.2" />
   </svg>,
 ];
 
@@ -2566,7 +2566,7 @@ function AboutGuideMock({ index, step }: { index: number; step: AboutGuideStep }
 
   return (
     <figure
-      className={shotLoaded ? "about-guide-mock has-shot" : "about-guide-mock"}
+      className={`${shotLoaded ? "about-guide-mock has-shot" : "about-guide-mock"}${index === 4 ? " is-link" : ""}`}
       aria-hidden="true"
     >
       {shotType && (
@@ -2803,6 +2803,42 @@ function getNextStep(
   return "complete";
 }
 
+function SidebarIcon({ name }: { name: "home" | "settings" | "data" | "about" }) {
+  if (name === "home") {
+    return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 11 8-7 8 7v9H4v-9Z" /><path d="M9 20v-6h6v6" /></svg>;
+  }
+  if (name === "settings") {
+    return <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2" /><path d="M12 2.8v2.1M12 19.1v2.1M21.2 12h-2.1M4.9 12H2.8M18.5 5.5 17 7M7 17l-1.5 1.5M18.5 18.5 17 17M7 7 5.5 5.5" /></svg>;
+  }
+  if (name === "data") {
+    return <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2" /><path d="M4 9h16M4 15h16M10 3v18M15 3v18" /></svg>;
+  }
+  return <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2" /><path d="M8 8h8M8 12h8M8 16h6" /></svg>;
+}
+
+function AboutSourceLogo({ source }: { source: AboutSource["icon"] }) {
+  const logos = {
+    opendict: { src: "/source-icons/opendict-logo.png", className: "wide" },
+    mfds: { src: "/source-icons/mfds-logo.png", className: "wide" },
+    kpic: { src: "/source-icons/kpic-mark.png", className: "crest" },
+    silverlens: { src: "/brand/silverlens-mark.png", className: "brand-symbol" },
+  } as const;
+  const logo = logos[source];
+  return (
+    <span className={`about-source-logo ${logo.className}`} aria-hidden="true">
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img src={logo.src} alt="" />
+      {source === "mfds" && (
+        <>
+          {/* 공공데이터포털에서 실제로 제공하는 OpenAPI임을 D 마크로 함께 표시한다. */}
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img className="about-source-data-go" src="/source-icons/data-go.png" alt="" />
+        </>
+      )}
+    </span>
+  );
+}
+
 function Sidebar({
   active,
   onNavigate,
@@ -2815,7 +2851,10 @@ function Sidebar({
   return (
     <aside className="sidebar" aria-label={copy.menuLabel}>
       <div className="brand">
-        <span className="brand-mark">SL</span>
+        <span className="brand-mark">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/silverlens-mark.png" alt="" />
+        </span>
         <span>{copy.brand}</span>
       </div>
       <nav>
@@ -2823,39 +2862,39 @@ function Sidebar({
           className={active === "chat" ? "nav-item active" : "nav-item"}
           onClick={() => onNavigate("chat")}
         >
-          <span aria-hidden="true">⌂</span>
+          <span aria-hidden="true"><SidebarIcon name="home" /></span>
           {copy.service}
         </button>
         <button
           className={active === "setup" ? "nav-item active" : "nav-item"}
           onClick={() => onNavigate("setup")}
         >
-          <span aria-hidden="true">⚙</span>
+          <span aria-hidden="true"><SidebarIcon name="settings" /></span>
           {copy.basicSetup}
         </button>
         <button
           className={active === "data" ? "nav-item active" : "nav-item"}
           onClick={() => onNavigate("data")}
         >
-          <span aria-hidden="true">▦</span>
+          <span aria-hidden="true"><SidebarIcon name="data" /></span>
           {copy.data}
         </button>
         <button
           className={active === "about" ? "nav-item active" : "nav-item"}
           onClick={() => onNavigate("about")}
         >
-          <span aria-hidden="true">▤</span>
+          <span aria-hidden="true"><SidebarIcon name="about" /></span>
           {copy.about}
         </button>
       </nav>
-      <div className="sidebar-note">
-        <strong>{copy.sidebarTitle}</strong>
-        <span>{copy.sidebarNote}</span>
-      </div>
       <Link className="caregiver-entry-link" href="/caregiver">
         <span>{copy.caregiverEntry}</span>
         <span aria-hidden="true">↗</span>
       </Link>
+      <div className="sidebar-note">
+        <strong>{copy.sidebarTitle}</strong>
+        <span>{copy.sidebarNote}</span>
+      </div>
     </aside>
   );
 }
@@ -5082,7 +5121,10 @@ export default function SilverLensApp() {
           </div>
           <div className="about-bar-inner">
             <a className="about-bar-brand" href="#about-top">
-              <span className="about-bar-mark" aria-hidden="true">SL</span>
+              <span className="about-bar-mark" aria-hidden="true">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src="/brand/silverlens-mark.png" alt="" />
+              </span>
               SilverLens
             </a>
 
@@ -5253,7 +5295,7 @@ export default function SilverLensApp() {
                   {about.sources.map((source) => (
                     <article className="about-source-card" key={source.url}>
                       <header>
-                        <span className="about-source-icon" aria-hidden="true">{source.icon}</span>
+                        <AboutSourceLogo source={source.icon} />
                         <h4>{source.name}</h4>
                       </header>
                       <p>{source.text}</p>

@@ -141,7 +141,7 @@ SilverLens는 “어르신이 기술을 배우는 것”이 아니라 “기술�
 │   │   │   ├── link/                      # 일회용 코드 등록
 │   │   │   ├── seniors/[seniorId]/        # 시니어 상세 조회·연결 해제
 │   │   │   ├── threads/[threadId]/        # 돌봄이 대화 조회·삭제
-│   │   │   └── chat/                      # 돌봄이 AI 대화
+│   │   │   └── chat/                      # 돌봄이 글·사진·음성 AI 대화
 │   │   ├── senior/link/                   # 언어별 연결 코드 발급
 │   │   ├── senior/sync/                   # 연결 이후 건강정보·대화 동기화
 │   │   ├── chat/                          # 시니어 AI 답변
@@ -161,7 +161,7 @@ SilverLens는 “어르신이 기술을 배우는 것”이 아니라 “기술�
 │   ├── CaregiverPortal.tsx                # 인증 상태에 따른 로그인·작업공간 전환
 │   ├── CaregiverLogin.tsx                 # Google·이메일 로그인 UI
 │   ├── CaregiverSignup.tsx                # 이메일 회원가입 UI
-│   ├── CaregiverApp.tsx                   # 돌봄이 GPT형 대화·다중 시니어 관리
+│   ├── CaregiverApp.tsx                   # 돌봄이 GPT형 멀티모달 대화·다중 시니어 관리
 │   ├── firebaseAuth.ts                    # Firebase 클라이언트 초기화·인증 호출
 │   ├── localStore.ts                      # IndexedDB 저장·백업·복구
 │   ├── photoCapture.ts                    # 사진 축소와 밝기·흔들림 검사
@@ -202,7 +202,9 @@ SilverLens는 “어르신이 기술을 배우는 것”이 아니라 “기술�
 │   ├── brand/                             # 로고 원본과 미리보기
 │   └── reference-images/                  # 연령·성별·언어·가이드 참고 이미지
 ├── public/
+│   ├── brand/                             # 웹용 SilverLens 심벌 자산
 │   ├── guide/                             # 서비스 소개 사용법 이미지
+│   ├── source-icons/                      # 우리말샘·식약처·공공데이터·약학정보원 표식
 │   ├── favicon.svg
 │   └── og.png                             # 링크 공유 미리보기
 ├── scripts/

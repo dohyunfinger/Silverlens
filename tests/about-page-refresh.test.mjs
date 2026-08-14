@@ -4,16 +4,19 @@ import test from "node:test";
 
 const readText = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
-test("about page shows branded source badges and a fifth linking-code guide", async () => {
+test("about page shows official source logos and a fifth linking-code guide", async () => {
   const source = await readText("frontend/SilverLensApp.tsx");
 
-  assert.match(source, /icon: "말"/);
-  assert.match(source, /icon: "식약처"/);
-  assert.match(source, /icon: "약"/);
-  assert.match(source, /className="about-source-icon"/);
+  assert.match(source, /icon: "opendict"/);
+  assert.match(source, /icon: "mfds"/);
+  assert.match(source, /icon: "kpic"/);
+  assert.match(source, /className={`about-source-logo/);
+  assert.match(source, /source-icons\/data-go\.png/);
+  assert.match(source, /brand\/silverlens-mark\.png/);
   assert.match(source, /step: "5단계"/);
   assert.match(source, /데이터에서 한국어 연결 코드를 받습니다/);
   assert.match(source, /className="about-guide-mock-link"/);
+  assert.match(source, /index === 4 \? " is-link"/);
 });
 
 test("about page uses a light source panel and wraps Japanese cards", async () => {
