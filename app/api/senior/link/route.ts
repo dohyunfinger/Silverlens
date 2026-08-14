@@ -1,5 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
-import { issueLinkCode } from "../../../../backend/services/careData";
+import {
+  issueLinkCode,
+  type LinkCodeLanguage,
+} from "../../../../backend/services/careData";
 import { isSameOriginMutation } from "../../../../backend/services/caregiverRequest";
 
 export const dynamic = "force-dynamic";
@@ -13,12 +16,14 @@ export async function POST(request: NextRequest) {
       deviceId?: string;
       deviceSecret?: string;
       displayName?: string;
+      language?: LinkCodeLanguage;
       snapshot?: unknown;
     };
     const result = await issueLinkCode({
       deviceId: body.deviceId,
       deviceSecret: body.deviceSecret,
       displayName: body.displayName,
+      language: body.language,
       snapshot: body.snapshot,
     });
     return NextResponse.json(result, {

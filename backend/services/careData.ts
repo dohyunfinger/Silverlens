@@ -110,6 +110,38 @@ const KOREAN_CODE_WORDS = [
   "사과", "포도", "딸기", "참외", "수박", "자두", "감자", "호박",
   "멜론", "오이", "당근", "양파", "상추", "가지", "콩밥", "국수",
 ] as const;
+
+/** 영어 화면에서는 철자와 발음이 단순하고 서로 헷갈리기 어려운 낱말을 사용한다. */
+const ENGLISH_CODE_WORDS = [
+  "apple", "berry", "bread", "chair", "cloud", "daisy", "field", "flower",
+  "forest", "garden", "grape", "green", "happy", "honey", "house", "lemon",
+  "light", "melon", "milk", "moon", "morning", "orange", "paper", "peach",
+  "pencil", "plant", "plate", "rain", "river", "road", "rose", "school",
+  "shoe", "silver", "sky", "smile", "snow", "spoon", "spring", "star",
+  "stone", "summer", "sun", "table", "tea", "train", "tree", "water",
+  "window", "winter", "yellow", "book", "bowl", "bridge", "carrot", "cherry",
+  "clock", "coffee", "lake", "market", "music", "pearl", "sunset", "village",
+] as const;
+
+/** 일본어 화면에서는 읽는 법이 여러 개인 한자 대신 쉬운 히라가나 낱말을 사용한다. */
+const JAPANESE_CODE_WORDS = [
+  "そら", "うみ", "くも", "つき", "ほし", "はな", "かぜ", "もり",
+  "やま", "かわ", "いけ", "にじ", "あさ", "よる", "はる", "なつ",
+  "あき", "ふゆ", "みち", "えき", "いえ", "まど", "いす", "つくえ",
+  "ほん", "かさ", "くつ", "かばん", "とけい", "でんわ", "でんしゃ", "ばす",
+  "りんご", "ぶどう", "いちご", "みかん", "すいか", "めろん", "もも", "なし",
+  "くり", "いも", "まめ", "こめ", "ぱん", "もち", "そば", "うどん",
+  "みそ", "とうふ", "たまご", "さかな", "やさい", "だいこん", "にんじん", "たまねぎ",
+  "きゅうり", "かぼちゃ", "とまと", "れもん", "おちゃ", "みず", "さら", "はし",
+] as const;
+
+export type LinkCodeLanguage = NonNullable<SeniorProfileSnapshot["language"]>;
+
+const LINK_CODE_WORDS: Record<LinkCodeLanguage, readonly string[]> = {
+  "ko-KR": KOREAN_CODE_WORDS,
+  "en-US": ENGLISH_CODE_WORDS,
+  "ja-JP": JAPANESE_CODE_WORDS,
+};
 const LINK_CODE_TTL_MS = 10 * 60 * 1000;
 let schemaReady: Promise<void> | null = null;
 let databaseBinding: D1Database | null = null;
@@ -241,10 +273,19 @@ function randomToken(bytes = 32) {
   return [...values].map((value) => value.toString(16).padStart(2, "0")).join("");
 }
 
-function randomCode() {
+function linkCodeLanguage(
+  value: unknown,
+  fallback: SeniorProfileSnapshot["language"],
+): LinkCodeLanguage {
+  if (value === "ko-KR" || value === "en-US" || value === "ja-JP") return value;
+  return fallback ?? "ko-KR";
+}
+
+function randomCode(language: LinkCodeLanguage) {
+  const dictionary = LINK_CODE_WORDS[language];
   const values = crypto.getRandomValues(new Uint32Array(4));
   const words = Array.from(values.slice(0, 3))
-    .map((value) => KOREAN_CODE_WORDS[value % KOREAN_CODE_WORDS.length]);
+    .map((value) => dictionary[value % dictionary.length]);
   const digits = String(values[3] % 1000).padStart(3, "0");
   return `${words.join("-")}-${digits}`;
 }
@@ -253,13 +294,18 @@ function normalizedCode(value: string) {
   return value
     .normalize("NFC")
     .toUpperCase()
-    .replace(/[^A-Z0-9가-힣]/g, "")
+    .replace(/[^A-Z0-9가-힣ぁ-ゖァ-ヺー]/g, "")
     .slice(0, 40);
 }
 
 function isValidLinkCode(value: string) {
   // 배포 직전에 발급된 기존 영문 코드도 남은 10분 동안 사용할 수 있게 한다.
-  return /^[A-Z0-9]{10}$/.test(value) || /^[가-힣]{6}[0-9]{3}$/.test(value);
+  return (
+    /^[A-Z0-9]{10}$/.test(value) ||
+    /^[가-힣]{6}[0-9]{3}$/.test(value) ||
+    /^[A-Z]{9,24}[0-9]{3}$/.test(value) ||
+    /^[ぁ-ゖァ-ヺー]{6,18}[0-9]{3}$/.test(value)
+  );
 }
 
 async function authenticateDevice(deviceId: string, deviceSecret: string) {
@@ -275,11 +321,13 @@ export async function issueLinkCode(input: {
   deviceId?: string;
   deviceSecret?: string;
   displayName?: string;
+  language?: LinkCodeLanguage;
   snapshot: unknown;
 }) {
   await ensureCareSchema();
   const now = Date.now();
   const snapshot = sanitizeSeniorSnapshot(input.snapshot);
+  const language = linkCodeLanguage(input.language, snapshot.profile.language);
   const displayName = text(input.displayName, 30) || "어르신";
   let deviceId = text(input.deviceId, 80);
   let deviceSecret = text(input.deviceSecret, 160);
@@ -325,7 +373,7 @@ export async function issueLinkCode(input: {
     .run();
 
   for (let attempt = 0; attempt < 4; attempt += 1) {
-    const code = randomCode();
+    const code = randomCode(language);
     const codeHash = await sha256(normalizedCode(code));
     try {
       await db()

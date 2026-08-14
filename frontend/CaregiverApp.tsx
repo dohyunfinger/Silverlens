@@ -582,7 +582,7 @@ export default function CaregiverApp({ caregiver, onLogout }: CaregiverAppProps)
 
           <form className="care-link-form" onSubmit={registerSenior}>
             <strong>새 시니어 연결</strong>
-            <p>시니어의 데이터 화면에서 받은 한글 연결 코드를 입력하세요.</p>
+            <p>시니어의 데이터 화면에서 받은 연결 코드를 입력하세요. 선택한 언어에 맞는 낱말로 표시됩니다.</p>
             <input
               value={linkAlias}
               onChange={(event) => setLinkAlias(event.target.value.slice(0, 30))}
@@ -592,8 +592,8 @@ export default function CaregiverApp({ caregiver, onLogout }: CaregiverAppProps)
             <div>
               <input
                 value={linkCode}
-                onChange={(event) => setLinkCode(event.target.value.slice(0, 30))}
-                placeholder="하늘-나무-기차-572"
+                onChange={(event) => setLinkCode(event.target.value.slice(0, 40))}
+                placeholder="예: 하늘-나무-기차-572"
                 aria-label="연결 코드"
                 autoCapitalize="none"
                 autoComplete="off"

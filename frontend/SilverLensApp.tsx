@@ -1588,6 +1588,7 @@ const uiCopy = {
 
 type AboutFeature = { title: string; text: string };
 type AboutStep = { step: string; title: string; text: string };
+type AboutSource = { name: string; text: string; url: string; linkLabel: string };
 /**
  * 소개 페이지의 "이렇게 쓰세요" 단계.
  *
@@ -1635,6 +1636,7 @@ type AboutCopy = {
   githubCta: string;
   teamTitle: string;
   navFeatures: string;
+  navUpdates: string;
   navWorkflow: string;
   navGuide: string;
   languageLabel: string;
@@ -1649,6 +1651,16 @@ type AboutCopy = {
   featuresTitleAccent: string;
   featuresDescription: string;
   features: AboutFeature[];
+  updatesBadge: string;
+  updatesTitle: string;
+  updatesTitleAccent: string;
+  updatesDescription: string;
+  updates: AboutFeature[];
+  sourcesBadge: string;
+  sourcesTitle: string;
+  sourcesDescription: string;
+  sources: AboutSource[];
+  sourcePolicy: string;
   workflowBadge: string;
   workflowTitle: string;
   workflowTitleAccent: string;
@@ -1689,6 +1701,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
     githubCta: "깃허브 저장소 바로가기",
     teamTitle: "만든 사람들",
     navFeatures: "핵심 기능",
+    navUpdates: "현재 제공·출처",
     navWorkflow: "이용 흐름",
     navGuide: "사용 방법",
     languageLabel: "언어 선택",
@@ -1728,10 +1741,73 @@ const aboutCopy: Record<Language, AboutCopy> = {
         text: "긴 답변은 큰 글씨 카드로 나눠 보여 주고, 읽어 주는 속도는 어르신이 직접 맞추실 수 있습니다.",
       },
       {
-        title: "기기에만 남는 건강 정보",
-        text: "알레르기와 질병·건강 상태는 서버 DB가 아니라 이 기기에만 저장합니다. 가입도 로그인도 없습니다.",
+        title: "내가 정하는 정보 공유",
+        text: "시니어 정보는 먼저 이 기기에 저장합니다. 사용자가 직접 연결 코드를 만들고 돌봄이가 등록한 경우에만 연결된 정보가 공유됩니다.",
       },
     ],
+    updatesBadge: "Available now",
+    updatesTitle: "지금 SilverLens에서,",
+    updatesTitleAccent: "시니어와 돌봄이가 함께할 수 있습니다",
+    updatesDescription:
+      "시니어용 큰 화면뿐 아니라 로그인 기반 돌봄이 작업공간, 지속 동기화, 의약품 사진 확인과 데이터 관리까지 실제 서비스에 연결했습니다.",
+    updates: [
+      {
+        title: "로그인 없는 시니어 화면",
+        text: "시니어는 가입 없이 질문하고 알레르기·건강 상태·메모·대화를 이 기기에 저장합니다. 저장 파일 내보내기·불러오기·삭제도 데이터 화면에서 직접 합니다.",
+      },
+      {
+        title: "돌봄이 전용 작업공간",
+        text: "돌봄이는 Google 또는 이메일 계정으로 로그인해 여러 시니어를 등록하고, 목록 검색과 시니어별 건강정보·최근 대화를 한 화면에서 확인합니다.",
+      },
+      {
+        title: "한 번 연결하고 계속 공유",
+        text: "한국어·영어·일본어 화면마다 읽기 쉬운 낱말 코드가 발급됩니다. 코드는 10분 동안 한 번만 쓰며, 등록 뒤에는 같은 기기의 새 정보와 대화가 계속 동기화됩니다.",
+      },
+      {
+        title: "돌봄이 AI와 기록 관리",
+        text: "선택한 시니어의 공유 기록을 문맥으로 삼아 일반 AI처럼 폭넓게 질문할 수 있습니다. 새 대화를 만들고 필요 없는 돌봄이 대화는 삭제할 수 있습니다.",
+      },
+      {
+        title: "안전한 약 사진 확인",
+        text: "제품명과 앞·뒷면 각인, 제형, 모양, 색, 분할선을 차례로 관찰하고 식약처 공식 후보와 대조합니다. 색과 모양만으로 특정 약을 단정하지 않습니다.",
+      },
+      {
+        title: "접근성과 다국어",
+        text: "큰 글씨 카드, 음성 질문·읽어 주기, 최대 네 장의 사진, 한국어·영어·일본어 UI를 지원하며 일본어 긴 문장도 화면 안에서 줄바꿈되도록 조정했습니다.",
+      },
+    ],
+    sourcesBadge: "Data & Sources",
+    sourcesTitle: "어떤 자료를 쓰는지,",
+    sourcesDescription:
+      "공식 공개 데이터, 외부 확인 경로, 팀이 직접 정리한 자료를 구분합니다. 출처의 자료를 그대로 의료 판단으로 사용하지 않고 코드 안전 규칙과 AI 설명을 함께 적용합니다.",
+    sources: [
+      {
+        name: "국립국어원 우리말샘",
+        text: "사투리·지역어와 생활 언어의 표기와 뜻을 확인하는 참고 경로입니다. 서비스용 사투리 목록은 팀이 선별·검증해 별도 파일로 관리합니다.",
+        url: "https://opendict.korean.go.kr",
+        linkLabel: "우리말샘 열기",
+      },
+      {
+        name: "식품의약품안전처 의약품 낱알식별 정보",
+        text: "공공데이터포털 OpenAPI에서 제품명·각인·제형·모양·색·분할선·공식 이미지 주소를 동기화해 약 사진 후보를 대조합니다.",
+        url: "https://www.data.go.kr/data/15057639/openapi.do",
+        linkLabel: "공식 데이터 보기",
+      },
+      {
+        name: "약학정보원 의약품 식별검색",
+        text: "자료를 복제하거나 데이터셋으로 수집하지 않습니다. 사용자가 후보를 직접 최종 확인할 수 있는 외부 검색 경로로만 안내합니다.",
+        url: "https://health.kr/searchIdentity/search.asp",
+        linkLabel: "식별검색 열기",
+      },
+      {
+        name: "SilverLens 팀 정리 데이터",
+        text: "식품·요리·별칭·건강 항목·안전 규칙은 저장소의 data 폴더에서 원본과 생성물을 나누어 관리합니다. 공식 진단·처방 데이터가 아닌 서비스용 참고 자료입니다.",
+        url: "https://github.com/dohyunfinger/-OGQ-/tree/main/data",
+        linkLabel: "데이터 폴더 보기",
+      },
+    ],
+    sourcePolicy:
+      "의약품 후보는 제품명 또는 각인 근거가 있을 때만 제시합니다. 모든 건강·복약 판단은 의사 또는 약사와 다시 확인해야 합니다.",
     workflowBadge: "Workflow",
     workflowTitle: "질문에서 이해까지,",
     workflowTitleAccent: "한눈에 보이는 쉬운 정보 흐름",
@@ -1763,16 +1839,16 @@ const aboutCopy: Record<Language, AboutCopy> = {
     guideTitle: "처음 오셨어도 괜찮습니다,",
     guideTitleAccent: "네 단계만 보시면 됩니다",
     guideDescription:
-      "가입도, 로그인도 없습니다. 화면에 들어오면 바로 물어보실 수 있고, 아래 네 단계는 더 정확한 답을 받는 방법입니다. 건강 정보는 이 기기에만 저장되고 서버로 올라가지 않습니다.",
+      "시니어 화면은 가입이나 로그인 없이 바로 쓸 수 있습니다. 건강 정보는 먼저 이 기기에 저장되며, 사용자가 연결 코드를 직접 발급해 돌봄이가 등록한 경우에만 연결된 돌봄이 화면으로 동기화됩니다.",
     guideTipsLabel: "이렇게 하시면 편합니다",
     guideSteps: [
       {
         step: "1단계",
-        title: "언어와 성별, 나이를 고릅니다",
-        text: "화면 위쪽 '내 정보 입력하기' 버튼을 누르면 나옵니다. 성별과 나이는 하루 권장 섭취량이 달라지는 부분에만 쓰이고, 넣지 않으셔도 대화는 그대로 됩니다.",
+        title: "기본설정에서 언어·성별·나이를 고릅니다",
+        text: "처음 화면의 큰 '내 정보 입력하기' 버튼이나 왼쪽 '기본설정' 메뉴를 누르면 나옵니다. 넣지 않아도 질문할 수 있고, 입력한 값은 필요한 맞춤 안내에만 참고합니다.",
         tips: [
-          "첫 화면의 '내 정보 말하기'를 누르고 말씀하시면 성별과 나이가 한 번에 채워집니다.",
-          "첫 화면에 있는 성별·나이 버튼을 바로 눌러 고르셔도 됩니다.",
+          "기본설정에서 '내 정보 말하기'를 누르고 말씀하시면 성별과 나이가 한 번에 채워집니다.",
+          "기본설정을 마친 뒤에도 왼쪽 메뉴에서 언제든 다시 바꿀 수 있습니다.",
           "잘못 눌렀으면 같은 버튼을 한 번 더 눌러 취소합니다.",
           "언어를 바꾸면 등록해 둔 건강 정보 표기도 함께 바뀝니다.",
         ],
@@ -1804,7 +1880,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
         text: "세 가지 중 편한 것을 쓰시면 됩니다. 사투리로 말씀하셔도 알아듣습니다. 음성과 사진을 함께 보내면 하나의 질문으로 이해합니다.",
         tips: [
           "음성은 큰 마이크 버튼을 누르고 말한 뒤 한 번 더 누르면 첨부됩니다.",
-          "사진은 성분표·음식·약 봉투 중 무엇을 찍는지 먼저 고르면 찍는 방법을 알려 드립니다.",
+          "사진은 성분표·음식·약 봉투 또는 알약 중 무엇을 찍는지 먼저 고르면 찍는 방법을 알려 드립니다.",
           "휴대폰에서는 지금 찍거나 저장된 사진에서 고를 수 있고, 한 상을 나눠 찍어 네 장까지 함께 보낼 수 있습니다.",
           "사진의 밝기와 흔들림은 미리 봐 드리고, 무엇이 찍혔는지는 답변에서 알려 드립니다.",
         ],
@@ -1847,7 +1923,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
     projectPageCta: "대회 프로젝트 페이지",
     contestNote:
       "전국마이스터고 스타프로젝트 참가작 · 주최 전국마이스터고등학교장협의회 · NAVER OGQ마켓",
-    dataSourceNote: "데이터 출처: 국립국어원 우리말샘 · 공공데이터포털",
+    dataSourceNote: "데이터 출처와 이용 범위는 위 '현재 제공·출처' 구간에 구분해 공개합니다.",
     footMedicalNote:
       "이 서비스는 진단이나 처방을 하지 않습니다. 건강에 관한 판단은 의사·약사와 상의해 주세요.",
     copyright:
@@ -1858,6 +1934,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
     githubCta: "Open GitHub repository",
     teamTitle: "Team",
     navFeatures: "Core features",
+    navUpdates: "Now available & sources",
     navWorkflow: "Workflow",
     navGuide: "How to use",
     languageLabel: "Choose language",
@@ -1897,10 +1974,73 @@ const aboutCopy: Record<Language, AboutCopy> = {
         text: "Long answers are split into large-type cards, and the reading speed can be adjusted by the user.",
       },
       {
-        title: "Health details stay on the device",
-        text: "Allergies and health conditions are stored on this device, not in a server database. No sign-up, no login.",
+        title: "Sharing stays under your control",
+        text: "Senior data is stored on this device first. It is shared only after the senior creates a linking code and a caregiver claims it.",
       },
     ],
+    updatesBadge: "Available now",
+    updatesTitle: "SilverLens now brings,",
+    updatesTitleAccent: "seniors and caregivers into one service",
+    updatesDescription:
+      "The live service now includes a caregiver workspace, ongoing sharing, safer pill-photo checks, and local data controls alongside the senior-friendly screen.",
+    updates: [
+      {
+        title: "No-login senior experience",
+        text: "Seniors can ask questions without an account and keep allergies, conditions, notes, and chats on this device. Saved data can be exported, imported, or erased from the Data page.",
+      },
+      {
+        title: "A caregiver workspace",
+        text: "Caregivers sign in with Google or email, register multiple seniors, search the list, and view each senior's shared health profile and recent chats in one workspace.",
+      },
+      {
+        title: "Link once, keep sharing",
+        text: "Each Korean, English, or Japanese screen issues an easy word code in that language. It works once for 10 minutes; after claiming it, new data and chats from the same device continue to sync.",
+      },
+      {
+        title: "Caregiver AI and chat controls",
+        text: "Caregivers can ask broad, everyday questions in a familiar AI-chat layout using the selected senior's shared history as context. Threads can be created and deleted.",
+      },
+      {
+        title: "Safer pill-photo checks",
+        text: "The service observes product text, front and back imprints, dosage form, shape, colour, and score lines, then compares official MFDS candidates. It never names a pill from colour and shape alone.",
+      },
+      {
+        title: "Accessible and multilingual",
+        text: "Large answer cards, voice input and playback, up to four photos, and Korean, English, and Japanese interfaces are supported, including safer wrapping for long Japanese text.",
+      },
+    ],
+    sourcesBadge: "Data & Sources",
+    sourcesTitle: "Clear about the data,",
+    sourcesDescription:
+      "Official open data, external verification links, and team-curated material are labelled separately. Source records are combined with code-level safety rules and plain-language AI explanations, not treated as a diagnosis.",
+    sources: [
+      {
+        name: "Urimalsam, National Institute of Korean Language",
+        text: "A reference for the spelling and meaning of dialect and everyday language. The service dictionary is separately selected and validated by the team.",
+        url: "https://opendict.korean.go.kr",
+        linkLabel: "Open Urimalsam",
+      },
+      {
+        name: "MFDS Pill Identification Information",
+        text: "The official OpenAPI supplies product names, imprints, dosage forms, shapes, colours, score lines, and official image URLs for candidate matching.",
+        url: "https://www.data.go.kr/data/15057639/openapi.do",
+        linkLabel: "View official dataset",
+      },
+      {
+        name: "Korea Pharmaceutical Information Center identification search",
+        text: "Its content is not copied or collected into our dataset. It is linked only as an external route where users can verify candidates themselves.",
+        url: "https://health.kr/searchIdentity/search.asp",
+        linkLabel: "Open identification search",
+      },
+      {
+        name: "SilverLens team-curated data",
+        text: "Food, dishes, aliases, health terms, and safety rules are maintained as sources and generated files in the repository's data folder. They are service reference material, not clinical standards.",
+        url: "https://github.com/dohyunfinger/-OGQ-/tree/main/data",
+        linkLabel: "Open data folder",
+      },
+    ],
+    sourcePolicy:
+      "A pill candidate is shown only when product text or an imprint supports it. All health and medication decisions must be confirmed with a doctor or pharmacist.",
     workflowBadge: "Workflow",
     workflowTitle: "From question to understanding,",
     workflowTitleAccent: "one clear flow of information",
@@ -1932,16 +2072,16 @@ const aboutCopy: Record<Language, AboutCopy> = {
     guideTitle: "First time here is fine,",
     guideTitleAccent: "four steps are all it takes",
     guideDescription:
-      "No sign-up, no login. You can ask a question the moment the screen opens, and these four steps simply help the answer fit you better. Health details are stored on this device, not in a server database.",
+      "The senior screen opens without sign-up or login. Health details are stored on this device first and sync to an authenticated caregiver only when the senior creates a code and the caregiver claims it.",
     guideTipsLabel: "Handy to know",
     guideSteps: [
       {
         step: "Step 1",
-        title: "Pick language, gender, and age",
-        text: "Press the button at the top of the screen. Gender and age are used only where daily intake guidance differs, and you can keep chatting without entering them.",
+        title: "Choose language, gender, and age in Basic settings",
+        text: "Use the large Enter my details button on the first screen or Basic settings in the left menu. You can still ask without them; entered values are used only where personalised guidance needs them.",
         tips: [
-          "Press Say my details on the first screen and speak, and gender and age fill in at once.",
-          "You can also tap the gender and age buttons right on the first screen.",
+          "Press Say my details in Basic settings and speak to fill gender and age at once.",
+          "You can return to Basic settings from the left menu at any time.",
           "Pressed the wrong one? Press the same button again to clear it.",
           "Changing the language also changes how saved health details are shown.",
         ],
@@ -1972,7 +2112,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
         text: "Use whichever is easiest. Dialect is understood. Send voice and a photo together and both are read as one question.",
         tips: [
           "For voice, press the big microphone, speak, then press once more to attach.",
-          "For photos, choose label, food, or medicine first and we share how to shoot it.",
+          "For photos, choose label, food, medicine packaging, or a pill first and we explain how to shoot it.",
           "On a phone you can take one now or pick a saved photo, and send up to four photos of the same table together.",
           "We check brightness and blur in advance; what is actually in the photo is told to you in the answer.",
         ],
@@ -2016,7 +2156,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
     contestNote:
       "An entry for the Meister High School Star Project · Hosted by the Korea Meister High School Principals' Council and NAVER OGQ Market",
     dataSourceNote:
-      "Data sources: Urimalsam (National Institute of Korean Language) · Public Data Portal",
+      "Sources and permitted uses are listed separately in the 'Now available & sources' section above.",
     footMedicalNote:
       "This service does not diagnose or prescribe. Please consult a doctor or pharmacist for health decisions.",
     copyright:
@@ -2027,6 +2167,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
     githubCta: "GitHub リポジトリを開く",
     teamTitle: "制作メンバー",
     navFeatures: "主要機能",
+    navUpdates: "提供中の機能・出典",
     navWorkflow: "利用の流れ",
     navGuide: "使い方",
     languageLabel: "言語を選ぶ",
@@ -2066,10 +2207,73 @@ const aboutCopy: Record<Language, AboutCopy> = {
         text: "長い回答は大きな文字のカードに分けて見せ、読み上げの速さはご自分で合わせられます。",
       },
       {
-        title: "端末にだけ残る健康情報",
-        text: "アレルギーと健康状態はサーバーDBではなく、この端末に保存します。登録もログインもありません。",
+        title: "共有するかは本人が決める",
+        text: "シニアの情報はまずこの端末に保存します。本人が連携コードを作り、介護者が登録した場合にだけ共有されます。",
       },
     ],
+    updatesBadge: "Available now",
+    updatesTitle: "現在のSilverLensでは、",
+    updatesTitleAccent: "シニアと介護者が一緒に使えます",
+    updatesDescription:
+      "シニア向けの大きな画面に加え、介護者用ワークスペース、継続同期、薬の写真確認、保存データ管理まで実際のサービスに組み込みました。",
+    updates: [
+      {
+        title: "ログイン不要のシニア画面",
+        text: "シニアはアカウントなしで質問でき、アレルギー・健康状態・メモ・会話を端末に保存できます。データ画面から書き出し・読み込み・削除もできます。",
+      },
+      {
+        title: "介護者専用ワークスペース",
+        text: "介護者はGoogleまたはメールでログインし、複数のシニアを登録・検索して、共有された健康情報と最近の会話を一つの画面で確認できます。",
+      },
+      {
+        title: "一度連携して継続共有",
+        text: "韓国語・英語・日本語の各画面で、その言語の読みやすい単語コードを発行します。コードは10分間に一度だけ使い、登録後は同じ端末の新しい情報と会話が継続して同期されます。",
+      },
+      {
+        title: "介護者AIと会話管理",
+        text: "選んだシニアの共有履歴を文脈にしながら、一般的なAIチャットのように幅広く質問できます。新しい会話を作り、不要な会話を削除できます。",
+      },
+      {
+        title: "安全を優先した薬の写真確認",
+        text: "製品名、表裏の刻印、剤形、形、色、割線を順に見て、食薬処の公式候補と照合します。色と形だけで薬品名を断定しません。",
+      },
+      {
+        title: "アクセシビリティと多言語",
+        text: "大きな文字のカード、音声質問と読み上げ、最大4枚の写真、韓国語・英語・日本語UIを備え、日本語の長い文も画面内で折り返します。",
+      },
+    ],
+    sourcesBadge: "Data & Sources",
+    sourcesTitle: "使用する資料を、",
+    sourcesDescription:
+      "公的オープンデータ、外部の確認先、チームが整理した資料を分けて示します。資料だけで医療判断をせず、コードの安全規則とAIのやさしい説明を組み合わせます。",
+    sources: [
+      {
+        name: "国立国語院 ウリマルセム",
+        text: "方言・地域語・生活語の表記と意味を確認する参考先です。サービス用の方言一覧はチームが別に選別・検証しています。",
+        url: "https://opendict.korean.go.kr",
+        linkLabel: "ウリマルセムを開く",
+      },
+      {
+        name: "食品医薬品安全処 医薬品錠剤識別情報",
+        text: "公共データポータルのOpenAPIから、製品名・刻印・剤形・形・色・割線・公式画像URLを同期し、薬の候補照合に使います。",
+        url: "https://www.data.go.kr/data/15057639/openapi.do",
+        linkLabel: "公式データを見る",
+      },
+      {
+        name: "薬学情報院 医薬品識別検索",
+        text: "資料を複製したりデータセットとして収集したりしません。利用者が候補を直接最終確認する外部検索先としてのみ案内します。",
+        url: "https://health.kr/searchIdentity/search.asp",
+        linkLabel: "識別検索を開く",
+      },
+      {
+        name: "SilverLensチーム整理データ",
+        text: "食品・料理・別名・健康項目・安全規則は、リポジトリのdataフォルダーで原本と生成物を分けて管理しています。診断や処方の基準ではなく、サービス用の参考資料です。",
+        url: "https://github.com/dohyunfinger/-OGQ-/tree/main/data",
+        linkLabel: "dataフォルダーを見る",
+      },
+    ],
+    sourcePolicy:
+      "薬の候補は製品名または刻印の根拠がある場合にだけ示します。健康・服薬の判断は必ず医師または薬剤師に確認してください。",
     workflowBadge: "Workflow",
     workflowTitle: "質問から理解まで、",
     workflowTitleAccent: "ひと目でわかる情報の流れ",
@@ -2101,16 +2305,16 @@ const aboutCopy: Record<Language, AboutCopy> = {
     guideTitle: "はじめてでも大丈夫、",
     guideTitleAccent: "四つの手順だけです",
     guideDescription:
-      "登録もログインもありません。画面が開いたらすぐ質問できます。下の四つの手順は、より合った答えを受け取るためのものです。健康情報はサーバーDBではなく、この端末に保存されます。",
+      "シニア画面は登録やログインなしですぐ使えます。健康情報はまず端末に保存され、本人が連携コードを発行して介護者が登録した場合にだけ、認証済みの介護者画面へ同期されます。",
     guideTipsLabel: "覚えておくと便利です",
     guideSteps: [
       {
         step: "手順 1",
-        title: "言語・性別・年齢を選びます",
-        text: "画面上の「私の情報を入力」ボタンから開きます。性別と年齢は一日の推奨摂取量が変わる部分にだけ使い、入力しなくても会話はできます。",
+        title: "基本設定で言語・性別・年齢を選びます",
+        text: "最初の大きな「私の情報を入力」ボタン、または左の「基本設定」メニューから開きます。入力しなくても質問でき、必要な個別案内にだけ使います。",
         tips: [
-          "最初の画面で「自分の情報を話す」を押して話すと、性別と年齢が一度に入ります。",
-          "最初の画面にある性別・年齢のボタンを直接押して選ぶこともできます。",
+          "基本設定で「自分の情報を話す」を押すと、性別と年齢を一度に入力できます。",
+          "設定後も左のメニューからいつでも変更できます。",
           "押し間違えたら同じボタンをもう一度押して取り消せます。",
           "言語を変えると、登録した健康情報の表記も一緒に変わります。",
         ],
@@ -2141,7 +2345,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
         text: "楽な方法を選んでください。方言のままでも通じます。音声と写真を一緒に送ると、ひとつの質問として理解します。",
         tips: [
           "音声は大きなマイクを押して話し、もう一度押すと添付されます。",
-          "写真は成分表・料理・薬の袋のどれを撮るか先に選ぶと、撮り方をお伝えします。",
+          "写真は成分表・料理・薬の袋・錠剤のどれを撮るか先に選ぶと、撮り方をお伝えします。",
           "スマートフォンでは今撮ることも、保存された写真から選ぶこともでき、食卓を分けて4枚まで一緒に送れます。",
           "写真の明るさとぶれは先に確認し、何が写っているかは回答でお伝えします。",
         ],
@@ -2184,7 +2388,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
     projectPageCta: "コンテストのプロジェクトページ",
     contestNote:
       "全国マイスター高スタープロジェクト参加作 · 主催 全国マイスター高等学校長協議会 · NAVER OGQマーケット",
-    dataSourceNote: "データ出典：国立国語院ウリマルセム · 公共データポータル",
+    dataSourceNote: "データ出典と利用範囲は、上の「提供中の機能・出典」で区分して公開しています。",
     footMedicalNote:
       "このサービスは診断や処方を行いません。健康に関する判断は医師・薬剤師にご相談ください。",
     copyright:
@@ -4807,6 +5011,7 @@ export default function SilverLensApp() {
               {/* 지금 보고 있는 구간을 메뉴에 표시한다. */}
               {[
                 { id: "about-features", label: about.navFeatures },
+                { id: "about-updates", label: about.navUpdates },
                 { id: "about-guide", label: about.navGuide },
                 { id: "about-workflow", label: about.navWorkflow },
               ].map((item) => (
@@ -4933,6 +5138,51 @@ export default function SilverLensApp() {
                   </div>
                 </div>
               </aside>
+            </div>
+          </section>
+
+          <section className="about-panel" id="about-updates">
+            <div className="about-wrap">
+              <div className="about-section-header">
+                <p className="about-section-badge">{about.updatesBadge}</p>
+                <h2 className="about-section-title">
+                  {about.updatesTitle}
+                  <span>{about.updatesTitleAccent}</span>
+                </h2>
+                <p className="about-section-description">{about.updatesDescription}</p>
+              </div>
+
+              <div className="about-updates-grid">
+                {about.updates.map((item, index) => (
+                  <article className="about-update-card" key={item.title}>
+                    <span className="about-update-number" aria-hidden="true">
+                      {String(index + 1).padStart(2, "0")}
+                    </span>
+                    <h3>{item.title}</h3>
+                    <p>{item.text}</p>
+                  </article>
+                ))}
+              </div>
+
+              <div className="about-sources">
+                <div className="about-sources-head">
+                  <p className="about-section-badge">{about.sourcesBadge}</p>
+                  <h3>{about.sourcesTitle}</h3>
+                  <p>{about.sourcesDescription}</p>
+                </div>
+                <div className="about-sources-grid">
+                  {about.sources.map((source) => (
+                    <article className="about-source-card" key={source.url}>
+                      <h4>{source.name}</h4>
+                      <p>{source.text}</p>
+                      <a href={source.url} target="_blank" rel="noopener noreferrer">
+                        {source.linkLabel} <span aria-hidden="true">↗</span>
+                      </a>
+                    </article>
+                  ))}
+                </div>
+                <p className="about-source-policy">{about.sourcePolicy}</p>
+              </div>
             </div>
           </section>
 

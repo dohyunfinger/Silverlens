@@ -17,14 +17,23 @@
 
 # testing and build output
 /coverage
+/.nyc_output/
 /.next/
 /out/
 /dist/
+/.vinext/
+/.vite/
+/.turbo/
+/.cache/
+/.eslintcache
 /.wrangler/
 /.firebase/
 /.sites-runtime/
 /outputs/
 /work/
+/test-results/
+/playwright-report/
+/blob-report/
 
 # local uploads and recordings
 /uploads/
@@ -37,6 +46,8 @@
 .env
 .env.*
 !.env.example
+.envrc
+/.direnv/
 .dev.vars
 .dev.vars.*
 !.dev.vars.example
@@ -120,7 +131,25 @@ firebase-debug.log*
 firestore-debug.log*
 ui-debug.log*
 .DS_Store
+Thumbs.db
+Desktop.ini
+*.swp
+*.swo
+*.tmp
+*.bak
+*~
 __pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+*.py[cod]
 .venv/
 .vercel
 next-env.d.ts
+
+# editor and local assistant state
+/.idea/
+/.vscode/
+*.code-workspace
+/.codex/
+/.claude/settings.local.json
