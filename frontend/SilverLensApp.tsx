@@ -2466,6 +2466,107 @@ const aboutCopy: Record<Language, AboutCopy> = {
   },
 };
 
+type AboutPhotoStory = {
+  image: string;
+  source: string;
+  credit: string;
+  alt: string;
+  kicker: string;
+  title: string;
+  text: string;
+};
+
+/** 소개 화면 아래쪽에 실제 생활 장면을 더해 기능 설명이 추상적으로 보이지 않게 한다. */
+const aboutPhotoStories: Record<Language, AboutPhotoStory[]> = {
+  "ko-KR": [
+    {
+      image: "/about/family-cooking.jpg",
+      source: "https://unsplash.com/photos/grandfather-and-grandchildren-prepare-food-in-kitchen-pazs-Hi5mf8",
+      credit: "Land O'Lakes, Inc. · Unsplash",
+      alt: "주방에서 손주들과 음식을 준비하는 할아버지",
+      kicker: "함께 차리는 식탁",
+      title: "건강한 식생활을 일상에서",
+      text: "사진과 음성으로 물은 내용을 가족과 식탁에서 바로 이해하고 활용할 수 있게 돕습니다.",
+    },
+    {
+      image: "/about/senior-smartphone.jpg",
+      source: "https://unsplash.com/photos/elderly-couple-looking-at-a-smartphone-together-on-couch-p4NlV4YvUeI",
+      credit: "Vitaly Gariev · Unsplash",
+      alt: "소파에 앉아 스마트폰을 함께 보는 시니어 부부",
+      kicker: "익숙한 기기",
+      title: "스마트폰 하나로 편안하게",
+      text: "시니어는 가입 없이 묻고, 큰 글씨와 음성으로 답을 확인할 수 있습니다.",
+    },
+    {
+      image: "/about/caregiver-conversation.jpg",
+      source: "https://unsplash.com/photos/three-women-interacting-indoors-with-soft-lighting-iMTRPLdReVo",
+      credit: "Age Cymru · Unsplash",
+      alt: "돌봄이와 마주 보며 대화하는 두 시니어 여성",
+      kicker: "돌봄이와 연결",
+      title: "필요한 사람에게 정보가 이어져요",
+      text: "시니어가 허용한 건강정보와 최근 대화를 돌봄이가 한 화면에서 확인합니다.",
+    },
+  ],
+  "en-US": [
+    {
+      image: "/about/family-cooking.jpg",
+      source: "https://unsplash.com/photos/grandfather-and-grandchildren-prepare-food-in-kitchen-pazs-Hi5mf8",
+      credit: "Land O'Lakes, Inc. · Unsplash",
+      alt: "A grandfather preparing food with his grandchildren in a kitchen",
+      kicker: "A table prepared together",
+      title: "Healthy eating in everyday life",
+      text: "Turn questions asked by photo or voice into guidance that families can use right at the table.",
+    },
+    {
+      image: "/about/senior-smartphone.jpg",
+      source: "https://unsplash.com/photos/elderly-couple-looking-at-a-smartphone-together-on-couch-p4NlV4YvUeI",
+      credit: "Vitaly Gariev · Unsplash",
+      alt: "An older couple looking at a smartphone together on a couch",
+      kicker: "A familiar device",
+      title: "Comfortable with just a smartphone",
+      text: "Older adults can ask without signing up and check answers in large text or by voice.",
+    },
+    {
+      image: "/about/caregiver-conversation.jpg",
+      source: "https://unsplash.com/photos/three-women-interacting-indoors-with-soft-lighting-iMTRPLdReVo",
+      credit: "Age Cymru · Unsplash",
+      alt: "A caregiver talking face to face with two older women",
+      kicker: "Connected care",
+      title: "Information reaches the right person",
+      text: "Caregivers can review health information and recent chats that the senior chose to share.",
+    },
+  ],
+  "ja-JP": [
+    {
+      image: "/about/family-cooking.jpg",
+      source: "https://unsplash.com/photos/grandfather-and-grandchildren-prepare-food-in-kitchen-pazs-Hi5mf8",
+      credit: "Land O'Lakes, Inc. · Unsplash",
+      alt: "台所で孫たちと料理をする祖父",
+      kicker: "一緒につくる食卓",
+      title: "健康な食生活を毎日の中へ",
+      text: "写真や音声で尋ねた内容を、家族と食卓ですぐ理解して活用できるよう支えます。",
+    },
+    {
+      image: "/about/senior-smartphone.jpg",
+      source: "https://unsplash.com/photos/elderly-couple-looking-at-a-smartphone-together-on-couch-p4NlV4YvUeI",
+      credit: "Vitaly Gariev · Unsplash",
+      alt: "ソファでスマートフォンを一緒に見るシニア夫婦",
+      kicker: "使い慣れた端末",
+      title: "スマートフォンひとつで気軽に",
+      text: "シニアは登録なしで質問し、大きな文字や音声で回答を確認できます。",
+    },
+    {
+      image: "/about/caregiver-conversation.jpg",
+      source: "https://unsplash.com/photos/three-women-interacting-indoors-with-soft-lighting-iMTRPLdReVo",
+      credit: "Age Cymru · Unsplash",
+      alt: "介護者と向き合って話す二人のシニア女性",
+      kicker: "介護者との連携",
+      title: "必要な人へ情報がつながります",
+      text: "シニアが共有を許可した健康情報と最近の会話を、介護者がひとつの画面で確認します。",
+    },
+  ],
+};
+
 const aboutFeatureIcons = [
   <svg key="chat" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
     <path d="M4 7c0-1.1.9-2 2-2h12c1.1 0 2 .9 2 2v7c0 1.1-.9 2-2 2H9l-5 3V7Z" />
@@ -2892,8 +2993,12 @@ function Sidebar({
         </button>
       </nav>
       <Link className="caregiver-entry-link" href="/caregiver">
-        <span>{copy.caregiverEntry}</span>
-        <span aria-hidden="true">↗</span>
+        <span className="caregiver-entry-icon" aria-hidden="true">
+          {/* eslint-disable-next-line @next/next/no-img-element */}
+          <img src="/brand/silverlens-mark.png" alt="" />
+        </span>
+        <span className="caregiver-entry-label">{copy.caregiverEntry}</span>
+        <span className="caregiver-entry-arrow" aria-hidden="true">↗</span>
       </Link>
       <div className="sidebar-note">
         <strong>{copy.sidebarTitle}</strong>
@@ -5111,6 +5216,7 @@ export default function SilverLensApp() {
 
   if (screen === "about") {
     const about = aboutCopy[activeLanguage];
+    const photoStories = aboutPhotoStories[activeLanguage];
     const leaveAbout = () => {
       stopNarration();
       setScreen(chatTurns.length > 0 ? "chat" : "setup");
@@ -5235,6 +5341,26 @@ export default function SilverLensApp() {
                 ))}
               </div>
 
+              <div className="about-photo-stories">
+                {photoStories.slice(0, 2).map((story, index) => (
+                  <figure
+                    className={index === 0 ? "about-photo-story is-wide" : "about-photo-story"}
+                    key={story.image}
+                  >
+                    {/* eslint-disable-next-line @next/next/no-img-element */}
+                    <img src={story.image} alt={story.alt} loading="lazy" />
+                    <figcaption>
+                      <span>{story.kicker}</span>
+                      <strong>{story.title}</strong>
+                      <p>{story.text}</p>
+                      <a href={story.source} target="_blank" rel="noreferrer">
+                        {story.credit} <span aria-hidden="true">↗</span>
+                      </a>
+                    </figcaption>
+                  </figure>
+                ))}
+              </div>
+
               {/*
                 실제 서비스 화면 조각을 소개 페이지 안에 액자처럼 넣어 둔다.
                 두 화면의 톤 차이가 "실수"가 아니라 "의도된 대비"로 읽히게 하는 연결 고리다.
@@ -5297,6 +5423,19 @@ export default function SilverLensApp() {
                   </article>
                 ))}
               </div>
+
+              <figure className="about-care-story">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img src={photoStories[2].image} alt={photoStories[2].alt} loading="lazy" />
+                <figcaption>
+                  <span>{photoStories[2].kicker}</span>
+                  <strong>{photoStories[2].title}</strong>
+                  <p>{photoStories[2].text}</p>
+                  <a href={photoStories[2].source} target="_blank" rel="noreferrer">
+                    {photoStories[2].credit} <span aria-hidden="true">↗</span>
+                  </a>
+                </figcaption>
+              </figure>
 
               <div className="about-sources">
                 <div className="about-sources-head">

@@ -36,6 +36,29 @@ test("about hero uses a credited family photo and step five has a real guide cap
   assert.deepEqual([...heroPhoto.subarray(0, 2)], [0xff, 0xd8]);
 });
 
+test("lower about sections use photo stories and colorful navigation icons", async () => {
+  const [source, css, cooking, smartphone, caregiver] = await Promise.all([
+    readText("frontend/SilverLensApp.tsx"),
+    readText("app/globals.css"),
+    readFile(new URL("../public/about/family-cooking.jpg", import.meta.url)),
+    readFile(new URL("../public/about/senior-smartphone.jpg", import.meta.url)),
+    readFile(new URL("../public/about/caregiver-conversation.jpg", import.meta.url)),
+  ]);
+
+  assert.match(source, /const aboutPhotoStories/);
+  assert.match(source, /className="about-photo-stories"/);
+  assert.match(source, /className="about-care-story"/);
+  assert.match(source, /className="caregiver-entry-icon"/);
+  assert.match(css, /\.about-feature-card:nth-child\(6\)/);
+  assert.match(css, /\.about-workflow-card:nth-child\(4\)/);
+  assert.match(css, /\.about-guide-item:nth-child\(5\)/);
+  assert.match(css, /\.nav-item:nth-child\(4\) > span/);
+  assert.match(css, /\.caregiver-entry-link[\s\S]*?min-height: 72px/);
+  for (const photo of [cooking, smartphone, caregiver]) {
+    assert.deepEqual([...photo.subarray(0, 2)], [0xff, 0xd8]);
+  }
+});
+
 test("about page uses a light source panel and wraps Japanese cards", async () => {
   const css = await readText("app/globals.css");
 
