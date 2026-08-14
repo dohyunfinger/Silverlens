@@ -179,12 +179,12 @@ export default function CaregiverLogin({
         <div className="caregiver-login-intro">
           <p className="caregiver-login-eyebrow">SILVERLENS CARE</p>
           <h1>
-            어르신의 일상을
-            <br />더 세심하게 살펴보세요
+            어르신의 오늘을 이해하고,
+            <br />더 나은 돌봄을 준비하세요
           </h1>
           <p className="caregiver-login-description">
-            연결된 어르신의 건강정보와 최근 대화를 확인하고, 필요한 돌봄
-            내용을 한곳에서 관리할 수 있습니다.
+            어르신이 직접 연결한 건강정보와 최근 질문을 함께 확인하고,
+            필요한 도움을 놓치지 않도록 한곳에서 준비할 수 있습니다.
           </p>
 
           <ul
@@ -194,18 +194,27 @@ export default function CaregiverLogin({
             <li>
               <span aria-hidden="true">01</span>
               <div>
-                <strong>건강정보 확인</strong>
-                <p>복용약, 알레르기와 주의사항을 빠르게 확인합니다.</p>
+                <strong>최근 변화 한눈에</strong>
+                <p>최근 질문과 건강정보를 한 화면에서 빠르게 확인합니다.</p>
               </div>
             </li>
             <li>
               <span aria-hidden="true">02</span>
               <div>
-                <strong>안전한 연결</strong>
-                <p>어르신이 알려준 일회용 코드로만 연결할 수 있습니다.</p>
+                <strong>어르신이 선택한 연결</strong>
+                <p>어르신이 만든 일회용 코드로 연결하며 허용된 정보만 공유됩니다.</p>
               </div>
             </li>
           </ul>
+
+          <a
+            className="caregiver-login-photo-credit"
+            href="https://unsplash.com/photos/three-women-interacting-indoors-with-soft-lighting-iMTRPLdReVo"
+            target="_blank"
+            rel="noreferrer"
+          >
+            사진: Age Cymru · Unsplash <span aria-hidden="true">↗</span>
+          </a>
         </div>
 
         <section
@@ -225,8 +234,7 @@ export default function CaregiverLogin({
           </div>
 
           <p className="caregiver-login-card-copy">
-            등록한 계정으로 로그인하면 연결된 어르신을 계속 확인할 수
-            있습니다.
+            로그인하면 연결한 어르신 목록과 최근 대화가 안전하게 이어집니다.
           </p>
 
           <button

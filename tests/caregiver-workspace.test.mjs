@@ -71,6 +71,20 @@ test("caregiver chat accepts temporary photo and voice attachments", async () =>
   assert.match(route, /MAX_INLINE_DATA_LENGTH/);
 });
 
+test("caregiver login uses a credited senior-care photo and respectful copy", async () => {
+  const [login, css] = await Promise.all([
+    readFile(new URL("../frontend/CaregiverLogin.tsx", import.meta.url), "utf8"),
+    readFile(new URL("../app/globals.css", import.meta.url), "utf8"),
+  ]);
+
+  assert.match(login, /어르신의 오늘을 이해하고/);
+  assert.match(login, /어르신이 선택한 연결/);
+  assert.match(login, /caregiver-login-photo-credit/);
+  assert.match(login, /Age Cymru · Unsplash/);
+  assert.match(css, /url\("\/about\/caregiver-conversation\.jpg"\)/);
+  assert.match(css, /\.caregiver-login-benefits[\s\S]*?backdrop-filter: blur\(10px\)/);
+});
+
 test("caregiver thread deletion rejects an unauthenticated request", async () => {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("delete-auth-test", `${process.pid}-${Date.now()}`);
