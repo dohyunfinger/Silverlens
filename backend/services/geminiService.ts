@@ -1,14 +1,13 @@
 import { getGeminiConfig } from "../config/env";
 import {
-  findPillCandidates,
   findRelevantKnowledge,
   getDrugIdentificationReferenceForPrompt,
-  getPillIdentificationCatalogCount,
   type PillObservation,
 } from "../data/loadData";
 import { matchFrequentCondition } from "../data/diseaseI18n";
 import { higherRisk, type RiskFloorHit } from "../data/loadData";
 import { callGeminiGenerateContent } from "./geminiClient";
+import { findRuntimePillCandidates } from "./mfdsPillData";
 import {
   findAllergyTermConflicts,
   getHealthLabel,
@@ -198,16 +197,16 @@ function parseMedicinePhotoObservations(raw: string): MedicinePhotoObservation[]
 }
 
 /**
- * 공식 낱알 데이터가 준비된 배포에서만 약 사진을 한 번 구조화한다.
+ * 약 사진에서 식별에 필요한 관찰값을 한 번 구조화한다.
  * 이 단계는 제품명을 맞히는 모델 호출이 아니라 사진에서 보이는 글자와 외형을
- * 추출하는 단계이며, 실제 후보명은 findPillCandidates가 공식 데이터에서 고른다.
+ * 추출하는 단계이며, 실제 후보명은 D1의 공식 데이터 검색이 고른다.
  */
 async function inspectMedicinePhotos(
   images: InlineImage[],
   apiKey: string,
   models: string[],
 ): Promise<MedicinePhotoObservation[]> {
-  if (images.length === 0 || getPillIdentificationCatalogCount() === 0) return [];
+  if (images.length === 0) return [];
 
   const content: GeminiContent = {
     role: "user",
@@ -553,10 +552,12 @@ export async function generateSeniorFriendlyAnswer(
     apiKey,
     textModelChain,
   );
-  const medicineCandidateGroups = medicinePhotoObservations.map((observation) => ({
-    observation,
-    candidates: findPillCandidates(observation, 5),
-  }));
+  const medicineCandidateGroups = await Promise.all(
+    medicinePhotoObservations.map(async (observation) => ({
+      observation,
+      candidates: await findRuntimePillCandidates(observation, 5),
+    })),
+  );
   const drugIdentificationReference = isDrugIdentificationRequest
     ? getDrugIdentificationReferenceForPrompt()
     : null;

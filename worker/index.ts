@@ -1,14 +1,17 @@
 /** Cloudflare Worker entry point for the vinext-starter template. */
 import { handleImageOptimization, DEFAULT_DEVICE_SIZES, DEFAULT_IMAGE_SIZES } from "vinext/server/image-optimization";
 import handler from "vinext/server/app-router-entry";
+import { syncMfdsPillCatalog, type D1Database } from "../backend/services/mfdsPillData";
 
 // @cloudflare/workers-types 를 설치하지 않아 Fetcher 전역 타입이 없다.
 // 여기서 쓰는 것은 fetch 하나뿐이라 필요한 만큼만 직접 선언한다.
 type AssetFetcher = { fetch(request: Request): Promise<Response> };
 
-// D1 바인딩은 두지 않는다. 건강 정보는 서버가 아니라 브라우저(IndexedDB)에만 저장한다.
+// 연결 데이터와 공식 낱알 카탈로그는 D1에 저장하고, 키는 Secret으로만 받는다.
 interface Env {
   ASSETS: AssetFetcher;
+  DB?: D1Database;
+  MFDS_DATA_API_KEY?: string;
   IMAGES: {
     input(stream: ReadableStream): {
       transform(options: Record<string, unknown>): {
@@ -45,6 +48,29 @@ const worker = {
     }
 
     return handler.fetch(request, env, ctx);
+  },
+
+  async scheduled(
+    _controller: unknown,
+    env: Env,
+    ctx: ExecutionContext,
+  ): Promise<void> {
+    ctx.waitUntil(
+      syncMfdsPillCatalog(env).then((result) => {
+        console.log("[SilverLens] MFDS catalog sync", {
+          status: result.status,
+          reason: result.reason,
+          recordsSynced: result.recordsSynced,
+          totalCount: result.totalCount,
+          nextPage: result.nextPage,
+        });
+      }).catch((error) => {
+        console.error(
+          "[SilverLens] MFDS catalog sync failed",
+          error instanceof Error ? error.message : error,
+        );
+      }),
+    );
   },
 };
 

@@ -18,6 +18,10 @@ const localBindingConfig = {
   placement: { region: "gcp:us-west1" },
   // Firebase와 인증 관련 값을 Dashboard에서 관리하므로 재배포 때 보존한다.
   keep_vars: true,
+  // Process only two MFDS pages per run to bound Worker time and API load.
+  triggers: {
+    crons: ["17 * * * *"],
+  },
   d1_databases: [
     {
       binding: "DB",

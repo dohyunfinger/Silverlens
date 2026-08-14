@@ -46,6 +46,9 @@ export async function validateArtifact(projectRoot = defaultProjectRoot) {
   if (wrangler.keep_vars !== true) {
     throw new Error("Generated Wrangler configuration must preserve dashboard environment variables.");
   }
+  if (!wrangler.triggers?.crons?.includes("17 * * * *")) {
+    throw new Error("Generated Wrangler configuration must include the MFDS hourly sync trigger.");
+  }
   await requireFile(configuredAssets, "client assets directory");
 
   const redirect = JSON.parse(await readFile(deployRedirectPath, "utf8"));
@@ -62,15 +65,20 @@ export async function validateArtifact(projectRoot = defaultProjectRoot) {
     // for artifacts that contain only Node-loadable modules.
     const hasDefaultExport = /export\s*\{[^}]*\bas\s+default\b[^}]*\}/s.test(workerSource);
     const hasFetchHandler = /async\s+fetch\s*\(request,\s*env,\s*ctx\)/.test(workerSource);
-    if (!hasDefaultExport || !hasFetchHandler) {
-      throw new Error("dist/server/index.js must export default.fetch(request, env, ctx).");
+    const hasScheduledHandler = /async\s+scheduled\s*\(/.test(workerSource);
+    if (!hasDefaultExport || !hasFetchHandler || !hasScheduledHandler) {
+      throw new Error("dist/server/index.js must export default fetch and scheduled handlers.");
     }
   } else {
     const workerUrl = pathToFileURL(workerPath);
     workerUrl.searchParams.set("artifact-validation", `${process.pid}-${Date.now()}`);
     const worker = await import(workerUrl.href);
-    if (!worker.default || typeof worker.default.fetch !== "function") {
-      throw new Error("dist/server/index.js must export default.fetch(request, env, ctx).");
+    if (
+      !worker.default ||
+      typeof worker.default.fetch !== "function" ||
+      typeof worker.default.scheduled !== "function"
+    ) {
+      throw new Error("dist/server/index.js must export default fetch and scheduled handlers.");
     }
   }
 

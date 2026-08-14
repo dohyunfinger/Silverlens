@@ -170,7 +170,7 @@ export function loadKnowledgeData(): KnowledgeData {
   return memoryCache;
 }
 
-function normalizedDrugText(value: string | undefined) {
+export function normalizedDrugText(value: string | undefined) {
   return (value ?? "")
     .normalize("NFKC")
     .toLocaleUpperCase("ko-KR")
@@ -203,7 +203,18 @@ export function findPillCandidates(
   if (!observation) return [];
 
   const catalog = loadKnowledgeData().pillIdentification.records;
-  return catalog
+  return rankPillCandidates(observation, catalog, limit);
+}
+
+/** D1 또는 로컬 JSON에서 가져온 공식 품목을 같은 안전 기준으로 정렬한다. */
+export function rankPillCandidates(
+  observation: PillObservation | null | undefined,
+  records: readonly PillIdentificationRecord[],
+  limit = 5,
+): PillCandidate[] {
+  if (!observation) return [];
+
+  return records
     .map((record) => {
       const matchedBy: string[] = [];
       let identityScore = 0;

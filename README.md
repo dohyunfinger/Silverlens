@@ -55,6 +55,7 @@ SilverLens는 “어르신이 기술을 배우는 것”이 아니라 “기술�
 | 돌봄이 등록 후 | 인증된 돌봄이 계정만 연결된 시니어의 공유 정보와 이후 동기화 내용을 조회 |
 | 사진 첨부 | 보내기 전 사진은 브라우저에 임시 보관하며 만료 후 삭제; 질문 시 Gemini API로 전송 |
 | 돌봄이 인증 | Firebase ID 토큰을 서버에서 검증하고 서명된 HttpOnly 세션 쿠키 사용 |
+| 공식 낱알 카탈로그 | 식약처 API 키는 Cloudflare Secret에만 두고, 예약 작업이 공식 품목을 D1에 나누어 동기화 |
 
 시니어에게 계정을 요구하지 않는 대신, 브라우저 저장소를 지우거나 기기를 바꾸면 로컬 정보가 사라질 수 있습니다. 데이터 화면의 저장 파일 내보내기를 백업 수단으로 사용할 수 있습니다.
 
@@ -76,7 +77,7 @@ SilverLens는 “어르신이 기술을 배우는 것”이 아니라 “기술�
 | 질병명 다국어 대응 | 460개 | 한국어·영어·일본어·일본어 로마자 표기 |
 | 시니어 다빈도 상병명 | 405개 | 직접 입력한 병명을 읽기 쉬운 표기로 정규화할 때 참고 |
 | 약 사진 관찰 기준 | 10개 | 식별 전 확인할 관찰 항목과 안전 결정 규칙 |
-| 식약처 낱알 품목 | 동기화 시 결정 | `MFDS_DATA_API_KEY`로 동기화한 공식 후보 레코드 |
+| 식약처 낱알 품목 | 배포 D1 동기화 시 결정 | `MFDS_DATA_API_KEY`를 서버 Secret으로 읽어 동기화한 공식 후보 레코드 |
 
 `food_aliases.json`과 일부 서비스용 지식은 현재 `data/sources` 변환 대상 밖에서 별도 관리합니다. 모든 JSON이 공식 데이터라고 오해하지 않도록 아래처럼 출처와 성격을 구분합니다.
 
@@ -178,11 +179,12 @@ SilverLens는 “어르신이 기술을 배우는 것”이 아니라 “기술�
 │   │   ├── transcriptionService.ts        # 음성 인식과 건강정보 추출
 │   │   ├── ttsService.ts                  # 답변 음성 생성·캐시
 │   │   ├── careData.ts                    # D1 연결·동기화·대화 저장
+│   │   ├── mfdsPillData.ts                # 식약처 API→D1 예약 동기화·낱알 후보 검색
 │   │   ├── caregiverAuth.ts               # Firebase 토큰 검증·세션 쿠키
 │   │   └── caregiverRequest.ts            # 인증·동일 출처 요청 검사
 │   └── local_dialect/                     # 선택형 FastAPI 방언 변환 서버
 ├── build/sites-vite-plugin.ts             # Sites 배포 산출물·마이그레이션 패키징
-├── db/schema.ts                           # D1 테이블 정의
+├── db/schema.ts                           # 연결 데이터·식약처 카탈로그 D1 테이블 정의
 ├── data/
 │   ├── sources/                           # 사람이 편집하는 변환 원본 6종
 │   ├── health_terms.json                  # 알레르기·질병 3개 언어 항목
@@ -250,7 +252,7 @@ npm run dev
 | `FIREBASE_API_KEY`, `FIREBASE_AUTH_DOMAIN`, `FIREBASE_PROJECT_ID`, `FIREBASE_APP_ID` | 돌봄이 로그인 |
 | `AUTH_SESSION_SECRET` | 32자 이상의 무작위 서버 세션 서명값 |
 | `NEXT_PUBLIC_DIALECT_API_URL` | 선택형 로컬 방언 변환 서버 |
-| `MFDS_DATA_API_KEY` | 식약처 낱알 데이터 동기화 때만 사용; 배포 런타임에는 불필요 |
+| `MFDS_DATA_API_KEY` | 식약처 낱알 데이터 예약 동기화용 서버 Secret; 브라우저에는 전달하지 않음 |
 
 실제 키는 `.env.local`, `.dev.vars`, Cloudflare Secret에만 두고 Git에 커밋하지 않습니다. Firebase 웹 API 키는 클라이언트 식별값이지만 승인 도메인·Firebase 규칙·서버 토큰 검증을 함께 사용해야 합니다.
 
@@ -261,7 +263,11 @@ npm run prepare:data
 npm run sync:drug-data
 ```
 
-`sync:drug-data`는 공공데이터포털에서 발급받은 `MFDS_DATA_API_KEY`를 로컬 환경에서 읽어 `data/mfds_pill_identification.json`을 만듭니다. 키 자체는 결과 파일에 저장하지 않습니다.
+배포된 Worker는 매시 17분에 예약 작업을 실행합니다. 한 번에 두 페이지씩 받아 D1의 `mfds_pills`를 갱신하고, 중간 진행 위치를 저장하므로 전체 카탈로그가 여러 번의 실행에 나뉘어 안전하게 채워집니다. 앱은 D1을 먼저 검색하고 동기화 전이나 장애 시에는 로컬 JSON을 보조 경로로 사용합니다.
+
+Cloudflare Workers의 **Settings → Variables and Secrets**에서 `MFDS_DATA_API_KEY`를 Secret으로 저장해야 예약 동기화가 시작됩니다. 키 값은 코드·로그·응답에 포함되지 않습니다. `/api/drugs/status`에서는 키의 실제 값 없이 설정 여부, D1 레코드 수, 최근 동기화 상태만 확인할 수 있습니다.
+
+`sync:drug-data`는 로컬 개발용 보조 명령입니다. 공공데이터포털에서 발급받은 키를 로컬 환경에서 읽어 `data/mfds_pill_identification.json`을 만들며, 키 자체는 결과 파일에 저장하지 않습니다.
 
 ## 확인과 배포
 
