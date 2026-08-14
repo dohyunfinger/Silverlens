@@ -81,7 +81,11 @@ test("caregiver login uses a credited senior-care photo and respectful copy", as
   assert.match(login, /어르신이 선택한 연결/);
   assert.match(login, /caregiver-login-photo-credit/);
   assert.match(login, /Age Cymru · Unsplash/);
-  assert.match(css, /url\("\/about\/caregiver-conversation\.jpg"\)/);
+  assert.match(
+    css,
+    /\.caregiver-login-root\s*\{[\s\S]*?url\("\/about\/caregiver-conversation\.jpg"\)/,
+  );
+  assert.match(css, /\.caregiver-login-intro\s*\{[\s\S]*?background: none/);
   assert.match(css, /\.caregiver-login-benefits[\s\S]*?backdrop-filter: blur\(10px\)/);
 });
 

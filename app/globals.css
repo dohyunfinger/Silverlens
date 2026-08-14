@@ -7795,9 +7795,9 @@ html[lang="ja-JP"] .about-workflow-card p {
   grid-template-rows: auto 1fr auto;
   color: var(--care-login-ink);
   background:
-    radial-gradient(circle at 14% 17%, rgba(209, 231, 221, .78), transparent 29rem),
-    radial-gradient(circle at 88% 82%, rgba(239, 222, 188, .48), transparent 28rem),
-    linear-gradient(135deg, #f5f8f4 0%, #fbfaf6 58%, #f7f4eb 100%);
+    linear-gradient(90deg, rgba(8, 33, 27, .82) 0%, rgba(8, 33, 27, .67) 48%, rgba(8, 33, 27, .46) 100%),
+    linear-gradient(180deg, rgba(4, 20, 16, .2), rgba(4, 20, 16, .46)),
+    url("/about/caregiver-conversation.jpg") center 44% / cover no-repeat;
   animation: screenEnter .28s ease backwards;
 }
 
@@ -7809,6 +7809,30 @@ html[lang="ja-JP"] .about-workflow-card p {
   justify-content: space-between;
   gap: 24px;
   margin: 0 auto;
+}
+
+.caregiver-login-header .caregiver-brand,
+.caregiver-login-header .caregiver-back-link {
+  color: #fff;
+  text-shadow: 0 2px 12px rgba(0, 0, 0, .34);
+}
+
+.caregiver-login-header .caregiver-back-link {
+  border: 1px solid rgba(255, 255, 255, .2);
+  background: rgba(8, 33, 27, .34);
+  backdrop-filter: blur(8px);
+}
+
+.caregiver-login-header .caregiver-mode-badge {
+  border-color: rgba(255, 255, 255, .38);
+  color: #fff;
+  background: rgba(255, 255, 255, .14);
+  backdrop-filter: blur(8px);
+}
+
+.caregiver-login-header .caregiver-back-link:hover {
+  color: #fff;
+  background: rgba(8, 33, 27, .52);
 }
 
 .caregiver-login-layout {
@@ -7824,20 +7848,12 @@ html[lang="ja-JP"] .about-workflow-card p {
 .caregiver-login-intro {
   position: relative;
   display: flex;
-  min-height: 650px;
+  min-height: 620px;
   flex-direction: column;
-  justify-content: flex-end;
-  overflow: hidden;
-  padding: clamp(34px, 4vw, 56px);
-  border: 1px solid rgba(255, 255, 255, .72);
-  border-radius: 34px;
+  justify-content: center;
+  padding: clamp(28px, 3.5vw, 48px);
   color: #fff;
-  background:
-    linear-gradient(180deg, rgba(11, 39, 32, .05) 10%, rgba(11, 39, 32, .28) 42%, rgba(11, 39, 32, .96) 100%),
-    linear-gradient(90deg, rgba(24, 63, 54, .18), transparent 58%),
-    url("/about/caregiver-conversation.jpg") 52% center / cover no-repeat;
-  box-shadow: 0 28px 72px rgba(36, 54, 47, .16);
-  isolation: isolate;
+  background: none;
 }
 
 .caregiver-login-eyebrow {
@@ -7939,9 +7955,9 @@ html[lang="ja-JP"] .about-workflow-card p {
   padding: 34px;
   border: 1px solid rgba(210, 216, 212, .9);
   border-radius: 28px;
-  background: rgba(255, 255, 255, .94);
-  box-shadow: 0 24px 60px rgba(40, 52, 47, .1), 0 2px 6px rgba(40, 52, 47, .04);
-  backdrop-filter: blur(16px);
+  background: rgba(255, 255, 255, .96);
+  box-shadow: 0 28px 72px rgba(5, 24, 19, .3), 0 2px 8px rgba(5, 24, 19, .12);
+  backdrop-filter: blur(18px);
 }
 
 .caregiver-login-card-heading {
@@ -8219,12 +8235,13 @@ html[lang="ja-JP"] .about-workflow-card p {
   justify-content: space-between;
   gap: 24px;
   margin: 0 auto;
-  color: #7b8480;
+  color: rgba(255, 255, 255, .76);
   font-size: 12px;
+  text-shadow: 0 1px 8px rgba(0, 0, 0, .35);
 }
 
 .caregiver-login-footer span {
-  color: #40504a;
+  color: #fff;
   font-weight: 800;
 }
 
@@ -8233,6 +8250,10 @@ html[lang="ja-JP"] .about-workflow-card p {
 }
 
 @media (max-width: 880px) {
+  .caregiver-login-root {
+    background-position: 43% center;
+  }
+
   .caregiver-login-layout {
     width: min(100% - 32px, 580px);
     grid-template-columns: 1fr;
@@ -8242,7 +8263,7 @@ html[lang="ja-JP"] .about-workflow-card p {
 
   .caregiver-login-intro {
     max-width: none;
-    min-height: 500px;
+    min-height: 460px;
     padding: 36px;
     text-align: center;
   }
@@ -8274,6 +8295,7 @@ html[lang="ja-JP"] .about-workflow-card p {
 @media (max-width: 600px) {
   .caregiver-login-root {
     overflow-y: auto;
+    background-position: 47% center;
   }
 
   .caregiver-login-header {
@@ -8329,10 +8351,8 @@ html[lang="ja-JP"] .about-workflow-card p {
   }
 
   .caregiver-login-intro {
-    min-height: 430px;
+    min-height: 390px;
     padding: 28px 22px;
-    border-radius: 24px;
-    background-position: 58% center;
   }
 
   .caregiver-login-benefits {
