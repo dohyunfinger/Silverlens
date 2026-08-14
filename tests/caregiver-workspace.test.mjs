@@ -38,6 +38,19 @@ test("caregiver prompt receives linked senior history and thread deletion checks
   assert.match(route, /deleteCaregiverThread\(caregiver\.uid, threadId\)/);
 });
 
+test("selected senior health information expands directly below that profile", async () => {
+  const source = await readFile(
+    new URL("../frontend/CaregiverApp.tsx", import.meta.url),
+    "utf8",
+  );
+
+  assert.match(source, /seniorDetail\?\.id === selectedSeniorId/);
+  assert.match(source, /aria-expanded=\{expanded\}/);
+  assert.match(source, /aria-controls=\{`care-profile-\$\{senior\.id\}`\}/);
+  assert.match(source, /expanded && profile &&/);
+  assert.match(source, /seniorDetail\?\.id === senior\.id && seniorDetail\.chatTurns\.length/);
+});
+
 test("caregiver thread deletion rejects an unauthenticated request", async () => {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("delete-auth-test", `${process.pid}-${Date.now()}`);

@@ -418,7 +418,11 @@ export default function CaregiverApp({ caregiver, onLogout }: CaregiverAppProps)
     }
   };
 
-  const profile = seniorDetail?.profile ?? selectedSenior?.profile;
+  // 선택 직후 이전 시니어의 상세 응답이 잠깐 남아 있어도 새 프로필 아래에 섞이지 않게 한다.
+  const profile =
+    seniorDetail?.id === selectedSeniorId
+      ? seniorDetail.profile
+      : selectedSenior?.profile;
 
   return (
     <main className="care-workspace">
@@ -612,42 +616,60 @@ export default function CaregiverApp({ caregiver, onLogout }: CaregiverAppProps)
             {visibleSeniors.length === 0 ? (
               <p className="care-empty-list">연결된 시니어가 없습니다.<br />연결 코드를 받아 등록해 주세요.</p>
             ) : (
-              visibleSeniors.map((senior) => (
-                <div key={senior.id} className={selectedSeniorId === senior.id ? "active" : ""}>
-                  <button type="button" onClick={() => chooseSenior(senior.id)}>
-                    <span className="care-avatar">{senior.alias.slice(0, 1)}</span>
-                    <span><strong>{senior.alias}</strong><small>대화 {senior.recentChatCount}개 · {relativeTime(senior.updatedAt)} 동기화</small></span>
-                  </button>
-                  <button type="button" className="care-unlink" onClick={() => void unlinkSenior(senior)} aria-label={`${senior.alias} 연결 해제`}>×</button>
-                </div>
-              ))
+              visibleSeniors.map((senior) => {
+                const expanded = selectedSeniorId === senior.id;
+                return (
+                  <div key={senior.id} className={expanded ? "active" : ""}>
+                    <button
+                      type="button"
+                      onClick={() => chooseSenior(senior.id)}
+                      aria-expanded={expanded}
+                      aria-controls={`care-profile-${senior.id}`}
+                    >
+                      <span className="care-avatar">{senior.alias.slice(0, 1)}</span>
+                      <span>
+                        <strong>{senior.alias}</strong>
+                        <small>대화 {senior.recentChatCount}개 · {relativeTime(senior.updatedAt)} 동기화</small>
+                      </span>
+                    </button>
+                    <button
+                      type="button"
+                      className="care-unlink"
+                      onClick={() => void unlinkSenior(senior)}
+                      aria-label={`${senior.alias} 연결 해제`}
+                    >
+                      ×
+                    </button>
+
+                    {expanded && profile && (
+                      <section className="care-profile-card" id={`care-profile-${senior.id}`}>
+                        <header><span>건강정보</span><strong>{senior.alias}</strong></header>
+                        <dl>
+                          <div><dt>기본</dt><dd>{profile.ageConfirmed ? `${profile.ageBand}대` : "나이 미입력"}{profile.gender ? ` · ${profile.gender === "male" ? "남성" : "여성"}` : ""}</dd></div>
+                          <div><dt>알레르기</dt><dd>{profile.allergyIds.length ? profile.allergyIds.map((id) => getHealthLabel(id, "ko-KR")).join(", ") : "등록 없음"}</dd></div>
+                          <div><dt>질병·건강</dt><dd>{profile.conditionIds.length ? profile.conditionIds.map((id) => getHealthLabel(id, "ko-KR")).join(", ") : "등록 없음"}</dd></div>
+                        </dl>
+                        {profile.healthNotes.length > 0 && (
+                          <div className="care-profile-notes">
+                            <strong>상세 메모</strong>
+                            {profile.healthNotes.map((note, index) => <p key={note.id || index}>{note.text}</p>)}
+                          </div>
+                        )}
+                        {seniorDetail?.id === senior.id && seniorDetail.chatTurns.length > 0 ? (
+                          <details className="care-senior-recent">
+                            <summary>시니어의 최근 질문 {seniorDetail.chatTurns.length}개</summary>
+                            {seniorDetail.chatTurns.slice(0, 8).map((turn) => (
+                              <div key={turn.id}><strong>{turn.question || "음성·사진 질문"}</strong><p>{turn.answer}</p></div>
+                            ))}
+                          </details>
+                        ) : null}
+                      </section>
+                    )}
+                  </div>
+                );
+              })
             )}
           </div>
-
-          {selectedSenior && profile && (
-            <section className="care-profile-card">
-              <header><span>건강정보</span><strong>{selectedSenior.alias}</strong></header>
-              <dl>
-                <div><dt>기본</dt><dd>{profile.ageConfirmed ? `${profile.ageBand}대` : "나이 미입력"}{profile.gender ? ` · ${profile.gender === "male" ? "남성" : "여성"}` : ""}</dd></div>
-                <div><dt>알레르기</dt><dd>{profile.allergyIds.length ? profile.allergyIds.map((id) => getHealthLabel(id, "ko-KR")).join(", ") : "등록 없음"}</dd></div>
-                <div><dt>질병·건강</dt><dd>{profile.conditionIds.length ? profile.conditionIds.map((id) => getHealthLabel(id, "ko-KR")).join(", ") : "등록 없음"}</dd></div>
-              </dl>
-              {profile.healthNotes.length > 0 && (
-                <div className="care-profile-notes">
-                  <strong>상세 메모</strong>
-                  {profile.healthNotes.map((note, index) => <p key={note.id || index}>{note.text}</p>)}
-                </div>
-              )}
-              {seniorDetail?.chatTurns.length ? (
-                <details className="care-senior-recent">
-                  <summary>시니어의 최근 질문 {seniorDetail.chatTurns.length}개</summary>
-                  {seniorDetail.chatTurns.slice(0, 8).map((turn) => (
-                    <div key={turn.id}><strong>{turn.question || "음성·사진 질문"}</strong><p>{turn.answer}</p></div>
-                  ))}
-                </details>
-              ) : null}
-            </section>
-          )}
         </aside>
       </div>
 

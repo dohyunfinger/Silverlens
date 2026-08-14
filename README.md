@@ -130,37 +130,96 @@ SilverLens는 “어르신이 기술을 배우는 것”이 아니라 “기술�
 
 ```text
 .
+├── .openai/
+│   ├── hosting.json                       # Sites 프로젝트와 D1 논리 바인딩
+│   └── drizzle/0001_caregiver_links.sql   # 돌봄이 연결·대화 D1 마이그레이션
 ├── app/
 │   ├── api/
-│   │   ├── auth/                  # Firebase ID 토큰 → 서버 세션
-│   │   ├── caregiver/             # 돌봄이 목록·연결·대화·삭제 API
-│   │   ├── senior/                # 연결 코드 발급과 지속 동기화
-│   │   ├── chat/                  # 시니어 AI 답변
-│   │   ├── transcribe/            # 음성 인식·건강정보 분류
-│   │   └── tts/                   # 답변 음성 생성
-│   ├── caregiver/                 # 돌봄이 로그인·회원가입·작업공간 경로
-│   └── globals.css
+│   │   ├── auth/                          # Firebase 설정 조회와 서버 세션 발급·해제
+│   │   ├── caregiver/
+│   │   │   ├── overview/                  # 연결 시니어와 돌봄이 대화 목록
+│   │   │   ├── link/                      # 일회용 코드 등록
+│   │   │   ├── seniors/[seniorId]/        # 시니어 상세 조회·연결 해제
+│   │   │   ├── threads/[threadId]/        # 돌봄이 대화 조회·삭제
+│   │   │   └── chat/                      # 돌봄이 AI 대화
+│   │   ├── senior/link/                   # 언어별 연결 코드 발급
+│   │   ├── senior/sync/                   # 연결 이후 건강정보·대화 동기화
+│   │   ├── chat/                          # 시니어 AI 답변
+│   │   ├── transcribe/                    # 음성 인식·건강정보 분류
+│   │   ├── tts/                           # 답변 음성 생성
+│   │   └── log/                           # 개발용 지식 데이터 상태 API
+│   ├── caregiver/
+│   │   ├── page.tsx                       # 돌봄이 로그인·작업공간 진입
+│   │   └── signup/page.tsx                # 이메일 회원가입
+│   ├── log/page.tsx                       # 개발 전용 데이터 점검 화면
+│   ├── globals.css                        # 시니어·소개·돌봄이 반응형 스타일
+│   ├── layout.tsx                         # 메타데이터와 공통 레이아웃
+│   └── page.tsx                           # 시니어 서비스 진입
 ├── frontend/
-│   ├── SilverLensApp.tsx          # 시니어 설정·대화·데이터·서비스 소개
-│   ├── SeniorCareLinkPanel.tsx    # 언어별 일회용 연결 코드 UI
-│   ├── CaregiverApp.tsx           # 돌봄이 GPT형 작업공간
-│   └── localStore.ts              # IndexedDB 저장
+│   ├── SilverLensApp.tsx                  # 시니어 설정·대화·데이터·서비스 소개
+│   ├── SeniorCareLinkPanel.tsx            # 언어별 일회용 연결 코드와 지속 공유
+│   ├── CaregiverPortal.tsx                # 인증 상태에 따른 로그인·작업공간 전환
+│   ├── CaregiverLogin.tsx                 # Google·이메일 로그인 UI
+│   ├── CaregiverSignup.tsx                # 이메일 회원가입 UI
+│   ├── CaregiverApp.tsx                   # 돌봄이 GPT형 대화·다중 시니어 관리
+│   ├── firebaseAuth.ts                    # Firebase 클라이언트 초기화·인증 호출
+│   ├── localStore.ts                      # IndexedDB 저장·백업·복구
+│   ├── photoCapture.ts                    # 사진 축소와 밝기·흔들림 검사
+│   └── DataLogView.tsx                    # 개발용 데이터 통계 화면
 ├── backend/
-│   ├── data/                      # JSON 검색·건강 ID·질병 다국어 처리
-│   └── services/                  # Gemini, 인증, 연결·동기화·대화 데이터
-├── db/schema.ts                   # D1 테이블 정의
+│   ├── config/env.ts                      # 환경변수·Gemini 모델 체인
+│   ├── data/
+│   │   ├── loadData.ts                    # 질문 관련 식품·규칙·의약품 후보 검색
+│   │   ├── healthTerms.ts                 # 건강정보 ID와 다국어 표시명
+│   │   └── diseaseI18n.ts                 # 질병명 다국어 정규화
+│   ├── services/
+│   │   ├── geminiClient.ts                # Gemini 호출·폴백·429 재시도
+│   │   ├── geminiService.ts               # 시니어·돌봄이 답변과 안전 하한선
+│   │   ├── transcriptionService.ts        # 음성 인식과 건강정보 추출
+│   │   ├── ttsService.ts                  # 답변 음성 생성·캐시
+│   │   ├── careData.ts                    # D1 연결·동기화·대화 저장
+│   │   ├── caregiverAuth.ts               # Firebase 토큰 검증·세션 쿠키
+│   │   └── caregiverRequest.ts            # 인증·동일 출처 요청 검사
+│   └── local_dialect/                     # 선택형 FastAPI 방언 변환 서버
+├── build/sites-vite-plugin.ts             # Sites 배포 산출물·마이그레이션 패키징
+├── db/schema.ts                           # D1 테이블 정의
 ├── data/
-│   ├── sources/                   # 사람이 관리하는 변환 원본
-│   ├── drug_identification_reference.json
-│   └── mfds_pill_identification.json
+│   ├── sources/                           # 사람이 편집하는 변환 원본 6종
+│   ├── health_terms.json                  # 알레르기·질병 3개 언어 항목
+│   ├── health_groups.json                 # 건강정보 선택 UI 그룹
+│   ├── safety_rules.json                  # 질병·식품 위험도 규칙
+│   ├── senior_food_knowledge.json         # 시니어 식품 지식
+│   ├── recipes.json                       # 요리·재료 사전
+│   ├── korean_dish_names.json             # 한식 대표명·변형
+│   ├── global_dish_names.json             # 외국 음식 쉬운 풀이
+│   ├── food_aliases.json                  # 외래어·별칭 정규화
+│   ├── dialect_dictionary.json            # 검증된 사투리 사전
+│   ├── disease_i18n.json                  # 질병명 다국어 대응
+│   ├── senior_frequent_conditions.json    # 직접 입력 상병명 정규화
+│   ├── drug_identification_reference.json # 약 사진 관찰·안전 기준
+│   └── mfds_pill_identification.json      # 식약처 API 동기화 품목
+├── docs/
+│   ├── brand/                             # 로고 원본과 미리보기
+│   └── reference-images/                  # 연령·성별·언어·가이드 참고 이미지
+├── public/
+│   ├── guide/                             # 서비스 소개 사용법 이미지
+│   ├── favicon.svg
+│   └── og.png                             # 링크 공유 미리보기
 ├── scripts/
-│   ├── build-verified.mjs         # Windows/Linux 공용 빌드 검증
+│   ├── build-verified.mjs                 # Windows/Linux 공용 제한시간 빌드
+│   ├── validate-artifact.mjs              # Worker·Sites 산출물 검증
 │   ├── prepare_knowledge_data.py
 │   ├── sync-mfds-pill-data.mjs
-│   └── validate-artifact.mjs
-├── tests/
-├── worker/index.ts
-└── .openai/hosting.json
+│   └── sites-env.sh                       # Sites 환경변수 보조 스크립트
+├── tests/                                 # 안전·연결·렌더링·데이터 회귀 테스트
+├── types/cloudflare-workers.d.ts          # Cloudflare 런타임 타입
+├── worker/index.ts                        # Worker 진입점·정적 자산·이미지 최적화
+├── vite.config.ts                         # Vinext·Cloudflare·Sites 빌드 설정
+├── next.config.ts
+├── eslint.config.mjs
+├── tsconfig.json
+├── package.json
+└── .env.example                           # 키 이름만 있는 환경변수 예시
 ```
 
 ## 로컬 실행

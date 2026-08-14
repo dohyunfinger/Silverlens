@@ -1588,11 +1588,17 @@ const uiCopy = {
 
 type AboutFeature = { title: string; text: string };
 type AboutStep = { step: string; title: string; text: string };
-type AboutSource = { name: string; text: string; url: string; linkLabel: string };
+type AboutSource = {
+  icon: string;
+  name: string;
+  text: string;
+  url: string;
+  linkLabel: string;
+};
 /**
  * 소개 페이지의 "이렇게 쓰세요" 단계.
  *
- * public/guide/step-1 ~ step-4 에 실제 화면 사진을 넣어 두면 그 사진을 쓴다.
+ * public/guide/step-1 ~ step-5 에 실제 화면 사진을 넣어 두면 그 사진을 쓴다.
  * 사진이 없으면 아래 mock* 값으로 CSS 목업을 그려서, 사진 없이도 설명이 끊기지 않는다.
  */
 type AboutGuideStep = {
@@ -1726,7 +1732,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
       },
       {
         title: "낯선 식재료 풀이",
-        text: "외래어 별칭 101개와 외국 음식 사전 501종으로 로즈마리·아보카도 같은 낯선 이름을 쉬운 우리말로 풀어 드립니다.",
+        text: "식품 외래어·별칭 500개와 외국 음식 사전 501종으로 로즈마리·아보카도 같은 낯선 이름을 쉬운 우리말로 풀어 드립니다.",
       },
       {
         title: "코드가 지키는 안전선",
@@ -1782,24 +1788,28 @@ const aboutCopy: Record<Language, AboutCopy> = {
       "공식 공개 데이터, 외부 확인 경로, 팀이 직접 정리한 자료를 구분합니다. 출처의 자료를 그대로 의료 판단으로 사용하지 않고 코드 안전 규칙과 AI 설명을 함께 적용합니다.",
     sources: [
       {
+        icon: "말",
         name: "국립국어원 우리말샘",
         text: "사투리·지역어와 생활 언어의 표기와 뜻을 확인하는 참고 경로입니다. 서비스용 사투리 목록은 팀이 선별·검증해 별도 파일로 관리합니다.",
         url: "https://opendict.korean.go.kr",
         linkLabel: "우리말샘 열기",
       },
       {
+        icon: "식약처",
         name: "식품의약품안전처 의약품 낱알식별 정보",
         text: "공공데이터포털 OpenAPI에서 제품명·각인·제형·모양·색·분할선·공식 이미지 주소를 동기화해 약 사진 후보를 대조합니다.",
         url: "https://www.data.go.kr/data/15057639/openapi.do",
         linkLabel: "공식 데이터 보기",
       },
       {
+        icon: "약",
         name: "약학정보원 의약품 식별검색",
         text: "자료를 복제하거나 데이터셋으로 수집하지 않습니다. 사용자가 후보를 직접 최종 확인할 수 있는 외부 검색 경로로만 안내합니다.",
         url: "https://health.kr/searchIdentity/search.asp",
         linkLabel: "식별검색 열기",
       },
       {
+        icon: "SL",
         name: "SilverLens 팀 정리 데이터",
         text: "식품·요리·별칭·건강 항목·안전 규칙은 저장소의 data 폴더에서 원본과 생성물을 나누어 관리합니다. 공식 진단·처방 데이터가 아닌 서비스용 참고 자료입니다.",
         url: "https://github.com/dohyunfinger/-OGQ-/tree/main/data",
@@ -1837,9 +1847,9 @@ const aboutCopy: Record<Language, AboutCopy> = {
     ],
     guideBadge: "How to use",
     guideTitle: "처음 오셨어도 괜찮습니다,",
-    guideTitleAccent: "네 단계만 보시면 됩니다",
+    guideTitleAccent: "다섯 단계만 보시면 됩니다",
     guideDescription:
-      "시니어 화면은 가입이나 로그인 없이 바로 쓸 수 있습니다. 건강 정보는 먼저 이 기기에 저장되며, 사용자가 연결 코드를 직접 발급해 돌봄이가 등록한 경우에만 연결된 돌봄이 화면으로 동기화됩니다.",
+      "시니어 화면은 가입이나 로그인 없이 바로 쓸 수 있습니다. 아래 다섯 단계는 질문하고, 답변을 보고, 필요할 때 돌봄이와 안전하게 연결하는 방법입니다.",
     guideTipsLabel: "이렇게 하시면 편합니다",
     guideSteps: [
       {
@@ -1905,6 +1915,22 @@ const aboutCopy: Record<Language, AboutCopy> = {
         mockCaption: "큰 글씨 카드로 보여주고, 길면 다음 카드로 이어집니다.",
         mockHighlight: -1,
       },
+      {
+        step: "5단계",
+        title: "데이터에서 한국어 연결 코드를 받습니다",
+        text: "왼쪽 '데이터' 메뉴를 열고 돌봄이 화면에 보일 이름을 확인한 뒤 '한국어 연결 코드 만들기'를 누릅니다. 화면 언어가 영어·일본어이면 그 언어의 쉬운 낱말 코드가 나옵니다.",
+        tips: [
+          "연결 코드는 10분 동안 한 번만 사용할 수 있습니다.",
+          "화면에 나온 낱말과 숫자를 믿을 수 있는 돌봄이에게만 알려 주세요.",
+          "돌봄이가 한 번 등록하면 다시 코드를 받을 필요 없이 이 기기의 새 정보와 대화가 계속 전달됩니다.",
+          "연결된 돌봄이 수와 마지막 전달 시간도 같은 카드에서 확인할 수 있습니다.",
+        ],
+        mockTitle: "내 데이터 관리",
+        mockItems: ["연결 코드 받기", "한국어 연결 코드 만들기", "하늘-나무-기차-572"],
+        mockNote: "10분 동안 한 번만 사용할 수 있어요",
+        mockCaption: "데이터 화면에서 이름을 확인하고 한국어 연결 코드 만들기를 누릅니다.",
+        mockHighlight: 1,
+      },
     ],
     guideCta: "바로 시작해 보기",
     toTop: "맨 위로 돌아가기",
@@ -1959,7 +1985,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
       },
       {
         title: "Unfamiliar ingredients explained",
-        text: "101 loanword aliases and a 501-item global dish dictionary turn names like rosemary or avocado into plain, familiar words.",
+        text: "A 500-item food alias and loanword dictionary plus 501 global dishes turn names like rosemary or avocado into plain, familiar words.",
       },
       {
         title: "A safety floor kept by code",
@@ -2015,24 +2041,28 @@ const aboutCopy: Record<Language, AboutCopy> = {
       "Official open data, external verification links, and team-curated material are labelled separately. Source records are combined with code-level safety rules and plain-language AI explanations, not treated as a diagnosis.",
     sources: [
       {
+        icon: "말",
         name: "Urimalsam, National Institute of Korean Language",
         text: "A reference for the spelling and meaning of dialect and everyday language. The service dictionary is separately selected and validated by the team.",
         url: "https://opendict.korean.go.kr",
         linkLabel: "Open Urimalsam",
       },
       {
+        icon: "MFDS",
         name: "MFDS Pill Identification Information",
         text: "The official OpenAPI supplies product names, imprints, dosage forms, shapes, colours, score lines, and official image URLs for candidate matching.",
         url: "https://www.data.go.kr/data/15057639/openapi.do",
         linkLabel: "View official dataset",
       },
       {
+        icon: "Rx",
         name: "Korea Pharmaceutical Information Center identification search",
         text: "Its content is not copied or collected into our dataset. It is linked only as an external route where users can verify candidates themselves.",
         url: "https://health.kr/searchIdentity/search.asp",
         linkLabel: "Open identification search",
       },
       {
+        icon: "SL",
         name: "SilverLens team-curated data",
         text: "Food, dishes, aliases, health terms, and safety rules are maintained as sources and generated files in the repository's data folder. They are service reference material, not clinical standards.",
         url: "https://github.com/dohyunfinger/-OGQ-/tree/main/data",
@@ -2070,9 +2100,9 @@ const aboutCopy: Record<Language, AboutCopy> = {
     ],
     guideBadge: "How to use",
     guideTitle: "First time here is fine,",
-    guideTitleAccent: "four steps are all it takes",
+    guideTitleAccent: "five steps are all it takes",
     guideDescription:
-      "The senior screen opens without sign-up or login. Health details are stored on this device first and sync to an authenticated caregiver only when the senior creates a code and the caregiver claims it.",
+      "The senior screen opens without sign-up or login. These five steps cover asking, reading the answer, and securely linking with a caregiver when needed.",
     guideTipsLabel: "Handy to know",
     guideSteps: [
       {
@@ -2137,6 +2167,22 @@ const aboutCopy: Record<Language, AboutCopy> = {
         mockCaption: "Answers come as large-type cards and continue onto the next card.",
         mockHighlight: -1,
       },
+      {
+        step: "Step 5",
+        title: "Get an English linking code from Data",
+        text: "Open Data in the left menu, check the name shown to the caregiver, and press Create English linking code. Korean and Japanese screens issue easy word codes in their own language.",
+        tips: [
+          "The linking code works once for 10 minutes.",
+          "Share the words and numbers only with a caregiver you trust.",
+          "After the caregiver claims it once, new information and chats from this device continue to sync without another code.",
+          "The same card shows the number of linked caregivers and the last shared time.",
+        ],
+        mockTitle: "My data",
+        mockItems: ["Get a linking code", "Create English linking code", "apple-river-chair-572"],
+        mockNote: "Works once for 10 minutes",
+        mockCaption: "Check the name in Data, then create an English linking code.",
+        mockHighlight: 1,
+      },
     ],
     guideCta: "Try it now",
     toTop: "Back to top",
@@ -2192,7 +2238,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
       },
       {
         title: "見慣れない食材の解説",
-        text: "外来語の別名101件と外国料理辞典501種で、ローズマリーやアボカドのような名前をやさしい言葉に置き換えて説明します。",
+        text: "食品の外来語・別名500件と外国料理辞典501種で、ローズマリーやアボカドのような名前をやさしい言葉に置き換えて説明します。",
       },
       {
         title: "コードが守る安全の下限",
@@ -2248,24 +2294,28 @@ const aboutCopy: Record<Language, AboutCopy> = {
       "公的オープンデータ、外部の確認先、チームが整理した資料を分けて示します。資料だけで医療判断をせず、コードの安全規則とAIのやさしい説明を組み合わせます。",
     sources: [
       {
+        icon: "말",
         name: "国立国語院 ウリマルセム",
         text: "方言・地域語・生活語の表記と意味を確認する参考先です。サービス用の方言一覧はチームが別に選別・検証しています。",
         url: "https://opendict.korean.go.kr",
         linkLabel: "ウリマルセムを開く",
       },
       {
+        icon: "MFDS",
         name: "食品医薬品安全処 医薬品錠剤識別情報",
         text: "公共データポータルのOpenAPIから、製品名・刻印・剤形・形・色・割線・公式画像URLを同期し、薬の候補照合に使います。",
         url: "https://www.data.go.kr/data/15057639/openapi.do",
         linkLabel: "公式データを見る",
       },
       {
+        icon: "薬",
         name: "薬学情報院 医薬品識別検索",
         text: "資料を複製したりデータセットとして収集したりしません。利用者が候補を直接最終確認する外部検索先としてのみ案内します。",
         url: "https://health.kr/searchIdentity/search.asp",
         linkLabel: "識別検索を開く",
       },
       {
+        icon: "SL",
         name: "SilverLensチーム整理データ",
         text: "食品・料理・別名・健康項目・安全規則は、リポジトリのdataフォルダーで原本と生成物を分けて管理しています。診断や処方の基準ではなく、サービス用の参考資料です。",
         url: "https://github.com/dohyunfinger/-OGQ-/tree/main/data",
@@ -2303,9 +2353,9 @@ const aboutCopy: Record<Language, AboutCopy> = {
     ],
     guideBadge: "How to use",
     guideTitle: "はじめてでも大丈夫、",
-    guideTitleAccent: "四つの手順だけです",
+    guideTitleAccent: "五つの手順だけです",
     guideDescription:
-      "シニア画面は登録やログインなしですぐ使えます。健康情報はまず端末に保存され、本人が連携コードを発行して介護者が登録した場合にだけ、認証済みの介護者画面へ同期されます。",
+      "シニア画面は登録やログインなしですぐ使えます。下の五つの手順で、質問、回答の確認、必要なときの安全な介護者連携まで説明します。",
     guideTipsLabel: "覚えておくと便利です",
     guideSteps: [
       {
@@ -2369,6 +2419,22 @@ const aboutCopy: Record<Language, AboutCopy> = {
         mockNote: "次のページに続きがあります →",
         mockCaption: "大きな文字のカードで見せ、長ければ次のカードへ続きます。",
         mockHighlight: -1,
+      },
+      {
+        step: "手順 5",
+        title: "データ画面で日本語の連携コードを受け取ります",
+        text: "左の「データ」を開き、介護者に表示する名前を確認して「日本語の連携コードを作る」を押します。韓国語・英語の画面では、それぞれの言語の読みやすい単語コードが出ます。",
+        tips: [
+          "連携コードは10分間に一度だけ使えます。",
+          "画面に出た単語と数字は、信頼できる介護者にだけ伝えてください。",
+          "介護者が一度登録すると、新しい情報と会話は次回からコードなしで同期されます。",
+          "連携中の介護者数と最終共有時刻も同じカードで確認できます。",
+        ],
+        mockTitle: "マイデータ管理",
+        mockItems: ["連携コードを受け取る", "日本語の連携コードを作る", "そら-かわ-いす-572"],
+        mockNote: "10分間に一度だけ使えます",
+        mockCaption: "データ画面で名前を確認し、日本語の連携コードを作ります。",
+        mockHighlight: 1,
       },
     ],
     guideCta: "すぐに始めてみる",
@@ -2464,12 +2530,17 @@ const aboutGuideIcons = [
     <path d="M8 3h11a2 2 0 0 1 2 2v11" />
     <path d="M6 11h6M6 15h4" />
   </svg>,
+  <svg key="link" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+    <path d="M9.5 14.5 14.5 9.5" />
+    <path d="M7.2 16.8 5.6 18.4a3.4 3.4 0 0 1-4.8-4.8l3.4-3.4A3.4 3.4 0 0 1 9 10" />
+    <path d="m16.8 7.2 1.6-1.6a3.4 3.4 0 0 1 4.8 4.8l-3.4 3.4A3.4 3.4 0 0 1 15 14" />
+  </svg>,
 ];
 
 /**
  * 사용 가이드에 넣을 실제 화면 사진의 파일 이름.
  *
- * public/guide/ 에 step-1 ~ step-4 를 넣으면 그 사진이 쓰인다.
+ * public/guide/ 에 step-1 ~ step-5 를 넣으면 그 사진이 쓰인다.
  * 내보내는 형식이 사람마다 달라서 png, jpg, webp 를 차례로 찾아본다.
  * 하나도 없으면 CSS 목업이 그대로 남으므로 코드를 고칠 필요가 없다.
  */
@@ -2516,7 +2587,15 @@ function AboutGuideMock({ index, step }: { index: number; step: AboutGuideStep }
       <div className="about-guide-mock-screen" hidden={shotLoaded}>
         <span className="about-guide-mock-title">{step.mockTitle}</span>
 
-        {index === 3 ? (
+        {index === 4 ? (
+          <div className="about-guide-mock-link">
+            <span>{step.mockItems[0]}</span>
+            <strong>{step.mockTitle}</strong>
+            <button type="button" tabIndex={-1}>{step.mockItems[1]}</button>
+            <code>{step.mockItems[2]}</code>
+            <small>{step.mockNote}</small>
+          </div>
+        ) : index === 3 ? (
           <>
             <p className="about-guide-mock-answer">{step.mockItems[0]}</p>
             <span className="about-guide-mock-next">{step.mockNote}</span>
@@ -5173,7 +5252,10 @@ export default function SilverLensApp() {
                 <div className="about-sources-grid">
                   {about.sources.map((source) => (
                     <article className="about-source-card" key={source.url}>
-                      <h4>{source.name}</h4>
+                      <header>
+                        <span className="about-source-icon" aria-hidden="true">{source.icon}</span>
+                        <h4>{source.name}</h4>
+                      </header>
                       <p>{source.text}</p>
                       <a href={source.url} target="_blank" rel="noopener noreferrer">
                         {source.linkLabel} <span aria-hidden="true">↗</span>

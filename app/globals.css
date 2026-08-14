@@ -3156,7 +3156,7 @@ html[lang="ja-JP"] .quick-ask strong {
 }
 .care-senior-search input { min-width: 0; border: 0; outline: 0; background: transparent; font-size: 12px; }
 
-.care-senior-list { flex: 0 1 auto; max-height: 240px; padding: 0 8px; }
+.care-senior-list { flex: 1 1 auto; max-height: none; padding: 0 8px 10px; }
 .care-senior-list > div { position: relative; display: grid; grid-template-columns: minmax(0, 1fr) 30px; align-items: center; border-radius: 11px; }
 .care-senior-list > div:hover,
 .care-senior-list > div.active { background: #eaf1ee; }
@@ -3169,8 +3169,10 @@ html[lang="ja-JP"] .quick-ask strong {
 .care-unlink:hover { color: #9e3429; background: #fff1ef; }
 
 .care-profile-card {
+  grid-column: 1 / -1;
   min-height: 0;
-  margin: 12px 14px 14px;
+  max-height: 360px;
+  margin: 2px 7px 10px;
   padding: 13px;
   overflow-y: auto;
   border: 1px solid #dce4e0;
@@ -3211,7 +3213,7 @@ html[lang="ja-JP"] .quick-ask strong {
   .care-mobile-tabs { display: flex; gap: 5px; }
   .care-close-mobile { display: grid; width: 34px; height: 34px; place-items: center; border: 0; border-radius: 8px; color: #51605a; background: #edf2ef; font-size: 21px; cursor: pointer; }
   .care-mobile-shade { position: fixed; inset: 62px 0 0; z-index: 35; display: block; border: 0; background: rgba(16, 24, 21, .34); }
-  .care-senior-list { max-height: 270px; }
+  .care-senior-list { max-height: none; }
 }
 
 @media (max-width: 650px) {
@@ -5111,10 +5113,13 @@ html[lang="ja-JP"] .quick-ask strong {
 .about-sources {
   margin-top: 34px;
   padding: clamp(28px, 4vw, 46px);
+  border: 1px solid #c9ddd4;
   border-radius: var(--about-radius-lg);
-  color: #fff;
-  background: linear-gradient(145deg, var(--about-primary), var(--about-secondary-deep));
-  box-shadow: var(--about-shadow-hover);
+  color: var(--about-primary);
+  background:
+    radial-gradient(circle at 100% 0%, rgba(119, 184, 155, .16), transparent 38%),
+    linear-gradient(145deg, #f5faf7, #edf6f1);
+  box-shadow: 0 18px 44px rgba(28, 78, 61, .1);
 }
 
 .about-sources-head {
@@ -5124,20 +5129,21 @@ html[lang="ja-JP"] .quick-ask strong {
 
 .about-sources-head .about-section-badge {
   margin-bottom: 14px;
-  color: #fff;
-  background: rgba(255, 255, 255, .14);
+  color: var(--about-secondary);
+  background: #fff;
+  box-shadow: 0 5px 18px rgba(28, 78, 61, .08);
 }
 
 .about-sources-head h3 {
   margin: 0 0 12px;
-  color: #fff;
+  color: var(--about-primary);
   font-size: clamp(28px, 3vw, 42px);
   font-weight: 950;
   letter-spacing: -.045em;
 }
 
 .about-sources-head > p {
-  color: rgba(255, 255, 255, .78);
+  color: var(--about-muted);
 }
 
 .about-sources-grid {
@@ -5151,28 +5157,53 @@ html[lang="ja-JP"] .quick-ask strong {
   min-height: 230px;
   flex-direction: column;
   padding: 24px;
-  border: 1px solid rgba(255, 255, 255, .2);
+  border: 1px solid #d8e5df;
   border-radius: var(--about-radius-md);
-  background: rgba(255, 255, 255, .08);
+  background: rgba(255, 255, 255, .88);
+  box-shadow: 0 12px 30px rgba(28, 78, 61, .07);
+}
+
+.about-source-card > header {
+  display: grid;
+  min-width: 0;
+  grid-template-columns: 52px minmax(0, 1fr);
+  align-items: center;
+  gap: 14px;
+  margin-bottom: 14px;
+}
+
+.about-source-icon {
+  display: grid;
+  width: 52px;
+  height: 52px;
+  place-items: center;
+  border: 1px solid #c7dbd1;
+  border-radius: 16px;
+  color: var(--about-secondary);
+  background: linear-gradient(145deg, #fff, #e8f3ed);
+  font-size: 13px;
+  font-weight: 950;
+  letter-spacing: -.03em;
 }
 
 .about-source-card h4 {
-  margin: 0 0 10px;
-  color: #fff;
+  min-width: 0;
+  margin: 0;
+  color: var(--about-primary);
   font-size: 20px;
   line-height: 1.4;
   word-break: keep-all;
 }
 
 .about-source-card p {
-  color: rgba(255, 255, 255, .76);
+  color: var(--about-muted);
 }
 
 .about-source-card a {
   width: fit-content;
   margin-top: auto;
   padding-top: 20px;
-  color: #fff;
+  color: var(--about-secondary-deep);
   font-weight: 900;
   text-decoration: underline;
   text-underline-offset: 4px;
@@ -5182,8 +5213,9 @@ html[lang="ja-JP"] .quick-ask strong {
   margin: 22px 0 0;
   padding: 18px 20px;
   border-radius: var(--about-radius-sm);
-  color: #fff;
-  background: rgba(0, 0, 0, .14);
+  border: 1px solid #e2d7b9;
+  color: #564826;
+  background: #fffaf0;
   font-size: var(--fs-200);
   font-weight: 800;
   line-height: 1.65;
@@ -5191,11 +5223,26 @@ html[lang="ja-JP"] .quick-ask strong {
 
 html[lang="ja-JP"] .about-update-card h3,
 html[lang="ja-JP"] .about-update-card p,
+html[lang="ja-JP"] .about-feature-card h3,
+html[lang="ja-JP"] .about-feature-card p,
+html[lang="ja-JP"] .about-guide-head h3,
+html[lang="ja-JP"] .about-guide-text,
+html[lang="ja-JP"] .about-guide-tips li,
+html[lang="ja-JP"] .about-section-title,
+html[lang="ja-JP"] .about-section-description,
 html[lang="ja-JP"] .about-source-card h4,
 html[lang="ja-JP"] .about-source-card p {
+  max-width: 100%;
   overflow-wrap: anywhere;
   word-break: normal;
   line-break: strict;
+}
+
+html[lang="ja-JP"] .about-feature-card,
+html[lang="ja-JP"] .about-update-card,
+html[lang="ja-JP"] .about-source-card {
+  min-width: 0;
+  overflow: hidden;
 }
 
 /*
@@ -5641,6 +5688,59 @@ html[lang="ja-JP"] .about-workflow-card p {
   font-weight: 700;
   line-height: 1.55;
   word-break: keep-all;
+}
+
+.about-guide-mock-link {
+  display: grid;
+  gap: 10px;
+  padding: 14px;
+  border-radius: 16px;
+  color: #173c31;
+  background: #fffdf7;
+  box-shadow: 0 0 0 6px rgba(255, 255, 255, .1);
+}
+
+.about-guide-mock-link > span {
+  color: #527065;
+  font-size: 12px;
+  font-weight: 850;
+}
+
+.about-guide-mock-link > strong {
+  font-size: 22px;
+  line-height: 1.3;
+}
+
+.about-guide-mock-link > button {
+  min-height: 54px;
+  padding: 10px 12px;
+  border: 0;
+  border-radius: 13px;
+  color: #fff;
+  background: #3f7565;
+  font-size: 16px;
+  font-weight: 900;
+  line-height: 1.35;
+}
+
+.about-guide-mock-link > code {
+  padding: 12px 10px;
+  border: 2px dashed #5c887a;
+  border-radius: 12px;
+  color: #173c31;
+  background: #f4faf6;
+  font-family: inherit;
+  font-size: 16px;
+  font-weight: 950;
+  text-align: center;
+  overflow-wrap: anywhere;
+}
+
+.about-guide-mock-link > small {
+  color: #6b746f;
+  font-size: 11px;
+  font-weight: 750;
+  text-align: center;
 }
 
 /* 어두운 화면 아래에 흰 글씨로 얹는 한 문장. */
