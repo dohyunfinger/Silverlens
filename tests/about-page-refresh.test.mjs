@@ -19,6 +19,23 @@ test("about page shows official source logos and a fifth linking-code guide", as
   assert.match(source, /index === 4 \? " is-link"/);
 });
 
+test("about hero uses a credited family photo and step five has a real guide capture", async () => {
+  const [source, css, stepFive, heroPhoto] = await Promise.all([
+    readText("frontend/SilverLensApp.tsx"),
+    readText("app/globals.css"),
+    readFile(new URL("../public/guide/step-5.png", import.meta.url)),
+    readFile(new URL("../public/about/grandparents-hero.jpg", import.meta.url)),
+  ]);
+
+  assert.match(source, /className="about-hero-photo"/);
+  assert.match(source, /grandmother-laughing-with-her-grandchildren-wearing-white-DxPgOHdcwes/);
+  assert.match(source, /heroPhotoCredit/);
+  assert.match(css, /url\("\/about\/grandparents-hero\.jpg"\)/);
+  assert.equal(stepFive.readUInt32BE(16), 837);
+  assert.equal(stepFive.readUInt32BE(20), 1116);
+  assert.deepEqual([...heroPhoto.subarray(0, 2)], [0xff, 0xd8]);
+});
+
 test("about page uses a light source panel and wraps Japanese cards", async () => {
   const css = await readText("app/globals.css");
 

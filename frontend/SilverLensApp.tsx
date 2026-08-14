@@ -1651,6 +1651,7 @@ type AboutCopy = {
   heroTitle: string;
   heroTitleAccent: string;
   heroDescription: string[];
+  heroPhotoCredit: string;
   heroCta: string;
   featuresBadge: string;
   featuresTitle: string;
@@ -1719,6 +1720,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
       "사투리를 이해하는 AI로 시니어에게 쉽고 안전한 건강 정보를 제공합니다.",
       "어려운 표현은 줄이고, 익숙한 말투로 더 편안한 디지털 건강 경험을 만듭니다.",
     ],
+    heroPhotoCredit: "사진: Hoi An and Da Nang Photographer · Unsplash",
     heroCta: "핵심기술 보기",
     featuresBadge: "Core Features",
     featuresTitle: "누구나 쉽게 사용할 수 있도록,",
@@ -1972,6 +1974,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
       "SilverLens delivers health information that is easy and safe for older adults.",
       "Fewer difficult terms, familiar phrasing, and a calmer digital health experience.",
     ],
+    heroPhotoCredit: "Photo: Hoi An and Da Nang Photographer · Unsplash",
     heroCta: "See core features",
     featuresBadge: "Core Features",
     featuresTitle: "Simple for everyone,",
@@ -2225,6 +2228,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
       "方言を理解するAIで、シニアにやさしく安全な健康情報を届けます。",
       "難しい表現を減らし、慣れた話し方でより安心なデジタル健康体験をつくります。",
     ],
+    heroPhotoCredit: "写真: Hoi An and Da Nang Photographer · Unsplash",
     heroCta: "主要機能を見る",
     featuresBadge: "Core Features",
     featuresTitle: "誰でも簡単に使えるように、",
@@ -5174,6 +5178,7 @@ export default function SilverLensApp() {
 
         <main>
           <section className="about-panel about-panel-hero" id="about-top">
+            <div className="about-hero-photo" aria-hidden="true" />
             <div className="about-wrap about-hero-inner">
               <p className="about-brand-title">SilverLens</p>
               <p className="about-brand-subtitle">{about.brandSubtitle}</p>
@@ -5199,6 +5204,14 @@ export default function SilverLensApp() {
                 </a>
               </div>
             </div>
+            <a
+              className="about-photo-credit"
+              href="https://unsplash.com/photos/grandmother-laughing-with-her-grandchildren-wearing-white-DxPgOHdcwes"
+              target="_blank"
+              rel="noreferrer"
+            >
+              {about.heroPhotoCredit}
+            </a>
           </section>
 
           <section className="about-panel about-panel-tint" id="about-features">

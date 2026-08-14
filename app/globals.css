@@ -4669,19 +4669,49 @@ html[lang="ja-JP"] .quick-ask strong {
 }
 
 .about-panel-hero {
-  background: radial-gradient(circle at 50% 32%, var(--about-wash-strong) 0%, #fff 68%);
+  isolation: isolate;
+  background: #fffaf1;
 }
 
 .about-panel-hero::before {
   content: "";
   position: absolute;
-  top: 26%;
-  left: 50%;
-  width: 720px;
-  height: 460px;
-  transform: translate(-50%, -50%);
-  background: radial-gradient(circle, rgba(42, 143, 115, .16) 0%, rgba(255, 255, 255, 0) 72%);
-  filter: blur(64px);
+  z-index: 1;
+  inset: 0;
+  background:
+    radial-gradient(circle at 20% 22%, rgba(255, 209, 106, .25), transparent 34%),
+    radial-gradient(circle at 44% 78%, rgba(96, 178, 145, .16), transparent 38%);
+  pointer-events: none;
+}
+
+/*
+ * 소개 첫 화면은 실제 가족 사진을 오른쪽 배경으로 써서 서비스의 대상을 바로
+ * 느낄 수 있게 한다. 왼쪽의 따뜻한 아이보리 그라데이션은 사진을 가리는 장식이
+ * 아니라 제목 대비를 확보하는 읽기 안전 영역이다.
+ */
+.about-hero-photo {
+  position: absolute;
+  z-index: 0;
+  inset: 0 0 0 43%;
+  background:
+    linear-gradient(90deg, #fffaf1 0%, rgba(255, 250, 241, .86) 18%, rgba(255, 250, 241, .08) 58%),
+    url("/about/grandparents-hero.jpg") 50% 39% / cover no-repeat;
+  filter: saturate(1.05) brightness(1.04);
+}
+
+.about-panel-hero::after {
+  content: "";
+  position: absolute;
+  z-index: 1;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    #fffaf1 0%,
+    rgba(255, 250, 241, .99) 31%,
+    rgba(255, 250, 241, .9) 49%,
+    rgba(255, 250, 241, .28) 68%,
+    rgba(255, 250, 241, .04) 100%
+  );
   pointer-events: none;
 }
 
@@ -4694,17 +4724,46 @@ html[lang="ja-JP"] .quick-ask strong {
 .about-hero-inner {
   display: flex;
   flex-direction: column;
-  align-items: center;
+  align-items: flex-start;
   justify-content: center;
-  width: min(calc(100% - 48px), 980px);
-  text-align: center;
+  width: min(calc(100% - 48px), var(--about-max));
+  text-align: left;
+}
+
+.about-hero-title,
+.about-hero-description {
+  max-width: 680px;
+}
+
+.about-hero-description {
+  margin-right: 0;
+  margin-left: 0;
+}
+
+.about-photo-credit {
+  position: absolute;
+  right: 22px;
+  bottom: 18px;
+  z-index: 4;
+  max-width: min(52vw, 560px);
+  padding: 7px 11px;
+  border: 1px solid rgba(255, 255, 255, .72);
+  border-radius: 999px;
+  color: #18342c;
+  background: rgba(255, 255, 255, .82);
+  box-shadow: 0 4px 18px rgba(17, 49, 40, .12);
+  backdrop-filter: blur(8px);
+  font-size: 12px;
+  font-weight: 750;
+  line-height: 1.35;
+  text-decoration: none;
 }
 
 .about-hero-actions {
   display: flex;
   flex-wrap: wrap;
   align-items: center;
-  justify-content: center;
+  justify-content: flex-start;
   gap: 14px;
   margin-top: 44px;
 }
@@ -5969,10 +6028,33 @@ html[lang="ja-JP"] .about-workflow-card p {
     scroll-snap-type: none;
   }
 
+  .about-panel-hero {
+    min-height: calc(100svh - var(--about-bar));
+  }
+
+  .about-hero-photo {
+    inset: 0;
+    background-position: 50% 38%;
+  }
+
+  .about-panel-hero::after {
+    background: rgba(255, 250, 241, .76);
+  }
+
   .about-wrap,
   .about-bar-inner,
   .about-hero-inner {
     width: calc(100% - 28px);
+  }
+
+  .about-hero-inner {
+    align-items: center;
+    text-align: center;
+  }
+
+  .about-hero-description {
+    margin-right: auto;
+    margin-left: auto;
   }
 
   .about-bar-brand {
@@ -5990,7 +6072,15 @@ html[lang="ja-JP"] .about-workflow-card p {
   }
 
   .about-hero-actions {
+    justify-content: center;
     margin-top: 32px;
+  }
+
+  .about-photo-credit {
+    right: 12px;
+    bottom: 10px;
+    max-width: calc(100% - 24px);
+    font-size: 10px;
   }
 
   .about-btn-primary,
