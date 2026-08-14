@@ -35,6 +35,11 @@ import {
   makeStoredHealthId,
   type HealthKind,
 } from "../backend/data/healthTerms";
+import {
+  SERVICE_INTRO_COOKIE_MAX_AGE,
+  SERVICE_INTRO_COOKIE_NAME,
+  SERVICE_INTRO_COOKIE_VALUE,
+} from "../shared/serviceIntro";
 
 type Language = "ko-KR" | "en-US" | "ja-JP";
 type Gender = "male" | "female";
@@ -801,6 +806,18 @@ const PROFILE_STORE_KEY = "state-v1";
 /** 대화 이력은 최근 것만 남긴다. 오래된 것까지 두면 저장 용량이 계속 늘어난다. */
 const MAX_STORED_TURNS = 30;
 const BACKUP_FILE_NAME = "silverlens-backup.json";
+
+/** 소개 화면을 실제로 나간 뒤에만 이 브라우저를 재방문으로 기억한다. */
+function rememberServiceIntroSeen() {
+  try {
+    const secure = window.location.protocol === "https:" ? "; Secure" : "";
+    document.cookie =
+      `${SERVICE_INTRO_COOKIE_NAME}=${SERVICE_INTRO_COOKIE_VALUE}; ` +
+      `Path=/; Max-Age=${SERVICE_INTRO_COOKIE_MAX_AGE}; SameSite=Lax${secure}`;
+  } catch {
+    // 쿠키가 차단된 환경에서는 다음 방문에도 소개 화면을 보여 주는 편이 안전하다.
+  }
+}
 
 /** 기기에 저장하는 내용. 답변 음성은 다시 만들 수 있어 저장하지 않는다. */
 type StoredState = {
@@ -3215,13 +3232,20 @@ function HealthPickerCard({
   );
 }
 
-export default function SilverLensApp() {
+export default function SilverLensApp({
+  initialIntroSeen = false,
+}: {
+  initialIntroSeen?: boolean;
+}) {
   /*
-   * 첫 화면은 대화 화면이다.
+   * 첫 방문은 서비스 소개, 소개를 확인한 재방문은 대화 화면에서 시작한다.
    * 어르신에게 언어·성별·나이·알레르기·질병을 먼저 다 채우게 하면 대화에 닿기 전에
    * 지쳐 이탈한다. 그래서 바로 말할 수 있게 두고, 정보 입력은 버튼으로 안내한다.
    */
-  const [screen, setScreen] = useState<PageScreen>("chat");
+  const [screen, setScreen] = useState<PageScreen>(
+    initialIntroSeen ? "chat" : "about",
+  );
+  const [introSeen, setIntroSeen] = useState(initialIntroSeen);
   const [language, setLanguage] = useState<Language | null>(null);
   const [gender, setGender] = useState<Gender | null>(null);
   const [ageBand, setAgeBand] = useState(70);
@@ -4166,6 +4190,12 @@ export default function SilverLensApp() {
       if (stored) {
         applyStoredState(stored);
         setStoreSavedAt(typeof stored.savedAt === "number" ? stored.savedAt : null);
+        // 이 기능이 추가되기 전부터 이 기기에 데이터가 있던 사용자는 재방문자다.
+        if (!initialIntroSeen) {
+          rememberServiceIntroSeen();
+          setIntroSeen(true);
+          setScreen("chat");
+        }
       } else {
         // v1 이전에는 음성 메모만 localStorage에 있었다. 한 번만 옮겨 온다.
         const legacy = readLegacyHealthNotes();
@@ -4176,11 +4206,12 @@ export default function SilverLensApp() {
     return () => {
       cancelled = true;
     };
-  }, [applyStoredState]);
+  }, [applyStoredState, initialIntroSeen]);
 
   /** 값이 바뀌면 잠시 뒤 한 번만 저장한다(선택마다 곧바로 쓰지 않도록). */
   useEffect(() => {
-    if (!storeReady) return;
+    // 첫 소개를 읽는 동안 빈 상태가 저장되면 새로고침을 재방문으로 오인할 수 있다.
+    if (!storeReady || !introSeen) return;
     const timer = window.setTimeout(() => {
       const snapshot: StoredState = {
         version: 1,
@@ -4204,6 +4235,7 @@ export default function SilverLensApp() {
     return () => window.clearTimeout(timer);
   }, [
     storeReady,
+    introSeen,
     language,
     gender,
     ageBand,
@@ -4312,10 +4344,18 @@ export default function SilverLensApp() {
 
   // 첫 진입 안내는 "언어를 고르세요"가 아니라 "무엇을 말하면 되는지"를 읽어 준다.
   useEffect(() => {
-    if (!voicePreferenceReady || !autoVoiceGuide || initialTtsPlayed.current) return;
+    if (
+      !introSeen ||
+      screen === "about" ||
+      !voicePreferenceReady ||
+      !autoVoiceGuide ||
+      initialTtsPlayed.current
+    ) {
+      return;
+    }
     initialTtsPlayed.current = true;
     queueBrowserNarration(uiCopy["ko-KR"].welcomeVoice, "ko-KR", 450);
-  }, [autoVoiceGuide, queueBrowserNarration, voicePreferenceReady]);
+  }, [autoVoiceGuide, introSeen, queueBrowserNarration, screen, voicePreferenceReady]);
 
   useEffect(() => {
     const narrationControllers = narrationControllersRef.current;
@@ -5219,6 +5259,8 @@ export default function SilverLensApp() {
     const photoStories = aboutPhotoStories[activeLanguage];
     const leaveAbout = () => {
       stopNarration();
+      rememberServiceIntroSeen();
+      setIntroSeen(true);
       setScreen(chatTurns.length > 0 ? "chat" : "setup");
     };
 
