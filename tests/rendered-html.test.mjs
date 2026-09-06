@@ -57,7 +57,6 @@ test("starts with the introduction, then renders the senior service on return vi
 
   assert.equal(returnResponse.status, 200);
   assert.match(returnHtml, /기본설정/);
-  assert.match(returnHtml, /데이터/);
   assert.match(returnHtml, /내 정보 말하기/);
   assert.match(returnHtml, /내 정보 입력하기/);
   assert.doesNotMatch(returnHtml, /class="chat-quick-row"/);

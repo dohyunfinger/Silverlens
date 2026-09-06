@@ -2986,13 +2986,6 @@ function Sidebar({
           {copy.basicSetup}
         </button>
         <button
-          className={active === "data" ? "nav-item active" : "nav-item"}
-          onClick={() => onNavigate("data")}
-        >
-          <span aria-hidden="true"><SidebarIcon name="data" /></span>
-          {copy.data}
-        </button>
-        <button
           className={active === "about" ? "nav-item active" : "nav-item"}
           onClick={() => onNavigate("about")}
         >
