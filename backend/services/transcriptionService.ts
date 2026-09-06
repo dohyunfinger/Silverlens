@@ -10,6 +10,7 @@ import {
   isHealthTermId,
   toHealthLanguage,
   type HealthKind,
+  type HealthLanguage,
 } from "../data/healthTerms";
 import type { InlineMedia } from "./geminiService";
 
@@ -38,6 +39,21 @@ export type TranscriptionResult = {
 
 /** 화면의 나이 버튼과 같은 구간만 받는다(frontend ageChoices 와 동일). */
 const AGE_BANDS = [40, 50, 60, 70, 80, 90];
+
+const transcriptLanguageRules: Record<HealthLanguage, string> = {
+  "ko-KR":
+    "transcript는 들리는 한국어를 한글로 그대로 받아쓰세요. 다른 언어로 번역하지 마세요.",
+  "en-US":
+    "Write transcript in English using the Latin alphabet exactly as spoken. Do not translate it into Korean or Japanese.",
+  "ja-JP":
+    "transcriptは、聞こえた日本語を漢字・ひらがな・カタカナでそのまま書き起こしてください。韓国語や英語に翻訳したり、ローマ字で書いたりしないでください。",
+};
+
+const transcriptExamples: Record<HealthLanguage, string> = {
+  "ko-KR": "복숭아 알레르기가 있어요.",
+  "en-US": "I have a peach allergy.",
+  "ja-JP": "桃アレルギーがあります。",
+};
 
 function cleanItems(value: unknown, kind: HealthKind) {
   if (!Array.isArray(value)) return [];
@@ -125,6 +141,9 @@ export async function transcribeAudio(
                 text: [
                   "첨부한 음성에서 실제로 들리는 말을 받아쓰고 건강정보를 분류하세요.",
                   "질문에 답하거나 내용을 요약하지 마세요.",
+                  transcriptLanguageRules[selectedLanguage],
+                  `받아쓰기 언어: ${selectedLanguage}`,
+                  "transcript는 말한 내용을 원문 문자로 적고, 번역·의역·요약하지 마세요.",
                   "식품명, 질병명, 알레르기명을 가능한 정확히 적으세요.",
                   "알레르기에는 사용자가 알레르기라고 명시한 음식·물질만 넣으세요.",
                   "conditions에는 사용자가 직접 말한 질병이나 관리 중인 건강 상태(예: 폐경 후)만 넣으세요.",
@@ -149,9 +168,9 @@ export async function transcribeAudio(
                   `건강정보 다국어 카탈로그: ${JSON.stringify(healthCatalog)}`,
                   `방언 참고 사전: ${JSON.stringify(dialectDictionary)}`,
                   `외래어·별칭 참고 사전: ${JSON.stringify(foodAliases)}`,
-                  "방언이나 외래어로 들리는 식품명은 참고 사전의 표준 이름으로 바꿔 적으세요.",
+                  "참고 사전과 카탈로그는 건강정보 ID를 분류할 때만 사용하세요. transcript의 표현이나 언어를 한국어 표준 이름으로 바꾸지 마세요.",
                   "반드시 다음 JSON 객체만 반환하세요.",
-                  '{"transcript":"받아쓴 전체 문장","allergies":["카탈로그 allergy ID"],"conditions":["카탈로그 condition ID"],"gender":"male|female|null","age":숫자 또는 null}',
+                  `{"transcript":${JSON.stringify(transcriptExamples[selectedLanguage])},"allergies":["카탈로그 allergy ID"],"conditions":["카탈로그 condition ID"],"gender":"male|female|null","age":숫자 또는 null}`,
                 ].join("\n"),
               },
               {
