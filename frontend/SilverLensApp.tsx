@@ -789,7 +789,7 @@ const narrationRateOptions = [
   { label: { "ko-KR": "조금 느리게", "en-US": "A little slow", "ja-JP": "少しゆっくり" }, value: 0.82 },
   { label: { "ko-KR": "보통", "en-US": "Normal", "ja-JP": "ふつう" }, value: 0.95 },
   { label: { "ko-KR": "조금 빠르게", "en-US": "A little fast", "ja-JP": "少し速く" }, value: 1.08 },
-  { label: { "ko-KR": "빠르게", "en-US": "Fast", "ja-JP": "速く" }, value: 1.2 },
+  { label: { "ko-KR": "빠르게", "en-US": "Fast", "ja-JP": "速く" }, value: 1.5 },
 ] as const;
 
 /** 기본값은 "보통". */
@@ -4246,11 +4246,12 @@ export default function SilverLensApp({
     setHealthNotes((current) => current.filter((note) => note.id !== id));
   }, []);
 
-  // 첫 진입 안내는 "언어를 고르세요"가 아니라 "무엇을 말하면 되는지"를 읽어 준다.
+  // 저장된 언어를 모두 불러온 뒤 해당 언어로 첫 안내를 읽어 준다.
   useEffect(() => {
     if (
       !introSeen ||
       screen === "about" ||
+      !storeReady ||
       !voicePreferenceReady ||
       !autoVoiceGuide ||
       initialTtsPlayed.current
@@ -4258,8 +4259,16 @@ export default function SilverLensApp({
       return;
     }
     initialTtsPlayed.current = true;
-    queueBrowserNarration(uiCopy["ko-KR"].welcomeVoice, "ko-KR", 450);
-  }, [autoVoiceGuide, introSeen, queueBrowserNarration, screen, voicePreferenceReady]);
+    queueBrowserNarration(uiCopy[activeLanguage].welcomeVoice, activeLanguage, 450);
+  }, [
+    activeLanguage,
+    autoVoiceGuide,
+    introSeen,
+    queueBrowserNarration,
+    screen,
+    storeReady,
+    voicePreferenceReady,
+  ]);
 
   useEffect(() => {
     const narrationControllers = narrationControllersRef.current;
