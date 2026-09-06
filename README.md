@@ -1,25 +1,16 @@
 # SilverLens
 
-**사투리와 생활 언어, 사진, 개인 건강정보를 함께 이해해 시니어와 돌봄이에게 쉬운 건강 식생활 정보를 제공하는 AI 서비스**
+**사투리와 생활 언어, 사진, 개인 건강정보를 함께 이해해 시니어에게 쉬운 건강 식생활 정보를 제공하는 AI 서비스**
 
-SilverLens는 “어르신이 기술을 배우는 것”이 아니라 “기술이 어르신의 사용 방식에 맞추는 것”을 목표로 합니다. 시니어 화면은 로그인 없이 바로 열리고, 큰 글씨·큰 버튼·음성·사진 중심으로 질문할 수 있습니다. 필요할 때만 본인이 연결 코드를 발급해 로그인한 돌봄이와 정보를 공유합니다.
+SilverLens는 “어르신이 기술을 배우는 것”이 아니라 “기술이 어르신의 사용 방식에 맞추는 것”을 목표로 합니다. 큰 글씨·큰 버튼·음성·사진 중심으로 바로 질문할 수 있으며, 건강정보와 대화는 브라우저에 저장하고 파일로 백업할 수 있습니다.
 
 > 이 서비스는 의료 진단이나 처방을 하지 않습니다. 건강·복약 판단은 의사 또는 약사와 확인해야 합니다.
-
-## 서비스 링크
-
-| 화면 | 주소 |
-| --- | --- |
-| 시니어 서비스 | [https://silverlens.ogq.workers.dev](https://silverlens.ogq.workers.dev) |
-| 돌봄이 로그인·작업공간 | [https://silverlens.ogq.workers.dev/caregiver](https://silverlens.ogq.workers.dev/caregiver) |
-| 식약처 낱알 데이터 동기화 상태 | [https://silverlens.ogq.workers.dev/api/drugs/status](https://silverlens.ogq.workers.dev/api/drugs/status) |
 
 ## 현재 구현된 기능
 
 ### 시니어 화면
 
-- 첫 방문에는 서비스 소개부터 시작하고, 이후 같은 브라우저에서는 시니어 화면으로 바로 진입
-- 가입·로그인 없이 질문하고 기기에 정보 저장
+- 바로 질문하고 기기에 정보 저장
 - 한국어·영어·일본어 UI와 언어별 음성 안내
 - 사투리·생활 언어를 포함한 음성 질문, 글 질문, 최대 4장의 사진 질문
 - 성분표·음식·약 봉투·알약 촬영 목적별 안내와 전송 전 밝기·흔들림 확인
@@ -27,32 +18,6 @@ SilverLens는 “어르신이 기술을 배우는 것”이 아니라 “기술�
 - 코드가 보장하는 알레르기·질병 위험도 하한선
 - 긴 답변을 큰 글씨 카드로 분리하고 속도 조절 가능한 다시 듣기 제공
 - 내 정보·대화·상세 메모를 파일로 내보내기, 불러오기, 삭제
-
-### 시니어–돌봄이 연결
-
-- 시니어가 데이터 화면에서 10분 동안 한 번만 쓸 수 있는 연결 코드 발급
-- 화면 언어별로 읽기 쉬운 코드 생성
-  - 한국어: `하늘-나무-기차-572`
-  - 영어: `apple-river-chair-572`
-  - 일본어: `そら-かわ-いす-572`
-- 돌봄이가 코드를 한 번 등록하면 해당 계정과 연결 유지
-- 연결 전 정보와 최근 대화를 최초 공유하고, 연결 뒤 같은 기기에서 생긴 변경사항 지속 동기화
-- 시니어는 로그인하지 않으며, 직접 코드를 만든 경우에만 연결 가능
-
-### 돌봄이 화면
-
-- Firebase Google 로그인과 이메일 회원가입·로그인
-- 한 계정에서 여러 시니어 등록, 목록·이름 검색, 시니어별 건강정보와 최근 대화 확인
-- 일반 AI 서비스와 비슷한 대화형 화면에서 선택한 시니어의 공유 기록을 문맥으로 질문
-- 글뿐 아니라 사진 최대 4장과 음성을 첨부해 질문
-- 돌봄이 질문은 음식·건강 주제로 잠그지 않되 의료 진단·처방 안전선 유지
-- 새 대화 생성과 돌봄이 대화 기록 삭제
-
-### 서비스 소개·데이터 투명성
-
-- 시니어 사용 흐름을 5단계 이미지로 안내
-- 시니어 기능, 돌봄이 연결 방식, 저장 위치와 안전 원칙 설명
-- 우리말샘·식품의약품안전처·공공데이터포털·약학정보원의 활용 범위와 원문 링크 구분
 
 ### 의약품 사진 안전 확인
 
@@ -66,14 +31,11 @@ SilverLens는 “어르신이 기술을 배우는 것”이 아니라 “기술�
 
 | 상태 | 저장·공유 방식 |
 | --- | --- |
-| 돌봄이와 연결하기 전 | 시니어 프로필, 건강정보, 메모, 대화는 브라우저 IndexedDB에 저장 |
-| 연결 코드 발급 | 시니어 기기 식별자와 공유 스냅샷을 Cloudflare D1에 저장하고 일회용 코드 발급 |
-| 돌봄이 등록 후 | 인증된 돌봄이 계정만 연결된 시니어의 공유 정보와 이후 동기화 내용을 조회 |
+| 시니어 정보 | 프로필, 건강정보, 메모, 대화는 브라우저 IndexedDB에 저장 |
+| 백업·복원 | 데이터 화면에서 JSON 저장 파일을 내보내거나 다시 불러오기 |
 | 사진 첨부 | 보내기 전 사진은 브라우저에 임시 보관하며 만료 후 삭제; 질문 시 Gemini API로 전송 |
-| 돌봄이 인증 | Firebase ID 토큰을 서버에서 검증하고 서명된 HttpOnly 세션 쿠키 사용 |
-| 공식 낱알 카탈로그 | 식약처 API 키는 Cloudflare Secret에만 두고, 예약 작업이 공식 품목을 D1에 나누어 동기화 |
 
-시니어에게 계정을 요구하지 않는 대신, 브라우저 저장소를 지우거나 기기를 바꾸면 로컬 정보가 사라질 수 있습니다. 데이터 화면의 저장 파일 내보내기를 백업 수단으로 사용할 수 있습니다.
+브라우저 저장소를 지우거나 기기를 바꾸면 로컬 정보가 사라질 수 있습니다. 데이터 화면의 저장 파일 내보내기를 백업 수단으로 사용할 수 있습니다.
 
 ## 데이터 현황
 
@@ -89,11 +51,11 @@ SilverLens는 “어르신이 기술을 배우는 것”이 아니라 “기술�
 | 사투리 사전 | 257종 | 식재료·음식·신체증상·생활 분야의 지역 표현 |
 | 안전 규칙 | 21개 | 위험 식품 123종, 위험도 하한선 규칙 11개 |
 | 건강정보 항목 | 99개 | 알레르기 46개, 질병·건강 상태 53개를 3개 언어 ID로 관리 |
-| 건강정보 실제 표시 그룹 | 18개 | 현재 99개 선택 항목을 알레르기 8개, 질병·건강 상태 10개 묶음으로 표시 |
+| 건강정보 화면 그룹 | 66개 | 알레르기 23, 질병 40, 식이 상태 3개 그룹 |
 | 질병명 다국어 대응 | 460개 | 한국어·영어·일본어·일본어 로마자 표기 |
 | 시니어 다빈도 상병명 | 405개 | 직접 입력한 병명을 읽기 쉬운 표기로 정규화할 때 참고 |
 | 약 사진 관찰 기준 | 10개 | 식별 전 확인할 관찰 항목과 안전 결정 규칙 |
-| 식약처 낱알 품목 | 배포 D1 동기화 시 결정 | `MFDS_DATA_API_KEY`를 서버 Secret으로 읽어 동기화한 공식 후보 레코드 |
+| 식약처 낱알 품목 | 동기화 시 결정 | `MFDS_DATA_API_KEY`로 동기화한 공식 레코드 |
 
 `food_aliases.json`과 일부 서비스용 지식은 현재 `data/sources` 변환 대상 밖에서 별도 관리합니다. 모든 JSON이 공식 데이터라고 오해하지 않도록 아래처럼 출처와 성격을 구분합니다.
 
@@ -127,7 +89,6 @@ SilverLens는 “어르신이 기술을 배우는 것”이 아니라 “기술�
 | 알레르기 | 등록 알레르기가 질문·재료에 직접 나타나면 모델 판정과 무관하게 위험 경고 |
 | 과도한 제한 방지 | 밀 알레르기 때문에 소금까지 금지하는 식의 무관한 제한을 하지 않도록 구체 규칙 적용 |
 | 의약품 식별 | 제품명 또는 각인이 맞는 후보만 남기며 색·모양만으로 특정하지 않음 |
-| 돌봄이 AI | 주제 제한은 풀되 공유 기록에 없는 증상·감정·사실을 추측하지 않음 |
 | 의료 경계 | 진단·처방·임의 복약 지시를 하지 않고 위험하거나 불확실하면 전문가 확인 안내 |
 | 서버 로그 | `/log`와 `/api/log`는 개발 환경 기본, 운영에서는 명시적으로 열지 않으면 비활성화 |
 
@@ -137,30 +98,10 @@ SilverLens는 “어르신이 기술을 배우는 것”이 아니라 “기술�
 | --- | --- |
 | 웹 | Next.js 16, React 19, TypeScript, Vinext/Vite |
 | 실행·호스팅 | Cloudflare Workers |
-| 연결 데이터 | Cloudflare D1 |
-| 돌봄이 인증 | Firebase Authentication, 서버 검증 세션 쿠키 |
+| 의약품 카탈로그 | Cloudflare D1 |
 | AI | Gemini 텍스트·이미지·오디오·TTS, 모델 폴백과 429 재시도 |
 | 로컬 저장 | IndexedDB |
 | 선택형 방언 변환 | `backend/local_dialect` FastAPI 서버 |
-
-## 동작 구조
-
-```text
-시니어 브라우저
-  ├─ IndexedDB: 프로필·건강정보·메모·대화·임시 사진
-  ├─ /api/chat → Gemini: 글·사진 질문과 개인 건강정보를 반영한 답변
-  └─ /api/senior/* → D1: 사용자가 연결 코드를 만든 뒤 공유 스냅샷 동기화
-
-돌봄이 브라우저
-  ├─ Firebase Authentication → HttpOnly 세션 쿠키
-  ├─ /api/caregiver/* → D1: 연결 시니어·건강정보·최근 대화·돌봄이 대화
-  └─ 선택한 시니어의 공유 기록 + 글·사진·음성 → Gemini
-
-Cloudflare Worker 예약 작업
-  └─ 식약처 낱알식별 OpenAPI → D1 mfds_pills → 약 사진 공식 후보 검색
-```
-
-시니어의 로컬 정보는 연결 전에는 서버에 올라가지 않습니다. 연결 코드를 만든 뒤에는 해당 기기의 공유 스냅샷만 D1에 저장되며, 인증된 돌봄이 계정이 코드를 한 번 등록해야 조회할 수 있습니다.
 
 ## 프로젝트 구조
 
@@ -168,40 +109,19 @@ Cloudflare Worker 예약 작업
 .
 ├── .openai/
 │   ├── hosting.json                       # Sites 프로젝트와 D1 논리 바인딩
-│   └── drizzle/
-│       ├── 0001_caregiver_links.sql       # 돌봄이 연결·대화 테이블
-│       └── 0002_mfds_pill_catalog.sql     # 식약처 낱알 카탈로그·동기화 상태 테이블
+│   └── drizzle/0002_mfds_pill_catalog.sql # 식약처 의약품 카탈로그 D1 마이그레이션
 ├── app/
 │   ├── api/
-│   │   ├── auth/                          # Firebase 설정 조회와 서버 세션 발급·해제
-│   │   ├── caregiver/
-│   │   │   ├── overview/                  # 연결 시니어와 돌봄이 대화 목록
-│   │   │   ├── link/                      # 일회용 코드 등록
-│   │   │   ├── seniors/[seniorId]/        # 시니어 상세 조회·연결 해제
-│   │   │   ├── threads/[threadId]/        # 돌봄이 대화 조회·삭제
-│   │   │   └── chat/                      # 돌봄이 글·사진·음성 AI 대화
-│   │   ├── senior/link/                   # 언어별 연결 코드 발급
-│   │   ├── senior/sync/                   # 연결 이후 건강정보·대화 동기화
-│   │   ├── drugs/status/                  # 키 노출 없는 식약처 D1 동기화 상태
 │   │   ├── chat/                          # 시니어 AI 답변
 │   │   ├── transcribe/                    # 음성 인식·건강정보 분류
 │   │   ├── tts/                           # 답변 음성 생성
 │   │   └── log/                           # 개발용 지식 데이터 상태 API
-│   ├── caregiver/
-│   │   ├── page.tsx                       # 돌봄이 로그인·작업공간 진입
-│   │   └── signup/page.tsx                # 이메일 회원가입
 │   ├── log/page.tsx                       # 개발 전용 데이터 점검 화면
-│   ├── globals.css                        # 시니어·소개·돌봄이 반응형 스타일
+│   ├── globals.css                        # 시니어·소개 반응형 스타일
 │   ├── layout.tsx                         # 메타데이터와 공통 레이아웃
 │   └── page.tsx                           # 시니어 서비스 진입
 ├── frontend/
 │   ├── SilverLensApp.tsx                  # 시니어 설정·대화·데이터·서비스 소개
-│   ├── SeniorCareLinkPanel.tsx            # 언어별 일회용 연결 코드와 지속 공유
-│   ├── CaregiverPortal.tsx                # 인증 상태에 따른 로그인·작업공간 전환
-│   ├── CaregiverLogin.tsx                 # Google·이메일 로그인 UI
-│   ├── CaregiverSignup.tsx                # 이메일 회원가입 UI
-│   ├── CaregiverApp.tsx                   # 돌봄이 GPT형 멀티모달 대화·다중 시니어 관리
-│   ├── firebaseAuth.ts                    # Firebase 클라이언트 초기화·인증 호출
 │   ├── localStore.ts                      # IndexedDB 저장·백업·복구
 │   ├── photoCapture.ts                    # 사진 축소와 밝기·흔들림 검사
 │   └── DataLogView.tsx                    # 개발용 데이터 통계 화면
@@ -213,18 +133,13 @@ Cloudflare Worker 예약 작업
 │   │   └── diseaseI18n.ts                 # 질병명 다국어 정규화
 │   ├── services/
 │   │   ├── geminiClient.ts                # Gemini 호출·폴백·429 재시도
-│   │   ├── geminiQuota.ts                 # 호출 제한 응답·재시도 시간 공통 처리
-│   │   ├── geminiService.ts               # 시니어·돌봄이 답변과 안전 하한선
-│   │   ├── koreanAge.ts                    # 한국어 나이 표현 정규화
+│   │   ├── geminiService.ts               # 시니어 답변과 안전 하한선
 │   │   ├── transcriptionService.ts        # 음성 인식과 건강정보 추출
 │   │   ├── ttsService.ts                  # 답변 음성 생성·캐시
-│   │   ├── careData.ts                    # D1 연결·동기화·대화 저장
-│   │   ├── mfdsPillData.ts                # 식약처 API→D1 예약 동기화·낱알 후보 검색
-│   │   ├── caregiverAuth.ts               # Firebase 토큰 검증·세션 쿠키
-│   │   └── caregiverRequest.ts            # 인증·동일 출처 요청 검사
+│   │   └── mfdsPillData.ts                # 식약처 의약품 카탈로그 조회·동기화
 │   └── local_dialect/                     # 선택형 FastAPI 방언 변환 서버
 ├── build/sites-vite-plugin.ts             # Sites 배포 산출물·마이그레이션 패키징
-├── db/schema.ts                           # 연결 데이터·식약처 카탈로그 D1 테이블 정의
+├── db/schema.ts                           # D1 테이블 정의
 ├── data/
 │   ├── sources/                           # 사람이 편집하는 변환 원본 6종
 │   ├── health_terms.json                  # 알레르기·질병 3개 언어 항목
@@ -239,109 +154,37 @@ Cloudflare Worker 예약 작업
 │   ├── disease_i18n.json                  # 질병명 다국어 대응
 │   ├── senior_frequent_conditions.json    # 직접 입력 상병명 정규화
 │   ├── drug_identification_reference.json # 약 사진 관찰·안전 기준
-│   └── mfds_pill_identification.json      # 로컬 개발·D1 장애 시 사용하는 보조 카탈로그
+│   └── mfds_pill_identification.json      # 식약처 API 동기화 품목
 ├── docs/
-│   ├── brand/                             # 로고 원본과 미리보기
+│   ├── brand/
 │   └── reference-images/                  # 연령·성별·언어·가이드 참고 이미지
 ├── public/
-│   ├── about/                             # 서비스 소개에 쓰는 실사 사진
-│   ├── brand/                             # 웹용 SilverLens 심벌 자산
 │   ├── guide/                             # 서비스 소개 사용법 이미지
-│   ├── source-icons/                      # 우리말샘·식약처·공공데이터·약학정보원 표식
 │   ├── favicon.svg
-│   └── og.png                             # 링크 공유 미리보기
+│   └── og.png
 ├── scripts/
-│   ├── build-verified.mjs                 # Windows/Linux 공용 제한시간 빌드
-│   ├── validate-artifact.mjs              # Worker·Sites 산출물 검증
-│   ├── install-ci.sh                      # Linux CI 의존성 설치
+│   ├── build-verified.mjs
+│   ├── validate-artifact.mjs
 │   ├── prepare_knowledge_data.py
 │   ├── sync-mfds-pill-data.mjs
 │   └── sites-env.sh                       # Sites 환경변수 보조 스크립트
-├── shared/serviceIntro.ts                 # 첫 방문 서비스 소개 완료 쿠키 상수
-├── tests/                                 # 안전·연결·렌더링·데이터 회귀 테스트
-├── types/cloudflare-workers.d.ts          # Cloudflare 런타임 타입
-├── worker/index.ts                        # Worker 진입점·이미지 최적화·식약처 예약 작업
+├── tests/                                 # 안전·렌더링·데이터 회귀 테스트
+├── types/cloudflare-workers.d.ts
+├── worker/index.ts                        자산·이미지 최적화
 ├── vite.config.ts                         # Vinext·Cloudflare·Sites 빌드 설정
 ├── next.config.ts
-├── postcss.config.mjs
 ├── eslint.config.mjs
 ├── tsconfig.json
 ├── package.json
-├── package-lock.json
 └── .env.example                           # 키 이름만 있는 환경변수 예시
 ```
 
-## 로컬 실행
-
-요구 환경은 Node.js 22.13 이상입니다.
-
-```bash
-npm install
-cp .env.example .env.local
-npm run dev
-```
-
-PowerShell에서는 다음처럼 복사할 수 있습니다.
-
-```powershell
-Copy-Item .env.example .env.local
-npm run dev
-```
-
-`.env.local`에 필요한 값을 채웁니다.
-
 | 변수 | 용도 |
 | --- | --- |
-| `GEMINI_API_KEY` | 시니어·돌봄이 대화, 음성 인식, TTS |
+| `GEMINI_API_KEY` | 시니어 대화, 음성 인식, TTS |
 | `GEMINI_TEXT_MODEL`, `GEMINI_TTS_MODEL` | 기본 모델 변경(선택) |
-| `FIREBASE_API_KEY`, `FIREBASE_AUTH_DOMAIN`, `FIREBASE_PROJECT_ID`, `FIREBASE_APP_ID` | 돌봄이 로그인 |
-| `AUTH_SESSION_SECRET` | 32자 이상의 무작위 서버 세션 서명값 |
-| `NEXT_PUBLIC_DIALECT_API_URL`, `DIALECT_MODEL_ID` | 선택형 로컬 방언 변환 서버 주소와 모델 ID |
-| `MFDS_DATA_API_KEY` | 식약처 낱알 데이터 예약 동기화용 서버 Secret; 브라우저에는 전달하지 않음 |
-
-실제 키는 `.env.local`, `.dev.vars`, Cloudflare Secret에만 두고 Git에 커밋하지 않습니다. Firebase 웹 API 키는 클라이언트 식별값이지만 승인 도메인·Firebase 규칙·서버 토큰 검증을 함께 사용해야 합니다.
-
-## 데이터 준비와 의약품 동기화
-
-```bash
-npm run prepare:data
-npm run sync:drug-data
-```
-
-배포된 Worker는 매시 17분에 예약 작업을 실행합니다. 한 번에 두 페이지씩 받아 D1의 `mfds_pills`를 갱신하고, 중간 진행 위치를 저장하므로 전체 카탈로그가 여러 번의 실행에 나뉘어 안전하게 채워집니다. 앱은 D1을 먼저 검색하고 동기화 전이나 장애 시에는 로컬 JSON을 보조 경로로 사용합니다.
-
-Cloudflare Workers의 **Settings → Variables and Secrets**에서 `MFDS_DATA_API_KEY`를 Secret으로 저장해야 예약 동기화가 시작됩니다. 키 값은 코드·로그·응답에 포함되지 않습니다. `/api/drugs/status`에서는 키의 실제 값 없이 설정 여부, D1 레코드 수, 최근 동기화 상태만 확인할 수 있습니다.
-
-`sync:drug-data`는 로컬 개발용 보조 명령입니다. 공공데이터포털에서 발급받은 키를 로컬 환경에서 읽어 `data/mfds_pill_identification.json`을 만들며, 키 자체는 결과 파일에 저장하지 않습니다.
-
-## 확인과 배포
-
-```bash
-npm run lint
-npm test
-npm run build
-npm run deploy
-```
-
-`build`는 `scripts/build-verified.mjs`를 사용하므로 Windows PowerShell과 Linux에서 같은 경로로 실행됩니다. `deploy`는 빌드와 산출물 검증 뒤 Cloudflare Workers로 배포합니다. D1 바인딩 이름은 `DB`입니다.
-
-D1 스키마가 변경된 배포에서는 빌드 뒤 마이그레이션을 먼저 적용합니다.
-
-```bash
-npm run build
-npx wrangler d1 migrations apply silverlens-care --remote --config dist/server/wrangler.json
-npx wrangler deploy --config dist/server/wrangler.json --keep-vars
-```
-
-Cloudflare에는 `DB` D1 바인딩과 `17 * * * *` 예약 트리거가 생성됩니다. Dashboard에서 Secret을 추가하면 새 Worker 버전이 만들어지므로, 그 버전이 운영 트래픽 100%로 배포됐는지도 확인해야 합니다.
-
-## 현재 제약사항
-
-- 시니어가 돌봄이와 연결하지 않은 상태에서 브라우저 저장소를 지우거나 기기를 바꾸면 로컬 정보가 사라질 수 있습니다.
-- 의약품 기능은 사진만으로 확정 판정하지 않습니다. 제품명·각인이 확인되는 공식 후보를 보여주며 최종 판단은 약사나 의료진에게 확인해야 합니다.
-- 식약처 D1 카탈로그는 매시간 두 페이지씩 나누어 동기화하므로 최초 설정 직후에는 레코드가 점진적으로 증가합니다.
-- 로컬 방언 변환 서버는 선택 기능입니다. 연결하지 않아도 저장소의 사투리 사전과 Gemini 기반 질문 처리는 동작합니다.
-- Firebase 로그인은 실제 배포 도메인이 Firebase 승인 도메인에 등록되어 있어야 합니다.
+| `NEXT_PUBLIC_DIALECT_API_URL` | 선택형 로컬 방언 변환 서버 |
+| `MFDS_DATA_API_KEY` | 식약처 낱알 데이터 동기화 때만 사용; 배포 런타임에는 불필요 |
 
 ## 팀
 
@@ -349,10 +192,10 @@ Cloudflare에는 `DB` D1 바인딩과 `17 * * * *` 예약 트리거가 생성됩
 
 | 이름 | 역할 |
 | --- | --- |
-| 박정찬 | 팀장, 프로젝트 기획, AI 프롬프트 설계 |
-| 최수혁 | 백엔드·프론트엔드, AI 기능 구현 |
+| 박정찬 | 팀장, 프로젝트 아이디어, AI 프롬프트 설계 ,데이터 수집|
+| 최수혁 | 백엔드·프론트엔드, AI 기능 구현  및 기능 기획|
 | 김근호 | 프론트엔드, UI/UX |
-| 이도현 | 저장소·배포 관리 |
+| 이도현 | 저장소·배포 관리 , 데이터 수집 |
 
 ## 라이선스
 

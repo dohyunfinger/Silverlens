@@ -11,7 +11,6 @@ import {
   useState,
 } from "react";
 import ReactMarkdown from "react-markdown";
-import Link from "next/link";
 import {
   clearPendingPhotos,
   clearStore,
@@ -23,11 +22,6 @@ import {
   writeStore,
 } from "./localStore";
 import { type PhotoIssue, preparePhoto } from "./photoCapture";
-import SeniorCareLinkPanel, {
-  CARE_LINK_STORE_KEY,
-  isCareLinkState,
-  type CareLinkState,
-} from "./SeniorCareLinkPanel";
 import {
   getHealthGroupOptions,
   getHealthLabel,
@@ -1029,7 +1023,6 @@ const uiCopy = {
     basicSetup: "기본설정",
     data: "데이터",
     about: "서비스 소개",
-    caregiverEntry: "돌봄이 화면",
     sidebarTitle: "어르신을 위한 AI",
     sidebarNote: "말하고, 찍고, 편하게 물어보세요.",
     progressLanguage: "언어",
@@ -1111,7 +1104,7 @@ const uiCopy = {
     backupTitle: "내 정보 저장",
     dataTitle: "내 데이터 관리",
     dataDescription: "이 기기에 저장된 건강 정보와 대화 기록을 확인하고 안전하게 옮길 수 있어요.",
-    backupHelp: "이 기기에만 저장됩니다. 로그인은 필요하지 않아요.",
+    backupHelp: "내 정보는 이 기기에만 안전하게 저장됩니다.",
     backupSavedAt: "{time}에 저장했어요.",
     backupNever: "아직 저장된 내용이 없어요.",
     backupStoreLocal: "이 브라우저의 저장 공간이 제한되어 간단히 저장합니다.",
@@ -1222,7 +1215,6 @@ const uiCopy = {
     basicSetup: "Basic setup",
     data: "Data",
     about: "About",
-    caregiverEntry: "Caregiver view",
     sidebarTitle: "AI for older adults",
     sidebarNote: "Speak, snap a photo, and ask comfortably.",
     progressLanguage: "Language",
@@ -1304,7 +1296,7 @@ const uiCopy = {
     backupTitle: "Saved on this device",
     dataTitle: "Manage my data",
     dataDescription: "Review the health information and conversations saved on this device, or move them safely.",
-    backupHelp: "Everything stays on this device. No sign-in needed.",
+    backupHelp: "Your information stays safely on this device.",
     backupSavedAt: "Saved at {time}.",
     backupNever: "Nothing saved yet.",
     backupStoreLocal: "This browser limits storage, so we save a simpler copy.",
@@ -1415,7 +1407,6 @@ const uiCopy = {
     basicSetup: "基本設定",
     data: "データ",
     about: "サービス紹介",
-    caregiverEntry: "介護者画面",
     sidebarTitle: "高齢者のためのAI",
     sidebarNote: "話して、撮って、気軽に聞いてください。",
     progressLanguage: "言語",
@@ -1615,7 +1606,7 @@ type AboutSource = {
 /**
  * 소개 페이지의 "이렇게 쓰세요" 단계.
  *
- * public/guide/step-1 ~ step-5 에 실제 화면 사진을 넣어 두면 그 사진을 쓴다.
+ * public/guide/step-1 ~ step-4 에 실제 화면 사진을 넣어 두면 그 사진을 쓴다.
  * 사진이 없으면 아래 mock* 값으로 CSS 목업을 그려서, 사진 없이도 설명이 끊기지 않는다.
  */
 type AboutGuideStep = {
@@ -1766,31 +1757,31 @@ const aboutCopy: Record<Language, AboutCopy> = {
         text: "긴 답변은 큰 글씨 카드로 나눠 보여 주고, 읽어 주는 속도는 어르신이 직접 맞추실 수 있습니다.",
       },
       {
-        title: "내가 정하는 정보 공유",
-        text: "시니어 정보는 먼저 이 기기에 저장합니다. 사용자가 직접 연결 코드를 만들고 돌봄이가 등록한 경우에만 연결된 정보가 공유됩니다.",
+        title: "내 기기에 안전하게 저장",
+        text: "알레르기·건강 상태·메모·대화는 이 기기에 저장하고, 필요할 때 저장 파일로 내보내거나 다시 불러올 수 있습니다.",
       },
     ],
     updatesBadge: "Available now",
     updatesTitle: "지금 SilverLens에서,",
-    updatesTitleAccent: "시니어와 돌봄이가 함께할 수 있습니다",
+    updatesTitleAccent: "시니어에게 필요한 기능을 제공합니다",
     updatesDescription:
-      "시니어용 큰 화면뿐 아니라 로그인 기반 돌봄이 작업공간, 지속 동기화, 의약품 사진 확인과 데이터 관리까지 실제 서비스에 연결했습니다.",
+      "큰 화면과 음성·사진 질문, 의약품 사진 확인, 개인 건강정보 반영과 기기 내 데이터 관리까지 실제 서비스에 연결했습니다.",
     updates: [
       {
-        title: "로그인 없는 시니어 화면",
-        text: "시니어는 가입 없이 질문하고 알레르기·건강 상태·메모·대화를 이 기기에 저장합니다. 저장 파일 내보내기·불러오기·삭제도 데이터 화면에서 직접 합니다.",
+        title: "바로 시작하는 시니어 화면",
+        text: "시니어는 곧바로 질문하고 알레르기·건강 상태·메모·대화를 이 기기에 저장합니다.",
       },
       {
-        title: "돌봄이 전용 작업공간",
-        text: "돌봄이는 Google 또는 이메일 계정으로 로그인해 여러 시니어를 등록하고, 목록 검색과 시니어별 건강정보·최근 대화를 한 화면에서 확인합니다.",
+        title: "간편한 데이터 관리",
+        text: "데이터 화면에서 저장 내용을 파일로 내보내고, 다시 불러오거나 전체 삭제할 수 있습니다.",
       },
       {
-        title: "한 번 연결하고 계속 공유",
-        text: "한국어·영어·일본어 화면마다 읽기 쉬운 낱말 코드가 발급됩니다. 코드는 10분 동안 한 번만 쓰며, 등록 뒤에는 같은 기기의 새 정보와 대화가 계속 동기화됩니다.",
+        title: "건강정보 맞춤 답변",
+        text: "등록한 알레르기와 질병·건강 상태를 답변에 반영하고, 위험한 음식은 카드 상단에서 먼저 경고합니다.",
       },
       {
-        title: "돌봄이 AI와 기록 관리",
-        text: "선택한 시니어의 공유 기록을 문맥으로 삼아 글·사진·음성으로 폭넓게 질문할 수 있습니다. 새 대화를 만들고 필요 없는 돌봄이 대화는 삭제할 수 있습니다.",
+        title: "이어지는 대화와 기록",
+        text: "글·사진·음성 질문을 한 대화로 이어서 이해하며, 최근 답변은 이 기기에 저장해 다시 확인할 수 있습니다.",
       },
       {
         title: "안전한 약 사진 확인",
@@ -1868,7 +1859,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
     guideTitle: "처음 오셨어도 괜찮습니다,",
     guideTitleAccent: "다섯 단계만 보시면 됩니다",
     guideDescription:
-      "시니어 화면은 가입이나 로그인 없이 바로 쓸 수 있습니다. 아래 다섯 단계는 질문하고, 답변을 보고, 필요할 때 돌봄이와 안전하게 연결하는 방법입니다.",
+      "아래 다섯 단계에서 기본정보 입력, 질문, 답변 확인과 내 데이터 백업 방법을 안내합니다.",
     guideTipsLabel: "이렇게 하시면 편합니다",
     guideSteps: [
       {
@@ -1936,18 +1927,18 @@ const aboutCopy: Record<Language, AboutCopy> = {
       },
       {
         step: "5단계",
-        title: "데이터에서 한국어 연결 코드를 받습니다",
-        text: "왼쪽 '데이터' 메뉴를 열고 돌봄이 화면에 보일 이름을 확인한 뒤 '한국어 연결 코드 만들기'를 누릅니다. 화면 언어가 영어·일본어이면 그 언어의 쉬운 낱말 코드가 나옵니다.",
+        title: "데이터를 파일로 안전하게 보관합니다",
+        text: "왼쪽 '데이터' 메뉴에서 저장 파일 내보내기를 누르면 건강정보와 대화를 백업할 수 있습니다. 다른 기기나 새 브라우저에서는 저장 파일 불러오기로 복원합니다.",
         tips: [
-          "연결 코드는 10분 동안 한 번만 사용할 수 있습니다.",
-          "화면에 나온 낱말과 숫자를 믿을 수 있는 돌봄이에게만 알려 주세요.",
-          "돌봄이가 한 번 등록하면 다시 코드를 받을 필요 없이 이 기기의 새 정보와 대화가 계속 전달됩니다.",
-          "연결된 돌봄이 수와 마지막 전달 시간도 같은 카드에서 확인할 수 있습니다.",
+          "저장 파일은 본인만 확인할 수 있는 안전한 장소에 보관해 주세요.",
+          "복원할 때는 '저장 파일 불러오기'를 누르고 내보낸 JSON 파일을 선택합니다.",
+          "공용 컴퓨터에서는 사용 후 데이터 삭제를 눌러 개인정보를 지워 주세요.",
+          "마지막 저장 시각도 같은 화면에서 확인할 수 있습니다.",
         ],
         mockTitle: "내 데이터 관리",
-        mockItems: ["연결 코드 받기", "한국어 연결 코드 만들기", "하늘-나무-기차-572"],
-        mockNote: "10분 동안 한 번만 사용할 수 있어요",
-        mockCaption: "데이터 화면에서 이름을 확인하고 한국어 연결 코드 만들기를 누릅니다.",
+        mockItems: ["저장 파일 내보내기", "저장 파일 불러오기", "내 데이터 삭제"],
+        mockNote: "내 정보는 이 기기에 저장됩니다",
+        mockCaption: "데이터 화면에서 저장 내용을 백업하거나 복원할 수 있습니다.",
         mockHighlight: 1,
       },
     ],
@@ -2020,31 +2011,31 @@ const aboutCopy: Record<Language, AboutCopy> = {
         text: "Long answers are split into large-type cards, and the reading speed can be adjusted by the user.",
       },
       {
-        title: "Sharing stays under your control",
-        text: "Senior data is stored on this device first. It is shared only after the senior creates a linking code and a caregiver claims it.",
+        title: "Stored safely on your device",
+        text: "Allergies, conditions, notes, and chats stay on this device and can be exported or restored with a saved file.",
       },
     ],
     updatesBadge: "Available now",
     updatesTitle: "SilverLens now brings,",
-    updatesTitleAccent: "seniors and caregivers into one service",
+    updatesTitleAccent: "essential features for older adults",
     updatesDescription:
-      "The live service now includes a caregiver workspace, ongoing sharing, safer pill-photo checks, and local data controls alongside the senior-friendly screen.",
+      "The live service combines a senior-friendly interface, voice and photo questions, safer pill-photo checks, personal health context, and local data controls.",
     updates: [
       {
-        title: "No-login senior experience",
-        text: "Seniors can ask questions without an account and keep allergies, conditions, notes, and chats on this device. Saved data can be exported, imported, or erased from the Data page.",
+        title: "A senior screen ready to use",
+        text: "Older adults can ask questions right away and keep allergies, conditions, notes, and chats on this device.",
       },
       {
-        title: "A caregiver workspace",
-        text: "Caregivers sign in with Google or email, register multiple seniors, search the list, and view each senior's shared health profile and recent chats in one workspace.",
+        title: "Simple data controls",
+        text: "The Data page can export saved information, restore it from a file, or erase it completely.",
       },
       {
-        title: "Link once, keep sharing",
-        text: "Each Korean, English, or Japanese screen issues an easy word code in that language. It works once for 10 minutes; after claiming it, new data and chats from the same device continue to sync.",
+        title: "Health-aware answers",
+        text: "Registered allergies and conditions shape each answer, and risky foods are highlighted at the top of the answer card.",
       },
       {
-        title: "Caregiver AI and chat controls",
-        text: "Caregivers can ask broad questions with text, photos, or voice in a familiar AI-chat layout using the selected senior's shared history as context. Threads can be created and deleted.",
+        title: "Continuous conversations",
+        text: "Text, photo, and voice questions continue in one conversation, and recent answers remain available on this device.",
       },
       {
         title: "Safer pill-photo checks",
@@ -2122,7 +2113,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
     guideTitle: "First time here is fine,",
     guideTitleAccent: "five steps are all it takes",
     guideDescription:
-      "The senior screen opens without sign-up or login. These five steps cover asking, reading the answer, and securely linking with a caregiver when needed.",
+      "These five steps cover personal settings, asking questions, reading answers, and backing up your saved data.",
     guideTipsLabel: "Handy to know",
     guideSteps: [
       {
@@ -2189,18 +2180,18 @@ const aboutCopy: Record<Language, AboutCopy> = {
       },
       {
         step: "Step 5",
-        title: "Get an English linking code from Data",
-        text: "Open Data in the left menu, check the name shown to the caregiver, and press Create English linking code. Korean and Japanese screens issue easy word codes in their own language.",
+        title: "Keep your data safe in a file",
+        text: "Open Data in the left menu and export a saved file containing your health information and chats. Use Import saved file to restore it on another device or browser.",
         tips: [
-          "The linking code works once for 10 minutes.",
-          "Share the words and numbers only with a caregiver you trust.",
-          "After the caregiver claims it once, new information and chats from this device continue to sync without another code.",
-          "The same card shows the number of linked caregivers and the last shared time.",
+          "Keep the saved file in a private, secure location.",
+          "Choose Import saved file and select the exported JSON file to restore it.",
+          "On a shared computer, use Erase my data when you finish.",
+          "The same page shows when your information was last saved.",
         ],
         mockTitle: "My data",
-        mockItems: ["Get a linking code", "Create English linking code", "apple-river-chair-572"],
-        mockNote: "Works once for 10 minutes",
-        mockCaption: "Check the name in Data, then create an English linking code.",
+        mockItems: ["Export saved file", "Import saved file", "Erase my data"],
+        mockNote: "Your information stays on this device",
+        mockCaption: "Back up or restore your saved information from the Data page.",
         mockHighlight: 1,
       },
     ],
@@ -2274,31 +2265,31 @@ const aboutCopy: Record<Language, AboutCopy> = {
         text: "長い回答は大きな文字のカードに分けて見せ、読み上げの速さはご自分で合わせられます。",
       },
       {
-        title: "共有するかは本人が決める",
-        text: "シニアの情報はまずこの端末に保存します。本人が連携コードを作り、介護者が登録した場合にだけ共有されます。",
+        title: "端末に安全に保存",
+        text: "アレルギー・健康状態・メモ・会話はこの端末に保存し、保存ファイルとして書き出し・復元できます。",
       },
     ],
     updatesBadge: "Available now",
     updatesTitle: "現在のSilverLensでは、",
-    updatesTitleAccent: "シニアと介護者が一緒に使えます",
+    updatesTitleAccent: "シニアに必要な機能をそろえています",
     updatesDescription:
-      "シニア向けの大きな画面に加え、介護者用ワークスペース、継続同期、薬の写真確認、保存データ管理まで実際のサービスに組み込みました。",
+      "大きな画面、音声・写真の質問、薬の写真確認、個人の健康情報を反映した回答、端末内のデータ管理をひとつにまとめました。",
     updates: [
       {
-        title: "ログイン不要のシニア画面",
-        text: "シニアはアカウントなしで質問でき、アレルギー・健康状態・メモ・会話を端末に保存できます。データ画面から書き出し・読み込み・削除もできます。",
+        title: "すぐ使えるシニア画面",
+        text: "すぐに質問を始められ、アレルギー・健康状態・メモ・会話をこの端末に保存できます。",
       },
       {
-        title: "介護者専用ワークスペース",
-        text: "介護者はGoogleまたはメールでログインし、複数のシニアを登録・検索して、共有された健康情報と最近の会話を一つの画面で確認できます。",
+        title: "わかりやすいデータ管理",
+        text: "データ画面から保存内容を書き出し、ファイルから復元し、必要ならすべて削除できます。",
       },
       {
-        title: "一度連携して継続共有",
-        text: "韓国語・英語・日本語の各画面で、その言語の読みやすい単語コードを発行します。コードは10分間に一度だけ使い、登録後は同じ端末の新しい情報と会話が継続して同期されます。",
+        title: "健康情報に合わせた回答",
+        text: "登録したアレルギーや疾患を回答に反映し、危険な食品は回答カードの上部で先に警告します。",
       },
       {
-        title: "介護者AIと会話管理",
-        text: "選んだシニアの共有履歴を文脈にしながら、文字・写真・音声で幅広く質問できます。新しい会話を作り、不要な会話を削除できます。",
+        title: "続けて使える会話と履歴",
+        text: "文字・写真・音声の質問をひとつの会話として理解し、最近の回答はこの端末で確認できます。",
       },
       {
         title: "安全を優先した薬の写真確認",
@@ -2376,7 +2367,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
     guideTitle: "はじめてでも大丈夫、",
     guideTitleAccent: "五つの手順だけです",
     guideDescription:
-      "シニア画面は登録やログインなしですぐ使えます。下の五つの手順で、質問、回答の確認、必要なときの安全な介護者連携まで説明します。",
+      "下の五つの手順で、基本設定、質問、回答の確認、保存データのバックアップ方法を説明します。",
     guideTipsLabel: "覚えておくと便利です",
     guideSteps: [
       {
@@ -2443,18 +2434,18 @@ const aboutCopy: Record<Language, AboutCopy> = {
       },
       {
         step: "手順 5",
-        title: "データ画面で日本語の連携コードを受け取ります",
-        text: "左の「データ」を開き、介護者に表示する名前を確認して「日本語の連携コードを作る」を押します。韓国語・英語の画面では、それぞれの言語の読みやすい単語コードが出ます。",
+        title: "データをファイルで安全に保管します",
+        text: "左の「データ」から保存ファイルを書き出すと、健康情報と会話をバックアップできます。別の端末やブラウザでは、保存ファイルの読み込みで復元します。",
         tips: [
-          "連携コードは10分間に一度だけ使えます。",
-          "画面に出た単語と数字は、信頼できる介護者にだけ伝えてください。",
-          "介護者が一度登録すると、新しい情報と会話は次回からコードなしで同期されます。",
-          "連携中の介護者数と最終共有時刻も同じカードで確認できます。",
+          "保存ファイルは本人だけが確認できる安全な場所に保管してください。",
+          "復元するときは「保存ファイルを読み込む」を押し、書き出したJSONファイルを選びます。",
+          "共用パソコンでは使用後にデータ削除を押してください。",
+          "最後の保存時刻も同じ画面で確認できます。",
         ],
         mockTitle: "マイデータ管理",
-        mockItems: ["連携コードを受け取る", "日本語の連携コードを作る", "そら-かわ-いす-572"],
-        mockNote: "10分間に一度だけ使えます",
-        mockCaption: "データ画面で名前を確認し、日本語の連携コードを作ります。",
+        mockItems: ["保存ファイルを書き出す", "保存ファイルを読み込む", "データを削除"],
+        mockNote: "情報はこの端末に保存されます",
+        mockCaption: "データ画面で保存内容をバックアップ・復元できます。",
         mockHighlight: 1,
       },
     ],
@@ -2512,16 +2503,16 @@ const aboutPhotoStories: Record<Language, AboutPhotoStory[]> = {
       alt: "소파에 앉아 스마트폰을 함께 보는 시니어 부부",
       kicker: "익숙한 기기",
       title: "스마트폰 하나로 편안하게",
-      text: "시니어는 가입 없이 묻고, 큰 글씨와 음성으로 답을 확인할 수 있습니다.",
+      text: "시니어는 바로 질문하고, 큰 글씨와 음성으로 답을 확인할 수 있습니다.",
     },
     {
-      image: "/about/caregiver-conversation.jpg",
-      source: "https://unsplash.com/photos/three-women-interacting-indoors-with-soft-lighting-iMTRPLdReVo",
-      credit: "Age Cymru · Unsplash",
-      alt: "돌봄이와 마주 보며 대화하는 두 시니어 여성",
-      kicker: "돌봄이와 연결",
-      title: "필요한 사람에게 정보가 이어져요",
-      text: "시니어가 허용한 건강정보와 최근 대화를 돌봄이가 한 화면에서 확인합니다.",
+      image: "/about/grandparents-hero.jpg",
+      source: "https://unsplash.com/photos/grandmother-laughing-with-her-grandchildren-wearing-white-DxPgOHdcwes",
+      credit: "Hoi An and Da Nang Photographer · Unsplash",
+      alt: "손주들과 함께 웃는 할머니",
+      kicker: "내 정보 관리",
+      title: "필요할 때 직접 백업해요",
+      text: "건강정보와 최근 대화를 저장 파일로 내보내고 다시 불러올 수 있습니다.",
     },
   ],
   "en-US": [
@@ -2541,16 +2532,16 @@ const aboutPhotoStories: Record<Language, AboutPhotoStory[]> = {
       alt: "An older couple looking at a smartphone together on a couch",
       kicker: "A familiar device",
       title: "Comfortable with just a smartphone",
-      text: "Older adults can ask without signing up and check answers in large text or by voice.",
+      text: "Older adults can ask right away and check answers in large text or by voice.",
     },
     {
-      image: "/about/caregiver-conversation.jpg",
-      source: "https://unsplash.com/photos/three-women-interacting-indoors-with-soft-lighting-iMTRPLdReVo",
-      credit: "Age Cymru · Unsplash",
-      alt: "A caregiver talking face to face with two older women",
-      kicker: "Connected care",
-      title: "Information reaches the right person",
-      text: "Caregivers can review health information and recent chats that the senior chose to share.",
+      image: "/about/grandparents-hero.jpg",
+      source: "https://unsplash.com/photos/grandmother-laughing-with-her-grandchildren-wearing-white-DxPgOHdcwes",
+      credit: "Hoi An and Da Nang Photographer · Unsplash",
+      alt: "A grandmother laughing with her grandchildren",
+      kicker: "Your data",
+      title: "Back it up when you need to",
+      text: "Export health information and recent chats to a saved file, then restore them later.",
     },
   ],
   "ja-JP": [
@@ -2573,13 +2564,13 @@ const aboutPhotoStories: Record<Language, AboutPhotoStory[]> = {
       text: "シニアは登録なしで質問し、大きな文字や音声で回答を確認できます。",
     },
     {
-      image: "/about/caregiver-conversation.jpg",
-      source: "https://unsplash.com/photos/three-women-interacting-indoors-with-soft-lighting-iMTRPLdReVo",
-      credit: "Age Cymru · Unsplash",
-      alt: "介護者と向き合って話す二人のシニア女性",
-      kicker: "介護者との連携",
-      title: "必要な人へ情報がつながります",
-      text: "シニアが共有を許可した健康情報と最近の会話を、介護者がひとつの画面で確認します。",
+      image: "/about/grandparents-hero.jpg",
+      source: "https://unsplash.com/photos/grandmother-laughing-with-her-grandchildren-wearing-white-DxPgOHdcwes",
+      credit: "Hoi An and Da Nang Photographer · Unsplash",
+      alt: "孫たちと笑う祖母",
+      kicker: "自分のデータ",
+      title: "必要なときに自分でバックアップ",
+      text: "健康情報と最近の会話を保存ファイルに書き出し、あとで復元できます。",
     },
   ],
 };
@@ -2682,13 +2673,13 @@ function AboutGuideMock({ index, step }: { index: number; step: AboutGuideStep }
   // 확장자를 하나씩 시도한다. 다 실패하면 사진 없이 목업만 남는다.
   const [typeIndex, setTypeIndex] = useState(0);
   const [shotLoaded, setShotLoaded] = useState(false);
-  const shotType = ABOUT_GUIDE_SHOT_TYPES[typeIndex];
+  const shotType = index === 4 ? undefined : ABOUT_GUIDE_SHOT_TYPES[typeIndex];
   const itemClass = (itemIndex: number, base: string) =>
     itemIndex === step.mockHighlight ? `${base} highlight` : base;
 
   return (
     <figure
-      className={`${shotLoaded ? "about-guide-mock has-shot" : "about-guide-mock"}${index === 4 ? " is-link" : ""}`}
+      className={`${shotLoaded ? "about-guide-mock has-shot" : "about-guide-mock"}${index === 4 ? " is-data" : ""}`}
       aria-hidden="true"
     >
       {shotType && (
@@ -2710,7 +2701,7 @@ function AboutGuideMock({ index, step }: { index: number; step: AboutGuideStep }
         <span className="about-guide-mock-title">{step.mockTitle}</span>
 
         {index === 4 ? (
-          <div className="about-guide-mock-link">
+          <div className="about-guide-mock-data">
             <span>{step.mockItems[0]}</span>
             <strong>{step.mockTitle}</strong>
             <button type="button" tabIndex={-1}>{step.mockItems[1]}</button>
@@ -3009,14 +3000,6 @@ function Sidebar({
           {copy.about}
         </button>
       </nav>
-      <Link className="caregiver-entry-link" href="/caregiver">
-        <span className="caregiver-entry-icon" aria-hidden="true">
-          {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src="/brand/silverlens-mark.png" alt="" />
-        </span>
-        <span className="caregiver-entry-label">{copy.caregiverEntry}</span>
-        <span className="caregiver-entry-arrow" aria-hidden="true">↗</span>
-      </Link>
       <div className="sidebar-note">
         <strong>{copy.sidebarTitle}</strong>
         <span>{copy.sidebarNote}</span>
@@ -4177,7 +4160,7 @@ export default function SilverLensApp({
    * 기기에 저장해 둔 프로필과 대화를 되살린다.
    *
    * 어르신이 매번 많은 알레르기·질병·건강 상태를 다시 고르게 하면 재방문이 어렵다.
-   * 로그인도 서버도 없이 브라우저 안에만 두고, 옛 localStorage 메모도 한 번 옮겨 온다.
+   * 서버 전송 없이 브라우저 안에만 두고, 옛 localStorage 메모도 한 번 옮겨 온다.
    */
   useEffect(() => {
     let cancelled = false;
@@ -4236,78 +4219,6 @@ export default function SilverLensApp({
   }, [
     storeReady,
     introSeen,
-    language,
-    gender,
-    ageBand,
-    ageConfirmed,
-    allergyIds,
-    conditionIds,
-    healthNotes,
-    chatTurns,
-  ]);
-
-  /**
-   * 연결 카드는 데이터 화면에만 있지만, 연결된 뒤의 변경은 어느 화면에서든
-   * 돌봄이에게 전달되어야 한다. 특히 새 답변이 생긴 직후 최신 대화 전체를
-   * 기기 자격 증명으로 동기화한다.
-   */
-  useEffect(() => {
-    // 데이터 화면에서는 연결 카드가 이름과 상태까지 함께 동기화한다.
-    if (!storeReady || screen === "data") return;
-    const controller = new AbortController();
-    const timer = window.setTimeout(() => {
-      void readStore<CareLinkState>(CARE_LINK_STORE_KEY).then(async (link) => {
-        if (!isCareLinkState(link) || controller.signal.aborted) return;
-        const snapshot: StoredState = {
-          version: 1,
-          savedAt: Date.now(),
-          profile: {
-            language,
-            gender,
-            ageBand,
-            ageConfirmed,
-            allergyIds,
-            conditionIds,
-            healthNotes,
-          },
-          chatTurns: chatTurns.slice(-MAX_STORED_TURNS),
-        };
-        try {
-          const response = await fetch("/api/senior/sync", {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            signal: controller.signal,
-            body: JSON.stringify({
-              deviceId: link.deviceId,
-              deviceSecret: link.deviceSecret,
-              displayName: link.displayName,
-              snapshot,
-            }),
-          });
-          if (!response.ok) return;
-          const result = (await response.json()) as {
-            syncedAt: number;
-            linkedCaregiverCount: number;
-          };
-          await writeStore(CARE_LINK_STORE_KEY, {
-            ...link,
-            lastSyncedAt: result.syncedAt,
-            linkedCaregiverCount: result.linkedCaregiverCount,
-          } satisfies CareLinkState);
-        } catch (error) {
-          if (!(error instanceof DOMException && error.name === "AbortError")) {
-            console.warn("[SilverLens] 돌봄이 정보 자동 전달에 실패했습니다.");
-          }
-        }
-      });
-    }, 650);
-    return () => {
-      window.clearTimeout(timer);
-      controller.abort();
-    };
-  }, [
-    storeReady,
-    screen,
     language,
     gender,
     ageBand,
@@ -5666,20 +5577,6 @@ export default function SilverLensApp({
   }
 
   if (screen === "data") {
-    const careSnapshot: StoredState = {
-      version: 1,
-      savedAt: storeSavedAt ?? 0,
-      profile: {
-        language,
-        gender,
-        ageBand,
-        ageConfirmed,
-        allergyIds,
-        conditionIds,
-        healthNotes,
-      },
-      chatTurns: chatTurns.slice(-MAX_STORED_TURNS),
-    };
     return (
       <main className="app-shell">
         <Sidebar active="data" onNavigate={setScreen} copy={activeCopy} />
@@ -5691,11 +5588,6 @@ export default function SilverLensApp({
               <p>{activeCopy.dataDescription}</p>
             </div>
           </header>
-
-          <SeniorCareLinkPanel
-            language={activeLanguage}
-            snapshot={careSnapshot}
-          />
 
           <section className="health-notes" aria-label={activeCopy.notesTitle}>
             <div className="health-notes-head">
@@ -5781,10 +5673,6 @@ export default function SilverLensApp({
             )}
           </section>
 
-          <Link className="caregiver-mobile-entry-link" href="/caregiver">
-            {activeCopy.caregiverEntry}
-            <span aria-hidden="true">↗</span>
-          </Link>
         </section>
       </main>
     );
@@ -6530,10 +6418,6 @@ export default function SilverLensApp({
               </button>
             </div>
           )}
-          <Link className="caregiver-mobile-entry-link" href="/caregiver">
-            {activeCopy.caregiverEntry}
-            <span aria-hidden="true">↗</span>
-          </Link>
         </section>
       </main>
     );
@@ -6780,10 +6664,6 @@ export default function SilverLensApp({
             <ChevronIcon direction="right" />
           </span>
         </button>
-        <Link className="caregiver-mobile-entry-link" href="/caregiver">
-          {activeCopy.caregiverEntry}
-          <span aria-hidden="true">↗</span>
-        </Link>
       </section>
     </main>
   );

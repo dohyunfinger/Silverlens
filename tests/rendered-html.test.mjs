@@ -61,63 +61,7 @@ test("starts with the introduction, then renders the senior service on return vi
   assert.match(returnHtml, /내 정보 말하기/);
   assert.match(returnHtml, /내 정보 입력하기/);
   assert.doesNotMatch(returnHtml, /class="chat-quick-row"/);
-});
-
-test("renders the caregiver entry link and authentication screens", async () => {
-  const workerUrl = new URL("../dist/server/index.js", import.meta.url);
-  workerUrl.searchParams.set("caregiver-test", `${process.pid}-${Date.now()}`);
-  const { default: worker } = await import(workerUrl.href);
-  const environment = {
-    ASSETS: {
-      fetch: async () => new Response("Not found", { status: 404 }),
-    },
-  };
-  const context = {
-    waitUntil() {},
-    passThroughOnException() {},
-  };
-
-  const seniorResponse = await worker.fetch(
-    new Request("http://localhost/", {
-      headers: {
-        accept: "text/html",
-        cookie: "silverlens_service_intro_seen=1",
-      },
-    }),
-    environment,
-    context,
-  );
-  const seniorHtml = await seniorResponse.text();
-
-  assert.equal(seniorResponse.status, 200);
-  assert.match(seniorHtml, /href=["']\/caregiver["']/);
-  assert.match(seniorHtml, /돌봄이 화면/);
-
-  const caregiverResponse = await worker.fetch(
-    new Request("http://localhost/caregiver", {
-      headers: { accept: "text/html" },
-    }),
-    environment,
-    context,
-  );
-  const caregiverHtml = await caregiverResponse.text();
-
-  assert.equal(caregiverResponse.status, 200);
-  assert.match(caregiverHtml, /Google로 계속하기/);
-  assert.match(caregiverHtml, /href=["']\/caregiver\/signup["']/);
-  assert.match(caregiverHtml, /시니어 화면으로 돌아가기/);
-
-  const signupResponse = await worker.fetch(
-    new Request("http://localhost/caregiver/signup", {
-      headers: { accept: "text/html" },
-    }),
-    environment,
-    context,
-  );
-  const signupHtml = await signupResponse.text();
-
-  assert.equal(signupResponse.status, 200);
-  assert.match(signupHtml, /돌봄이 계정을 만든 뒤/);
-  assert.match(signupHtml, /개인정보 수집 및 이용에 동의합니다/);
-  assert.match(signupHtml, /로그인으로 돌아가기/);
+  assert.doesNotMatch(returnHtml, /href=["']\/caregiver/);
+  assert.doesNotMatch(returnHtml, /돌봄이 화면/);
+  assert.doesNotMatch(returnHtml, /로그인|회원가입/);
 });

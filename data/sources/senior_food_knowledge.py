@@ -8125,7 +8125,6 @@ food_data = [
         "bad_compatibility": "없음"
     }
   },
-  
 
   
     

@@ -21,11 +21,6 @@ export type ConversationTurn = {
   answer: string;
 };
 
-export type CaregiverAnswerContext = {
-  seniorAlias?: string;
-  seniorHistory?: ConversationTurn[];
-};
-
 /** 설정 화면에서 음성으로 남긴 상세 설명. 목록으로 고를 수 없는 내용을 담는다. */
 export type HealthNote = {
   kind: "allergy" | "condition" | "setup";
@@ -35,7 +30,6 @@ export type HealthNote = {
 export type UserGender = "male" | "female";
 
 export type UserProfile = {
-  audience?: "senior" | "caregiver";
   language?: string;
   gender?: UserGender;
   ageBand?: number;
@@ -450,7 +444,7 @@ const ON_TOPIC_KEYWORDS = [
   // 사투리/방언
   "사투리", "방언", "표준어", "정구지", "무시",
   // 서비스 사용 관련
-  "실버렌즈", "서비스", "사용법", "이용", "가입", "로그인", "프로필",
+  "실버렌즈", "서비스", "사용법", "이용", "프로필",
   "언어 설정", "설정", "도움말", "사용방법",
   // 인사/일상 대화(가벼운 스몰토크는 허용)
   "안녕", "고마워", "감사", "반가워", "수고",
@@ -501,7 +495,6 @@ export async function generateSeniorFriendlyAnswer(
     images?: InlineImage[];
   } = {},
   history: ConversationTurn[] = [],
-  caregiverContext: CaregiverAnswerContext = {},
 ): Promise<SeniorAnswerResult> {
   const { apiKey, textModelChain } = getGeminiConfig();
   const conversationHistory = sanitizeHistory(history);
@@ -512,13 +505,6 @@ export async function generateSeniorFriendlyAnswer(
     .filter(Boolean)
     .join("\n");
   const selectedLanguage = toHealthLanguage(profile.language);
-  const isCaregiverAudience = profile.audience === "caregiver";
-  const linkedSeniorHistory = isCaregiverAudience
-    ? sanitizeHistory(caregiverContext.seniorHistory ?? [], 12)
-    : [];
-  const linkedSeniorAlias = isCaregiverAudience
-    ? caregiverContext.seniorAlias?.trim().slice(0, 30) || "선택된 시니어 없음"
-    : "";
 
   const profileAllergies =
     profile.allergies ??
@@ -563,7 +549,6 @@ export async function generateSeniorFriendlyAnswer(
     : null;
   const hasMedia = Boolean(media.audio || images.length > 0);
   if (
-    !isCaregiverAudience &&
     !hasMedia &&
     isMeaningfulText(message) &&
     !isLikelyOnTopic(topicContext, knowledge)
@@ -592,12 +577,8 @@ export async function generateSeniorFriendlyAnswer(
   ])];
 
   const prompt = [
-    isCaregiverAudience
-      ? "당신은 시니어를 돌보는 보호자·요양보호사의 실무와 일상 질문을 폭넓게 지원하는 돌봄 보조 AI입니다."
-      : "당신은 시니어에게 식재료와 조리 정보를 쉬운 말로 설명하는 보조 AI입니다.",
-    isCaregiverAudience
-      ? "돌봄이의 질문은 음식·건강으로 주제를 제한하지 마세요. 일반 지식, 일정 정리, 문장 작성, 요약 등에도 가능한 범위에서 직접 답하세요."
-      : "음식·영양·건강·사투리·서비스 이용과 무관한 질문(예: 스포츠 선수, 연예인, 시사, 일반 상식)이면 관련 지식으로 답하지 말고, 시니어 식품·영양 정보를 돕는 AI임을 밝히고 음식이나 건강 관련 질문을 다시 안내하세요.",
+    "당신은 시니어에게 식재료와 조리 정보를 쉬운 말로 설명하는 보조 AI입니다.",
+    "음식·영양·건강·사투리·서비스 이용과 무관한 질문(예: 스포츠 선수, 연예인, 시사, 일반 상식)이면 관련 지식으로 답하지 말고, 시니어 식품·영양 정보를 돕는 AI임을 밝히고 음식이나 건강 관련 질문을 다시 안내하세요.",
     answerLanguageInstruction(selectedLanguage),
     "의학적 진단이나 치료 지시를 하지 말고, 위험 가능성이 있으면 의료진 또는 약사 확인을 권하세요.",
     "등록된 알레르기 식품을 추천하거나 레시피 재료로 넣지 마세요.",
@@ -606,13 +587,9 @@ export async function generateSeniorFriendlyAnswer(
     "밀 알레르기에는 밀가루가 필요한 자리만 쌀가루·감자전분 등 안전한 대체재로 바꾸고, 우유 알레르기에는 유제품이 필요한 자리만 알레르기 없는 비유제품으로 바꾸세요.",
     "고혈압·심부전·신장질환 등 나트륨 제한 근거가 등록되어 있지 않다면 소금을 임의로 금지하지 마세요. 간장도 밀·대두 알레르기 여부와 나트륨 제한을 각각 확인한 뒤 안내하세요.",
     "대체 식재료를 제안하기 전에 그 재료가 무엇을 대신하는지 한 번 확인하고, 맛내기·반죽·농도·유제품 역할에 맞는 현실적인 대체재만 제시하세요.",
-    isCaregiverAudience
-      ? "첫 문장에서 결론을 말하고, 돌봄이가 바로 행동으로 옮길 수 있도록 확인할 점과 다음 행동을 구분해 간결하게 설명하세요."
-      : "첫 문장에서 결론을 말하고, 꼭 필요한 내용만 보통 6~9개의 짧은 문장으로 설명하세요.",
+    "첫 문장에서 결론을 말하고, 꼭 필요한 내용만 보통 6~9개의 짧은 문장으로 설명하세요.",
     "문장 하나에는 핵심 하나만 담고, 한 문단은 1~2개의 짧은 문장으로 작성하세요.",
-    isCaregiverAudience
-      ? "전문용어가 필요하면 쉬운 뜻을 바로 덧붙이고, 긴 표 대신 짧은 제목과 목록을 사용하세요. 어르신에게 직접 전달할 표현이 있으면 따옴표로 짧게 제시하세요."
-      : "TTS로 자연스럽게 읽히도록 표와 긴 목록은 피하고 문장 사이를 짧은 문단으로 나누세요.",
+    "TTS로 자연스럽게 읽히도록 표와 긴 목록은 피하고 문장 사이를 짧은 문단으로 나누세요.",
     "첨부된 글, 음성, 사진이 있으면 각각 따로 답하지 말고 하나의 질문으로 함께 이해하세요.",
     // 사진에 먹을 것이 없으면 억지로 판단하지 않게 먼저 막는다.
     ...imageContentGuardInstructions(images.length),
@@ -650,14 +627,6 @@ export async function generateSeniorFriendlyAnswer(
     "성별만으로 질병을 추정하거나 단정하지 마세요. 성별이 미입력이면 성별과 무관한 일반 기준으로 설명하세요.",
     "성역할을 가정하는 표현을 쓰지 마세요. 조리를 누가 하는지, 가족 중 누가 챙겨주는지 임의로 단정하지 마세요.",
     "사용자 알레르기나 질병·건강 상태와 충돌하거나 불확실하면 안전 원칙을 우선하세요.",
-    ...(isCaregiverAudience
-      ? [
-          "선택한 시니어의 최근 대화는 사실 확인과 반복된 관심사 파악을 위한 읽기 전용 참고자료입니다.",
-          "최근 대화에 없는 사실이나 시니어의 의도·감정·증상을 추측하지 마세요. 자료가 부족하면 확인할 수 없다고 분명히 말하세요.",
-          "최근 대화를 요약하거나 반복된 걱정을 찾을 때는 아래에 제공된 시니어 앱 최근 대화만 근거로 사용하고, 돌봄이와 AI의 이전 대화와 섞지 마세요.",
-          "시니어의 민감한 건강정보는 현재 돌봄 목적의 답변에 필요한 범위에서만 언급하세요.",
-        ]
-      : []),
     "risk_level은 danger, caution, safe 중 하나만 사용하세요.",
     "등록 알레르기와 직접 충돌하거나 섭취하지 말아야 한다고 답할 때는 danger로 표시하세요.",
     "불확실하여 전문가 확인이 필요하지만 명확한 금지는 아닐 때만 caution으로 표시하세요.",
@@ -670,17 +639,7 @@ export async function generateSeniorFriendlyAnswer(
     `어르신이 음성으로 남긴 상세 메모: ${
       healthNoteLines.length > 0 ? JSON.stringify(healthNoteLines) : "없음"
     }`,
-    `${isCaregiverAudience ? "현재 돌봄이 AI 대화의 이전 내용" : "이전 대화"}: ${JSON.stringify(conversationHistory)}`,
-    ...(isCaregiverAudience
-      ? [
-          `선택한 시니어: ${linkedSeniorAlias}`,
-          `시니어 앱 최근 대화: ${
-            linkedSeniorHistory.length > 0
-              ? JSON.stringify(linkedSeniorHistory)
-              : "제공된 대화 없음"
-          }`,
-        ]
-      : []),
+    `이전 대화: ${JSON.stringify(conversationHistory)}`,
     `질문에서 찾은 방언 참고: ${JSON.stringify(knowledge.dialectHints)}`,
     `질문에서 찾은 외래어·별칭 참고: ${JSON.stringify(knowledge.foodAliasHints)}`,
     `질문에서 찾은 한식 메뉴명 참고: ${JSON.stringify(knowledge.dishNameHints)}`,

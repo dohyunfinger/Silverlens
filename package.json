@@ -18,8 +18,6 @@
     "sync:drug-data": "node scripts/sync-mfds-pill-data.mjs"
   },
   "dependencies": {
-    "firebase": "^12.17.1",
-    "jose": "^6.2.8",
     "next": "16.2.6",
     "react": "19.2.6",
     "react-dom": "19.2.6",
