@@ -5546,6 +5546,14 @@ export default function SilverLensApp({
                 <p className="about-legal-note">{about.footMedicalNote}</p>
                 <p className="about-legal-copy">{about.copyright}</p>
               </div>
+
+              <button
+                type="button"
+                className="about-temp-reset"
+                onClick={() => void clearSavedData()}
+              >
+                {activeCopy.backupClear}
+              </button>
             </div>
           </footer>
         </main>

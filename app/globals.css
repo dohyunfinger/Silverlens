@@ -7074,3 +7074,23 @@ strong {
     border-radius: 14px;
   }
 }
+
+.about-temp-reset {
+  display: block;
+  width: min(360px, 100%);
+  min-height: 56px;
+  margin: 32px auto 0;
+  padding: 12px 20px;
+  border: 1px solid #f0b8b5;
+  border-radius: 16px;
+  color: #b42318;
+  background: #fff5f4;
+  font-size: 17px;
+  font-weight: 800;
+  cursor: pointer;
+}
+
+.about-temp-reset:hover {
+  color: #fff;
+  background: #b42318;
+}

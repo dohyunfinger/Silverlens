@@ -17,6 +17,12 @@ test("about page shows official source logos and a fifth data-backup guide", asy
   assert.match(source, /데이터를 파일로 안전하게 보관합니다/);
   assert.match(source, /className="about-guide-mock-data"/);
   assert.match(source, /index === 4 \? " is-data"/);
+  assert.match(source, /className="about-temp-reset"/);
+  assert.match(source, /onClick=\{\(\) => void clearSavedData\(\)\}/);
+  assert.ok(
+    source.indexOf('className="about-temp-reset"') >
+      source.indexOf('className="about-legal"'),
+  );
 });
 
 test("about hero uses a credited family photo and step five uses the backup mock", async () => {
