@@ -6414,10 +6414,45 @@ strong {
 }
 
 .send-question {
+  display: grid;
+  width: 100%;
+  min-height: 84px;
+  grid-template-columns: 48px minmax(0, 1fr);
+  grid-template-rows: auto auto;
+  align-items: center;
+  justify-items: start;
+  column-gap: 14px;
+  row-gap: 2px;
+  padding: 14px 20px;
   border: 0;
   color: #fff;
   background: var(--toss-blue);
   box-shadow: 0 8px 20px rgba(27, 100, 218, 0.22);
+}
+
+.send-question > span {
+  display: grid;
+  width: 48px;
+  height: 48px;
+  grid-row: 1 / -1;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.16);
+}
+
+.send-question strong,
+.send-question small {
+  grid-column: 2;
+  text-align: left;
+}
+
+.send-question strong {
+  align-self: end;
+  font-size: 20px;
+}
+
+.send-question small {
+  align-self: start;
 }
 
 .send-question small {
@@ -6932,6 +6967,11 @@ strong {
   .composer-tool,
   .send-question {
     min-height: 64px;
+  }
+
+  .send-question {
+    min-height: 76px;
+    padding: 12px 16px;
   }
 
   .speed-control {

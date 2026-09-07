@@ -16,6 +16,7 @@ test("uses the senior-friendly minimal card theme across service screens", async
   assert.match(css, /\.about-accent,[\s\S]*?-webkit-text-fill-color: currentColor;/);
   assert.match(css, /\.about-panel-cta \{[\s\S]*?var\(--toss-blue-deep\)/);
   assert.match(css, /\.about-guide-mock,[\s\S]*?background: #191f28;/);
+  assert.match(css, /\.send-question \{[\s\S]*?width: 100%;[\s\S]*?grid-template-columns: 48px minmax\(0, 1fr\);/);
   assert.match(
     css,
     /@media \(max-width: 1180px\), \(hover: none\) and \(pointer: coarse\) \{[\s\S]*?\.app-shell \{[\s\S]*?grid-template-columns: minmax\(0, 1fr\);[\s\S]*?border-radius: 0;/,
