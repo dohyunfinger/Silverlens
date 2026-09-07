@@ -6737,8 +6737,9 @@ strong {
   box-shadow: 0 8px 20px rgba(49, 130, 246, 0.24);
 }
 
-@media (max-width: 900px) {
+@media (max-width: 1180px), (hover: none) and (pointer: coarse) {
   .app-shell {
+    grid-template-columns: minmax(0, 1fr);
     width: 100%;
     min-height: 100vh;
     margin: 0;
@@ -6747,15 +6748,43 @@ strong {
   }
 
   .sidebar {
+    position: sticky;
+    top: 0;
+    z-index: 30;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    padding: 8px;
     border-right: 0;
     border-bottom: 1px solid var(--toss-line);
     background: rgba(255, 255, 255, 0.96);
     box-shadow: 0 4px 18px rgba(25, 31, 40, 0.06);
   }
 
+  .brand,
+  .sidebar-note {
+    display: none;
+  }
+
+  .sidebar nav {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    width: 100%;
+    min-width: 0;
+    margin: 0;
+  }
+
+  .nav-item {
+    min-width: 0;
+    justify-content: center;
+    text-align: center;
+  }
+
   .setup-screen,
   .chat-screen,
   .data-screen {
+    width: 100%;
+    max-width: none;
     padding: 24px 20px 34px;
   }
 }
