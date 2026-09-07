@@ -6130,6 +6130,9 @@ html[lang="ja-JP"] .about-workflow-card p {
   --muted: var(--toss-muted);
   --line: var(--toss-line);
   --sky: var(--toss-blue-soft);
+  --good: var(--toss-blue-deep);
+  --brand-dark-top: var(--toss-blue);
+  --brand-dark-bottom: var(--toss-blue-deep);
 }
 
 html,
@@ -6138,7 +6141,27 @@ body {
 }
 
 body {
+  font-family: Pretendard, "Pretendard Variable", "Noto Sans KR", "Noto Sans JP",
+    -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+  font-weight: 500;
+  line-height: 1.55;
   letter-spacing: -0.015em;
+}
+
+button,
+input,
+textarea {
+  font-family: inherit;
+  letter-spacing: -0.02em;
+}
+
+h1,
+h2,
+h3,
+legend,
+strong {
+  font-weight: 800;
+  letter-spacing: -0.035em;
 }
 
 .app-shell {
@@ -6361,6 +6384,46 @@ body {
   background: #fff;
 }
 
+.mic-primary {
+  border: 0;
+  border-radius: 22px;
+  background: var(--toss-blue);
+  box-shadow: 0 10px 24px rgba(27, 100, 218, 0.24);
+}
+
+.mic-primary:hover {
+  box-shadow: 0 14px 30px rgba(27, 100, 218, 0.28);
+}
+
+.mic-primary small {
+  color: #eaf2ff;
+}
+
+.composer-tool {
+  border: 0;
+  color: var(--toss-text);
+  background: var(--toss-surface-soft);
+  box-shadow: inset 0 0 0 1px var(--toss-line);
+}
+
+.composer-tool.active {
+  border: 0;
+  color: var(--toss-blue-deep);
+  background: var(--toss-blue-soft);
+  box-shadow: inset 0 0 0 2px #9ec5ff;
+}
+
+.send-question {
+  border: 0;
+  color: #fff;
+  background: var(--toss-blue);
+  box-shadow: 0 8px 20px rgba(27, 100, 218, 0.22);
+}
+
+.send-question small {
+  color: #eaf2ff;
+}
+
 .setup-progress {
   border-bottom-color: #c9d3df;
 }
@@ -6507,9 +6570,151 @@ body {
   --about-wash: rgba(49, 130, 246, 0.06);
   --about-wash-strong: var(--toss-blue-soft);
   --about-tint: var(--toss-surface-soft);
+  --about-on-deep: #ffffff;
+  --about-on-deep-muted: #d8e7ff;
+  --about-on-deep-line: rgba(255, 255, 255, 0.22);
   --about-shadow: var(--toss-shadow);
   --about-shadow-hover: 0 20px 50px rgba(25, 31, 40, 0.12);
   background: #fff;
+}
+
+.about-accent,
+.about-section-title span {
+  color: var(--toss-blue-deep);
+  background: none;
+  -webkit-text-fill-color: currentColor;
+}
+
+.about-photo-credit {
+  color: var(--toss-text);
+  box-shadow: 0 4px 18px rgba(25, 31, 40, 0.12);
+}
+
+.about-panel-cta {
+  color: #fff;
+  background: linear-gradient(155deg, var(--toss-blue), var(--toss-blue-deep));
+}
+
+.about-sitefoot {
+  background: var(--toss-bg);
+}
+
+.about-photo-story,
+.about-care-story {
+  background: #333d4b;
+  box-shadow: 0 18px 44px rgba(25, 31, 40, 0.16);
+}
+
+.about-feature-card:nth-child(1) {
+  --icon-a: #6b9df8;
+  --icon-b: #1b64da;
+  --icon-wash: rgba(49, 130, 246, 0.1);
+}
+
+.about-feature-card:nth-child(2) {
+  --icon-a: #8b7cf6;
+  --icon-b: #6554c0;
+  --icon-wash: rgba(139, 124, 246, 0.1);
+}
+
+.about-feature-card:nth-child(3) {
+  --icon-a: #4da6f7;
+  --icon-b: #2878c8;
+  --icon-wash: rgba(77, 166, 247, 0.1);
+}
+
+.about-feature-card:nth-child(4) {
+  --icon-a: #f08a72;
+  --icon-b: #c85f4a;
+  --icon-wash: rgba(240, 138, 114, 0.1);
+}
+
+.about-feature-card:nth-child(5) {
+  --icon-a: #9b78e6;
+  --icon-b: #7049bd;
+  --icon-wash: rgba(155, 120, 230, 0.1);
+}
+
+.about-feature-card:nth-child(6) {
+  --icon-a: #5b8def;
+  --icon-b: #345fbd;
+  --icon-wash: rgba(91, 141, 239, 0.1);
+}
+
+.about-icon-box {
+  color: var(--toss-blue-deep);
+  background: var(--toss-blue-soft);
+}
+
+.about-workflow-card:nth-child(1) {
+  --flow-a: #6b9df8;
+  --flow-b: #1b64da;
+  --flow-wash: rgba(49, 130, 246, 0.08);
+}
+
+.about-workflow-card:nth-child(2) {
+  --flow-a: #8b7cf6;
+  --flow-b: #6554c0;
+  --flow-wash: rgba(139, 124, 246, 0.08);
+}
+
+.about-workflow-card:nth-child(3) {
+  --flow-a: #4da6f7;
+  --flow-b: #2878c8;
+  --flow-wash: rgba(77, 166, 247, 0.08);
+}
+
+.about-workflow-card:nth-child(4) {
+  --flow-a: #f0a05a;
+  --flow-b: #c96e2f;
+  --flow-wash: rgba(240, 160, 90, 0.08);
+}
+
+.about-workflow-card:not(:last-child)::after {
+  color: rgba(27, 100, 218, 0.28);
+}
+
+.about-guide-item:nth-child(1) {
+  --guide-a: #6b9df8;
+  --guide-b: #1b64da;
+  --guide-wash: rgba(49, 130, 246, 0.07);
+}
+
+.about-guide-item:nth-child(2) {
+  --guide-a: #4da6f7;
+  --guide-b: #2878c8;
+  --guide-wash: rgba(77, 166, 247, 0.07);
+}
+
+.about-guide-mock,
+.about-guide-mock.is-data {
+  background: #191f28;
+  box-shadow: 0 16px 34px rgba(25, 31, 40, 0.24);
+}
+
+.about-guide-mock-screen,
+.about-guide-mock.is-data .about-guide-mock-screen {
+  background: linear-gradient(160deg, #333d4b, #191f28);
+}
+
+.about-guide-mock-data {
+  color: var(--toss-text);
+  background: #fff;
+}
+
+.about-guide-mock-data > span,
+.about-guide-mock-data > small {
+  color: var(--toss-muted);
+}
+
+.about-guide-mock-data > button {
+  background: var(--toss-blue);
+}
+
+.about-guide-mock-data > code {
+  border-color: #9ec5ff;
+  color: var(--toss-blue-deep);
+  background: var(--toss-blue-soft);
 }
 
 .about-bar {
@@ -6561,15 +6766,18 @@ body {
   }
 
   .nav-item {
-    min-height: 62px;
+    min-height: 56px;
+    gap: 2px;
+    padding: 4px 2px;
     border-radius: 14px;
+    font-size: 12px;
   }
 
   .nav-item > span {
-    width: 32px;
-    height: 32px;
-    flex-basis: 32px;
-    border-radius: 11px;
+    width: 30px;
+    height: 30px;
+    flex-basis: 30px;
+    border-radius: 10px;
   }
 
   .setup-screen,
@@ -6580,7 +6788,28 @@ body {
 
   .chat-screen > h1 {
     margin: 16px 2px;
-    font-size: clamp(29px, 8vw, 36px);
+    font-size: clamp(27px, 7.4vw, 33px);
+    line-height: 1.22;
+  }
+
+  .chat-header {
+    gap: 8px;
+  }
+
+  .back-button {
+    width: 100%;
+    min-height: 50px;
+    padding: 8px 12px;
+  }
+
+  .profile-pills {
+    width: 100%;
+    gap: 6px;
+  }
+
+  .profile-pills span {
+    padding: 7px 10px;
+    font-size: 13px;
   }
 
   .quick-ask-strip,
@@ -6601,7 +6830,163 @@ body {
   }
 
   .answer-card {
+    min-height: clamp(300px, 48svh, 430px);
+    padding: 18px 42px 26px;
     border-radius: 20px;
+  }
+
+  .answer-markdown,
+  .answer-card > p {
+    font-size: clamp(18px, 5vw, 23px);
+    line-height: 1.58;
+  }
+
+  .answer-heading {
+    gap: 8px;
+  }
+
+  .answer-label {
+    padding: 8px 13px;
+    font-size: 17px;
+  }
+
+  .answer-state {
+    padding: 7px 9px;
+    font-size: 12px;
+  }
+
+  .chat-welcome {
+    gap: 10px;
+    padding: 15px;
+    margin-bottom: 12px;
+  }
+
+  .chat-welcome strong {
+    font-size: 19px;
+  }
+
+  .chat-welcome p {
+    font-size: 15px;
+    line-height: 1.55;
+  }
+
+  .chat-welcome-replay {
+    width: 100%;
+    min-height: 48px;
+    margin-left: 0;
+  }
+
+  .quick-asks.compact .quick-ask {
+    min-width: min(76vw, 240px);
+    min-height: 54px;
+  }
+
+  .question-composer textarea {
+    min-height: 96px;
+    padding: 15px 16px;
+    font-size: 18px;
+  }
+
+  .mic-primary {
+    min-height: 108px;
+    padding: 14px;
+  }
+
+  .mic-primary .mic-icon {
+    font-size: 38px;
+  }
+
+  .mic-primary strong {
+    font-size: 22px;
+  }
+
+  .composer-tool,
+  .send-question {
+    min-height: 64px;
+  }
+
+  .speed-control {
+    padding: 18px 16px;
+  }
+
+  .language-button,
+  .gender-button {
+    min-height: 62px;
+    font-size: 19px;
+  }
+
+  .age-option {
+    min-height: 86px;
+  }
+
+  .age-option strong {
+    font-size: 26px;
+  }
+
+  .about-panel {
+    padding: 48px 0;
+  }
+
+  .about-hero-title {
+    font-size: clamp(34px, 10vw, 44px);
+    line-height: 1.18;
+  }
+
+  .about-hero-description {
+    margin-top: 22px;
+    font-size: 17px;
+    line-height: 1.68;
+  }
+
+  .about-section-header {
+    margin-bottom: 34px;
+  }
+
+  .about-section-badge {
+    margin-bottom: 18px;
+    padding: 8px 16px;
+    font-size: 15px;
+  }
+
+  .about-section-title {
+    font-size: clamp(30px, 8.6vw, 38px);
+    line-height: 1.2;
+  }
+
+  .about-section-description {
+    margin-top: 20px;
+    font-size: 17px;
+    line-height: 1.68;
+  }
+
+  .about-feature-card,
+  .about-workflow-card,
+  .about-guide-item {
+    padding: 22px 20px;
+  }
+
+  .about-feature-card h3,
+  .about-workflow-card h3 {
+    font-size: 24px;
+  }
+
+  .about-feature-card p,
+  .about-workflow-card p,
+  .about-guide-text {
+    font-size: 16px;
+    line-height: 1.68;
+  }
+
+  .about-photo-story {
+    min-height: 300px;
+  }
+
+  .about-care-story {
+    min-height: 350px;
+  }
+
+  .about-care-story::after {
+    background: linear-gradient(180deg, rgba(25, 31, 40, 0.04) 24%, rgba(25, 31, 40, 0.9) 100%);
   }
 }
 
