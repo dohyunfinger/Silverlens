@@ -1096,10 +1096,6 @@ const uiCopy = {
     openProfileHelp: "알레르기·건강 상태를 알려주면 더 정확해요",
     profileDone: "입력 완료, 대화로 돌아가기",
     waitTranscribing: "건강정보를 입력하고 있어요. 잠시만 기다려 주세요.",
-    quickProfileSpeak: "내 정보 말하기",
-    quickProfileSpeakHelp: "예: 나이는 일흔이고 복숭아 알레르기가 있어요",
-    quickProfileMore: "알레르기 · 건강 상태까지 자세히 입력하기",
-    quickProfileDone: "알려주신 정보로 답변합니다",
     backupTitle: "내 정보 저장",
     dataTitle: "내 데이터 관리",
     dataDescription: "이 기기에 저장된 건강 정보와 대화 기록을 확인하고 안전하게 옮길 수 있어요.",
@@ -1286,10 +1282,6 @@ const uiCopy = {
     openProfileHelp: "Allergies and conditions make answers more precise",
     profileDone: "Done, back to the conversation",
     waitTranscribing: "I'm saving your health information. One moment please.",
-    quickProfileSpeak: "Say my details",
-    quickProfileSpeakHelp: "Example: I'm in my seventies and allergic to peaches",
-    quickProfileMore: "Add allergies and conditions in detail",
-    quickProfileDone: "I'll answer using what you shared",
     backupTitle: "Saved on this device",
     dataTitle: "Manage my data",
     dataDescription: "Review the health information and conversations saved on this device, or move them safely.",
@@ -1476,10 +1468,6 @@ const uiCopy = {
     openProfileHelp: "アレルギーや健康状態を教えるとより正確です",
     profileDone: "入力完了、会話に戻る",
     waitTranscribing: "健康情報を保存しています。少しお待ちください。",
-    quickProfileSpeak: "自分の情報を話す",
-    quickProfileSpeakHelp: "例：年齢は七十で、桃のアレルギーがあります",
-    quickProfileMore: "アレルギー・健康状態まで詳しく入力する",
-    quickProfileDone: "教えていただいた情報でお答えします",
     backupTitle: "この端末に保存",
     dataTitle: "自分のデータを管理",
     dataDescription: "この端末に保存された健康情報と会話履歴を確認し、安全に移すことができます。",
@@ -3333,7 +3321,6 @@ export default function SilverLensApp({
   const nextStep = getNextStep(language, gender, ageConfirmed);
   const activeLanguage = language ?? "ko-KR";
   const activeCopy = uiCopy[activeLanguage];
-  const basicSetupComplete = Boolean(language && gender && ageConfirmed);
   const narrationRate = narrationRateOptions[narrationRateIndex].value;
   const narrationRateLabel = narrationRateOptions[narrationRateIndex].label[activeLanguage];
   const allergyOptions = useMemo(
@@ -5787,56 +5774,6 @@ export default function SilverLensApp({
           )}
 
           <section className="answer-section" aria-live="polite">
-            {/*
-              첫 화면에서는 말로 알려 주기와 직접 입력하기, 두 경로만 크게 보여 준다.
-              기본설정을 마쳤거나 답변이 하나라도 생기면 감춰서 답변 볼 자리를 넓힌다.
-            */}
-            {answerCards.length === 0 && !basicSetupComplete && (
-              <div className="chat-quick-profile">
-                <div className="chat-quick-actions">
-                  <button
-                    type="button"
-                    className={
-                      recordingContext === "setup"
-                        ? "chat-quick-speak recording"
-                        : "chat-quick-speak"
-                    }
-                    onClick={() => toggleRecording("setup")}
-                    disabled={isTranscribingVoice}
-                    aria-pressed={recordingContext === "setup"}
-                  >
-                    <span aria-hidden="true">
-                      {recordingContext === "setup" ? "●" : "🎙️"}
-                    </span>
-                    <span>
-                      <strong>
-                        {recordingContext === "setup"
-                          ? activeCopy.recording
-                          : activeCopy.quickProfileSpeak}
-                      </strong>
-                      <small>
-                        {recordingContext === "setup"
-                          ? activeCopy.recordingHelp
-                          : activeCopy.quickProfileSpeakHelp}
-                      </small>
-                    </span>
-                  </button>
-
-                  <button
-                    type="button"
-                    className="chat-quick-open-profile"
-                    onClick={openProfileSetup}
-                  >
-                    <span aria-hidden="true">✎</span>
-                    <span>
-                      <strong>{activeCopy.openProfile}</strong>
-                      <small>{activeCopy.openProfileHelp}</small>
-                    </span>
-                  </button>
-                </div>
-              </div>
-            )}
-
             <div className="answer-heading">
               <span className="answer-label">{activeCopy.answerLabel}</span>
               <span className={isLoadingAnswer ? "answer-state waiting" : "answer-state"}>
@@ -6379,7 +6316,7 @@ export default function SilverLensApp({
     <main className="app-shell">
       <Sidebar active="setup" onNavigate={setScreen} copy={activeCopy} />
       <section className="setup-screen">
-        {/* 큰 단계 버튼으로 현재 위치와 완료 여부를 동시에 분명하게 보여 준다. */}
+        {/* 이전의 한 줄 흐름은 유지하고 완료 체크와 현재 단계만 간단히 강조한다. */}
         <nav className="setup-progress" aria-label={promptCopy[activeLanguage][nextStep]}>
           {setupProgressItems.map((item, index) => (
             <button

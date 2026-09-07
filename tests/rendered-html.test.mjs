@@ -57,11 +57,13 @@ test("starts with the introduction, then renders the senior service on return vi
 
   assert.equal(returnResponse.status, 200);
   assert.match(returnHtml, /기본설정/);
-  assert.match(returnHtml, /내 정보 말하기/);
   assert.match(returnHtml, /내 정보 입력하기/);
   assert.match(returnHtml, /class="quick-ask-strip"/);
   assert.doesNotMatch(returnHtml, /class="profile-lang/);
   assert.doesNotMatch(returnHtml, /class="chat-quick-profile-head"/);
+  assert.doesNotMatch(returnHtml, /class="chat-quick-profile"/);
+  assert.doesNotMatch(returnHtml, /class="chat-quick-speak/);
+  assert.doesNotMatch(returnHtml, /class="chat-quick-open-profile"/);
   assert.ok(
     returnHtml.indexOf('class="quick-ask-strip"') <
       returnHtml.indexOf("<h1"),
