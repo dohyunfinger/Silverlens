@@ -7,8 +7,18 @@ import {
   type TranscriptionPurpose,
 } from "../../../backend/services/transcriptionService";
 import { isGeminiQuotaError } from "../../../backend/services/geminiQuota";
+import {
+  toHealthLanguage,
+  type HealthLanguage,
+} from "../../../backend/data/healthTerms";
 
 const MAX_AUDIO_DATA_LENGTH = 14 * 1024 * 1024;
+
+const retryMessages: Record<HealthLanguage, string> = {
+  "ko-KR": "음식 이름이나 말이 정확히 들리지 않았어요. 조금 천천히 다시 말해 주세요.",
+  "en-US": "I could not hear the food name or sentence accurately. Please speak again a little more slowly.",
+  "ja-JP": "食べ物の名前やお話を正確に聞き取れませんでした。少しゆっくり、もう一度話してください。",
+};
 
 function isInlineAudio(value: unknown): value is InlineMedia {
   if (!value || typeof value !== "object") return false;
@@ -46,8 +56,16 @@ export async function POST(request: Request) {
     )
       ? (body.purpose as TranscriptionPurpose)
       : "chat";
-    const language = typeof body.language === "string" ? body.language : "ko-KR";
+    const language = toHealthLanguage(
+      typeof body.language === "string" ? body.language : "ko-KR",
+    );
     const result = await transcribeAudio(body.audio, purpose, language);
+    if (result.needsRetry) {
+      return NextResponse.json(
+        { error: retryMessages[language], retryRequired: true },
+        { status: 422 },
+      );
+    }
     return NextResponse.json({
       text: result.transcript,
       allergies: result.allergies,

@@ -38,6 +38,7 @@ import {
 type Language = "ko-KR" | "en-US" | "ja-JP";
 type Gender = "male" | "female";
 type SetupStep = "language" | "gender" | "age" | "complete";
+type SetupSection = Exclude<SetupStep, "complete">;
 type PageScreen = "setup" | "chat" | "data" | "about";
 type RecordingContext = "setup" | "chat" | "allergy" | "condition";
 type NarrationStatus = "preparing" | "ready" | "error";
@@ -1095,8 +1096,6 @@ const uiCopy = {
     openProfileHelp: "알레르기·건강 상태를 알려주면 더 정확해요",
     profileDone: "입력 완료, 대화로 돌아가기",
     waitTranscribing: "건강정보를 입력하고 있어요. 잠시만 기다려 주세요.",
-    quickProfileTitle: "먼저 알려주시면 더 정확해요",
-    quickProfileHelp: "말로 한 번에 알려주시거나 직접 입력할 수 있어요. 넘어가도 대화는 됩니다.",
     quickProfileSpeak: "내 정보 말하기",
     quickProfileSpeakHelp: "예: 나이는 일흔이고 복숭아 알레르기가 있어요",
     quickProfileMore: "알레르기 · 건강 상태까지 자세히 입력하기",
@@ -1165,7 +1164,7 @@ const uiCopy = {
     profileVoiceEmpty: "음성에서 분명하게 말한 알레르기나 질병·건강 상태를 찾지 못했어요.",
     voiceFoundGender: "말씀하신 성별도 함께 골라 두었어요.",
     voiceFoundAge: "말씀하신 나이에 맞춰 {age}대를 골라 두었어요.",
-    audioPreviewFail: "음성은 첨부됐지만 글자로 미리보지 못했습니다. 음성 자체는 함께 보낼 수 있어요.",
+    audioPreviewFail: "음성을 정확히 인식하지 못했습니다. 틀린 내용으로 답하지 않도록 다시 말해 주세요.",
     transcribeRetry: "음성을 글자로 바꾸지 못했습니다. 다시 말해 주세요.",
     micPermission: "마이크 권한을 허용하면 음성으로 말할 수 있어요.",
     imageOnly: "사진 파일만 첨부할 수 있어요.",
@@ -1287,8 +1286,6 @@ const uiCopy = {
     openProfileHelp: "Allergies and conditions make answers more precise",
     profileDone: "Done, back to the conversation",
     waitTranscribing: "I'm saving your health information. One moment please.",
-    quickProfileTitle: "Tell me a little and answers get sharper",
-    quickProfileHelp: "Tell me all at once by voice or enter it yourself. You can also skip this and chat.",
     quickProfileSpeak: "Say my details",
     quickProfileSpeakHelp: "Example: I'm in my seventies and allergic to peaches",
     quickProfileMore: "Add allergies and conditions in detail",
@@ -1357,7 +1354,7 @@ const uiCopy = {
     profileVoiceEmpty: "I could not find clearly spoken allergy or condition information in the voice.",
     voiceFoundGender: "I also selected the gender you mentioned.",
     voiceFoundAge: "I selected the {age}s to match the age you mentioned.",
-    audioPreviewFail: "The recording is attached, but I could not preview it as text. The audio can still be sent.",
+    audioPreviewFail: "I could not recognize the recording accurately. Please speak again so I do not answer from incorrect words.",
     transcribeRetry: "I could not convert the voice to text. Please try again.",
     micPermission: "Allow microphone permission to speak by voice.",
     imageOnly: "Please attach an image file only.",
@@ -1479,8 +1476,6 @@ const uiCopy = {
     openProfileHelp: "アレルギーや健康状態を教えるとより正確です",
     profileDone: "入力完了、会話に戻る",
     waitTranscribing: "健康情報を保存しています。少しお待ちください。",
-    quickProfileTitle: "先に教えていただくとより正確です",
-    quickProfileHelp: "音声でまとめて伝えるか、ご自身で入力できます。飛ばしても会話できます。",
     quickProfileSpeak: "自分の情報を話す",
     quickProfileSpeakHelp: "例：年齢は七十で、桃のアレルギーがあります",
     quickProfileMore: "アレルギー・健康状態まで詳しく入力する",
@@ -1549,7 +1544,7 @@ const uiCopy = {
     profileVoiceEmpty: "音声から明確なアレルギーや病気・健康状態を見つけられませんでした。",
     voiceFoundGender: "お話しになった性別も一緒に選んでおきました。",
     voiceFoundAge: "お話しになった年齢に合わせて{age}代を選んでおきました。",
-    audioPreviewFail: "音声は添付されましたが、文字プレビューはできませんでした。音声自体は一緒に送れます。",
+    audioPreviewFail: "音声を正確に認識できませんでした。間違った内容で回答しないよう、もう一度話してください。",
     transcribeRetry: "音声を文字に変換できませんでした。もう一度話してください。",
     micPermission: "マイクの許可をすると、音声で話せます。",
     imageOnly: "写真ファイルだけを添付できます。",
@@ -3264,7 +3259,7 @@ export default function SilverLensApp({
   const [isPreparingPhoto, setIsPreparingPhoto] = useState(false);
   const [isPhotoZoomOpen, setIsPhotoZoomOpen] = useState(false);
   /** 대화 화면 헤더의 언어 알약이 펼쳐져 있는지. */
-  const [isLanguageOpen, setIsLanguageOpen] = useState(false);
+  const [activeSetupSection, setActiveSetupSection] = useState<SetupSection>("language");
   /** 소개 화면에서 얼마나 읽었는지(0~1). 상단 진행 막대에 쓴다. */
   const [aboutProgress, setAboutProgress] = useState(0);
   /** 소개 화면에서 지금 보고 있는 구간의 id. 상단 메뉴를 강조하는 데 쓴다. */
@@ -4481,7 +4476,8 @@ export default function SilverLensApp({
    * 진행 표시의 단계 이름을 누르면 그 항목까지 화면을 움직이고 포커스도 옮긴다.
    * 화면만 스크롤하면 키보드나 스크린리더 사용자는 위치를 알 수 없다.
    */
-  const focusSetupSection = (step: "language" | "gender" | "age") => {
+  const focusSetupSection = (step: SetupSection) => {
+    setActiveSetupSection(step);
     const target =
       step === "language"
         ? languageSectionRef.current
@@ -4490,7 +4486,7 @@ export default function SilverLensApp({
           : ageSectionRef.current;
     if (!target) return;
 
-    target.scrollIntoView({ behavior: "smooth", block: "center" });
+    target.scrollIntoView({ behavior: "smooth", block: "start" });
     // scrollIntoView 가 이미 움직이고 있어 포커스가 화면을 또 끌어당기지 않게 한다.
     target.querySelector("button")?.focus({ preventScroll: true });
   };
@@ -4517,12 +4513,14 @@ export default function SilverLensApp({
     const next = language === id ? null : id;
     setLanguage(next);
     announceNext(next, gender, ageConfirmed);
+    if (next) window.setTimeout(() => focusSetupSection("gender"), 180);
   };
 
   const toggleGender = (id: Gender) => {
     const next = gender === id ? null : id;
     setGender(next);
     announceNext(language, next, ageConfirmed);
+    if (next) window.setTimeout(() => focusSetupSection("age"), 180);
   };
 
   const selectAge = (age: number) => {
@@ -4729,16 +4727,6 @@ export default function SilverLensApp({
           1,
           Math.round((Date.now() - (recordingStartedAtRef.current ?? Date.now())) / 1000),
         );
-        if (context === "chat") {
-          setPendingAudio({ blob, duration, url });
-          queueAutomaticNarration(
-            automaticNoticeCopy[activeLanguage].audioAttached,
-            activeLanguage,
-            80,
-          );
-        } else {
-          setRecordedUrl(url);
-        }
         stream.getTracks().forEach((track) => track.stop());
         streamRef.current = null;
         mediaRecorderRef.current = null;
@@ -4754,6 +4742,19 @@ export default function SilverLensApp({
               context === "chat"
                 ? await normalizeDialectLocally(analysis.text)
                 : analysis.text;
+            if (context === "chat") {
+              setPendingAudio((current) => {
+                if (current) URL.revokeObjectURL(current.url);
+                return { blob, duration, url };
+              });
+              queueAutomaticNarration(
+                automaticNoticeCopy[activeLanguage].audioAttached,
+                activeLanguage,
+                80,
+              );
+            } else {
+              setRecordedUrl(url);
+            }
             setTranscript(text);
             if (context === "chat") {
               setChatInput(text);
@@ -4780,13 +4781,13 @@ export default function SilverLensApp({
               setProfileVoiceNotice(`${applied.notice} ${activeCopy.noteSaved}`);
             }
         } catch (error) {
-          setRecordingError(
-            context === "chat"
-              ? activeCopy.audioPreviewFail
-              : error instanceof Error
-                ? error.message
-                : activeCopy.transcribeRetry,
-          );
+          URL.revokeObjectURL(url);
+          const message =
+            error instanceof Error && error.message
+              ? error.message
+              : activeCopy.audioPreviewFail;
+          setRecordingError(message);
+          queueAutomaticNarration(message, activeLanguage, 80);
           if (context !== "chat") setProfileVoiceNotice("");
         } finally {
           setIsTranscribingVoice(false);
@@ -5014,7 +5015,9 @@ export default function SilverLensApp({
 
   /** overrideText 가 있으면 입력창 내용 대신 그 문장을 보낸다(자주 묻는 질문 버튼). */
   const askGemini = async (overrideText?: string) => {
-    const cleaned = (overrideText ?? chatInput).trim();
+    const cleaned = (
+      overrideText ?? (chatInput.trim() || (pendingAudio ? transcript : ""))
+    ).trim();
     const hasMeaningfulText = Boolean(cleaned && /[\p{L}\p{N}]/u.test(cleaned));
     const hasPendingImages = pendingImages.length > 0;
     if (!hasMeaningfulText && !pendingAudio && !hasPendingImages) {
@@ -5026,17 +5029,12 @@ export default function SilverLensApp({
     setIsLoadingAnswer(true);
     try {
       // 사진은 첨부한 순서대로 모두 보낸다. 순서가 프롬프트의 사진 순서와 맞아야 한다.
-      const [audio, images] = await Promise.all([
-        pendingAudio
-          ? convertRecordingToWav(pendingAudio.blob).then(blobToInlineData)
-          : null,
-        Promise.all(
-          pendingImages.map(async (image) => ({
-            ...(await blobToInlineData(image.file)),
-            purpose: image.purpose ?? undefined,
-          })),
-        ),
-      ]);
+      const images = await Promise.all(
+        pendingImages.map(async (image) => ({
+          ...(await blobToInlineData(image.file)),
+          purpose: image.purpose ?? undefined,
+        })),
+      );
       // 글로 쓴 질문도 방언 변환 모델을 거치게 한다(음성 질문은 녹음 직후 이미 통과).
       const normalizedText = cleaned
         ? await normalizeDialectLocally(cleaned, activeLanguage)
@@ -5083,7 +5081,8 @@ export default function SilverLensApp({
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
           message: normalizedText,
-          audio,
+          // 검증된 받아쓰기만 보내 중복 음성 해석에서 음식명이 새로 생기는 일을 막는다.
+          audio: null,
           // 사진마다 촬영 목적을 함께 보내 Vision 지시를 목적에 맞게 좁힌다.
           images,
           profile: {
@@ -5190,7 +5189,7 @@ export default function SilverLensApp({
                 {/* eslint-disable-next-line @next/next/no-img-element */}
                 <img src="/brand/silverlens-mark.png" alt="" />
               </span>
-              SilverLens
+              <span className="about-bar-brand-text">SilverLens</span>
             </a>
 
             <nav className="about-bar-nav" aria-label={activeCopy.menuLabel}>
@@ -5229,9 +5228,13 @@ export default function SilverLensApp({
                 ))}
               </div>
 
-              <button className="about-bar-cta" onClick={leaveAbout}>
+              <button
+                className="about-bar-cta"
+                onClick={leaveAbout}
+                aria-label={about.backToService}
+              >
                 <span aria-hidden="true">←</span>
-                {about.backToService}
+                <span className="about-bar-cta-text">{about.backToService}</span>
               </button>
             </div>
           </div>
@@ -5744,56 +5747,29 @@ export default function SilverLensApp({
               <strong>{activeCopy.openProfile}</strong>
               {!hasProfileInfo && <small>{activeCopy.openProfileHelp}</small>}
             </button>
-            <div className="profile-pills">
-              {/*
-                평소에는 현재 언어 하나만 알약으로 보이고, 누르면 옆으로 늘어나
-                세 언어가 나온다. 세 개를 늘 펼쳐 두면 헤더가 넘쳐 폰에서 잘렸다.
-                버튼 셋을 항상 그려 두고 CSS 로 접기 때문에 늘어나는 움직임이 부드럽다.
-              */}
-              <div
-                className={isLanguageOpen ? "profile-lang open" : "profile-lang"}
-                role="group"
-                aria-label={activeCopy.languageLegend}
-              >
-                {languages.map((item) => {
-                  const isCurrent = activeLanguage === item.id;
-                  const hidden = !isLanguageOpen && !isCurrent;
-                  return (
-                    <button
-                      key={item.id}
-                      type="button"
-                      className={isCurrent ? "profile-lang-item active" : "profile-lang-item"}
-                      onClick={() => {
-                        if (!isLanguageOpen) {
-                          setIsLanguageOpen(true);
-                          return;
-                        }
-                        setLanguage(item.id);
-                        setIsLanguageOpen(false);
-                      }}
-                      aria-pressed={isCurrent}
-                      aria-expanded={isCurrent ? isLanguageOpen : undefined}
-                      // 접혀 있는 동안에는 탭 이동에서 빼 둔다.
-                      tabIndex={hidden ? -1 : 0}
-                    >
-                      <LanguageFlag id={item.id} />
-                      <span>{item.label}</span>
-                      <span className="profile-lang-caret">
-                        <ChevronIcon direction="down" />
-                      </span>
-                    </button>
-                  );
-                })}
+            {(ageConfirmed || allergyIds.length + conditionIds.length > 0) && (
+              <div className="profile-pills">
+                {ageConfirmed && <span>● {ageBand}{activeCopy.profileAge}</span>}
+                {allergyIds.length + conditionIds.length > 0 && (
+                  <span>
+                    ♡ {activeCopy.allergyTitle} {allergyIds.length} · {activeCopy.conditionTitle}{" "}
+                    {conditionIds.length}
+                  </span>
+                )}
               </div>
-              {ageConfirmed && <span>● {ageBand}{activeCopy.profileAge}</span>}
-              {allergyIds.length + conditionIds.length > 0 && (
-                <span>
-                  ♡ {activeCopy.allergyTitle} {allergyIds.length} · {activeCopy.conditionTitle}{" "}
-                  {conditionIds.length}
-                </span>
-              )}
-            </div>
+            )}
           </header>
+
+          <section className="quick-ask-strip" aria-label={activeCopy.quickAskTitle}>
+            <p className="quick-asks-title">{activeCopy.quickAskTitle}</p>
+            <QuickAskButtons
+              items={visibleQuickAsks}
+              language={activeLanguage}
+              disabled={isLoadingAnswer}
+              onPick={pickQuickAsk}
+              variant="compact"
+            />
+          </section>
 
           <h1>{activeCopy.headline}</h1>
 
@@ -5817,11 +5793,6 @@ export default function SilverLensApp({
             */}
             {answerCards.length === 0 && !basicSetupComplete && (
               <div className="chat-quick-profile">
-                <div className="chat-quick-profile-head">
-                  <strong>{activeCopy.quickProfileTitle}</strong>
-                  <small>{activeCopy.quickProfileHelp}</small>
-                </div>
-
                 <div className="chat-quick-actions">
                   <button
                     type="button"
@@ -5970,15 +5941,6 @@ export default function SilverLensApp({
                     <p>
                       {activeCopy.emptyAnswerHelp}
                     </p>
-                    {/* 빈 입력창 앞에서 막히지 않도록 바로 누를 수 있는 예시를 둔다. */}
-                    <p className="quick-asks-title">{activeCopy.quickAskTitle}</p>
-                    <QuickAskButtons
-                      items={visibleQuickAsks}
-                      language={activeLanguage}
-                      disabled={isLoadingAnswer}
-                      onPick={pickQuickAsk}
-                      variant="large"
-                    />
                   </div>
                 )}
               </article>
@@ -6077,20 +6039,6 @@ export default function SilverLensApp({
           </section>
 
           <section className="question-composer" aria-label={activeCopy.questionArea}>
-            {/* 첫 답변 뒤에도 예시를 쓸 수 있게, 접이식으로 짧게 둔다. */}
-            {answerCards.length > 0 && (
-              <details className="quick-asks-fold">
-                <summary>{activeCopy.quickAskTitle}</summary>
-                <QuickAskButtons
-                  items={visibleQuickAsks}
-                  language={activeLanguage}
-                  disabled={isLoadingAnswer}
-                  onPick={pickQuickAsk}
-                  variant="compact"
-                />
-              </details>
-            )}
-
             <button
               className={isRecording ? "mic-primary recording" : "mic-primary"}
               onClick={() => toggleRecording("chat")}
@@ -6431,20 +6379,23 @@ export default function SilverLensApp({
     <main className="app-shell">
       <Sidebar active="setup" onNavigate={setScreen} copy={activeCopy} />
       <section className="setup-screen">
-        {/* 세 단계 이름을 그대로 두고, 누르면 해당 항목으로 화면과 포커스를 옮긴다. */}
+        {/* 큰 단계 버튼으로 현재 위치와 완료 여부를 동시에 분명하게 보여 준다. */}
         <nav className="setup-progress" aria-label={promptCopy[activeLanguage][nextStep]}>
-          {setupProgressItems.map((item) => (
+          {setupProgressItems.map((item, index) => (
             <button
               key={item.step}
               type="button"
-              className={item.done ? "done" : nextStep === item.step ? "current" : ""}
+              className={[
+                item.done ? "done" : "",
+                activeSetupSection === item.step ? "current" : "",
+              ].filter(Boolean).join(" ")}
               onClick={() => focusSetupSection(item.step)}
-              aria-current={nextStep === item.step ? "step" : undefined}
+              aria-current={activeSetupSection === item.step ? "step" : undefined}
             >
-              {item.label}
-              {item.done && (
-                <span className="setup-progress-check" aria-hidden="true">✓</span>
-              )}
+              <span className="setup-progress-index" aria-hidden="true">
+                {item.done ? "✓" : index + 1}
+              </span>
+              <span>{item.label}</span>
             </button>
           ))}
         </nav>

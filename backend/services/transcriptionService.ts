@@ -35,6 +35,10 @@ export type TranscriptionResult = {
   gender: "male" | "female" | null;
   /** 화면 버튼과 같은 나이대(40~90). 말하지 않았으면 null. */
   ageBand: number | null;
+  /** 모델이 실제 음성에서 판단한 주 사용 언어. */
+  detectedLanguage: HealthLanguage | "other" | "unclear";
+  /** 중요한 단어가 불명확하거나 선택 언어와 다르면 답변으로 넘기지 않는다. */
+  needsRetry: boolean;
 };
 
 /** 화면의 나이 버튼과 같은 구간만 받는다(frontend ageChoices 와 동일). */
@@ -42,11 +46,11 @@ const AGE_BANDS = [40, 50, 60, 70, 80, 90];
 
 const transcriptLanguageRules: Record<HealthLanguage, string> = {
   "ko-KR":
-    "transcript는 들리는 한국어를 한글로 그대로 받아쓰세요. 다른 언어로 번역하지 마세요.",
+    "한국어 음성으로 먼저 해석하고 transcript는 들리는 한국어를 한글로 그대로 받아쓰세요. 비슷하게 들리는 일본어·영어 단어로 바꾸거나 다른 언어로 번역하지 마세요.",
   "en-US":
-    "Write transcript in English using the Latin alphabet exactly as spoken. Do not translate it into Korean or Japanese.",
+    "Treat the recording as English first. Write transcript in English using the Latin alphabet exactly as spoken. Do not reinterpret similar sounds as Korean or Japanese, and do not translate them.",
   "ja-JP":
-    "transcriptは、聞こえた日本語を漢字・ひらがな・カタカナでそのまま書き起こしてください。韓国語や英語に翻訳したり、ローマ字で書いたりしないでください。",
+    "音声をまず日本語として認識してください。transcriptは、聞こえた日本語を漢字・ひらがな・カタカナでそのまま書き起こしてください。似た音の韓国語として解釈せず、韓国語や英語に翻訳したり、ローマ字で書いたりしないでください。",
 };
 
 const transcriptExamples: Record<HealthLanguage, string> = {
@@ -79,9 +83,49 @@ function cleanAgeBand(value: unknown): number | null {
   return AGE_BANDS.includes(clamped) ? clamped : null;
 }
 
+function cleanDetectedLanguage(
+  value: unknown,
+): HealthLanguage | "other" | "unclear" {
+  if (value === "ko-KR" || value === "en-US" || value === "ja-JP") return value;
+  return value === "other" ? "other" : "unclear";
+}
+
+function cleanConfidence(value: unknown) {
+  const parsed = typeof value === "number" ? value : Number(value);
+  if (!Number.isFinite(parsed)) return 0;
+  return Math.min(1, Math.max(0, parsed));
+}
+
+function cleanUncertainTerms(value: unknown) {
+  if (!Array.isArray(value)) return [];
+  return [...new Set(
+    value
+      .filter((item): item is string => typeof item === "string")
+      .map((item) => item.trim())
+      .filter(Boolean),
+  )].slice(0, 8);
+}
+
+/** 일본어·영어 설정인데 결과가 한글 위주면 번역·오인식된 결과로 보고 막는다. */
+function usesWrongDominantScript(transcript: string, language: HealthLanguage) {
+  const hangul = (transcript.match(/\p{Script=Hangul}/gu) ?? []).length;
+  const japanese = (
+    transcript.match(/[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]/gu) ?? []
+  ).length;
+  const latin = (transcript.match(/\p{Script=Latin}/gu) ?? []).length;
+
+  if (language === "ja-JP") return hangul > Math.max(japanese, latin);
+  if (language === "en-US") return hangul > Math.max(latin, japanese);
+  // 한국어 문장 안의 원어 음식명·브랜드명은 해당 문자 그대로 둘 수 있다.
+  return false;
+}
 
 
-function parseStructuredResult(text: string): TranscriptionResult {
+
+function parseStructuredResult(
+  text: string,
+  selectedLanguage: HealthLanguage,
+): TranscriptionResult {
   const withoutFence = text
     .replace(/^```(?:json)?\s*/i, "")
     .replace(/\s*```$/i, "")
@@ -100,10 +144,29 @@ function parseStructuredResult(text: string): TranscriptionResult {
     conditions?: unknown;
     gender?: unknown;
     age?: unknown;
+    detectedLanguage?: unknown;
+    confidence?: unknown;
+    uncertainTerms?: unknown;
+    needsRetry?: unknown;
   };
   const transcript =
     typeof parsed.transcript === "string" ? parsed.transcript.trim() : "";
   if (!transcript) throw new Error("음성에서 말을 찾지 못했습니다.");
+
+  const detectedLanguage = cleanDetectedLanguage(parsed.detectedLanguage);
+  const confidence = cleanConfidence(parsed.confidence);
+  const uncertainTerms = cleanUncertainTerms(parsed.uncertainTerms);
+  const detectedDifferentLanguage =
+    detectedLanguage !== "other" &&
+    detectedLanguage !== "unclear" &&
+    detectedLanguage !== selectedLanguage;
+  const needsRetry =
+    parsed.needsRetry === true ||
+    detectedLanguage === "unclear" ||
+    detectedDifferentLanguage ||
+    confidence < 0.8 ||
+    uncertainTerms.length > 0 ||
+    usesWrongDominantScript(transcript, selectedLanguage);
 
   return {
     transcript,
@@ -114,6 +177,8 @@ function parseStructuredResult(text: string): TranscriptionResult {
     ageBand:
       cleanAgeBand(extractAgeFromTranscript(transcript)) ??
       cleanAgeBand(parsed.age),
+    detectedLanguage,
+    needsRetry,
   };
 }
 
@@ -144,6 +209,12 @@ export async function transcribeAudio(
                   transcriptLanguageRules[selectedLanguage],
                   `받아쓰기 언어: ${selectedLanguage}`,
                   "transcript는 말한 내용을 원문 문자로 적고, 번역·의역·요약하지 마세요.",
+                  "음성에서 실제로 들리지 않은 음식·식재료·제품 이름을 문맥으로 만들어 내지 마세요.",
+                  "음식명처럼 답변의 의미를 바꾸는 단어가 조금이라도 불명확하면 추측하지 말고 uncertainTerms에 넣고 needsRetry를 true로 표시하세요.",
+                  "선택 언어 문장 안에서 영어 브랜드명, 외국 음식명, 고유명사가 분명히 들리면 통상 사용하는 원래 표기를 유지하세요.",
+                  "detectedLanguage는 번역된 transcript가 아니라 실제 음성의 주 사용 언어를 ko-KR, en-US, ja-JP, other, unclear 중 하나로 판단하세요.",
+                  "confidence는 전체 문장과 핵심 음식명을 정확히 들었다는 확신을 0부터 1 사이 숫자로 적으세요.",
+                  "음질이 나쁘거나 말이 겹치거나 핵심 단어가 불명확하면 confidence를 0.8 미만으로 적고 needsRetry를 true로 표시하세요.",
                   "식품명, 질병명, 알레르기명을 가능한 정확히 적으세요.",
                   "알레르기에는 사용자가 알레르기라고 명시한 음식·물질만 넣으세요.",
                   "conditions에는 사용자가 직접 말한 질병이나 관리 중인 건강 상태(예: 폐경 후)만 넣으세요.",
@@ -170,7 +241,7 @@ export async function transcribeAudio(
                   `외래어·별칭 참고 사전: ${JSON.stringify(foodAliases)}`,
                   "참고 사전과 카탈로그는 건강정보 ID를 분류할 때만 사용하세요. transcript의 표현이나 언어를 한국어 표준 이름으로 바꾸지 마세요.",
                   "반드시 다음 JSON 객체만 반환하세요.",
-                  `{"transcript":${JSON.stringify(transcriptExamples[selectedLanguage])},"allergies":["카탈로그 allergy ID"],"conditions":["카탈로그 condition ID"],"gender":"male|female|null","age":숫자 또는 null}`,
+                  `{"transcript":${JSON.stringify(transcriptExamples[selectedLanguage])},"allergies":["카탈로그 allergy ID"],"conditions":["카탈로그 condition ID"],"gender":"male|female|null","age":숫자 또는 null,"detectedLanguage":"${selectedLanguage}","confidence":0.99,"uncertainTerms":[],"needsRetry":false}`,
                 ].join("\n"),
               },
               {
@@ -196,5 +267,5 @@ export async function transcribeAudio(
     .join("")
     .trim();
   if (!generated) throw new Error("음성에서 말을 찾지 못했습니다.");
-  return parseStructuredResult(generated);
+  return parseStructuredResult(generated, selectedLanguage);
 }
