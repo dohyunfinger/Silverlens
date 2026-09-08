@@ -10,8 +10,11 @@ import { callGeminiGenerateContent } from "./geminiClient";
 import { findRuntimePillCandidates } from "./mfdsPillData";
 import {
   findAllergyTermConflicts,
+  getHealthCatalogForPrompt,
   getHealthLabel,
+  isHealthTermId,
   toHealthLanguage,
+  type HealthKind,
 } from "../data/healthTerms";
 
 export type RiskLevel = "danger" | "caution" | "safe";
@@ -135,6 +138,8 @@ export type SeniorAnswerResult = {
   answer: string;
   riskLevel: RiskLevel;
   warningMessage: string;
+  profileAllergyIds: string[];
+  profileConditionIds: string[];
 };
 
 type GeminiResponse = {
@@ -266,7 +271,16 @@ type StructuredAnswer = {
   answer?: unknown;
   risk_level?: unknown;
   warning_message?: unknown;
+  profile_allergy_ids?: unknown;
+  profile_condition_ids?: unknown;
 };
+
+function cleanProfileUpdateIds(value: unknown, kind: HealthKind) {
+  if (!Array.isArray(value)) return [];
+  return [
+    ...new Set(value.filter((id): id is string => isHealthTermId(kind, id))),
+  ].slice(0, 40);
+}
 
 /**
  * 같은 질문을 다시 물었을 때 Gemini를 또 부르지 않도록 답변을 잠깐 보관한다.
@@ -348,6 +362,14 @@ function parseStructuredAnswer(text: string): SeniorAnswerResult {
       riskLevel !== "safe" && typeof parsed.warning_message === "string"
         ? parsed.warning_message.trim()
         : "",
+    profileAllergyIds: cleanProfileUpdateIds(
+      parsed.profile_allergy_ids,
+      "allergy",
+    ),
+    profileConditionIds: cleanProfileUpdateIds(
+      parsed.profile_condition_ids,
+      "condition",
+    ),
   };
 }
 
@@ -505,6 +527,7 @@ export async function generateSeniorFriendlyAnswer(
     .filter(Boolean)
     .join("\n");
   const selectedLanguage = toHealthLanguage(profile.language);
+  const healthCatalog = getHealthCatalogForPrompt();
 
   const profileAllergies =
     profile.allergies ??
@@ -557,6 +580,8 @@ export async function generateSeniorFriendlyAnswer(
       answer: localizedOffTopicAnswer(selectedLanguage),
       riskLevel: "safe",
       warningMessage: "",
+      profileAllergyIds: [],
+      profileConditionIds: [],
     };
   }
 
@@ -623,6 +648,10 @@ export async function generateSeniorFriendlyAnswer(
     "음성으로 남긴 상세 메모는 목록으로 고를 수 없는 개인 사정입니다. 목록으로 등록한 알레르기·질병보다 구체적이므로 함께 반영하세요.",
     "예를 들어 목록에는 견과류만 등록됐지만 메모에 '견과류 중에 특히 호두가 안 맞는다'가 있으면 호두를 특히 강하게 피하도록 안내하세요.",
     "메모 내용과 목록이 어긋나면 더 조심스러운 쪽을 따르고, 메모를 근거로 새 질병을 진단하지는 마세요.",
+    "현재 사용자 글에서 사용자가 자신의 알레르기나 현재 앓거나 관리 중인 질병·건강 상태라고 직접 밝힌 항목만 기본설정 추가 후보로 골라 주세요.",
+    "다른 사람의 정보, 단순 질문, 가정, 음식·약·사진에 적힌 정보, 이전 대화와 답변에서만 나온 정보는 사용자 본인의 건강정보로 추가하지 마세요.",
+    "사용자가 직접 밝히지 않은 건강정보를 추측하거나 진단해서 추가하지 마세요.",
+    "추가 후보는 아래 건강정보 선택 목록에 있는 ID만 사용하고, 목록에 없거나 확실하지 않으면 넣지 마세요.",
     "성별과 나이대는 하루 권장 섭취량 기준이 달라지는 부분에만 쓰세요. 철분은 폐경 전 여성이 더 필요하고, 칼슘과 비타민D는 여성의 골다공증 위험이 높고, 퓨린과 요산은 남성의 통풍 위험이 높으며, 하루 열량과 단백질 권장량도 체격 차이로 다릅니다.",
     "성별만으로 질병을 추정하거나 단정하지 마세요. 성별이 미입력이면 성별과 무관한 일반 기준으로 설명하세요.",
     "성역할을 가정하는 표현을 쓰지 마세요. 조리를 누가 하는지, 가족 중 누가 챙겨주는지 임의로 단정하지 마세요.",
@@ -639,6 +668,7 @@ export async function generateSeniorFriendlyAnswer(
     `어르신이 음성으로 남긴 상세 메모: ${
       healthNoteLines.length > 0 ? JSON.stringify(healthNoteLines) : "없음"
     }`,
+    `건강정보 선택 목록 DATA: ${JSON.stringify(healthCatalog)}`,
     `이전 대화: ${JSON.stringify(conversationHistory)}`,
     `질문에서 찾은 방언 참고: ${JSON.stringify(knowledge.dialectHints)}`,
     `질문에서 찾은 외래어·별칭 참고: ${JSON.stringify(knowledge.foodAliasHints)}`,
@@ -649,7 +679,7 @@ export async function generateSeniorFriendlyAnswer(
     `적용할 안전 원칙: ${JSON.stringify(knowledge.safetyRules)}`,
     `현재 사용자 글 질문: ${message || "없음. 첨부된 음성이나 사진을 중심으로 답변할 것"}`,
     "반드시 다음 JSON 객체 하나만 반환하세요.",
-    '{"answer":"마크다운을 사용할 수 있는 완결된 답변","risk_level":"danger|caution|safe","warning_message":"위험·비권장일 때만 한 문장, 아니면 빈 문자열"}',
+    '{"answer":"마크다운을 사용할 수 있는 완결된 답변","risk_level":"danger|caution|safe","warning_message":"위험·비권장일 때만 한 문장, 아니면 빈 문자열","profile_allergy_ids":["사용자가 직접 밝힌 목록 ID"],"profile_condition_ids":["사용자가 직접 밝힌 목록 ID"]}',
   ].join("\n");
 
   const requestContent: GeminiContent = {

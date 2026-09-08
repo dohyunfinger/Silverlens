@@ -1157,6 +1157,7 @@ const uiCopy = {
     medicalNote: "이 내용은 일반 생활 참고용이며 진단·치료를 대신하지 않습니다. 처방받은 식단이 있으면 그 안내를 우선하세요.",
     processingVoice: "음성을 글자로 바꾸고 있어요. 잠시만 기다려 주세요.",
     profileVoiceFound: "AI가 음성을 확인해 알레르기 {allergies}개, 질병·건강 상태 {conditions}개를 나누어 입력했어요.",
+    profileTextFound: "대화에서 확인한 알레르기 {allergies}개, 질병·건강 상태 {conditions}개를 기본설정에 추가했어요.",
     profileVoiceEmpty: "음성에서 분명하게 말한 알레르기나 질병·건강 상태를 찾지 못했어요.",
     voiceFoundGender: "말씀하신 성별도 함께 골라 두었어요.",
     voiceFoundAge: "말씀하신 나이에 맞춰 {age}대를 골라 두었어요.",
@@ -1343,6 +1344,7 @@ const uiCopy = {
     medicalNote: "This is general lifestyle information and does not replace diagnosis or treatment. If you have a prescribed diet, follow that guidance first.",
     processingVoice: "Converting your voice to text. Please wait a moment.",
     profileVoiceFound: "AI found {allergies} allergies and {conditions} conditions from your voice and added them separately.",
+    profileTextFound: "I added {allergies} allergies and {conditions} health conditions found in the conversation to Basic Settings.",
     profileVoiceEmpty: "I could not find clearly spoken allergy or condition information in the voice.",
     voiceFoundGender: "I also selected the gender you mentioned.",
     voiceFoundAge: "I selected the {age}s to match the age you mentioned.",
@@ -1529,6 +1531,7 @@ const uiCopy = {
     medicalNote: "この内容は一般的な生活参考情報であり、診断や治療の代わりではありません。処方された食事指導がある場合はそちらを優先してください。",
     processingVoice: "音声を文字に変換しています。少しお待ちください。",
     profileVoiceFound: "AIが音声を確認し、アレルギー{allergies}件、病気・健康状態{conditions}件を分けて入力しました。",
+    profileTextFound: "会話で確認したアレルギー{allergies}件、病気・健康状態{conditions}件を基本設定に追加しました。",
     profileVoiceEmpty: "音声から明確なアレルギーや病気・健康状態を見つけられませんでした。",
     voiceFoundGender: "お話しになった性別も一緒に選んでおきました。",
     voiceFoundAge: "お話しになった年齢に合わせて{age}代を選んでおきました。",
@@ -3317,6 +3320,7 @@ export default function SilverLensApp({
   const languageSectionRef = useRef<HTMLFieldSetElement | null>(null);
   const genderSectionRef = useRef<HTMLFieldSetElement | null>(null);
   const ageSectionRef = useRef<HTMLFieldSetElement | null>(null);
+  const setupCompletionRef = useRef<HTMLButtonElement | null>(null);
 
   const nextStep = getNextStep(language, gender, ageConfirmed);
   const activeLanguage = language ?? "ko-KR";
@@ -4515,6 +4519,15 @@ export default function SilverLensApp({
     setAgeBand(age);
     setAgeConfirmed(!alreadySelected);
     announceNext(language, gender, !alreadySelected);
+    if (!alreadySelected && language && gender) {
+      window.setTimeout(() => {
+        setupCompletionRef.current?.scrollIntoView({
+          behavior: "smooth",
+          block: "center",
+        });
+        setupCompletionRef.current?.focus({ preventScroll: true });
+      }, 220);
+    }
   };
 
   const addHealthTag = (
@@ -5096,6 +5109,8 @@ export default function SilverLensApp({
         answer?: string;
         riskLevel?: "danger" | "caution" | "safe";
         warningMessage?: string;
+        profileAllergyIds?: string[];
+        profileConditionIds?: string[];
         error?: string;
         retryAfterSeconds?: number;
       };
@@ -5109,6 +5124,25 @@ export default function SilverLensApp({
       }
       if (!response.ok || !payload.answer) {
         throw new Error(payload.error || "답변을 불러오지 못했습니다.");
+      }
+      const addedAllergyIds = uniqueItems(payload.profileAllergyIds ?? []).filter(
+        (id) => !allergyIds.includes(id),
+      );
+      const addedConditionIds = uniqueItems(payload.profileConditionIds ?? []).filter(
+        (id) => !conditionIds.includes(id),
+      );
+      if (addedAllergyIds.length > 0) {
+        setAllergyIds((current) => uniqueItems([...current, ...addedAllergyIds]));
+      }
+      if (addedConditionIds.length > 0) {
+        setConditionIds((current) => uniqueItems([...current, ...addedConditionIds]));
+      }
+      if (addedAllergyIds.length + addedConditionIds.length > 0) {
+        setProfileVoiceNotice(
+          activeCopy.profileTextFound
+            .replace("{allergies}", String(addedAllergyIds.length))
+            .replace("{conditions}", String(addedConditionIds.length)),
+        );
       }
       const nextTurn: ChatTurn = {
         id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
@@ -6553,6 +6587,7 @@ export default function SilverLensApp({
           음성 인식이 진행 중일 때만 잠시 막는다.
         */}
         <button
+          ref={setupCompletionRef}
           className={isTranscribingVoice ? "start-button disabled" : "start-button"}
           onClick={beginChat}
           aria-disabled={isTranscribingVoice}

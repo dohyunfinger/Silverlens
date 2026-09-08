@@ -198,6 +198,8 @@ export async function POST(request: Request) {
       answer: result.answer,
       riskLevel: result.riskLevel,
       warningMessage: result.warningMessage,
+      profileAllergyIds: result.profileAllergyIds,
+      profileConditionIds: result.profileConditionIds,
     });
   } catch (error) {
     if (isGeminiQuotaError(error)) {
