@@ -196,6 +196,9 @@ export async function POST(request: Request) {
     );
     return NextResponse.json({
       answer: result.answer,
+      followUpQuestions: result.followUpQuestions ?? [],
+      conversationTitle: result.conversationTitle,
+      summary: result.summary,
       riskLevel: result.riskLevel,
       warningMessage: result.warningMessage,
       profileAllergyIds: result.profileAllergyIds,

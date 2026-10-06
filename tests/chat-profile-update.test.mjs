@@ -20,12 +20,3 @@ test("typed chat adds only catalog health IDs to basic settings", async () => {
   assert.match(app, /setAllergyIds\(\(current\) => uniqueItems\(\[\.\.\.current, \.\.\.addedAllergyIds\]\)\)/);
   assert.match(app, /setConditionIds\(\(current\) => uniqueItems\(\[\.\.\.current, \.\.\.addedConditionIds\]\)\)/);
 });
-
-test("selecting the final setup age moves focus to the completion button", async () => {
-  const app = await readText("frontend/SilverLensApp.tsx");
-
-  assert.match(app, /const setupCompletionRef = useRef<HTMLButtonElement \| null>\(null\)/);
-  assert.match(app, /setupCompletionRef\.current\?\.scrollIntoView/);
-  assert.match(app, /setupCompletionRef\.current\?\.focus/);
-  assert.match(app, /ref=\{setupCompletionRef\}/);
-});

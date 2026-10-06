@@ -3,7 +3,6 @@
 import {
   ChangeEvent,
   KeyboardEvent,
-  TouchEvent,
   useCallback,
   useEffect,
   useMemo,
@@ -11,6 +10,8 @@ import {
   useState,
 } from "react";
 import ReactMarkdown from "react-markdown";
+import { getEntryScreen } from "./entryScreen";
+import { appendConversationTurn, newConversationId, restoreConversations, type ConversationRoom, type ConversationTopic } from "./conversations";
 import {
   clearPendingPhotos,
   clearStore,
@@ -39,13 +40,16 @@ type Language = "ko-KR" | "en-US" | "ja-JP";
 type Gender = "male" | "female";
 type SetupStep = "language" | "gender" | "age" | "complete";
 type SetupSection = Exclude<SetupStep, "complete">;
-type PageScreen = "setup" | "chat" | "data" | "about";
+type PageScreen = "setup" | "chat" | "history" | "data" | "about";
 type RecordingContext = "setup" | "chat" | "allergy" | "condition";
 type NarrationStatus = "preparing" | "ready" | "error";
 type ChatTurn = {
   id: string;
   question: string;
   answer: string;
+  followUpQuestions?: string[];
+  summary?: string;
+  createdAt?: number;
   pages: string[];
   attachmentLabels: string[];
   riskLevel: "danger" | "caution" | "safe";
@@ -252,8 +256,11 @@ function uniqueItems(items: string[]) {
 }
 
 function narrationPagesForTurn(turn: ChatTurn) {
-  if (!turn.warningMessage || turn.pages.length === 0) return turn.pages;
-  return turn.pages.map((page, index) =>
+  const summary = (turn.summary?.trim() || turn.answer.split(/\n\s*\n/)[0])
+    .split(/(?<=[.!?。！？])\s+/).slice(0, 2).join(" ");
+  const pages = splitAnswerIntoPages(summary);
+  if (!turn.warningMessage || pages.length === 0) return pages;
+  return pages.map((page, index) =>
     index === 0 ? `${turn.warningMessage}\n\n${page}` : page,
   );
 }
@@ -667,124 +674,7 @@ const quickAsks: QuickAsk[] = [
 ];
 
 /** 등록 질병에 맞춰 하나만 더 붙이는 버튼. safety_rules 의 질병 ID를 그대로 쓴다. */
-const conditionQuickAsks: Array<{ conditionIds: string[] } & QuickAsk> = [
-  {
-    id: "diabetes",
-    icon: "🩸",
-    action: "ask",
-    conditionIds: ["condition_diabetes", "condition_prediabetes"],
-    label: {
-      "ko-KR": "혈당 안 오르는 반찬",
-      "en-US": "Side dishes that keep blood sugar steady",
-      "ja-JP": "血糖が上がりにくいおかず",
-    },
-    question: {
-      "ko-KR": "혈당이 천천히 오르는 반찬을 알려주세요.",
-      "en-US": "Please tell me side dishes that raise blood sugar slowly.",
-      "ja-JP": "血糖がゆっくり上がるおかずを教えてください。",
-    },
-  },
-  {
-    id: "kidney",
-    icon: "💧",
-    action: "ask",
-    conditionIds: ["condition_kidney_disease", "condition_dialysis"],
-    label: {
-      "ko-KR": "칼륨 적은 채소",
-      "en-US": "Vegetables low in potassium",
-      "ja-JP": "カリウムが少ない野菜",
-    },
-    question: {
-      "ko-KR": "칼륨이 적어서 신장에 부담이 덜한 채소를 알려주세요.",
-      "en-US": "Please tell me vegetables low in potassium that are gentler on the kidneys.",
-      "ja-JP": "カリウムが少なく腎臓の負担が軽い野菜を教えてください。",
-    },
-  },
-  {
-    id: "dysphagia",
-    icon: "🥄",
-    action: "ask",
-    conditionIds: ["condition_dysphagia"],
-    label: {
-      "ko-KR": "삼키기 쉬운 음식",
-      "en-US": "Foods that are easy to swallow",
-      "ja-JP": "飲み込みやすい食べ物",
-    },
-    question: {
-      "ko-KR": "삼키기 쉽게 만드는 음식과 조리법을 알려주세요.",
-      "en-US": "Please tell me foods and cooking methods that are easy to swallow.",
-      "ja-JP": "飲み込みやすい食べ物と調理法を教えてください。",
-    },
-  },
-  {
-    id: "hypertension",
-    icon: "🧂",
-    action: "ask",
-    conditionIds: ["condition_hypertension", "condition_heart_failure"],
-    label: {
-      "ko-KR": "싱겁게 먹는 방법",
-      "en-US": "How to eat with less salt",
-      "ja-JP": "薄味で食べる方法",
-    },
-    question: {
-      "ko-KR": "짜지 않게 간을 맞추면서 맛있게 먹는 방법을 알려주세요.",
-      "en-US": "Please tell me how to season food tastily with less salt.",
-      "ja-JP": "塩を減らしても おいしく味つけする方法を教えてください。",
-    },
-  },
-  {
-    id: "gout",
-    icon: "🦶",
-    action: "ask",
-    conditionIds: ["condition_gout"],
-    label: {
-      "ko-KR": "통풍에 피할 음식",
-      "en-US": "Foods to avoid with gout",
-      "ja-JP": "痛風で避ける食べ物",
-    },
-    question: {
-      "ko-KR": "통풍이 있을 때 피해야 할 음식을 알려주세요.",
-      "en-US": "Please tell me which foods to avoid when I have gout.",
-      "ja-JP": "痛風があるときに避けるべき食べ物を教えてください。",
-    },
-  },
-  {
-    id: "anticoagulant",
-    icon: "🩹",
-    action: "ask",
-    conditionIds: ["condition_anticoagulant"],
-    label: {
-      "ko-KR": "와파린과 음식",
-      "en-US": "Warfarin and food",
-      "ja-JP": "ワルファリンと食事",
-    },
-    question: {
-      "ko-KR": "와파린을 먹을 때 조심해야 할 음식을 알려주세요.",
-      "en-US": "Please tell me which foods need care while taking warfarin.",
-      "ja-JP": "ワルファリンを飲むときに気をつける食品を教えてください。",
-    },
-  },
-  {
-    id: "osteoporosis",
-    icon: "🦴",
-    action: "ask",
-    conditionIds: [
-      "condition_osteoporosis",
-      "condition_menopause",
-      "condition_vitamin_d_deficiency",
-    ],
-    label: {
-      "ko-KR": "뼈에 좋은 음식",
-      "en-US": "Foods good for bones",
-      "ja-JP": "骨に良い食べ物",
-    },
-    question: {
-      "ko-KR": "뼈 건강에 도움이 되는 음식을 알려주세요.",
-      "en-US": "Please tell me foods that help bone health.",
-      "ja-JP": "骨の健康に役立つ食べ物を教えてください。",
-    },
-  },
-];
+
 const narrationRateOptions = [
   { label: { "ko-KR": "아주 천천히", "en-US": "Very slow", "ja-JP": "とてもゆっくり" }, value: 0.72 },
   { label: { "ko-KR": "조금 느리게", "en-US": "A little slow", "ja-JP": "少しゆっくり" }, value: 0.82 },
@@ -799,7 +689,7 @@ const NARRATION_RATE_STORAGE_KEY = "silverlens:narration-rate-index-v2";
 const HEALTH_NOTES_STORAGE_KEY = "silverlens:health-notes-v1";
 const PROFILE_STORE_KEY = "state-v1";
 /** 대화 이력은 최근 것만 남긴다. 오래된 것까지 두면 저장 용량이 계속 늘어난다. */
-const MAX_STORED_TURNS = 30;
+
 const BACKUP_FILE_NAME = "silverlens-backup.json";
 
 /** 소개 화면을 실제로 나간 뒤에만 이 브라우저를 재방문으로 기억한다. */
@@ -823,11 +713,13 @@ type StoredState = {
     gender: Gender | null;
     ageBand: number;
     ageConfirmed: boolean;
+    completed?: boolean;
     allergyIds: string[];
     conditionIds: string[];
     healthNotes: HealthNote[];
   };
   chatTurns: ChatTurn[];
+  rooms?: ConversationRoom<ChatTurn>[];
 };
 
 function stringArray(value: unknown): string[] {
@@ -864,6 +756,9 @@ function sanitizeChatTurns(value: unknown): ChatTurn[] {
       id: turn.id,
       question: typeof turn.question === "string" ? turn.question : "",
       answer: turn.answer,
+      summary: typeof turn.summary === "string" ? turn.summary : undefined,
+      createdAt: typeof turn.createdAt === "number" && Number.isFinite(turn.createdAt) && turn.createdAt > 0 && turn.createdAt < 8640000000000000 ? turn.createdAt : undefined,
+      followUpQuestions: stringArray(turn.followUpQuestions).slice(0, 4),
       pages: stringArray(turn.pages),
       attachmentLabels: stringArray(turn.attachmentLabels),
       riskLevel: (turn.riskLevel === "danger" || turn.riskLevel === "caution"
@@ -872,8 +767,7 @@ function sanitizeChatTurns(value: unknown): ChatTurn[] {
       warningMessage:
         typeof turn.warningMessage === "string" ? turn.warningMessage : "",
     }))
-    .filter((turn) => turn.pages.length > 0)
-    .slice(-MAX_STORED_TURNS);
+    .filter((turn) => turn.pages.length > 0);
 }
 
 /** 저장 파일이나 저장소에서 읽은 값이 깨져 있어도 화면이 죽지 않게 걸러 낸다. */
@@ -898,11 +792,13 @@ function sanitizeStoredState(value: unknown): StoredState | null {
           : null,
       ageBand,
       ageConfirmed: profile.ageConfirmed === true,
+      completed: profile.completed === true,
       allergyIds: stringArray(profile.allergyIds),
       conditionIds: stringArray(profile.conditionIds),
       healthNotes: sanitizeHealthNotes(profile.healthNotes),
     },
     chatTurns: sanitizeChatTurns(raw.chatTurns),
+    rooms: restoreConversations(raw.rooms, sanitizeChatTurns(raw.chatTurns), typeof raw.savedAt === "number" ? raw.savedAt : Date.now(), sanitizeChatTurns),
   };
 }
 
@@ -1020,10 +916,10 @@ const uiCopy = {
   "ko-KR": {
     menuLabel: "서비스 메뉴",
     brand: "실버렌즈",
-    service: "서비스",
-    basicSetup: "기본설정",
+    service: "질문하기",
+    basicSetup: "내 정보",
     data: "데이터",
-    about: "서비스 소개",
+    about: "홈",
     sidebarTitle: "어르신을 위한 AI",
     sidebarNote: "말하고, 찍고, 편하게 물어보세요.",
     progressLanguage: "언어",
@@ -1038,7 +934,7 @@ const uiCopy = {
     answerSpeed: "답변 속도",
     answerSpeedHelp: "손이나 마우스로 끌어 음성 답변 속도를 조절하세요.",
     answerSpeedPreview: "🔈 이 속도로 들어보기",
-    answerSpeedSample: "지금 이 속도로 답변을 읽어드릴게요.",
+    answerSpeedSample: "이 속도는 어떠세요? 아래에서 조절해 주세요.",
     answerSpeedLimited: "이 브라우저는 한국어 음성 속도 조절이 제한돼요. 끊어 읽기로 속도를 맞춥니다.",
     ageOver: "{age}세 이상",
     ageUnder: "{age}세 이하",
@@ -1087,7 +983,8 @@ const uiCopy = {
     completionHint: "언어·성별·나이대를 선택하면 대화를 시작할 수 있어요.",
     backToSetup: "← 설정으로",
     welcomeVoice:
-      "안녕하세요. 무엇이든 편하게 말씀해 주세요. 드시려는 음식 이름을 말하시거나 사진을 찍어 보여주시면 드셔도 괜찮은지 알려드립니다. 알레르기나 앓고 계신 병이 있으시면 내 정보 입력하기 버튼을 눌러 알려주세요.",
+      "마이크를 눌러 말씀하시고, 보내기를 누르세요. 사진이나 글로도 질문할 수 있어요.",
+    profileIntroVoice: "편하신 언어부터 골라 주세요. 나중에 입력하시려면 모두 건너뛰기를 누르세요.",
     welcomeTitle: "말씀만 하시면 됩니다",
     welcomeBody:
       "드시려는 음식 이름을 말하거나 사진을 찍어 보여주세요. 드셔도 괜찮은지 큰 글자로 알려드립니다.",
@@ -1207,10 +1104,10 @@ const uiCopy = {
   "en-US": {
     menuLabel: "Service menu",
     brand: "SilverLens",
-    service: "Service",
-    basicSetup: "Basic setup",
+    service: "Ask",
+    basicSetup: "My info",
     data: "Data",
-    about: "About",
+    about: "Home",
     sidebarTitle: "AI for older adults",
     sidebarNote: "Speak, snap a photo, and ask comfortably.",
     progressLanguage: "Language",
@@ -1274,7 +1171,8 @@ const uiCopy = {
     completionHint: "Choose language, gender, and age to start chatting.",
     backToSetup: "← Back to setup",
     welcomeVoice:
-      "Hello. Just say whatever you like. Tell me the name of a food or show me a photo, and I will tell you whether it is fine to eat. If you have allergies or a condition, press the My information button to let me know.",
+      "Tap the microphone, speak, then tap Send. You can also use a photo or text.",
+    profileIntroVoice: "Choose your preferred language. To add your information later, tap Skip all.",
     welcomeTitle: "Just speak to me",
     welcomeBody:
       "Say the name of a food or show me a photo. I will tell you in large text whether it is fine to eat.",
@@ -1394,10 +1292,10 @@ const uiCopy = {
   "ja-JP": {
     menuLabel: "サービスメニュー",
     brand: "シルバーレンズ",
-    service: "サービス",
-    basicSetup: "基本設定",
+    service: "質問する",
+    basicSetup: "自分の情報",
     data: "データ",
-    about: "サービス紹介",
+    about: "ホーム",
     sidebarTitle: "高齢者のためのAI",
     sidebarNote: "話して、撮って、気軽に聞いてください。",
     progressLanguage: "言語",
@@ -1461,7 +1359,8 @@ const uiCopy = {
     completionHint: "言語・性別・年齢を選ぶと会話を始められます。",
     backToSetup: "← 設定へ戻る",
     welcomeVoice:
-      "こんにちは。何でも気軽に話してください。食べたい食品の名前を言うか、写真を撮って見せてくださると、食べても大丈夫かお知らせします。アレルギーやご病気があれば、「私の情報を入力」ボタンを押して教えてください。",
+      "マイクを押して話し、送信を押してください。写真や文字でも質問できます。",
+    profileIntroVoice: "使いやすい言語を選んでください。情報をあとで入力する場合は、すべてスキップを押してください。",
     welcomeTitle: "話すだけで大丈夫です",
     welcomeBody:
       "食べたい食品の名前を言うか、写真を撮って見せてください。食べても大丈夫か大きな文字でお知らせします。",
@@ -2902,12 +2801,20 @@ function getNextStep(
   return "complete";
 }
 
-function SidebarIcon({ name }: { name: "home" | "settings" | "data" | "about" }) {
+function ProfilePersonIcon() {
+  return <svg viewBox="0 0 64 64" aria-hidden="true"><circle cx="32" cy="22" r="12" /><path d="M12 55v-5c0-10 9-17 20-17s20 7 20 17v5" /></svg>;
+}
+
+function SidebarIcon({ name }: { name: "home" | "search" | "history" | "settings" | "data" | "about" }) {
+  if (name === "history") return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 11a9 9 0 0 1-9 9H4l-2 2V11a9 9 0 0 1 19 0Z" /><path d="M7 11h.01M12 11h.01M17 11h.01" /></svg>;
+  if (name === "search") {
+    return <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="10.5" cy="10.5" r="6.5" /><path d="m15.5 15.5 5 5" /></svg>;
+  }
   if (name === "home") {
     return <svg viewBox="0 0 24 24" aria-hidden="true"><path d="m4 11 8-7 8 7v9H4v-9Z" /><path d="M9 20v-6h6v6" /></svg>;
   }
   if (name === "settings") {
-    return <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="3.2" /><path d="M12 2.8v2.1M12 19.1v2.1M21.2 12h-2.1M4.9 12H2.8M18.5 5.5 17 7M7 17l-1.5 1.5M18.5 18.5 17 17M7 7 5.5 5.5" /></svg>;
+    return <svg className="profile-smile-icon" viewBox="0 0 24 24" aria-hidden="true"><circle className="profile-smile-disc" cx="12" cy="12" r="11" /><circle className="profile-smile-eye" cx="8.5" cy="9" r="1" /><circle className="profile-smile-eye" cx="15.5" cy="9" r="1" /><path className="profile-smile-mouth" d="M8 13.5c1 1.8 2.3 2.7 4 2.7s3-.9 4-2.7" /></svg>;
   }
   if (name === "data") {
     return <svg viewBox="0 0 24 24" aria-hidden="true"><rect x="4" y="3" width="16" height="18" rx="2" /><path d="M4 9h16M4 15h16M10 3v18M15 3v18" /></svg>;
@@ -2958,11 +2865,22 @@ function Sidebar({
       </div>
       <nav>
         <button
+          className={active === "about" ? "nav-item active" : "nav-item"}
+          onClick={() => onNavigate("about")}
+        >
+          <span aria-hidden="true"><SidebarIcon name="home" /></span>
+          {copy.about}
+        </button>
+        <button
           className={active === "chat" ? "nav-item active" : "nav-item"}
           onClick={() => onNavigate("chat")}
         >
-          <span aria-hidden="true"><SidebarIcon name="home" /></span>
+          <span aria-hidden="true"><SidebarIcon name="search" /></span>
           {copy.service}
+        </button>
+        <button className={active === "history" ? "nav-item active" : "nav-item"} onClick={() => onNavigate("history")}>
+          <span aria-hidden="true"><SidebarIcon name="history" /></span>
+          {copy.service === "질문하기" ? "이전 대화" : copy.service === "質問する" ? "履歴" : "History"}
         </button>
         <button
           className={active === "setup" ? "nav-item active" : "nav-item"}
@@ -2970,13 +2888,6 @@ function Sidebar({
         >
           <span aria-hidden="true"><SidebarIcon name="settings" /></span>
           {copy.basicSetup}
-        </button>
-        <button
-          className={active === "about" ? "nav-item active" : "nav-item"}
-          onClick={() => onNavigate("about")}
-        >
-          <span aria-hidden="true"><SidebarIcon name="about" /></span>
-          {copy.about}
         </button>
       </nav>
       <div className="sidebar-note">
@@ -3065,6 +2976,16 @@ function HealthPickerCard({
   recordDisabled: boolean;
 }) {
   const hasSelection = selectedIds.length > 0;
+  const pickerRef = useRef<HTMLDivElement | null>(null);
+  const inputRef = useRef<HTMLInputElement | null>(null);
+  useEffect(() => {
+    if (!open) return;
+    inputRef.current?.focus({ preventScroll: true });
+    pickerRef.current?.scrollIntoView({
+      block: "start",
+      behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+    });
+  }, [open]);
 
   return (
     <section className={open ? "health-card open" : "health-card"}>
@@ -3079,7 +3000,8 @@ function HealthPickerCard({
           aria-expanded={open}
           onClick={onToggleOpen}
         >
-          {open ? copy.directInputClose : copy.directInput}
+          <span className="health-action-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><rect x="6" y="4" width="20" height="24" rx="4" /><path d="M11 11h10M11 16h10M11 21h6" /></svg></span>
+          <strong>{open ? copy.directInputClose : copy.directInput}</strong>
         </button>
         <button
           type="button"
@@ -3087,7 +3009,8 @@ function HealthPickerCard({
           onClick={onRecord}
           disabled={recordDisabled}
         >
-          {isRecording ? copy.recordingDone : copy.voiceInput}
+          <span className="health-action-icon" aria-hidden="true"><svg viewBox="0 0 32 32"><rect x="11" y="3" width="10" height="17" rx="5" /><path d="M6 15v2a10 10 0 0 0 20 0v-2M16 27v3M10 30h12" /></svg></span>
+          <strong>{isRecording ? copy.recordingDone : copy.voiceInput}</strong>
         </button>
       </div>
 
@@ -3115,9 +3038,9 @@ function HealthPickerCard({
       </div>
 
       {open && (
-        <div className="health-picker">
+        <div ref={pickerRef} className="health-picker">
           <input
-            autoFocus
+            ref={inputRef}
             placeholder={copy.inputPlaceholder}
             list={datalistId}
             onKeyDown={onAddTag}
@@ -3199,13 +3122,9 @@ export default function SilverLensApp({
 }: {
   initialIntroSeen?: boolean;
 }) {
-  /*
-   * 첫 방문은 서비스 소개, 소개를 확인한 재방문은 대화 화면에서 시작한다.
-   * 어르신에게 언어·성별·나이·알레르기·질병을 먼저 다 채우게 하면 대화에 닿기 전에
-   * 지쳐 이탈한다. 그래서 바로 말할 수 있게 두고, 정보 입력은 버튼으로 안내한다.
-   */
+  // 홈 방문 기록과 정보 입력 완료 기록은 별개다. 완료 여부는 저장소에서 확인한다.
   const [screen, setScreen] = useState<PageScreen>(
-    initialIntroSeen ? "chat" : "about",
+    getEntryScreen(initialIntroSeen, false),
   );
   const [introSeen, setIntroSeen] = useState(initialIntroSeen);
   const [language, setLanguage] = useState<Language | null>(null);
@@ -3214,6 +3133,10 @@ export default function SilverLensApp({
   const [ageConfirmed, setAgeConfirmed] = useState(false);
   const [allergyIds, setAllergyIds] = useState<string[]>([]);
   const [conditionIds, setConditionIds] = useState<string[]>([]);
+  const [profileWizardStep, setProfileWizardStep] = useState<"language" | "voice" | "gender" | "age" | "allergy" | "condition">("language");
+  const voiceStepPreviewPlayed = useRef(false);
+  const [profileCompleted, setProfileCompleted] = useState(false);
+  const [editingProfile, setEditingProfile] = useState(false);
   const [autoVoiceGuide, setAutoVoiceGuide] = useState(true);
   const [narrationRateIndex, setNarrationRateIndex] = useState(DEFAULT_RATE_INDEX);
   const [voicePreferenceReady, setVoicePreferenceReady] = useState(false);
@@ -3258,9 +3181,14 @@ export default function SilverLensApp({
   const [recordingError, setRecordingError] = useState("");
   const [chatInput, setChatInput] = useState("");
   const [chatTurns, setChatTurns] = useState<ChatTurn[]>([]);
-  const [answerCardIndex, setAnswerCardIndex] = useState(0);
+  const [rooms, setRooms] = useState<ConversationRoom<ChatTurn>[]>([]);
+  const [activeRoomId, setActiveRoomId] = useState(newConversationId);
+  const [historySearch, setHistorySearch] = useState("");
+  const [historyTopic, setHistoryTopic] = useState<ConversationTopic | "all">("all");
+  const [, setAnswerCardIndex] = useState(0);
   const [chatError, setChatError] = useState("");
   const [isLoadingAnswer, setIsLoadingAnswer] = useState(false);
+  const [pendingQuestion, setPendingQuestion] = useState("");
   const [isNarrating, setIsNarrating] = useState(false);
   const [isTranscribingVoice, setIsTranscribingVoice] = useState(false);
   const [narrationStatus, setNarrationStatus] = useState<Record<string, NarrationStatus>>({});
@@ -3272,6 +3200,46 @@ export default function SilverLensApp({
   const [transcript, setTranscript] = useState("");
   const mediaRecorderRef = useRef<MediaRecorder | null>(null);
   const streamRef = useRef<MediaStream | null>(null);
+  const latestAnswerRef = useRef<HTMLDivElement | null>(null);
+  const chatScrollRef = useRef<HTMLDivElement | null>(null);
+  useEffect(() => {
+    if (screen !== "chat") return;
+    const area = chatScrollRef.current;
+    if (!area) return;
+    if (pendingQuestion) {
+      const question = area.querySelector<HTMLElement>(".pending-turn .answer-question");
+      if (question) {
+        question.tabIndex = -1;
+        question.focus({ preventScroll: true });
+        area.scrollTo({
+          top: Math.max(0, area.scrollTop + question.getBoundingClientRect().top - area.getBoundingClientRect().top - 24),
+          behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+        });
+      }
+      return;
+    }
+    const answer = latestAnswerRef.current;
+    if (answer && chatTurns.length) {
+      answer.focus({ preventScroll: true });
+      const answerBounds = answer.getBoundingClientRect();
+      const centerOffset = Math.max(48, (area.clientHeight - answerBounds.height) / 2);
+      area.scrollTo({
+        top: Math.max(0, area.scrollTop + answerBounds.top - area.getBoundingClientRect().top - centerOffset),
+        behavior: window.matchMedia("(prefers-reduced-motion: reduce)").matches ? "auto" : "smooth",
+      });
+    }
+  }, [chatTurns.length, pendingQuestion, screen]);
+  const profileQuestionRef = useRef<HTMLElement | null>(null);
+  useEffect(() => {
+    if (screen !== "setup" || (profileCompleted && !editingProfile)) return;
+    window.scrollTo({ top: 0, behavior: "instant" });
+    const question = profileQuestionRef.current?.querySelector<HTMLElement>("legend, .voice-choice h2, .health-card h2, .health-card h3");
+    if (question) {
+      question.tabIndex = -1;
+      question.focus({ preventScroll: true });
+    }
+  }, [profileWizardStep, screen, profileCompleted, editingProfile]);
+
   const narrationAudioRef = useRef<HTMLAudioElement | null>(null);
   const narrationUrlRef = useRef<string | null>(null);
   const narrationFinishRef = useRef<(() => void) | null>(null);
@@ -3295,7 +3263,7 @@ export default function SilverLensApp({
   const chunksRef = useRef<Blob[]>([]);
   const recordingStartedAtRef = useRef<number | null>(null);
   const initialTtsPlayed = useRef(false);
-  const answerTouchStartX = useRef<number | null>(null);
+  const profileIntroPlayed = useRef(false);
   /**
    * 방금 고른 촬영 목적. 상태와 별도로 ref 에도 둔다.
    *
@@ -3320,7 +3288,6 @@ export default function SilverLensApp({
   const languageSectionRef = useRef<HTMLFieldSetElement | null>(null);
   const genderSectionRef = useRef<HTMLFieldSetElement | null>(null);
   const ageSectionRef = useRef<HTMLFieldSetElement | null>(null);
-  const setupCompletionRef = useRef<HTMLButtonElement | null>(null);
 
   const nextStep = getNextStep(language, gender, ageConfirmed);
   const activeLanguage = language ?? "ko-KR";
@@ -4047,10 +4014,13 @@ export default function SilverLensApp({
     setGender(state.profile.gender);
     setAgeBand(state.profile.ageBand);
     setAgeConfirmed(state.profile.ageConfirmed);
+    setProfileCompleted(state.profile.completed === true);
     setAllergyIds(state.profile.allergyIds);
     setConditionIds(state.profile.conditionIds);
     setHealthNotes(state.profile.healthNotes);
-    setChatTurns(state.chatTurns);
+    setRooms(state.rooms ?? []);
+    setActiveRoomId(newConversationId());
+    setChatTurns([]);
 
     const totalPages = state.chatTurns.reduce(
       (total, turn) => total + turn.pages.length,
@@ -4069,11 +4039,13 @@ export default function SilverLensApp({
         gender,
         ageBand,
         ageConfirmed,
+        completed: profileCompleted,
         allergyIds,
         conditionIds,
         healthNotes,
       },
-      chatTurns: chatTurns.slice(-MAX_STORED_TURNS),
+      chatTurns,
+        rooms,
     };
     const url = URL.createObjectURL(
       new Blob([JSON.stringify(snapshot, null, 2)], {
@@ -4090,8 +4062,10 @@ export default function SilverLensApp({
     activeCopy.backupExportDone,
     ageBand,
     ageConfirmed,
+    profileCompleted,
     allergyIds,
     chatTurns,
+    rooms,
     conditionIds,
     gender,
     healthNotes,
@@ -4126,10 +4100,14 @@ export default function SilverLensApp({
     setGender(null);
     setAgeBand(70);
     setAgeConfirmed(false);
+    setProfileCompleted(false);
+    setEditingProfile(false);
     setAllergyIds([]);
     setConditionIds([]);
     setHealthNotes([]);
     setChatTurns([]);
+    setRooms([]);
+    setActiveRoomId(newConversationId());
     setAnswerCardIndex(0);
     setStoreSavedAt(null);
     setBackupNotice(activeCopy.backupCleared);
@@ -4156,12 +4134,16 @@ export default function SilverLensApp({
         if (!initialIntroSeen) {
           rememberServiceIntroSeen();
           setIntroSeen(true);
-          setScreen("chat");
         }
       } else {
         // v1 이전에는 음성 메모만 localStorage에 있었다. 한 번만 옮겨 온다.
         const legacy = readLegacyHealthNotes();
         if (legacy.length > 0) setHealthNotes(legacy);
+      }
+      if (initialIntroSeen || stored) {
+        setScreen((current) => current === "about" || current === "setup"
+          ? getEntryScreen(true, stored?.profile?.completed === true)
+          : current);
       }
       setStoreReady(true);
     })();
@@ -4183,12 +4165,14 @@ export default function SilverLensApp({
           gender,
           ageBand,
           ageConfirmed,
+          completed: profileCompleted,
           allergyIds,
           conditionIds,
           healthNotes,
         },
         // 답변 음성은 저장하지 않는다. 용량이 크고 다시 만들 수 있다.
-        chatTurns: chatTurns.slice(-MAX_STORED_TURNS),
+        chatTurns,
+        rooms,
       };
       void writeStore(PROFILE_STORE_KEY, snapshot).then(() => {
         setStoreSavedAt(snapshot.savedAt);
@@ -4202,10 +4186,12 @@ export default function SilverLensApp({
     gender,
     ageBand,
     ageConfirmed,
+    profileCompleted,
     allergyIds,
     conditionIds,
     healthNotes,
     chatTurns,
+    rooms,
   ]);
 
   const addHealthNote = useCallback((kind: HealthNote["kind"], text: string) => {
@@ -4236,7 +4222,7 @@ export default function SilverLensApp({
   useEffect(() => {
     if (
       !introSeen ||
-      screen === "about" ||
+      screen !== "chat" ||
       !storeReady ||
       !voicePreferenceReady ||
       !autoVoiceGuide ||
@@ -4255,6 +4241,13 @@ export default function SilverLensApp({
     storeReady,
     voicePreferenceReady,
   ]);
+
+  useEffect(() => {
+    if (screen !== "setup") { profileIntroPlayed.current = false; return; }
+    if (!storeReady || !voicePreferenceReady || !autoVoiceGuide || profileCompleted || editingProfile || profileWizardStep !== "language" || profileIntroPlayed.current) return;
+    profileIntroPlayed.current = true;
+    queueBrowserNarration(uiCopy[activeLanguage].profileIntroVoice, activeLanguage, 200);
+  }, [screen, storeReady, voicePreferenceReady, autoVoiceGuide, profileCompleted, editingProfile, profileWizardStep, activeLanguage, queueBrowserNarration]);
 
   useEffect(() => {
     const narrationControllers = narrationControllersRef.current;
@@ -4361,24 +4354,32 @@ export default function SilverLensApp({
     }, 0);
     const previousOverflow = document.body.style.overflow;
     document.body.style.overflow = "hidden";
+    const onKeyDown = (event: globalThis.KeyboardEvent) => {
+      if (event.key === "Escape") {
+        event.preventDefault();
+        stopNarration();
+        setPhotoStep(null);
+        setIsPhotoZoomOpen(false);
+      }
+      if (event.key === "Tab") {
+        const buttons = photoPanelRef.current?.querySelectorAll<HTMLElement>('button:not(:disabled), input:not(:disabled), [tabindex="0"]');
+        if (!buttons?.length) return;
+        const first = buttons[0];
+        const last = buttons[buttons.length - 1];
+        if (event.shiftKey && (document.activeElement === first || document.activeElement === photoPanelRef.current)) {
+          event.preventDefault(); last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault(); first.focus();
+        }
+      }
+    };
+    document.addEventListener("keydown", onKeyDown);
     return () => {
       window.clearTimeout(timer);
+      document.removeEventListener("keydown", onKeyDown);
       document.body.style.overflow = previousOverflow;
     };
-  }, [photoStep]);
-
-  const announceNext = useCallback(
-    (
-      nextLanguage: Language | null = language,
-      nextGender: Gender | null = gender,
-      nextAgeConfirmed: boolean = ageConfirmed,
-    ) => {
-      const step = getNextStep(nextLanguage, nextGender, nextAgeConfirmed);
-      const lang = nextLanguage ?? "ko-KR";
-      queueAutomaticNarration(promptCopy[lang][step], lang, 80);
-    },
-    [ageConfirmed, gender, language, queueAutomaticNarration],
-  );
+  }, [photoStep, stopNarration]);
 
   const toggleAutoVoiceGuide = () => {
     const next = !autoVoiceGuide;
@@ -4452,11 +4453,6 @@ export default function SilverLensApp({
     }, 280);
   };
 
-  const replayCurrentGuide = () => {
-    const step = getNextStep(language, gender, ageConfirmed);
-    queueBrowserNarration(promptCopy[activeLanguage][step], activeLanguage, 20);
-  };
-
   /** 슬라이더를 옮긴 뒤 바로 속도를 확인할 수 있게 한 문장을 읽어준다. */
   const previewNarrationRate = () => {
     stopNarration();
@@ -4500,34 +4496,29 @@ export default function SilverLensApp({
     },
   ];
 
-  const toggleLanguage = (id: Language) => {
-    const next = language === id ? null : id;
-    setLanguage(next);
-    announceNext(next, gender, ageConfirmed);
-    if (next) window.setTimeout(() => focusSetupSection("gender"), 180);
-  };
-
-  const toggleGender = (id: Gender) => {
-    const next = gender === id ? null : id;
-    setGender(next);
-    announceNext(language, next, ageConfirmed);
-    if (next) window.setTimeout(() => focusSetupSection("age"), 180);
-  };
-
-  const selectAge = (age: number) => {
-    const alreadySelected = ageConfirmed && ageBand === age;
-    setAgeBand(age);
-    setAgeConfirmed(!alreadySelected);
-    announceNext(language, gender, !alreadySelected);
-    if (!alreadySelected && language && gender) {
-      window.setTimeout(() => {
-        setupCompletionRef.current?.scrollIntoView({
-          behavior: "smooth",
-          block: "center",
-        });
-        setupCompletionRef.current?.focus({ preventScroll: true });
-      }, 220);
+  const toggleLanguage = (id: Language) => { setLanguage(id); };
+  const toggleGender = (id: Gender) => { setGender(id); };
+  const selectAge = (age: number) => { setAgeBand(age); setAgeConfirmed(true); };
+  const advanceProfileWizard = () => {
+    stopNarration();
+    const steps = ["language", "voice", "gender", "age", "allergy", "condition"] as const;
+    const next = steps[steps.indexOf(profileWizardStep) + 1];
+    if (!next) return;
+    setProfileWizardStep(next);
+    if (next === "voice" && !voiceStepPreviewPlayed.current) {
+      voiceStepPreviewPlayed.current = true;
+      setAutoVoiceGuide(true);
+      window.localStorage.setItem("silverlens:auto-voice-guide", "on");
+      speakGuideNarration(uiCopy[activeLanguage].answerSpeedSample, activeLanguage);
     }
+  };
+
+  const finishProfileWizard = () => {
+    if (isTranscribingVoice || recordingContext) return;
+    stopNarration();
+    setProfileCompleted(true);
+    setEditingProfile(false);
+    setScreen("chat");
   };
 
   const addHealthTag = (
@@ -4805,26 +4796,7 @@ export default function SilverLensApp({
    * 정보 입력은 이제 필수 단계가 아니라 선택이므로 미완성이어도 막지 않는다.
    * 음성 인식이 돌아가는 중에만 잠깐 기다리게 한다.
    */
-  const beginChat = () => {
-    if (isTranscribingVoice) {
-      setProfileVoiceNotice(activeCopy.waitTranscribing);
-      return;
-    }
-    stopNarration();
-    setScreen("chat");
-  };
-
   /** 대화 화면에서 정보 입력 화면으로 이동하며 현재 단계를 음성으로 안내한다. */
-  const openProfileSetup = () => {
-    stopNarration();
-    setScreen("setup");
-    announceNext();
-  };
-
-  const replayWelcome = () => {
-    speakGuideNarration(activeCopy.welcomeVoice, activeLanguage);
-  };
-
   const answerCards = useMemo<AnswerCard[]>(
     () =>
       chatTurns.flatMap((turn, turnIndex) =>
@@ -4843,36 +4815,6 @@ export default function SilverLensApp({
       ),
     [chatTurns],
   );
-  const visibleAnswerCardIndex = Math.min(
-    answerCardIndex,
-    Math.max(0, answerCards.length - 1),
-  );
-  const activeAnswerCard = answerCards[visibleAnswerCardIndex];
-
-  const moveAnswerCard = useCallback(
-    (direction: -1 | 1) => {
-      if (answerCards.length === 0) return;
-      stopNarration();
-      setAnswerCardIndex((current) =>
-        Math.min(answerCards.length - 1, Math.max(0, current + direction)),
-      );
-    },
-    [answerCards.length, stopNarration],
-  );
-
-  const handleAnswerTouchStart = (event: TouchEvent) => {
-    answerTouchStartX.current = event.touches[0]?.clientX ?? null;
-  };
-
-  const handleAnswerTouchEnd = (event: TouchEvent) => {
-    if (answerTouchStartX.current === null) return;
-    const endX = event.changedTouches[0]?.clientX ?? answerTouchStartX.current;
-    const distance = endX - answerTouchStartX.current;
-    answerTouchStartX.current = null;
-    if (Math.abs(distance) < 45) return;
-    moveAnswerCard(distance < 0 ? 1 : -1);
-  };
-
   /** 사진 흐름 시작. 먼저 무엇을 찍는지 고르게 한다. */
   const openPhotoFlow = () => {
     stopNarration();
@@ -4882,6 +4824,7 @@ export default function SilverLensApp({
   };
 
   const closePhotoFlow = () => {
+    stopNarration();
     setPhotoStep(null);
     setIsPhotoZoomOpen(false);
   };
@@ -5027,6 +4970,7 @@ export default function SilverLensApp({
 
     setChatError("");
     setIsLoadingAnswer(true);
+    setPendingQuestion(cleaned || (pendingAudio ? activeCopy.audioQuestion : activeCopy.photoQuestion));
     try {
       // 사진은 첨부한 순서대로 모두 보낸다. 순서가 프롬프트의 사진 순서와 맞아야 한다.
       const images = await Promise.all(
@@ -5089,7 +5033,7 @@ export default function SilverLensApp({
             language: activeLanguage,
             // 성별을 고르지 않았으면 보내지 않는다(프롬프트가 일반 기준으로 답한다).
             gender: gender ?? undefined,
-            ageBand,
+            ageBand: ageConfirmed ? ageBand : undefined,
             allergies: localizedAllergies,
             conditions: localizedConditions,
             allergyIds,
@@ -5102,11 +5046,16 @@ export default function SilverLensApp({
           history: chatTurns.slice(-6).map((turn) => ({
             question: turn.question,
             answer: turn.answer,
+      summary: typeof turn.summary === "string" ? turn.summary : undefined,
+      createdAt: typeof turn.createdAt === "number" && Number.isFinite(turn.createdAt) && turn.createdAt > 0 && turn.createdAt < 8640000000000000 ? turn.createdAt : undefined,
           })),
         }),
       });
       const payload = (await response.json()) as {
         answer?: string;
+        followUpQuestions?: string[];
+        conversationTitle?: string;
+        summary?: string;
         riskLevel?: "danger" | "caution" | "safe";
         warningMessage?: string;
         profileAllergyIds?: string[];
@@ -5148,7 +5097,10 @@ export default function SilverLensApp({
         id: `${Date.now()}-${Math.random().toString(36).slice(2, 8)}`,
         question: questionLabel,
         answer: payload.answer,
-        pages: splitAnswerIntoPages(payload.answer),
+        summary: payload.summary?.trim() || payload.answer.split(/\n\s*\n/)[0],
+        createdAt: Date.now(),
+        followUpQuestions: stringArray(payload.followUpQuestions).slice(0, 4),
+        pages: splitAnswerIntoPages(payload.summary?.trim() || payload.answer.split(/\n\s*\n/)[0]),
         attachmentLabels,
         riskLevel: payload.riskLevel ?? "safe",
         warningMessage: payload.warningMessage?.trim() ?? "",
@@ -5156,6 +5108,7 @@ export default function SilverLensApp({
       const narrationPages = narrationPagesForTurn(nextTurn);
       setAnswerCardIndex(answerCards.length);
       setChatTurns((turns) => [...turns, nextTurn]);
+      setRooms((current) => appendConversationTurn(current, activeRoomId, nextTurn).map((room) => room.id === activeRoomId && typeof payload.conversationTitle === "string" && payload.conversationTitle.trim() ? { ...room, title: payload.conversationTitle.trim().slice(0, 48) } : room));
       setChatInput("");
       setPendingAudio(null);
       // 보낸 사진은 모두 비우고 미리보기 주소도 함께 정리한다.
@@ -5184,7 +5137,30 @@ export default function SilverLensApp({
       setChatError(error instanceof Error ? error.message : "답변을 불러오지 못했습니다.");
     } finally {
       setIsLoadingAnswer(false);
+      setPendingQuestion("");
     }
+  };
+
+  const resetConversationDraft = () => {
+    setChatInput(""); setPendingAudio(null); setTranscript("");
+    setChatError(""); setRecordingError(""); setReviewImageId(null);
+    setPendingImages((images) => { images.forEach((image) => URL.revokeObjectURL(image.url)); return []; });
+    setShowTextInput(false);
+  };
+  const navigate = (next: PageScreen) => {
+    if (isLoadingAnswer || recordingContext || isTranscribingVoice) return;
+    stopNarration();
+    if (next !== "about") { rememberServiceIntroSeen(); setIntroSeen(true); }
+    if (next === "chat") {
+      resetConversationDraft(); setActiveRoomId(newConversationId()); setChatTurns([]); setAnswerCardIndex(0);
+    }
+    if (next === "setup") { setProfileWizardStep("language"); setEditingProfile(false); }
+    setScreen(next);
+  };
+  const openConversation = (room: ConversationRoom<ChatTurn>) => {
+    if (isLoadingAnswer || recordingContext || isTranscribingVoice) return;
+    stopNarration(); resetConversationDraft();
+    setActiveRoomId(room.id); setChatTurns(room.turns); setAnswerCardIndex(0); setScreen("chat");
   };
 
   if (screen === "about") {
@@ -5194,7 +5170,7 @@ export default function SilverLensApp({
       stopNarration();
       rememberServiceIntroSeen();
       setIntroSeen(true);
-      setScreen(chatTurns.length > 0 ? "chat" : "setup");
+      navigate("setup");
     };
 
     return (
@@ -5261,6 +5237,7 @@ export default function SilverLensApp({
           </div>
         </header>
 
+        <Sidebar active="about" onNavigate={navigate} copy={activeCopy} />
         <main>
           <section className="about-panel about-panel-hero" id="about-top">
             <div className="about-hero-photo" aria-hidden="true" />
@@ -5613,7 +5590,7 @@ export default function SilverLensApp({
   if (screen === "data") {
     return (
       <main className="app-shell">
-        <Sidebar active="data" onNavigate={setScreen} copy={activeCopy} />
+        <Sidebar active="data" onNavigate={navigate} copy={activeCopy} />
         <section className="data-screen">
           <header className="data-screen-header">
             <span aria-hidden="true">▦</span>
@@ -5712,15 +5689,41 @@ export default function SilverLensApp({
     );
   }
 
+  if (screen === "history") {
+    const labels = activeLanguage === "ko-KR"
+      ? { title: "이전 대화", all: "전체", food: "음식", medicine: "약", health: "건강", search: "대화 검색", empty: "아직 저장된 대화가 없어요", none: "검색한 대화가 없어요", start: "새 질문하기", help: "질문을 보내면 이 기기에 대화가 저장됩니다." }
+      : activeLanguage === "ja-JP"
+      ? { title: "会話履歴", all: "すべて", food: "食べ物", medicine: "薬", health: "健康", search: "会話を検索", empty: "会話はまだありません", none: "会話が見つかりません", start: "新しい質問", help: "会話はこの端末に保存されます。" }
+      : { title: "Previous conversations", all: "All", food: "Food", medicine: "Medicine", health: "Health", search: "Search conversations", empty: "No conversations yet", none: "No matching conversations", start: "New question", help: "Conversations are saved on this device." };
+    const filtered = rooms.filter((room) => (historyTopic === "all" || room.topic === historyTopic) &&
+      `${room.title} ${room.turns.map((turn) => `${turn.question} ${turn.answer}`).join(" ")}`.toLocaleLowerCase().includes(historySearch.toLocaleLowerCase()));
+    return <div className="app-shell history-screen">
+      <Sidebar active="history" onNavigate={navigate} copy={activeCopy} />
+      <main className="workspace conversation-history">
+        <header className="history-heading"><div><h1>{labels.title}</h1><p>{labels.help}</p></div><button className="history-new history-new-top" onClick={() => navigate("chat")}>＋ {labels.start}</button></header>
+        <div className="history-toolbar"><div className="history-filters">{(["all", "food", "medicine", "health"] as const).map((topic) => <button key={topic} aria-pressed={historyTopic === topic} onClick={() => setHistoryTopic(topic)}>{labels[topic]}</button>)}</div>
+          <input aria-label={labels.search} placeholder={labels.search} value={historySearch} onChange={(event) => setHistorySearch(event.target.value)} /></div>
+        <section className="room-list" aria-label={labels.title}>
+          {filtered.length === 0 && <div className="history-empty"><span aria-hidden="true">💬</span><h2>{rooms.length ? labels.none : labels.empty}</h2><p>{labels.help}</p></div>}
+          {filtered.map((room) => <button className="room-row" key={room.id} onClick={() => openConversation(room)}>
+            <span className={`room-icon ${room.topic}`} aria-hidden="true">{room.topic === "food" ? "🍽️" : room.topic === "medicine" ? "💊" : "💚"}</span>
+            <span className="room-content"><span className="room-topic">{labels[room.topic]}</span><strong>{room.title}</strong><span className="room-preview">{room.turns.at(-1)?.answer.replace(/[#*_`]/g, "")}</span></span>
+            <span className="room-date"><time dateTime={new Date(room.updatedAt).toISOString()}>{new Intl.DateTimeFormat(activeLanguage, { month: "short", day: "numeric", year: "numeric" }).format(room.updatedAt)}</time><span>{room.turns.length} {activeLanguage === "ko-KR" ? "개의 질문" : activeLanguage === "ja-JP" ? "件" : "questions"} ›</span></span>
+          </button>)}
+        </section>
+      </main>
+      <button className="history-new history-new-mobile" onClick={() => navigate("chat")}>＋ {labels.start}</button>
+    </div>;
+  }
+
   if (screen === "chat") {
+    const turnDate = (turn: ChatTurn) => {
+      const timestamp = turn.createdAt ?? (/^\d{13}-/.test(turn.id) ? Number(turn.id.split("-")[0]) : 0);
+      return timestamp ? new Date(timestamp) : null;
+    };
+    const turnTime = (turn: ChatTurn) => { const date = turnDate(turn); return date ? new Intl.DateTimeFormat(activeLanguage, { hour: "numeric", minute: "2-digit", timeZone: "Asia/Seoul" }).format(date) : ""; };
+    const turnDay = (turn: ChatTurn) => { const date = turnDate(turn); return date ? new Intl.DateTimeFormat(activeLanguage, { year: "numeric", month: "long", day: "numeric", weekday: "long", timeZone: "Asia/Seoul" }).format(date) : ""; };
     const isRecording = recordingContext === "chat";
-    // 등록 질병에 맞는 버튼을 하나만 덧붙인다. 여러 개면 화면이 길어진다.
-    const conditionAsk = conditionQuickAsks.find((item) =>
-      item.conditionIds.some((id) => conditionIds.includes(id)),
-    );
-    const visibleQuickAsks: QuickAsk[] = conditionAsk
-      ? [...quickAsks, conditionAsk]
-      : quickAsks;
     const pickQuickAsk = (item: QuickAsk) => {
       if (item.action === "photo") {
         openPhotoFlow();
@@ -5729,15 +5732,9 @@ export default function SilverLensApp({
       const question = item.question?.[activeLanguage];
       if (question) void askGemini(question);
     };
-    // 같은 답변 안에서 다음 장이 남아 있는지. 다른 대화로 넘어가는 것과 구분한다.
-    const hasNextPageInTurn = Boolean(
-      activeAnswerCard &&
-        activeAnswerCard.pageIndex + 1 < activeAnswerCard.pageCount,
-    );
     // 음성 인식 결과가 들어오면 글 입력창을 자동으로 펼쳐 확인·수정할 수 있게 한다.
-    const isTextInputVisible = showTextInput || chatInput.trim().length > 0;
-    const hasProfileInfo =
-      ageConfirmed || allergyIds.length > 0 || conditionIds.length > 0;
+    const isTextInputVisible = showTextInput;
+
     // 확인 화면이 보여 줄 사진. 지정된 것이 없으면 가장 마지막에 넣은 사진을 본다.
     const reviewImage =
       pendingImages.find((image) => image.id === reviewImageId) ??
@@ -5764,272 +5761,111 @@ export default function SilverLensApp({
       reviewImage?.issues && reviewImage.issues.length > 0,
     );
     return (
-      <main className="app-shell">
-        <Sidebar active="chat" onNavigate={setScreen} copy={activeCopy} />
+      <main className="app-shell chat-layout">
+        <Sidebar active="chat" onNavigate={navigate} copy={activeCopy} />
         <section className="chat-screen">
-          <header className="chat-header">
-            {/* 정보를 아직 안 넣었으면 버튼을 강조해 눈에 띄게 한다. */}
-            <button
-              className={hasProfileInfo ? "back-button" : "back-button highlight"}
-              onClick={openProfileSetup}
-            >
-              <strong>{activeCopy.openProfile}</strong>
-              {!hasProfileInfo && <small>{activeCopy.openProfileHelp}</small>}
-            </button>
-            {(ageConfirmed || allergyIds.length + conditionIds.length > 0) && (
-              <div className="profile-pills">
-                {ageConfirmed && <span>● {ageBand}{activeCopy.profileAge}</span>}
-                {allergyIds.length + conditionIds.length > 0 && (
-                  <span>
-                    ♡ {activeCopy.allergyTitle} {allergyIds.length} · {activeCopy.conditionTitle}{" "}
-                    {conditionIds.length}
-                  </span>
-                )}
-              </div>
-            )}
-          </header>
+          <div className="chat-scroll-area" ref={chatScrollRef} tabIndex={0} role="region" aria-label={activeLanguage === "ko-KR" ? "대화 내용" : activeLanguage === "ja-JP" ? "会話内容" : "Conversation messages"}>
 
-          <section className="quick-ask-strip" aria-label={activeCopy.quickAskTitle}>
-            <p className="quick-asks-title">{activeCopy.quickAskTitle}</p>
-            <QuickAskButtons
-              items={visibleQuickAsks}
-              language={activeLanguage}
-              disabled={isLoadingAnswer}
-              onPick={pickQuickAsk}
-              variant="compact"
-            />
-          </section>
+          {(chatTurns.length > 0 || pendingQuestion) && <h1>{rooms.find((room) => room.id === activeRoomId)?.title ?? activeCopy.headline}</h1>}
 
-          <h1>{activeCopy.headline}</h1>
-
-          {/* 첫 진입에서 무엇을 하면 되는지 한눈에 알려 주는 안내. */}
-          {answerCards.length === 0 && (
-            <section className="chat-welcome" aria-label={activeCopy.welcomeTitle}>
-              <div>
+          <section className="answer-section conversation-feed" aria-label={activeCopy.answerLabel}>
+            <div className="answer-heading"><span className="answer-label">{activeCopy.answerLabel}</span>
+              <span className="answer-state" role="status">{isLoadingAnswer ? activeCopy.answerLoading : chatTurns.length ? `${activeCopy.conversation} ${chatTurns.length}` : activeCopy.answerWaiting}</span>
+            </div>
+            {chatTurns.length === 0 && !pendingQuestion && <article className="answer-card conversation-empty empty-chat-welcome">
+              <div className="empty-chat-intro">
+                <h1>{activeCopy.headline}</h1>
                 <strong>{activeCopy.welcomeTitle}</strong>
                 <p>{activeCopy.welcomeBody}</p>
               </div>
-              <button type="button" className="chat-welcome-replay" onClick={replayWelcome}>
-                {activeCopy.welcomeReplay}
-              </button>
-            </section>
-          )}
-
-          <section className="answer-section" aria-live="polite">
-            <div className="answer-heading">
-              <span className="answer-label">{activeCopy.answerLabel}</span>
-              <span className={isLoadingAnswer ? "answer-state waiting" : "answer-state"}>
-                {isLoadingAnswer
-                  ? activeCopy.answerLoading
-                  : activeAnswerCard
-                    ? `${activeCopy.conversation} ${activeAnswerCard.turnIndex + 1} · ${activeCopy.answer} ${
-                        activeAnswerCard.pageIndex + 1
-                      }/${activeAnswerCard.pageCount}`
-                    : activeCopy.answerWaiting}
-              </span>
-            </div>
-
-            <div
-              className="answer-carousel"
-              onTouchStart={handleAnswerTouchStart}
-              onTouchEnd={handleAnswerTouchEnd}
-            >
-              <button
-                className="answer-arrow"
-                onClick={() => moveAnswerCard(-1)}
-                disabled={!activeAnswerCard || visibleAnswerCardIndex === 0}
-                aria-label={activeCopy.prevAnswer}
-              >
-                <ChevronIcon direction="left" />
-              </button>
-              <article className="answer-card">
-                {activeAnswerCard ? (
-                  <>
-                    <div className="answer-question">
-                      <span>{activeCopy.questionBadge}</span>
-                      <strong>{activeAnswerCard.question}</strong>
-                    </div>
-                    {/*
-                      카드 안 "2장 중 1장" 배지는 없앴다.
-                      헤더의 "대화 1 · 답변 1/2" 와 같은 말이라 자리만 차지했다.
-                      다음 장 안내는 카드 아래 버튼이 맡는다.
-                    */}
-                    {activeAnswerCard.warningMessage && (
-                      <div
-                        className={`answer-warning ${activeAnswerCard.riskLevel}`}
-                        role="alert"
-                      >
-                        <span className="warning-mark" aria-hidden="true">
-                          {activeAnswerCard.riskLevel === "danger" ? "⛔" : "⚠"}
-                        </span>
-                        <div>
-                          <strong>
-                            <span className="risk-chip">
-                              {activeAnswerCard.riskLevel === "danger"
-                                ? activeCopy.riskDanger
-                                : activeCopy.riskCaution}
-                            </span>
-                            {activeAnswerCard.riskLevel === "danger"
-                              ? activeCopy.foodWarning
-                              : activeCopy.foodCheck}
-                          </strong>
-                          <p>{activeAnswerCard.warningMessage}</p>
-                        </div>
-                      </div>
-                    )}
-                    {activeAnswerCard.attachmentLabels.length > 0 && (
-                      <div className="answer-attachments" aria-label={activeCopy.attachmentLabel}>
-                        {activeAnswerCard.attachmentLabels.map((label) => (
-                          <span key={label}>{label}</span>
-                        ))}
-                      </div>
-                    )}
-                    <div className="answer-markdown">
-                      <ReactMarkdown>{activeAnswerCard.content}</ReactMarkdown>
-                    </div>
-                    {/*
-                      답변이 여러 장이면 어르신이 첫 장만 보고 끝낼 수 있다.
-                      카드 안에서 다음 장이 있다는 것과 누르는 곳을 분명히 알린다.
-                    */}
-                    {activeAnswerCard.pageCount > 1 &&
-                      (hasNextPageInTurn ? (
-                        <button
-                          type="button"
-                          className="answer-next-page"
-                          onClick={() => moveAnswerCard(1)}
-                        >
-                          <span className="answer-next-page-text">
-                            <strong>{activeCopy.nextPagePrompt}</strong>
-                            <small>
-                              {activeCopy.pageBadge
-                                .replace("{current}", String(activeAnswerCard.pageIndex + 2))
-                                .replace("{total}", String(activeAnswerCard.pageCount))}
-                            </small>
-                          </span>
-                          <span className="answer-next-page-arrow" aria-hidden="true">
-                            →
-                          </span>
-                        </button>
-                      ) : (
-                        <p className="answer-last-page">{activeCopy.lastPageNotice}</p>
-                      ))}
-                  </>
-                ) : (
-                  <div className="answer-placeholder">
-                    <strong>{activeCopy.emptyAnswerTitle}</strong>
-                    <p>
-                      {activeCopy.emptyAnswerHelp}
-                    </p>
-                  </div>
-                )}
-              </article>
-              <button
-                className="answer-arrow"
-                onClick={() => moveAnswerCard(1)}
-                disabled={
-                  !activeAnswerCard ||
-                  visibleAnswerCardIndex === answerCards.length - 1
-                }
-                aria-label={activeCopy.nextAnswer}
-              >
-                <ChevronIcon direction="right" />
-              </button>
-            </div>
-
-            <div className="answer-history-footer">
-              {/* 작은 글자도 눌러서 답변을 넘기고 되돌릴 수 있게 한다. */}
-              <button
-                type="button"
-                className="answer-history-move"
-                onClick={() => moveAnswerCard(-1)}
-                disabled={!activeAnswerCard || visibleAnswerCardIndex === 0}
-              >
-                {activeCopy.previousCards}
-              </button>
-              <div className="answer-dots" aria-label={activeCopy.cardSelector}>
-                {answerCards.map((item, index) => (
-                  <button
-                    key={item.id}
-                    className={index === visibleAnswerCardIndex ? "active" : ""}
-                    onClick={() => {
-                      stopNarration();
-                      setAnswerCardIndex(index);
-                    }}
-                    aria-label={`${activeCopy.conversation} ${item.turnIndex + 1} · ${activeCopy.answer} ${item.pageIndex + 1}`}
-                  />
-                ))}
+              <section className="quick-ask-strip" aria-label={activeCopy.quickAskTitle}>
+                <p className="quick-asks-title">{activeCopy.quickAskTitle}</p>
+                <QuickAskButtons items={quickAsks} language={activeLanguage} disabled={isLoadingAnswer} onPick={pickQuickAsk} variant="compact" />
+              </section>
+            </article>}
+            {chatTurns.map((turn, turnIndex) => <article key={turn.id} className="answer-card conversation-turn">
+              {(turnIndex === 0 || turnDay(turn) !== turnDay(chatTurns[turnIndex - 1])) && turnDay(turn) && <div className="chat-date-divider"><span>{turnDay(turn)}</span></div>}
+              <div className="user-message" aria-label={activeCopy.questionBadge}>
+                {turnTime(turn) && <time className="chat-message-time">{turnTime(turn)}</time>}
+                <div className="answer-question"><strong>{turn.question}</strong>
+                  {turn.attachmentLabels.length > 0 && <div className="answer-attachments">{turn.attachmentLabels.map((label) => <span key={label}>{label}</span>)}</div>}
+                </div>
               </div>
-              <button
-                type="button"
-                className="answer-history-move"
-                onClick={() => moveAnswerCard(1)}
-                disabled={
-                  !activeAnswerCard ||
-                  visibleAnswerCardIndex === answerCards.length - 1
-                }
-              >
-                {activeCopy.nextCards}
-              </button>
-            </div>
-
-            <button
-              className="answer-replay"
-              disabled={!activeAnswerCard}
-              onClick={() => {
-                if (isNarrating) {
-                  stopNarration();
-                  return;
-                }
-                if (activeAnswerCard) {
-                  const turn = chatTurns[activeAnswerCard.turnIndex];
-                  const firstCardIndex =
-                    visibleAnswerCardIndex - activeAnswerCard.pageIndex;
-                  if (!turn) return;
-                  const narrationPages = narrationPagesForTurn(turn);
-                  if (narrationStatus[activeAnswerCard.turnId] === "error") {
-                    speakAnswerPagesWithBrowser(
-                      narrationPages,
-                      activeAnswerCard.pageIndex,
-                      firstCardIndex,
-                      activeLanguage,
-                    );
-                    return;
-                  }
-                  void speakGeminiAnswer(
-                    activeAnswerCard.turnId,
-                    narrationPages,
-                    activeAnswerCard.pageIndex,
-                    firstCardIndex,
-                    activeLanguage,
-                  );
-                }
-              }}
-            >
-              {isNarrating
-                ? activeCopy.stopReplay
-                : activeAnswerCard &&
-                    narrationStatus[activeAnswerCard.turnId] === "preparing"
-                  ? activeCopy.preparingReplay
-                  : activeAnswerCard &&
-                      narrationStatus[activeAnswerCard.turnId] === "ready"
-                    ? activeCopy.readyReplay
-                    : activeCopy.replayAnswer}
-            </button>
+              <div className="assistant-message">
+                <span className="chat-avatar" aria-hidden="true">✦</span>
+                <div className="assistant-message-body">
+                  <div className="assistant-identity">{activeLanguage === "ko-KR" ? "실버렌즈 AI" : "SilverLens AI"}</div>
+                  <div className="assistant-bubble" tabIndex={-1} ref={turnIndex === chatTurns.length - 1 && !pendingQuestion ? latestAnswerRef : undefined}>
+                    {turn.warningMessage && <div className={`answer-warning ${turn.riskLevel}`}><p>{turn.warningMessage}</p></div>}
+                    <div className="answer-markdown"><ReactMarkdown>{turn.summary || turn.answer.split(/\n\s*\n/)[0]}</ReactMarkdown></div>
+                    {turn.answer.trim() !== (turn.summary || turn.answer.split(/\n\s*\n/)[0]).trim() && <details className="answer-details">
+                      <summary>{activeLanguage === "ko-KR" ? "자세히 보기" : activeLanguage === "ja-JP" ? "詳しく見る" : "See details"}<span aria-hidden="true">⌄</span></summary>
+                      <div className="answer-markdown answer-detail-text"><ReactMarkdown>{turn.answer}</ReactMarkdown></div>
+                    </details>}
+                  </div>
+                  <button className="answer-replay" onClick={() => {
+                    if (isNarrating) { stopNarration(); return; }
+                    const firstCardIndex = chatTurns.slice(0, turnIndex).reduce((count, item) => count + item.pages.length, 0);
+                    const pages = narrationPagesForTurn(turn);
+                    if (narrationStatus[turn.id] === "error") speakAnswerPagesWithBrowser(pages, 0, firstCardIndex, activeLanguage);
+                    else void speakGeminiAnswer(turn.id, pages, 0, firstCardIndex, activeLanguage);
+                  }}>{isNarrating ? activeCopy.stopReplay : activeCopy.replayAnswer}</button>
+                  {turnTime(turn) && <time className="chat-message-time assistant-time">{turnTime(turn)}</time>}
+                  {Boolean(turn.followUpQuestions?.length) && <div className="answer-followups" aria-label={activeCopy.quickAskTitle}>
+                    <p>{activeCopy.quickAskTitle}</p>
+                    {turn.followUpQuestions!.map((question, index) => <button key={`${turn.id}-${index}`} disabled={isLoadingAnswer || Boolean(recordingContext) || isTranscribingVoice} onClick={() => void askGemini(question)}>{question}<span aria-hidden="true">↗</span></button>)}
+                  </div>}
+                </div>
+              </div>
+            </article>)}
+            {pendingQuestion && <article className="answer-card conversation-turn pending-turn">
+              <div className="user-message"><div className="answer-question"><strong>{pendingQuestion}</strong></div></div>
+              <div className="assistant-message"><span className="chat-avatar" aria-hidden="true">✦</span><div className="assistant-message-body">
+                <div className="assistant-identity">{activeLanguage === "ko-KR" ? "실버렌즈 AI" : "SilverLens AI"}</div><div className="assistant-bubble typing-bubble" role="status"><span className="typing-dots" aria-hidden="true"><i /><i /><i /></span>{activeCopy.answerLoading}</div>
+              </div></div>
+            </article>}
           </section>
 
-          <section className="question-composer" aria-label={activeCopy.questionArea}>
-            <button
+          <p className="medical-note">🛡 {activeCopy.medicalNote}</p>
+          </div>
+
+          <section className="question-composer fixed-composer" aria-label={activeCopy.questionArea}>
+            {(chatError || recordingError) && <div className="composer-feedback" role="alert">
+              {chatError && <p>{chatError}</p>}
+              {recordingError && <p>{recordingError}</p>}
+            </div>}
+            {(pendingAudio || pendingImages.length > 0) && (
+              <div className="pending-attachments compact-attachments" aria-label={activeCopy.pendingTitle}>
+                <span className="attachment-caption">{activeCopy.pendingTitle}</span>
+                <div className="attachment-list">
+                  {pendingAudio && <div className="attachment-chip">
+                    <span className="attachment-name">{activeCopy.audioAttached}</span>
+                    <button type="button" onClick={clearPendingAudio} aria-label={`${activeCopy.audioAttached} ×`}>×</button>
+                  </div>}
+                  {pendingImages.map((image, index) => <div className="attachment-chip" key={image.id}>
+                    <button type="button" className="attachment-name attachment-name-review" title={image.file.name}
+                      onClick={() => { setReviewImageId(image.id); setPhotoStep("review"); setIsPhotoZoomOpen(false); }}>
+                      {image.file.name}
+                    </button>
+                    <button type="button" onClick={() => removePendingImage(image.id)} aria-label={`${activeCopy.photoAttached} ${index + 1} ×`}>×</button>
+                  </div>)}
+                </div>
+              </div>
+            )}
+
+            {!isTextInputVisible && <button
               className={isRecording ? "mic-primary recording" : "mic-primary"}
               onClick={() => toggleRecording("chat")}
               aria-pressed={isRecording}
+              disabled={isLoadingAnswer || isTranscribingVoice}
             >
               <span className="mic-icon" aria-hidden="true">{isRecording ? "●" : "🎙️"}</span>
               <strong>{isRecording ? activeCopy.recording : activeCopy.voiceRecord}</strong>
               <small>{isRecording ? activeCopy.recordingHelp : activeCopy.voiceRecordHelp}</small>
-            </button>
+            </button>}
 
             <div className="composer-secondary">
-              <button className="composer-tool" onClick={openPhotoFlow}>
+              <button className="composer-tool" disabled={isRecording || isLoadingAnswer} onClick={openPhotoFlow}>
                 <span aria-hidden="true">📷</span>
                 <strong>{activeCopy.uploadPhoto}</strong>
               </button>
@@ -6058,11 +5894,12 @@ export default function SilverLensApp({
               <button
                 className={isTextInputVisible ? "composer-tool active" : "composer-tool"}
                 onClick={() => setShowTextInput((value) => !value)}
+                disabled={isRecording || isLoadingAnswer}
                 aria-expanded={isTextInputVisible}
                 aria-controls="chat-question"
               >
                 <span aria-hidden="true">⌨</span>
-                <strong>{activeCopy.writeText}</strong>
+                <strong>{isTextInputVisible ? activeCopy.voiceRecord : activeCopy.writeText}</strong>
               </button>
             </div>
 
@@ -6073,71 +5910,17 @@ export default function SilverLensApp({
                   id="chat-question"
                   value={chatInput}
                   onChange={(event) => setChatInput(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key !== "Enter" || event.shiftKey || event.nativeEvent.isComposing || event.nativeEvent.keyCode === 229) return;
+                    // Touch keyboards keep Enter for a newline; desktop Enter submits.
+                    if (!window.matchMedia("(hover: hover) and (pointer: fine)").matches) return;
+                    event.preventDefault();
+                    if (!isLoadingAnswer && !isRecording && !isTranscribingVoice) void askGemini();
+                  }}
                   placeholder={activeCopy.questionPlaceholder}
                   maxLength={1000}
-                  rows={3}
+                  rows={2}
                 />
-              </div>
-            )}
-
-            {(pendingAudio || pendingImages.length > 0) && (
-              <div className="pending-attachments" aria-label={activeCopy.pendingTitle}>
-                <strong>{activeCopy.pendingTitle}</strong>
-                <div className="attachment-list">
-                  {pendingAudio && (
-                    <div className="attachment-chip">
-                      <span className="attachment-icon">🎙️</span>
-                      <span>
-                        <strong>{activeCopy.audioAttached}</strong>
-                        <small>{formatDuration(pendingAudio.duration)} · 보내기 전</small>
-                      </span>
-                      <button onClick={clearPendingAudio} aria-label={activeCopy.audioAttached}>×</button>
-                    </div>
-                  )}
-                  {/* 첨부한 사진을 넣은 순서대로 모두 보여 준다. ×는 그 한 장만 뺀다. */}
-                  {pendingImages.map((image, index) => {
-                    const purposeOption = photoPurposeOptions.find(
-                      (option) => option.id === image.purpose,
-                    );
-                    return (
-                      <div className="attachment-chip" key={image.id}>
-                        <button
-                          type="button"
-                          className="attachment-thumb"
-                          onClick={() => {
-                            setReviewImageId(image.id);
-                            setPhotoStep("review");
-                            setIsPhotoZoomOpen(false);
-                          }}
-                          aria-label={activeCopy.photoZoomOpen}
-                        >
-                          {/* blob URL 은 이미지 최적화를 거칠 수 없어 img 를 그대로 쓴다. */}
-                          {/* eslint-disable-next-line @next/next/no-img-element */}
-                          <img src={image.url} alt="" />
-                        </button>
-                        <span>
-                          <strong>
-                            {activeCopy.photoAttached}
-                            {pendingImages.length > 1 ? ` ${index + 1}` : ""}
-                          </strong>
-                          <small>
-                            {purposeOption
-                              ? activeCopy[purposeOption.labelKey]
-                              : image.file.name}
-                          </small>
-                        </span>
-                        <button
-                          onClick={() => removePendingImage(image.id)}
-                          aria-label={`${activeCopy.photoAttached} ${index + 1} ×`}
-                        >
-                          ×
-                        </button>
-                      </div>
-                    );
-                  })}
-                </div>
-                {transcript && <p>{activeCopy.transcript}: {transcript}</p>}
-                <p>{activeCopy.sendPendingHelp}</p>
               </div>
             )}
 
@@ -6152,26 +5935,23 @@ export default function SilverLensApp({
               className="send-question"
               onClick={() => askGemini()}
               disabled={
-                isLoadingAnswer ||
+                isLoadingAnswer || isRecording || isTranscribingVoice ||
                 (!chatInput.trim() && !pendingAudio && pendingImages.length === 0)
               }
             >
               <span aria-hidden="true">➤</span>
-              <strong>{isLoadingAnswer ? activeCopy.sendingQuestion : activeCopy.sendQuestion}</strong>
+              <strong className="send-label-full">{isLoadingAnswer ? activeCopy.sendingQuestion : activeCopy.sendQuestion}</strong>
+              <strong className="send-label-mobile">{activeLanguage === "ko-KR" ? (isLoadingAnswer ? "전송 중" : "보내기") : activeLanguage === "ja-JP" ? (isLoadingAnswer ? "送信中" : "送信") : (isLoadingAnswer ? "Sending" : "Send")}</strong>
               <small>{activeCopy.sendHelp}</small>
             </button>
           </section>
 
-          {chatError && <p className="error-message" role="alert">{chatError}</p>}
-          {recordingError && <p className="error-message" role="alert">{recordingError}</p>}
-          <p className="medical-note">
-            🛡 {activeCopy.medicalNote}
-          </p>
 
           {/* 1단계: 무엇을 찍는지 고른다. 고르면 안내를 읽어 주고 카메라가 바로 열린다. */}
           {photoStep === "purpose" && (
             <div className="photo-sheet" role="dialog" aria-modal="true" aria-label={activeCopy.photoPurposeTitle}>
               <div className="photo-sheet-panel" ref={photoPanelRef} tabIndex={-1}>
+                <button type="button" className="photo-sheet-close" onClick={closePhotoFlow}>{activeCopy.photoPurposeCancel} <span aria-hidden="true">×</span></button>
                 <h2>{activeCopy.photoPurposeTitle}</h2>
                 <p className="photo-sheet-help">{activeCopy.photoPurposeHelp}</p>
                 <div className="photo-purpose-list">
@@ -6192,9 +5972,6 @@ export default function SilverLensApp({
                     </button>
                   ))}
                 </div>
-                <button type="button" className="photo-sheet-cancel" onClick={closePhotoFlow}>
-                  {activeCopy.photoPurposeCancel}
-                </button>
               </div>
             </div>
           )}
@@ -6206,6 +5983,7 @@ export default function SilverLensApp({
           {photoStep === "source" && (
             <div className="photo-sheet" role="dialog" aria-modal="true" aria-label={activeCopy.photoSourceTitle}>
               <div className="photo-sheet-panel" ref={photoPanelRef} tabIndex={-1}>
+                <button type="button" className="photo-sheet-close" onClick={closePhotoFlow}>{activeCopy.photoPurposeCancel} <span aria-hidden="true">×</span></button>
                 <h2>{activeCopy.photoSourceTitle}</h2>
                 {chosenPhotoPurpose && (
                   <p className="photo-sheet-help">
@@ -6242,9 +6020,6 @@ export default function SilverLensApp({
                   onClick={() => setPhotoStep("purpose")}
                 >
                   {activeCopy.photoSourceBack}
-                </button>
-                <button type="button" className="photo-sheet-cancel" onClick={closePhotoFlow}>
-                  {activeCopy.photoPurposeCancel}
                 </button>
               </div>
             </div>
@@ -6352,12 +6127,58 @@ export default function SilverLensApp({
     );
   }
 
-  const setupRecording = recordingContext === "setup";
+  if (screen === "setup" && profileCompleted && !editingProfile) {
+    const missing = activeLanguage === "ko-KR" ? "미입력" : activeLanguage === "ja-JP" ? "未入力" : "Not entered";
+    const rows = [
+      { icon: "◎", label: activeCopy.languageLegend, value: languages.find((item) => item.id === language)?.label || missing },
+      { icon: "♫", label: activeCopy.autoVoice, value: autoVoiceGuide ? activeCopy.on : activeCopy.off },
+      { icon: "◷", label: activeCopy.answerSpeed, value: narrationRateLabel },
+      { icon: "♙", label: activeCopy.genderLegend, value: gender === "male" ? activeCopy.male : gender === "female" ? activeCopy.female : missing },
+      { icon: "▦", label: activeCopy.ageLegend, value: ageConfirmed ? (ageBand === 40 ? activeCopy.ageUnder.replace("{age}", "49") : ageBand === 90 ? activeCopy.ageOver.replace("{age}", "90") : `${ageBand} ~ ${ageBand + 9}`) : missing },
+      { icon: "♡", label: activeCopy.allergyTitle, value: allergyIds.length ? allergyIds.map((id) => getHealthLabel(id, activeLanguage)).join(", ") : missing },
+      { icon: "+", label: activeCopy.conditionTitle, value: conditionIds.length ? conditionIds.map((id) => getHealthLabel(id, activeLanguage)).join(", ") : missing },
+    ];
+    return <main className="app-shell">
+      <Sidebar active="setup" onNavigate={navigate} copy={activeCopy} />
+      <section className="profile-overview">
+        <h1>{activeCopy.basicSetup}</h1>
+        <div className="profile-overview-hero">
+          <span className="profile-overview-avatar"><SidebarIcon name="settings" /></span>
+          <button className="profile-edit-button" onClick={() => { stopNarration(); setProfileWizardStep("language"); setEditingProfile(true); }}>
+            {activeLanguage === "ko-KR" ? "내 정보 다시 입력하기" : activeLanguage === "ja-JP" ? "情報を再入力する" : "Edit my information"}
+          </button>
+        </div>
+        <dl className="profile-summary-list">{rows.map((row) => <div key={row.label} className="profile-summary-row">
+          <dt><span aria-hidden="true">{row.icon}</span>{row.label}</dt><dd>{row.value}</dd>
+        </div>)}</dl>
+        {healthNotes.length > 0 && <section className="profile-summary-notes"><h2>{activeCopy.notesTitle}</h2>{healthNotes.map((note) => <p key={note.id}>{note.text}</p>)}</section>}
+      </section>
+    </main>;
+  }
+
 
   return (
     <main className="app-shell">
-      <Sidebar active="setup" onNavigate={setScreen} copy={activeCopy} />
-      <section className="setup-screen">
+      <Sidebar active="setup" onNavigate={navigate} copy={activeCopy} />
+      <section ref={profileQuestionRef} className="setup-screen profile-wizard" data-step={profileWizardStep}>
+        <header className="wizard-header">
+        <h1>{activeCopy.basicSetup}</h1>
+        {<p className="wizard-step-label" role="status">{["language", "voice", "gender", "age", "allergy", "condition"].indexOf(profileWizardStep) + 1} / 6</p>}
+        {profileWizardStep !== "language" && (
+          <button type="button" className="wizard-skip" onClick={() => {
+            stopNarration();
+            const steps = ["language", "voice", "gender", "age", "allergy", "condition"] as const;
+            setProfileWizardStep(steps[steps.indexOf(profileWizardStep) - 1]);
+          }}>{activeLanguage === "ko-KR" ? "이전" : activeLanguage === "ja-JP" ? "戻る" : "Back"}</button>
+        )}
+        </header>
+        <div className="wizard-track" aria-hidden="true">{["language", "voice", "gender", "age", "allergy", "condition"].map((step, index) => <span key={step} className={index <= ["language", "voice", "gender", "age", "allergy", "condition"].indexOf(profileWizardStep) ? "filled" : ""} />)}</div>
+        {profileWizardStep === "allergy" && (
+          <>
+            {profileVoiceNotice && <p role="status">{profileVoiceNotice}</p>}
+            {recordingError && <p className="error-message" role="alert">{recordingError}</p>}
+          </>
+        )}
         {/* 이전의 한 줄 흐름은 유지하고 완료 체크와 현재 단계만 간단히 강조한다. */}
         <nav className="setup-progress" aria-label={promptCopy[activeLanguage][nextStep]}>
           {setupProgressItems.map((item, index) => (
@@ -6379,19 +6200,44 @@ export default function SilverLensApp({
           ))}
         </nav>
 
-        <button
-          className={autoVoiceGuide ? "auto-tts enabled" : "auto-tts disabled"}
-          onClick={toggleAutoVoiceGuide}
-          aria-pressed={autoVoiceGuide}
-        >
-          <span aria-hidden="true">{autoVoiceGuide ? "🔊" : "🔇"}</span>
-          <span>
-            <strong>{activeCopy.autoVoice} {autoVoiceGuide ? activeCopy.on : activeCopy.off}</strong>
-            <small>{autoVoiceGuide ? activeCopy.autoVoiceHelpOn : activeCopy.autoVoiceHelpOff}</small>
-          </span>
-          <em aria-hidden="true">{autoVoiceGuide ? "ON" : "OFF"}</em>
-        </button>
+        {(profileWizardStep === "language") && <>
+        <fieldset className="form-section" ref={languageSectionRef}>
+          <legend>{activeCopy.languageLegend}</legend>
+          <div className="language-grid">
+            {languages.map((item) => (
+              <button
+                key={item.id}
+                className={language === item.id ? "language-button selected" : "language-button"}
+                onClick={() => toggleLanguage(item.id)}
+                aria-pressed={language === item.id}
+              >
+                <LanguageFlag id={item.id} />
+                <span className="language-name">{item.label}</span>
+                <small className="language-native">{item.id === "ko-KR" ? "한국어로 함께해요" : item.id === "en-US" ? "Let’s talk in English" : "日本語でお話ししましょう"}</small>
+                {language === item.id && <span className="selection-check">✓</span>}
+              </button>
+            ))}
+          </div>
+        </fieldset>
+        <div className="wizard-finish language-navigation">
+          <button className="start-button" disabled={!language} onClick={advanceProfileWizard}>{activeCopy.next}</button>
+          {!profileCompleted && !editingProfile && <button type="button" className="wizard-skip" onClick={finishProfileWizard}>
+            {activeLanguage === "ko-KR" ? "모두 건너뛰기" : activeLanguage === "ja-JP" ? "すべてスキップ" : "Skip all"}
+          </button>}
+        </div>
+        </>}
 
+        {(profileWizardStep === "voice") && <>
+        <div className="voice-choice" role="group" aria-label={activeCopy.autoVoice}>
+          <h2>{activeCopy.autoVoice}</h2>
+          {[true, false].map((enabled) => (
+            <button key={String(enabled)} type="button" aria-pressed={autoVoiceGuide === enabled}
+              onClick={() => { if (autoVoiceGuide !== enabled) toggleAutoVoiceGuide(); }}>
+              <span className="voice-choice-symbol" aria-hidden="true">{enabled ? <svg viewBox="0 0 32 32"><path d="M5 12h6l7-6v20l-7-6H5Z" /><path d="M23 10c4 3 4 9 0 12" /></svg> : <svg viewBox="0 0 32 32"><path d="M5 12h6l7-6v20l-7-6H5Z" /><path d="m23 12 6 8m0-8-6 8" /></svg>}</span>
+              <strong>{enabled ? "O" : "X"} · {enabled ? activeCopy.on : activeCopy.off}</strong>
+            </button>
+          ))}
+        </div>
         <section className="speed-control" aria-label={activeCopy.answerSpeed}>
           <div>
             <strong>{activeCopy.answerSpeed}</strong>
@@ -6416,24 +6262,10 @@ export default function SilverLensApp({
           </small>
         </section>
 
-        <fieldset className="form-section" ref={languageSectionRef}>
-          <legend>{activeCopy.languageLegend}</legend>
-          <div className="language-grid">
-            {languages.map((item) => (
-              <button
-                key={item.id}
-                className={language === item.id ? "language-button selected" : "language-button"}
-                onClick={() => toggleLanguage(item.id)}
-                aria-pressed={language === item.id}
-              >
-                <LanguageFlag id={item.id} />
-                <span>{item.label}</span>
-                {language === item.id && <span className="selection-check">✓</span>}
-              </button>
-            ))}
-          </div>
-        </fieldset>
+        {<button className="start-button" onClick={advanceProfileWizard}>{activeCopy.next}</button>}
+        </>}
 
+        {(profileWizardStep === "gender") && <>
         <fieldset className="form-section" ref={genderSectionRef}>
           <legend>{activeCopy.genderLegend}</legend>
           <div className="gender-grid">
@@ -6442,7 +6274,7 @@ export default function SilverLensApp({
               onClick={() => toggleGender("male")}
               aria-pressed={gender === "male"}
             >
-              <span aria-hidden="true">♟</span>
+              <span className="person-symbol"><ProfilePersonIcon /></span>
               <strong>{activeCopy.male}</strong>
               {gender === "male" && <span className="selection-check">✓</span>}
             </button>
@@ -6451,13 +6283,16 @@ export default function SilverLensApp({
               onClick={() => toggleGender("female")}
               aria-pressed={gender === "female"}
             >
-              <span aria-hidden="true">♟</span>
+              <span className="person-symbol"><ProfilePersonIcon /></span>
               <strong>{activeCopy.female}</strong>
               {gender === "female" && <span className="selection-check">✓</span>}
             </button>
           </div>
         </fieldset>
+        {<button className="start-button" disabled={!gender} onClick={advanceProfileWizard}>{activeCopy.next}</button>}
+        </>}
 
+        {(profileWizardStep === "age") && <>
         <fieldset className="form-section age-section" ref={ageSectionRef}>
           <legend>{activeCopy.ageLegend}</legend>
           <div className="age-grid" role="group" aria-label={activeCopy.ageLegend}>
@@ -6494,42 +6329,12 @@ export default function SilverLensApp({
               : activeCopy.ageHelp}
           </p>
         </fieldset>
+        {<button className="start-button" disabled={!ageConfirmed} onClick={advanceProfileWizard}>{activeCopy.next}</button>}
+        </>}
 
-        <div className="voice-row">
-          <button
-            className={setupRecording ? "voice-control recording" : "voice-control"}
-            onClick={() => toggleRecording("setup")}
-          >
-            <span>{setupRecording ? "●" : "🎙️"}</span>
-            <div>
-              <strong>{setupRecording ? activeCopy.recording : activeCopy.voiceProfile}</strong>
-              <small>{setupRecording ? activeCopy.recordingHelp : activeCopy.voiceProfileHelp}</small>
-            </div>
-          </button>
-          <button className="replay-control" onClick={replayCurrentGuide}>
-            <span>🔊</span>
-            <div>
-              <strong>{activeCopy.replayGuide}</strong>
-              <small>{activeCopy.replayGuideHelp}</small>
-            </div>
-          </button>
-        </div>
-
-        {recordedUrl && (
-          <div className="saved-recording compact">
-            <span>✓ {activeCopy.savedRecording}</span>
-            <audio controls src={recordedUrl}>
-              <track kind="captions" />
-            </audio>
-          </div>
-        )}
-        {transcript && <p className="transcript-box">{activeCopy.transcript}: {transcript}</p>}
-        {profileVoiceNotice && (
-          <p className="profile-voice-notice" role="status">{profileVoiceNotice}</p>
-        )}
-        {recordingError && <p className="error-message" role="alert">{recordingError}</p>}
-
+        {(profileWizardStep === "allergy" || profileWizardStep === "condition") && <>
         <div className="health-grid">
+          {profileWizardStep === "allergy" && (
           <HealthPickerCard
             kind="allergy"
             title={activeCopy.allergyTitle}
@@ -6553,7 +6358,9 @@ export default function SilverLensApp({
             onRecord={() => toggleRecording("allergy")}
             recordDisabled={isTranscribingVoice}
           />
+          )}
 
+          {profileWizardStep === "condition" && (
           <HealthPickerCard
             kind="condition"
             title={activeCopy.conditionTitle}
@@ -6577,7 +6384,13 @@ export default function SilverLensApp({
             onRecord={() => toggleRecording("condition")}
             recordDisabled={isTranscribingVoice}
           />
+          )}
         </div>
+        {<div className="wizard-finish">
+          <button className="start-button" disabled={isTranscribingVoice || Boolean(recordingContext)} onClick={profileWizardStep === "allergy" ? advanceProfileWizard : finishProfileWizard}>{profileWizardStep === "allergy" ? activeCopy.next : activeCopy.profileDone}</button>
+          <button className="wizard-skip" disabled={isTranscribingVoice || Boolean(recordingContext)} onClick={profileWizardStep === "allergy" ? advanceProfileWizard : finishProfileWizard}>{activeLanguage === "ko-KR" ? "건너뛰기" : activeLanguage === "ja-JP" ? "スキップ" : "Skip"}</button>
+        </div>}
+        </>}
         <p className="health-language-note">
           {activeCopy.healthLanguageNote}
         </p>
@@ -6586,17 +6399,7 @@ export default function SilverLensApp({
           정보 입력은 선택이므로 미완성이어도 항상 대화로 돌아갈 수 있다.
           음성 인식이 진행 중일 때만 잠시 막는다.
         */}
-        <button
-          ref={setupCompletionRef}
-          className={isTranscribingVoice ? "start-button disabled" : "start-button"}
-          onClick={beginChat}
-          aria-disabled={isTranscribingVoice}
-        >
-          <span>{activeCopy.profileDone}</span>
-          <span aria-hidden="true">
-            <ChevronIcon direction="right" />
-          </span>
-        </button>
+
       </section>
     </main>
   );

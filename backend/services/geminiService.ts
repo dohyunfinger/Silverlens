@@ -140,6 +140,9 @@ export type SeniorAnswerResult = {
   warningMessage: string;
   profileAllergyIds: string[];
   profileConditionIds: string[];
+  followUpQuestions?: string[];
+  conversationTitle?: string;
+  summary?: string;
 };
 
 type GeminiResponse = {
@@ -273,6 +276,9 @@ type StructuredAnswer = {
   warning_message?: unknown;
   profile_allergy_ids?: unknown;
   profile_condition_ids?: unknown;
+  follow_up_questions?: unknown;
+  conversation_title?: unknown;
+  summary?: unknown;
 };
 
 function cleanProfileUpdateIds(value: unknown, kind: HealthKind) {
@@ -357,6 +363,11 @@ function parseStructuredAnswer(text: string): SeniorAnswerResult {
       : "caution";
   return {
     answer: parsed.answer.trim(),
+    summary: typeof parsed.summary === "string" && parsed.summary.trim() ? parsed.summary.trim() : undefined,
+    conversationTitle: typeof parsed.conversation_title === "string" ? parsed.conversation_title.trim().slice(0, 48) : undefined,
+    followUpQuestions: Array.isArray(parsed.follow_up_questions)
+      ? [...new Set(parsed.follow_up_questions.filter((q): q is string => typeof q === "string" && q.trim().length > 0 && q.length <= 100).map((q) => q.trim()))].slice(0, 4)
+      : [],
     riskLevel,
     warningMessage:
       riskLevel !== "safe" && typeof parsed.warning_message === "string"
@@ -437,56 +448,6 @@ function localizedGeneralWarning(language?: string) {
   return "주의: 현재 건강정보를 기준으로 권장하지 않거나 확인이 필요한 음식입니다. 섭취 전 설명을 확인하세요.";
 }
 
-function localizedOffTopicAnswer(language?: string) {
-  if (language === "en-US") {
-    return "I'm an AI that only helps with senior-friendly food, nutrition, and health information. I can't answer that question, but feel free to ask me about a food, ingredient, recipe, or health concern instead.";
-  }
-  if (language === "ja-JP") {
-    return "私は高齢者向けの食品・栄養・健康情報をお手伝いするAIです。その質問には答えにくいです。代わりに、食品、材料、レシピ、健康に関する内容を聞いてください。";
-  }
-  return "저는 시니어 식품·영양·건강 정보를 도와드리는 AI입니다. 그 질문에는 답변드리기 어려워요. 대신 궁금하신 음식, 재료, 요리법, 건강 관련 내용을 물어봐 주세요.";
-}
-
-/**
- * 실제 Gemini 호출 전에 값싸게(=토큰 소모 없이) 걸러내는 1차 주제 확인 로직.
- * 음성/사진 첨부가 있으면 항상 식품·건강 관련 질문으로 간주해 통과시키고,
- * 텍스트만 있는 경우에만 아래 신호로 시니어 식품/건강 서비스 주제인지 판단합니다.
- */
-const ON_TOPIC_KEYWORDS = [
-  // 음식/식재료/조리
-  "음식", "식사", "먹", "드시", "드셔", "반찬", "국", "찌개", "나물", "채소",
-  "야채", "과일", "고기", "생선", "해산물", "쌀", "밥", "죽", "간식", "음료",
-  "물", "수분", "요리", "조리", "레시피", "재료", "곡물", "김치", "국물",
-  "양념", "간", "짜", "달", "매워", "매운",
-  // 영양/건강
-  "영양", "칼로리", "혈압", "당뇨", "고혈압", "콜레스테롤", "알레르기", "알러지",
-  "질병", "증상", "약", "복용", "소화", "비타민", "미네랄", "단백질", "지방",
-  "탄수화물", "저염", "저당", "다이어트", "체중", "영양제", "건강", "식단",
-  "섭취", "치아", "잇몸", "씹",
-  // 사투리/방언
-  "사투리", "방언", "표준어", "정구지", "무시",
-  // 서비스 사용 관련
-  "실버렌즈", "서비스", "사용법", "이용", "프로필",
-  "언어 설정", "설정", "도움말", "사용방법",
-  // 인사/일상 대화(가벼운 스몰토크는 허용)
-  "안녕", "고마워", "감사", "반가워", "수고",
-];
-
-function isLikelyOnTopic(topicContext: string, knowledge: ReturnType<typeof findRelevantKnowledge>) {
-  if (
-    knowledge.dialectHints.length > 0 ||
-    knowledge.recipes.length > 0 ||
-    knowledge.globalDishes.length > 0 ||
-    knowledge.foods.length > 0 ||
-    knowledge.dishNameHints.length > 0 ||
-    knowledge.foodAliasHints.length > 0
-  ) {
-    return true;
-  }
-  const normalized = topicContext.normalize("NFKC");
-  return ON_TOPIC_KEYWORDS.some((keyword) => normalized.includes(keyword));
-}
-
 function normalizedRiskText(value: string) {
   return value
     .normalize("NFKC")
@@ -543,14 +504,12 @@ export async function generateSeniorFriendlyAnswer(
     .slice(-8)
     .map((note) => ({ kind: note.kind, text: note.text.trim().slice(0, 400) }));
 
-  const knowledge = findRelevantKnowledge(topicContext, {
+  const knowledge = findRelevantKnowledge(message || topicContext, {
     language: selectedLanguage,
     conditionLabels: profileConditions,
     conditionIds: profile.conditionIds ?? [],
   });
 
-  // 첨부 파일이 없고 글로만 질문했는데 시니어 식품·건강 서비스와 무관한 주제이면
-  // Gemini API를 호출하지 않고 바로 안내 답변을 돌려줘 토큰 낭비를 막습니다.
   const images = media.images ?? [];
   const medicineImages = images.filter((image) => image.purpose === "medicine");
   const isDrugIdentificationRequest =
@@ -570,26 +529,11 @@ export async function generateSeniorFriendlyAnswer(
   const drugIdentificationReference = isDrugIdentificationRequest
     ? getDrugIdentificationReferenceForPrompt()
     : null;
-  const hasMedia = Boolean(media.audio || images.length > 0);
-  if (
-    !hasMedia &&
-    isMeaningfulText(message) &&
-    !isLikelyOnTopic(topicContext, knowledge)
-  ) {
-    return {
-      answer: localizedOffTopicAnswer(selectedLanguage),
-      riskLevel: "safe",
-      warningMessage: "",
-      profileAllergyIds: [],
-      profileConditionIds: [],
-    };
-  }
-
   const allergyConflicts = findAllergyTermConflicts(
-    topicContext,
+    message,
     profile.allergyIds ?? [],
   );
-  const normalizedTopicContext = normalizedRiskText(topicContext);
+  const normalizedTopicContext = normalizedRiskText(message);
   const directProfileAllergyLabels = profileAllergies.filter((label) => {
     const normalizedLabel = normalizedRiskText(label);
     return normalizedLabel.length >= 2 && normalizedTopicContext.includes(normalizedLabel);
@@ -604,9 +548,21 @@ export async function generateSeniorFriendlyAnswer(
   const prompt = [
     "당신은 시니어에게 식재료와 조리 정보를 쉬운 말로 설명하는 보조 AI입니다.",
     "음식·영양·건강·사투리·서비스 이용과 무관한 질문(예: 스포츠 선수, 연예인, 시사, 일반 상식)이면 관련 지식으로 답하지 말고, 시니어 식품·영양 정보를 돕는 AI임을 밝히고 음식이나 건강 관련 질문을 다시 안내하세요.",
+    "음식 이름의 뜻, 유래, 재료, 맛, 조리법을 묻는 질문도 서비스 범위입니다. 푸아그라가 뭐야?, 라클렛이 뭐예요?, What is foie gras?처럼 음식·건강이라는 단어 없이 음식명만 물어도 먼저 그 음식을 쉽게 설명하세요. 내부 자료나 키워드 목록에 없다는 이유로 범위 밖이라고 거절하지 마세요.",
+    "생소한 명칭은 현재 질문과 대화 맥락으로 의미를 판단하세요. 알고 있는 음식이면 직접 답하고, 의미를 확실히 알 수 없으면 이름이나 어떤 음식인지 한 가지를 확인하세요. 모르는 단어라는 이유만으로 자기소개나 서비스 범위 안내로 답변을 대신하지 마세요.",
     answerLanguageInstruction(selectedLanguage),
     "의학적 진단이나 치료 지시를 하지 말고, 위험 가능성이 있으면 의료진 또는 약사 확인을 권하세요.",
     "등록된 알레르기 식품을 추천하거나 레시피 재료로 넣지 마세요.",
+    "현재 질문에 직접 답하세요. 등록된 알레르기가 현재 음식의 실제 재료와 관련 없으면 그 알레르기를 언급하거나 다른 음식으로 대체하지 마세요. 복숭아 알레르기만 등록된 사용자가 새우 요리를 물으면 새우 알레르기를 추측하지 말고 새우 요리를 추천하세요.",
+    "음식 추천은 사람들이 일상에서 실제로 먹는 구체적인 메뉴 2~3개를 먼저 제시하세요. 새우 요리라면 새우볶음밥, 새우계란찜, 새우채소볶음처럼 친숙한 메뉴와 간단한 조리 팁을 제시하되 등록 알레르기와 실제 재료 충돌이 있으면 해당 메뉴를 제외하세요.",
+    "나이가 많다는 이유만으로 무조건 맑은 국, 두부, 닭고기로 대체하거나 소화가 약하다고 가정하지 마세요. 단순 요리 추천에는 의료진·약사 상담을 상투적인 마무리로 붙이지 마세요.",
+    "이전 대화에서 언급한 알레르기 식품은 현재 새 질문에 포함되지 않았으면 현재 음식의 재료로 간주하지 마세요. 이전의 잘못된 추천이나 제한도 답습하지 마세요.",
+    "약 관련 질문은 확인된 제품명·성분명과 확인되지 않은 부분을 구분하세요. 공식 후보가 있으면 식별 후보라고 설명하고 단정하지 마세요. 사진의 색·모양만으로 약 종류를 추정하거나 음식과의 금기를 확정하지 마세요.",
+    "약 이름이나 성분이 불명확하면 정확한 제품명 또는 성분명을 알려주실 수 있나요, 약 봉투의 이름이 보이게 찍어주실 수 있나요처럼 필요한 질문 한 가지를 하세요. 약이 확인되지 않은 상황을 '먹어도 될 것 같다'로 결론내리지 마세요.",
+    "확인된 약·성분에 근거 있는 음식 상호작용이 있으면 사용자가 제시한 음식과의 관련성과 이유를 설명하세요. 근거가 부족하면 확인이 필요함을 밝히고 약사에게 확인하도록 하되 임의 중단·변경을 지시하지 마세요.",
+    "summary는 처음 보여줄 핵심 답변입니다. 사용자가 실제로 필요한 결론과 행동만 쉬운 말로 2~3개의 짧은 문장(한국어 기준 180자 안팎)으로 쓰세요. 중요한 위험, 금지사항, 확인되지 않은 약 이름은 요약에서도 반드시 밝히세요. 요약에서 안전하다고 단정하고 상세에서만 경고하는 모순을 만들지 마세요. answer에는 자세히 보기를 열었을 때 읽을 구체적 음식 예시, 방법, 이유와 필요한 확인 질문을 담으세요. summary와 answer는 같은 언어이며 사실과 결론이 일치해야 합니다.",
+    "conversation_title은 대화 전체의 핵심 주제를 25자 이내로 요약한 제목입니다. 답변 언어로 쓰고 건강정보를 불필요하게 제목에 노출하지 마세요.",
+    "follow_up_questions에는 방금 답변의 실제 음식·조리법·확인할 약 이름에 이어지는 짧은 질문 4개를 답변 언어로 작성하세요. 사용자의 알레르기와 충돌하는 메뉴를 권하는 질문이나 확인되지 않은 안전성을 전제하는 질문은 제외하세요.",
     "알레르기는 등록된 식품과 그 파생 재료에만 적용하세요. 알레르기 정보만으로 소금처럼 무관한 재료까지 금지하지 마세요.",
     "재료를 바꿀 때는 같은 조리 역할끼리 바꾸세요. 밀가루는 반죽·튀김옷·농도용 재료이지 간을 맞추는 양념이 아니므로, '소금이나 밀가루 대신'처럼 서로 역할이 다른 재료를 한데 묶지 마세요.",
     "밀 알레르기에는 밀가루가 필요한 자리만 쌀가루·감자전분 등 안전한 대체재로 바꾸고, 우유 알레르기에는 유제품이 필요한 자리만 알레르기 없는 비유제품으로 바꾸세요.",
@@ -679,7 +635,7 @@ export async function generateSeniorFriendlyAnswer(
     `적용할 안전 원칙: ${JSON.stringify(knowledge.safetyRules)}`,
     `현재 사용자 글 질문: ${message || "없음. 첨부된 음성이나 사진을 중심으로 답변할 것"}`,
     "반드시 다음 JSON 객체 하나만 반환하세요.",
-    '{"answer":"마크다운을 사용할 수 있는 완결된 답변","risk_level":"danger|caution|safe","warning_message":"위험·비권장일 때만 한 문장, 아니면 빈 문자열","profile_allergy_ids":["사용자가 직접 밝힌 목록 ID"],"profile_condition_ids":["사용자가 직접 밝힌 목록 ID"]}',
+    '{"summary":"핵심 결론과 행동을 쉬운 말로 2~3문장","answer":"자세히 보기에서 읽을 구체적인 설명","risk_level":"danger|caution|safe","warning_message":"위험·비권장일 때만 한 문장, 아니면 빈 문자열","profile_allergy_ids":["사용자가 직접 밝힌 목록 ID"],"profile_condition_ids":["사용자가 직접 밝힌 목록 ID"],"follow_up_questions":["답변에 이어지는 짧은 질문 4개"],"conversation_title":"대화 주제 요약 제목"}',
   ].join("\n");
 
   const requestContent: GeminiContent = {
