@@ -47,6 +47,20 @@ function pickAvailableModels(models: string[]) {
   return ready.length > 0 ? ready : models;
 }
 
+/**
+ * generationConfig.thinkingConfig 를 뺀 요청 본문을 만든다.
+ * 모델마다 받는 thinking 설정이 달라 400 이 나면 설정 없이 한 번 더 보낸다.
+ */
+function withoutThinkingConfig(body: unknown) {
+  if (!body || typeof body !== "object") return null;
+  const config = (body as { generationConfig?: Record<string, unknown> })
+    .generationConfig;
+  if (!config || !("thinkingConfig" in config)) return null;
+  const { thinkingConfig: _omit, ...rest } = config;
+  void _omit;
+  return JSON.stringify({ ...(body as object), generationConfig: rest });
+}
+
 /** 모델을 바꿔도 결과가 같은 오류. 이때는 폴백하지 않고 바로 알린다. */
 function isFatalStatus(status: number) {
   return status === 401 || status === 403;
@@ -86,6 +100,7 @@ export async function callGeminiGenerateContent({
   defaultErrorMessage?: string;
 }): Promise<GeminiCallResult> {
   const serializedBody = JSON.stringify(body);
+  const bodyWithoutThinking = withoutThinkingConfig(body);
   const candidates = pickAvailableModels(models);
   const triedModels: string[] = [];
   let quotaRetrySeconds = 0;
@@ -93,6 +108,7 @@ export async function callGeminiGenerateContent({
 
   for (const model of candidates) {
     triedModels.push(model);
+    let requestBody = serializedBody;
 
     for (let attempt = 0; attempt < 2; attempt += 1) {
       const response = await fetch(
@@ -103,7 +119,7 @@ export async function callGeminiGenerateContent({
             "Content-Type": "application/json",
             "x-goog-api-key": apiKey,
           },
-          body: serializedBody,
+          body: requestBody,
         },
       );
       const rawBody = await response.text();
@@ -117,6 +133,19 @@ export async function callGeminiGenerateContent({
       lastFailure = new Error(message);
 
       if (isFatalStatus(response.status)) throw lastFailure;
+
+      // thinking 설정을 모르는 모델이면 모델을 쉬게 하지 말고 설정만 빼서 다시 보낸다.
+      if (
+        response.status === 400 &&
+        bodyWithoutThinking &&
+        requestBody !== bodyWithoutThinking &&
+        /thinking/i.test(message)
+      ) {
+        console.warn(`[SilverLens] ${model} 가 thinking 설정을 받지 않아 빼고 다시 보냅니다.`);
+        requestBody = bodyWithoutThinking;
+        attempt -= 1;
+        continue;
+      }
 
       if (response.status === 429) {
         const headerDelay = Number(response.headers.get("retry-after") ?? "");

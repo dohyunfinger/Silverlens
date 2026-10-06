@@ -339,11 +339,34 @@ function audioBufferToWav(buffer: AudioBuffer) {
   return wav;
 }
 
+/**
+ * Gemini 는 음성을 16kHz 로 낮춰서 처리한다. 브라우저 기본값(보통 48kHz)으로 보내면
+ * 파일만 세 배 커지고 업로드가 느려지므로 미리 16kHz 모노로 줄인다.
+ */
+const UPLOAD_SAMPLE_RATE = 16000;
+
+async function resampleForUpload(decoded: AudioBuffer) {
+  if (decoded.sampleRate <= UPLOAD_SAMPLE_RATE || typeof OfflineAudioContext === "undefined") {
+    return decoded;
+  }
+  const offline = new OfflineAudioContext(
+    1,
+    Math.ceil(decoded.duration * UPLOAD_SAMPLE_RATE),
+    UPLOAD_SAMPLE_RATE,
+  );
+  const source = offline.createBufferSource();
+  source.buffer = decoded;
+  source.connect(offline.destination);
+  source.start();
+  return offline.startRendering();
+}
+
 async function convertRecordingToWav(blob: Blob) {
   const context = new AudioContext();
   try {
     const decoded = await context.decodeAudioData(await blob.arrayBuffer());
-    return new Blob([audioBufferToWav(decoded)], { type: "audio/wav" });
+    const resampled = await resampleForUpload(decoded).catch(() => decoded);
+    return new Blob([audioBufferToWav(resampled)], { type: "audio/wav" });
   } catch {
     throw new Error("음성을 전송 가능한 형식으로 바꾸지 못했습니다. 다시 녹음해 주세요.");
   } finally {

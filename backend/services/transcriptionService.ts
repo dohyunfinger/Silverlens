@@ -1,10 +1,7 @@
 import { getGeminiConfig } from "../config/env";
 import { callGeminiGenerateContent } from "./geminiClient";
 import { extractAgeFromTranscript } from "./koreanAge";
-import {
-  getDialectDictionaryForPrompt,
-  getFoodAliasesForPrompt,
-} from "../data/loadData";
+import { getDialectDictionaryForPrompt } from "../data/loadData";
 import {
   getHealthCatalogForPrompt,
   isHealthTermId,
@@ -53,11 +50,35 @@ const transcriptLanguageRules: Record<HealthLanguage, string> = {
     "音声をまず日本語として認識してください。transcriptは、聞こえた日本語を漢字・ひらがな・カタカナでそのまま書き起こしてください。似た音の韓国語として解釈せず、韓国語や英語に翻訳したり、ローマ字で書いたりしないでください。",
 };
 
-const transcriptExamples: Record<HealthLanguage, string> = {
-  "ko-KR": "복숭아 알레르기가 있어요.",
-  "en-US": "I have a peach allergy.",
-  "ja-JP": "桃アレルギーがあります。",
+/*
+ * 응답 양식에 실제 문장 예시를 넣으면, 말소리가 없는 녹음에서 모델이 예시를 그대로
+ * 베껴 "복숭아 알레르기"가 프로필에 등록된 일이 있었다. 그래서 자리표시자만 둔다.
+ */
+const transcriptPlaceholders: Record<HealthLanguage, string> = {
+  "ko-KR": "<들린 말 그대로>",
+  "en-US": "<exactly what was spoken>",
+  "ja-JP": "<聞こえた言葉そのまま>",
 };
+
+/**
+ * 프롬프트에 붙일 건강정보 카탈로그를 한 줄씩 짧게 만든다.
+ * JSON 객체 그대로 보내면 키 이름이 반복돼 토큰이 크게 늘고 응답이 느려진다.
+ */
+function compactHealthCatalog() {
+  return getHealthCatalogForPrompt()
+    .map((term) => {
+      const names = [...new Set([...Object.values(term.labels), ...term.aliases])];
+      return `${term.id}: ${names.join(", ")}`;
+    })
+    .join("\n");
+}
+
+/** 방언 사전도 "방언=표준어" 형태로 줄인다. 한국어 음성에서만 쓴다. */
+function compactDialectDictionary() {
+  return getDialectDictionaryForPrompt()
+    .map((entry) => `${entry.dialect}=${entry.standard}`)
+    .join(", ");
+}
 
 function cleanItems(value: unknown, kind: HealthKind) {
   if (!Array.isArray(value)) return [];
@@ -151,7 +172,18 @@ function parseStructuredResult(
   };
   const transcript =
     typeof parsed.transcript === "string" ? parsed.transcript.trim() : "";
-  if (!transcript) throw new Error("음성에서 말을 찾지 못했습니다.");
+  // 말소리가 없으면 오류(500) 대신 다시 말해 달라는 안내(422)로 돌려보낸다.
+  if (!transcript) {
+    return {
+      transcript: "",
+      allergies: [],
+      conditions: [],
+      gender: null,
+      ageBand: null,
+      detectedLanguage: "unclear",
+      needsRetry: true,
+    };
+  }
 
   const detectedLanguage = cleanDetectedLanguage(parsed.detectedLanguage);
   const confidence = cleanConfidence(parsed.confidence);
@@ -188,10 +220,12 @@ export async function transcribeAudio(
   language = "ko-KR",
 ) {
   const { apiKey, textModelChain } = getGeminiConfig();
-  const dialectDictionary = getDialectDictionaryForPrompt();
-  const foodAliases = getFoodAliasesForPrompt();
-  const healthCatalog = getHealthCatalogForPrompt();
   const selectedLanguage = toHealthLanguage(language);
+  // 외래어·별칭 사전은 받아쓰기에 쓰지 않는다. 대화 단계(geminiService)가 질문에 맞는 항목만 골라 쓴다.
+  const dialectLine =
+    selectedLanguage === "ko-KR"
+      ? `방언 참고 사전(방언=표준어): ${compactDialectDictionary()}`
+      : "";
   const { rawBody } = await callGeminiGenerateContent({
     apiKey,
     models: textModelChain,
@@ -206,6 +240,7 @@ export async function transcribeAudio(
                 text: [
                   "첨부한 음성에서 실제로 들리는 말을 받아쓰고 건강정보를 분류하세요.",
                   "질문에 답하거나 내용을 요약하지 마세요.",
+                  "음성에 사람의 말소리가 없거나 잡음뿐이면 transcript를 빈 문자열로 두고 needsRetry를 true로 표시하세요. 응답 양식이나 예시 문장을 transcript에 옮기지 마세요.",
                   transcriptLanguageRules[selectedLanguage],
                   `받아쓰기 언어: ${selectedLanguage}`,
                   "transcript는 말한 내용을 원문 문자로 적고, 번역·의역·요약하지 마세요.",
@@ -236,13 +271,12 @@ export async function transcribeAudio(
                   "나이를 짐작해서 넣지 마세요.",
                   `현재 입력 화면: ${purpose}`,
                   `화면 표시 언어: ${selectedLanguage}`,
-                  `건강정보 다국어 카탈로그: ${JSON.stringify(healthCatalog)}`,
-                  `방언 참고 사전: ${JSON.stringify(dialectDictionary)}`,
-                  `외래어·별칭 참고 사전: ${JSON.stringify(foodAliases)}`,
+                  `건강정보 카탈로그(ID: 이름들):\n${compactHealthCatalog()}`,
+                  dialectLine,
                   "참고 사전과 카탈로그는 건강정보 ID를 분류할 때만 사용하세요. transcript의 표현이나 언어를 한국어 표준 이름으로 바꾸지 마세요.",
                   "반드시 다음 JSON 객체만 반환하세요.",
-                  `{"transcript":${JSON.stringify(transcriptExamples[selectedLanguage])},"allergies":["카탈로그 allergy ID"],"conditions":["카탈로그 condition ID"],"gender":"male|female|null","age":숫자 또는 null,"detectedLanguage":"${selectedLanguage}","confidence":0.99,"uncertainTerms":[],"needsRetry":false}`,
-                ].join("\n"),
+                  `{"transcript":${JSON.stringify(transcriptPlaceholders[selectedLanguage])},"allergies":["카탈로그 allergy ID"],"conditions":["카탈로그 condition ID"],"gender":"male|female|null","age":숫자 또는 null,"detectedLanguage":"${selectedLanguage}","confidence":0.99,"uncertainTerms":[],"needsRetry":false}`,
+                ].filter(Boolean).join("\n"),
               },
               {
                 inline_data: {
@@ -257,6 +291,9 @@ export async function transcribeAudio(
           temperature: 0,
           maxOutputTokens: 1024,
           responseMimeType: "application/json",
+          // 받아쓰기에는 추론이 필요 없고, 생각 단계가 응답 시간의 큰 몫을 차지한다.
+          // 이 설정을 모르는 모델이면 geminiClient 가 빼고 다시 보낸다.
+          thinkingConfig: { thinkingLevel: "minimal" },
         },
     },
   });
