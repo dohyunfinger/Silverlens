@@ -23,6 +23,54 @@
     ]
   },
   {
+    "id": "group_allergy_citrus",
+    "kind": "allergy",
+    "icon": "🍊",
+    "labels": {
+      "ko-KR": "감귤류",
+      "en-US": "Citrus fruits",
+      "ja-JP": "柑橘類"
+    },
+    "members": [
+      "allergy_orange",
+      "allergy_lemon",
+      "allergy_grapefruit",
+      "allergy_yuzu"
+    ]
+  },
+  {
+    "id": "group_allergy_berries",
+    "kind": "allergy",
+    "icon": "🫐",
+    "labels": {
+      "ko-KR": "베리류",
+      "en-US": "Berries",
+      "ja-JP": "ベリー類"
+    },
+    "members": [
+      "allergy_blueberry",
+      "allergy_mulberry",
+      "allergy_goji_berry"
+    ]
+  },
+  {
+    "id": "group_allergy_stone_fruits",
+    "kind": "allergy",
+    "icon": "🍒",
+    "labels": {
+      "ko-KR": "핵과류",
+      "en-US": "Stone fruits",
+      "ja-JP": "核果類"
+    },
+    "members": [
+      "allergy_cherry",
+      "allergy_plum",
+      "allergy_apricot",
+      "allergy_date",
+      "allergy_fig"
+    ]
+  },
+  {
     "id": "group_allergy_nuts",
     "kind": "allergy",
     "icon": "🥜",
@@ -37,6 +85,22 @@
       "allergy_almond",
       "allergy_pine_nut",
       "allergy_sesame"
+    ]
+  },
+  {
+    "id": "group_allergy_tree_nuts_extra",
+    "kind": "allergy",
+    "icon": "🌰",
+    "labels": {
+      "ko-KR": "그 밖의 견과류",
+      "en-US": "Other nuts",
+      "ja-JP": "その他のナッツ"
+    },
+    "members": [
+      "allergy_cashew",
+      "allergy_pistachio",
+      "allergy_hazelnut",
+      "allergy_macadamia"
     ]
   },
   {
@@ -114,6 +178,21 @@
     ]
   },
   {
+    "id": "group_allergy_meats_extra",
+    "kind": "allergy",
+    "icon": "🥩",
+    "labels": {
+      "ko-KR": "그 밖의 고기",
+      "en-US": "Other meats",
+      "ja-JP": "その他の肉"
+    },
+    "members": [
+      "allergy_lamb",
+      "allergy_duck",
+      "allergy_goat"
+    ]
+  },
+  {
     "id": "group_allergy_vegetable",
     "kind": "allergy",
     "icon": "🥬",
@@ -128,6 +207,37 @@
       "allergy_garlic",
       "allergy_broccoli",
       "allergy_cabbage"
+    ]
+  },
+  {
+    "id": "group_allergy_nightshades",
+    "kind": "allergy",
+    "icon": "🍆",
+    "labels": {
+      "ko-KR": "가지과 채소",
+      "en-US": "Nightshades",
+      "ja-JP": "ナス科野菜"
+    },
+    "members": [
+      "allergy_eggplant",
+      "allergy_bell_pepper",
+      "allergy_potato"
+    ]
+  },
+  {
+    "id": "group_allergy_root_vegetables",
+    "kind": "allergy",
+    "icon": "🥕",
+    "labels": {
+      "ko-KR": "뿌리 채소류",
+      "en-US": "Root vegetables",
+      "ja-JP": "根菜類"
+    },
+    "members": [
+      "allergy_carrot",
+      "allergy_radish",
+      "allergy_sweet_potato",
+      "allergy_lotus_root"
     ]
   },
   {
@@ -148,6 +258,42 @@
       "allergy_green_tea",
       "allergy_yeast",
       "allergy_cocoa"
+    ]
+  },
+  {
+    "id": "group_allergy_spices",
+    "kind": "allergy",
+    "icon": "🌶️",
+    "labels": {
+      "ko-KR": "향신료 · 양념류",
+      "en-US": "Spices and seasonings",
+      "ja-JP": "香辛料・調味料"
+    },
+    "members": [
+      "allergy_chili_pepper",
+      "allergy_black_pepper",
+      "allergy_mustard",
+      "allergy_cinnamon",
+      "allergy_ginger",
+      "allergy_turmeric",
+      "allergy_cilantro",
+      "allergy_mint"
+    ]
+  },
+  {
+    "id": "group_allergy_additives_extra",
+    "kind": "allergy",
+    "icon": "🧪",
+    "labels": {
+      "ko-KR": "보존제 · 색소 · 감미료",
+      "en-US": "Preservatives, colors and sweeteners",
+      "ja-JP": "保存料・着色料・甘味料"
+    },
+    "members": [
+      "allergy_benzoate",
+      "allergy_nitrites",
+      "allergy_artificial_colors",
+      "allergy_aspartame"
     ]
   },
   {
@@ -192,6 +338,34 @@
     ]
   },
   {
+    "id": "group_condition_cardiovascular_extra",
+    "kind": "condition",
+    "icon": "🫀",
+    "labels": {
+      "ko-KR": "그 밖의 심장 · 혈관 질환",
+      "en-US": "Other heart and blood vessel conditions",
+      "ja-JP": "その他の心臓・血管の病気"
+    },
+    "members": [
+      "condition_aortic_aneurysm",
+      "condition_peripheral_artery_disease"
+    ]
+  },
+  {
+    "id": "group_condition_hematology",
+    "kind": "condition",
+    "icon": "🩸",
+    "labels": {
+      "ko-KR": "혈액 · 혈전 질환",
+      "en-US": "Blood and thrombotic disorders",
+      "ja-JP": "血液・血栓疾患"
+    },
+    "members": [
+      "condition_deep_vein_thrombosis",
+      "condition_varicose_veins"
+    ]
+  },
+  {
     "id": "group_condition_kidney",
     "kind": "condition",
     "icon": "💧",
@@ -232,6 +406,23 @@
     ]
   },
   {
+    "id": "group_condition_gastrointestinal_extra",
+    "kind": "condition",
+    "icon": "🫄",
+    "labels": {
+      "ko-KR": "그 밖의 소화기 질환",
+      "en-US": "Other digestive conditions",
+      "ja-JP": "その他の消化器の病気"
+    },
+    "members": [
+      "condition_gastroparesis",
+      "condition_diverticulitis",
+      "condition_hemorrhoids",
+      "condition_hiatal_hernia",
+      "condition_liver_cirrhosis"
+    ]
+  },
+  {
     "id": "group_condition_bone",
     "kind": "condition",
     "icon": "🦴",
@@ -247,6 +438,21 @@
       "condition_sarcopenia",
       "condition_vitamin_d_deficiency",
       "condition_frailty_syndrome"
+    ]
+  },
+  {
+    "id": "group_condition_musculoskeletal_extra",
+    "kind": "condition",
+    "icon": "🩻",
+    "labels": {
+      "ko-KR": "허리 · 어깨 질환",
+      "en-US": "Back and shoulder conditions",
+      "ja-JP": "腰・肩の病気"
+    },
+    "members": [
+      "condition_herniated_disc",
+      "condition_spinal_stenosis",
+      "condition_frozen_shoulder"
     ]
   },
   {
@@ -266,6 +472,22 @@
       "condition_anxiety",
       "condition_insomnia",
       "condition_restless_legs_syndrome"
+    ]
+  },
+  {
+    "id": "group_condition_mental_neurological_extra",
+    "kind": "condition",
+    "icon": "🧩",
+    "labels": {
+      "ko-KR": "두통 · 어지럼 · 떨림",
+      "en-US": "Headache, dizziness and tremor",
+      "ja-JP": "頭痛・めまい・ふるえ"
+    },
+    "members": [
+      "condition_epilepsy",
+      "condition_migraine",
+      "condition_vertigo",
+      "condition_essential_tremor"
     ]
   },
   {
@@ -336,71 +558,21 @@
     ]
   },
   {
-    "id": "group_allergy_citrus",
-    "kind": "allergy",
-    "icon": "🍊",
+    "id": "group_condition_oncology_types",
+    "kind": "condition",
+    "icon": "🩺",
     "labels": {
-      "ko-KR": "감귤류",
-      "en-US": "Citrus fruits",
-      "ja-JP": "柑橘類"
+      "ko-KR": "주요 암종",
+      "en-US": "Cancer types",
+      "ja-JP": "主要がん"
     },
     "members": [
-      "allergy_orange",
-      "allergy_lemon",
-      "allergy_grapefruit",
-      "allergy_yuzu"
-    ]
-  },
-  {
-    "id": "group_allergy_tree_nuts_extra",
-    "kind": "allergy",
-    "icon": "🌰",
-    "labels": {
-      "ko-KR": "기타 견과류",
-      "en-US": "Other tree nuts",
-      "ja-JP": " 기타ナッツ類"
-    },
-    "members": [
-      "allergy_cashew",
-      "allergy_pistachio",
-      "allergy_hazelnut",
-      "allergy_macadamia"
-    ]
-  },
-  {
-    "id": "group_allergy_spices",
-    "kind": "allergy",
-    "icon": "🌶️",
-    "labels": {
-      "ko-KR": "향신료 · 양념류",
-      "en-US": "Spices and seasonings",
-      "ja-JP": "香辛料・調味料"
-    },
-    "members": [
-      "allergy_chili_pepper",
-      "allergy_black_pepper",
-      "allergy_mustard",
-      "allergy_cinnamon",
-      "allergy_ginger",
-      "allergy_turmeric",
-      "allergy_cilantro",
-      "allergy_mint"
-    ]
-  },
-  {
-    "id": "group_allergy_additives_extra",
-    "kind": "allergy",
-    "icon": "🧪",
-    "labels": {
-      "ko-KR": "기타 첨가물 · 보존제",
-      "en-US": "Other additives and preservatives",
-      "ja-JP": "その他添加物・保存料"
-    },
-    "members": [
-      "allergy_benzoate",
-      "allergy_nitrites",
-      "allergy_artificial_colors",
-      "allergy_aspartame"
+      "condition_breast_cancer",
+      "condition_lung_cancer",
+      "condition_colorectal_cancer",
+      "condition_prostate_cancer",
+      "condition_stomach_cancer",
+      "condition_thyroid_cancer"
     ]
   },
   {
@@ -435,43 +607,13 @@
     ]
   },
   {
-    "id": "group_condition_mental_neurological_extra",
-    "kind": "condition",
-    "icon": "🧩",
-    "labels": {
-      "ko-KR": "신경 · 정신건강 확장",
-      "en-US": "Neurological and mental health extended",
-      "ja-JP": "神経・メンタルヘルス拡張"
-    },
-    "members": [
-      "condition_epilepsy",
-      "condition_migraine",
-      "condition_vertigo",
-      "condition_essential_tremor"
-    ]
-  },
-  {
-    "id": "group_condition_hematology",
-    "kind": "condition",
-    "icon": "🩸",
-    "labels": {
-      "ko-KR": "혈액 · 혈전 질환",
-      "en-US": "Blood and thrombotic disorders",
-      "ja-JP": "血液・血栓疾患"
-    },
-    "members": [
-      "condition_deep_vein_thrombosis",
-      "condition_varicose_veins"
-    ]
-  },
-  {
     "id": "group_condition_infectious",
     "kind": "condition",
     "icon": "🦠",
     "labels": {
-      "ko-KR": "감염성 · 만성 증후군",
-      "en-US": "Infectious and chronic syndromes",
-      "ja-JP": "感染症・慢性症候群"
+      "ko-KR": "간염 · 결핵",
+      "en-US": "Hepatitis and tuberculosis",
+      "ja-JP": "肝炎・結核"
     },
     "members": [
       "condition_hepatitis_b",
@@ -491,160 +633,6 @@
     "members": [
       "condition_post_surgery",
       "condition_post_organ_transplant"
-    ]
-  },
-  {
-    "id": "group_allergy_berries",
-    "kind": "allergy",
-    "icon": "🫐",
-    "labels": {
-      "ko-KR": "베리류",
-      "en-US": "Berries",
-      "ja-JP": "ベリー類"
-    },
-    "members": [
-      "allergy_blueberry",
-      "allergy_mulberry",
-      "allergy_goji_berry"
-    ]
-  },
-  {
-    "id": "group_allergy_stone_fruits",
-    "kind": "allergy",
-    "icon": "🍒",
-    "labels": {
-      "ko-KR": "핵과류",
-      "en-US": "Stone fruits",
-      "ja-JP": "核果類"
-    },
-    "members": [
-      "allergy_cherry",
-      "allergy_plum",
-      "allergy_apricot",
-      "allergy_date",
-      "allergy_fig"
-    ]
-  },
-  {
-    "id": "group_allergy_nightshades",
-    "kind": "allergy",
-    "icon": "🍆",
-    "labels": {
-      "ko-KR": "가지과 채소",
-      "en-US": "Nightshades",
-      "ja-JP": "ナス科野菜"
-    },
-    "members": [
-      "allergy_eggplant",
-      "allergy_bell_pepper",
-      "allergy_potato"
-    ]
-  },
-  {
-    "id": "group_allergy_meats_extra",
-    "kind": "allergy",
-    "icon": "🥩",
-    "labels": {
-      "ko-KR": "기타 육류",
-      "en-US": "Other meats",
-      "ja-JP": "その他肉類"
-    },
-    "members": [
-      "allergy_lamb",
-      "allergy_duck",
-      "allergy_goat"
-    ]
-  },
-  {
-    "id": "group_condition_cardiovascular_extra",
-    "kind": "condition",
-    "icon": "🫀",
-    "labels": {
-      "ko-KR": "심장 · 혈관질환 확장",
-      "en-US": "Cardiovascular diseases extended",
-      "ja-JP": "心臓・血管疾患拡張"
-    },
-    "members": [
-      "condition_aortic_aneurysm",
-      "condition_peripheral_artery_disease"
-    ]
-  },
-  {
-    "id": "group_condition_musculoskeletal_extra",
-    "kind": "condition",
-    "icon": "🩻",
-    "labels": {
-      "ko-KR": "근골격계 · 척추 질환",
-      "en-US": "Musculoskeletal and spinal disorders",
-      "ja-JP": "筋骨格・脊椎疾患"
-    },
-    "members": [
-      "condition_herniated_disc",
-      "condition_spinal_stenosis",
-      "condition_frozen_shoulder"
-    ]
-  },
-  {
-    "id": "group_condition_liver_biliary_extra",
-    "kind": "condition",
-    "icon": "🧪",
-    "labels": {
-      "ko-KR": "간 · 담도 질환",
-      "en-US": "Liver and biliary diseases",
-      "ja-JP": "肝臓・胆道疾患"
-    },
-    "members": [
-      "condition_liver_cirrhosis"
-    ]
-  },
-  {
-    "id": "group_allergy_root_vegetables",
-    "kind": "allergy",
-    "icon": "🥕",
-    "labels": {
-      "ko-KR": "뿌리 채소류",
-      "en-US": "Root vegetables",
-      "ja-JP": "根菜類"
-    },
-    "members": [
-      "allergy_carrot",
-      "allergy_radish",
-      "allergy_sweet_potato",
-      "allergy_lotus_root"
-    ]
-  },
-  {
-    "id": "group_condition_gastrointestinal_extra",
-    "kind": "condition",
-    "icon": "🫄",
-    "labels": {
-      "ko-KR": "소화기 질환 확장",
-      "en-US": "Gastrointestinal conditions extended",
-      "ja-JP": "消化器疾患拡張"
-    },
-    "members": [
-      "condition_gastroparesis",
-      "condition_diverticulitis",
-      "condition_hemorrhoids",
-      "condition_hiatal_hernia"
-    ]
-  },
-  {
-    "id": "group_condition_oncology_types",
-    "kind": "condition",
-    "icon": "🩺",
-    "labels": {
-      "ko-KR": "주요 암종",
-      "en-US": "Cancer types",
-      "ja-JP": "主要がん"
-    },
-    "members": [
-      "condition_breast_cancer",
-      "condition_lung_cancer",
-      "condition_colorectal_cancer",
-      "condition_prostate_cancer",
-      "condition_stomach_cancer",
-      "condition_thyroid_cancer"
     ]
   }
 ]

@@ -7928,3 +7928,126 @@ strong {
   .profile-wizard .start-button { min-height: 56px; font-size: 22px; padding: 12px; border-radius: 16px; }
   .profile-wizard .wizard-finish .wizard-skip { min-height: 48px; padding: 8px; font-size: 20px; }
 }
+
+/* ===== 어르신 사용성 정리 (줄바꿈 · 글자 크기 · 목록 스크롤 · 넓은 화면) ===== */
+
+/* 한국어 답변이 "오/늘", "있/습니다"처럼 낱말 중간에서 끊기지 않게 한다. */
+.answer-markdown,
+.answer-question strong,
+.answer-followups button,
+.typing-bubble,
+.health-summary-empty,
+.speed-control small,
+.medical-note {
+  word-break: keep-all;
+  overflow-wrap: anywhere;
+}
+/* 일본어는 낱말 사이 공백이 없어 keep-all 이면 줄이 넘친다. 글자 경계에서 바꾼다. */
+html[lang="ja-JP"] .answer-markdown,
+html[lang="ja-JP"] .answer-question strong,
+html[lang="ja-JP"] .answer-followups button,
+html[lang="ja-JP"] .typing-bubble,
+html[lang="ja-JP"] .health-summary-empty,
+html[lang="ja-JP"] .speed-control small,
+html[lang="ja-JP"] .medical-note {
+  word-break: normal;
+  line-break: strict;
+}
+
+/* 어르신이 읽는 안내문은 15px 아래로 내려가지 않게 한다. */
+.medical-note,
+.health-language-note,
+.speed-control small,
+.health-picker-head small,
+.health-clear {
+  font-size: 15px;
+  line-height: 1.55;
+}
+
+/* 아무것도 고르지 않았을 때 안내는 제목처럼 보이지 않게 차분하게 둔다. */
+.health-summary-empty,
+.profile-wizard .health-summary-empty {
+  font-size: 18px;
+  font-weight: 600;
+  color: #6b7686;
+}
+
+/* 속도 슬라이더 양 끝 표시. 위쪽 "보통" 배지 스타일(.speed-control span)을 물려받지 않게 한다. */
+.speed-control .speed-scale {
+  display: flex;
+  justify-content: space-between;
+  margin-top: -4px;
+}
+.speed-control .speed-scale span {
+  padding: 0;
+  border-radius: 0;
+  background: none;
+  color: #5b6678;
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/*
+ * 알레르기·질병 목록을 카드 안에서 따로 스크롤하면 한 번에 묶음 4개 정도만 보인다.
+ * 화면 전체가 스크롤되게 풀어 준다.
+ */
+.health-picker,
+.profile-wizard .health-picker {
+  max-height: none;
+  overflow: visible;
+  overscroll-behavior-y: auto;
+}
+
+@media (max-width: 700px) {
+  /* "사진 올리기", "글로 쓰기"가 12px 이었다. 두 줄로 접히더라도 14px 로 키운다. */
+  .app-shell.chat-layout .chat-screen .fixed-composer {
+    grid-template-columns: 62px 62px minmax(0, 1fr) 74px;
+  }
+  .chat-layout .fixed-composer .composer-tool strong {
+    font-size: 14px;
+    line-height: 1.2;
+    white-space: normal;
+    word-break: keep-all;
+    text-align: center;
+  }
+  .chat-layout .chat-screen .fixed-composer .composer-tool {
+    min-height: 64px;
+    height: auto;
+  }
+  /* 성별·나이 단계에도 건너뛰기 버튼이 생겨 아래 고정 영역이 높아졌다. */
+  .app-shell:has(.profile-wizard > .wizard-finish .wizard-skip) {
+    padding-bottom: calc(240px + env(safe-area-inset-bottom, 0px));
+  }
+}
+
+/* 넓은 화면 소개: 설명 문단을 제목과 같은 왼쪽 줄에 맞춘다. 이름은 머리글에 이미 있다. */
+@media (min-width: 761px) {
+  .about-hero-description {
+    max-width: 680px;
+    margin-right: 0;
+    margin-left: 0;
+  }
+  .about-brand-title {
+    display: none;
+  }
+}
+
+/* 넓은 화면 대화: 화면 끝에서 끝까지 늘어나면 시선 이동이 길어진다. 가운데 폭으로 모은다. */
+@media (min-width: 1024px) {
+  .chat-screen .chat-scroll-area > h1,
+  .chat-screen .conversation-feed,
+  .chat-screen .medical-note {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 880px;
+    margin-right: auto;
+    margin-left: auto;
+  }
+  .app-shell.chat-layout .chat-screen .fixed-composer {
+    box-sizing: border-box;
+    width: 100%;
+    max-width: 920px;
+    margin-right: auto;
+    margin-left: auto;
+  }
+}

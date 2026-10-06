@@ -3,7 +3,7 @@ import { callGeminiGenerateContent } from "./geminiClient";
 import { extractAgeFromTranscript } from "./koreanAge";
 import { getDialectDictionaryForPrompt } from "../data/loadData";
 import {
-  getHealthCatalogForPrompt,
+  getCompactHealthCatalogForPrompt,
   isHealthTermId,
   toHealthLanguage,
   type HealthKind,
@@ -59,19 +59,6 @@ const transcriptPlaceholders: Record<HealthLanguage, string> = {
   "en-US": "<exactly what was spoken>",
   "ja-JP": "<聞こえた言葉そのまま>",
 };
-
-/**
- * 프롬프트에 붙일 건강정보 카탈로그를 한 줄씩 짧게 만든다.
- * JSON 객체 그대로 보내면 키 이름이 반복돼 토큰이 크게 늘고 응답이 느려진다.
- */
-function compactHealthCatalog() {
-  return getHealthCatalogForPrompt()
-    .map((term) => {
-      const names = [...new Set([...Object.values(term.labels), ...term.aliases])];
-      return `${term.id}: ${names.join(", ")}`;
-    })
-    .join("\n");
-}
 
 /** 방언 사전도 "방언=표준어" 형태로 줄인다. 한국어 음성에서만 쓴다. */
 function compactDialectDictionary() {
@@ -271,7 +258,7 @@ export async function transcribeAudio(
                   "나이를 짐작해서 넣지 마세요.",
                   `현재 입력 화면: ${purpose}`,
                   `화면 표시 언어: ${selectedLanguage}`,
-                  `건강정보 카탈로그(ID: 이름들):\n${compactHealthCatalog()}`,
+                  `건강정보 카탈로그(ID: 이름들):\n${getCompactHealthCatalogForPrompt()}`,
                   dialectLine,
                   "참고 사전과 카탈로그는 건강정보 ID를 분류할 때만 사용하세요. transcript의 표현이나 언어를 한국어 표준 이름으로 바꾸지 마세요.",
                   "반드시 다음 JSON 객체만 반환하세요.",

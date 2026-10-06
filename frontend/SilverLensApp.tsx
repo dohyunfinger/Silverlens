@@ -935,6 +935,13 @@ const photoPurposeOptions: Array<{
   },
 ];
 
+/** 답변을 기다리는 동안 시간에 따라 바꿔 보여 줄 안내. 4초·10초·20초에 다음 문구로 넘어간다. */
+const answerLoadingStages: Record<Language, string[]> = {
+  "ko-KR": ["질문을 확인하고 있어요", "건강 정보에 맞는지 살펴보고 있어요", "알기 쉽게 정리하고 있어요", "거의 다 됐어요. 조금만 기다려 주세요"],
+  "en-US": ["Reading your question", "Checking it against your health information", "Putting it in simple words", "Almost done. Just a moment, please"],
+  "ja-JP": ["ご質問を確認しています", "健康情報に合うか確かめています", "わかりやすくまとめています", "もうすぐです。少しお待ちください"],
+};
+
 const uiCopy = {
   "ko-KR": {
     menuLabel: "서비스 메뉴",
@@ -958,7 +965,9 @@ const uiCopy = {
     answerSpeedHelp: "손이나 마우스로 끌어 음성 답변 속도를 조절하세요.",
     answerSpeedPreview: "🔈 이 속도로 들어보기",
     answerSpeedSample: "이 속도는 어떠세요? 아래에서 조절해 주세요.",
-    answerSpeedLimited: "이 브라우저는 한국어 음성 속도 조절이 제한돼요. 끊어 읽기로 속도를 맞춥니다.",
+    answerSpeedLimited: "이 기기에서는 문장 사이를 쉬어 읽는 방식으로 속도를 맞춰요.",
+    speedSlow: "느리게",
+    speedFast: "빠르게",
     ageOver: "{age}세 이상",
     ageUnder: "{age}세 이하",
     writeText: "글로 쓰기",
@@ -976,6 +985,10 @@ const uiCopy = {
     conditionTitle: "질병·건강 상태",
     conditionHelp: "현재 치료하거나 관리 중인 상태",
     noneOption: "해당없음",
+    noneSelected: "아직 고른 항목이 없어요.",
+    noneNext: "해당 없음 · 다음",
+    noneDone: "해당 없음 · 완료",
+    skipStep: "이 질문 건너뛰기",
     directInput: "+ 직접 입력",
     directInputClose: "− 목록 닫기",
     pickerHint: "묶음 제목을 누르면 항목이 펼쳐집니다.",
@@ -983,7 +996,8 @@ const uiCopy = {
     selectedSummary: "{count}개 선택",
     voiceInput: "🎙 말해서 입력",
     recordingDone: "■ 녹음 완료",
-    inputPlaceholder: "입력 후 엔터",
+    allergyPlaceholder: "예: 호두, 새우",
+    conditionPlaceholder: "예: 당뇨, 고혈압",
     healthLanguageNote: "등록한 건강 정보는 선택한 언어에 맞춰 표시됩니다.",
     notesTitle: "음성으로 남긴 상세 메모",
     notesHelp: "말씀하신 내용을 그대로 저장해 AI가 답변할 때 함께 참고합니다.",
@@ -1036,7 +1050,6 @@ const uiCopy = {
     headline: "오늘은 무엇을 도와드릴까요?",
     answerLabel: "AI 답변",
     answerLoading: "답변 만드는 중",
-    answerWaiting: "답변 대기 중",
     conversation: "대화",
     answer: "답변",
     prevAnswer: "이전 대화 또는 이전 답변",
@@ -1146,7 +1159,9 @@ const uiCopy = {
     answerSpeedHelp: "Drag with your hand or mouse to adjust voice answer speed.",
     answerSpeedPreview: "🔈 Hear this speed",
     answerSpeedSample: "I will read answers at this speed.",
-    answerSpeedLimited: "This browser limits voice speed control, so pauses are used instead.",
+    answerSpeedLimited: "On this device, speed is adjusted by pausing between sentences.",
+    speedSlow: "Slower",
+    speedFast: "Faster",
     ageOver: "{age} and above",
     ageUnder: "{age} and under",
     writeText: "Write text",
@@ -1164,6 +1179,10 @@ const uiCopy = {
     conditionTitle: "Health conditions",
     conditionHelp: "Conditions currently being treated or managed",
     noneOption: "None",
+    noneSelected: "Nothing selected yet.",
+    noneNext: "None · Next",
+    noneDone: "None · Done",
+    skipStep: "Skip this question",
     directInput: "+ Type directly",
     directInputClose: "− Close the list",
     pickerHint: "Tap a group title to open its items.",
@@ -1171,7 +1190,8 @@ const uiCopy = {
     selectedSummary: "{count} selected",
     voiceInput: "🎙 Speak to enter",
     recordingDone: "■ Finish recording",
-    inputPlaceholder: "Type and press Enter",
+    allergyPlaceholder: "e.g. walnut, shrimp",
+    conditionPlaceholder: "e.g. diabetes, high blood pressure",
     healthLanguageNote: "Registered health information is shown in the selected language.",
     notesTitle: "Spoken details",
     notesHelp: "We keep what you said and share it with the AI when it answers.",
@@ -1224,7 +1244,6 @@ const uiCopy = {
     headline: "How can I help today?",
     answerLabel: "AI Answer",
     answerLoading: "Creating answer",
-    answerWaiting: "Waiting for answer",
     conversation: "Conversation",
     answer: "Answer",
     prevAnswer: "Previous conversation or answer",
@@ -1334,7 +1353,9 @@ const uiCopy = {
     answerSpeedHelp: "指やマウスで動かして音声回答の速さを調整してください。",
     answerSpeedPreview: "🔈 この速さで聞く",
     answerSpeedSample: "この速さで回答をお読みします。",
-    answerSpeedLimited: "このブラウザは音声速度の調整が制限されるため、区切り読みで調整します。",
+    answerSpeedLimited: "この端末では、文の間に少し間をあけて速さを調整します。",
+    speedSlow: "ゆっくり",
+    speedFast: "はやく",
     ageOver: "{age}歳以上",
     ageUnder: "{age}歳以下",
     writeText: "文字で書く",
@@ -1352,6 +1373,10 @@ const uiCopy = {
     conditionTitle: "病気・健康状態",
     conditionHelp: "現在治療中または管理中の状態",
     noneOption: "該当なし",
+    noneSelected: "まだ何も選んでいません。",
+    noneNext: "該当なし・次へ",
+    noneDone: "該当なし・完了",
+    skipStep: "この質問をとばす",
     directInput: "+ 直接入力",
     directInputClose: "− 一覧を閉じる",
     pickerHint: "グループの見出しを押すと項目が開きます。",
@@ -1359,7 +1384,8 @@ const uiCopy = {
     selectedSummary: "{count}件 選択",
     voiceInput: "🎙 話して入力",
     recordingDone: "■ 録音完了",
-    inputPlaceholder: "入力後 Enter",
+    allergyPlaceholder: "例：くるみ、えび",
+    conditionPlaceholder: "例：糖尿病、高血圧",
     healthLanguageNote: "登録した健康情報は選択した言語で表示されます。",
     notesTitle: "話して残した詳しいメモ",
     notesHelp: "話した内容をそのまま保存し、AIが答えるときに一緒に参考にします。",
@@ -1412,7 +1438,6 @@ const uiCopy = {
     headline: "今日は何をお手伝いしましょうか？",
     answerLabel: "AI回答",
     answerLoading: "回答を作成中",
-    answerWaiting: "回答待ち",
     conversation: "会話",
     answer: "回答",
     prevAnswer: "前の会話または回答",
@@ -1792,7 +1817,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
         title: "알레르기와 질병·건강 상태를 등록합니다",
         text: "여기까지 넣어 두시면 답변이 달라집니다. 등록한 알레르기 식품은 추천에서 빠지고, 질병과 부딪히는 음식은 안전 규칙이 정한 위험도까지 코드가 끌어올려 알려 드립니다.",
         tips: [
-          "묶음 제목을 누르면 항목이 펼쳐집니다. 해당 없으면 '해당없음'을 누르세요.",
+          "묶음 제목을 누르면 항목이 펼쳐집니다. 고를 것이 없으면 '해당 없음 · 다음'을 누르세요.",
           "목록에 없으면 '직접 입력'으로 적으실 수 있고, 적어 주신 병명은 정식 상병 표기로 맞춰 저장합니다.",
           "'말해서 입력'을 누르고 말씀하시면 그대로 메모로 남아 답변에 함께 반영됩니다.",
         ],
@@ -2045,7 +2070,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
         title: "Register allergies and conditions",
         text: "This is what changes the answers. Registered allergens are dropped from suggestions, and for foods that clash with your condition, code raises the risk to the level the safety rule requires.",
         tips: [
-          "Press a group heading to open its items, or choose None if it does not apply.",
+          "Press a group heading to open its items, or press 'None · Next' if nothing applies.",
           "Not on the list? Type it in with direct entry, and the name is saved in its standard clinical form.",
           "Press Speak to enter and your own words are kept as a note the AI reads too.",
         ],
@@ -2299,7 +2324,7 @@ const aboutCopy: Record<Language, AboutCopy> = {
         title: "アレルギーと疾患を登録します",
         text: "ここまで入れると答えが変わります。登録したアレルギー食品はおすすめから外れ、疾患とぶつかる食品は安全ルールが定めた危険度までコードが引き上げてお知らせします。",
         tips: [
-          "グループの見出しを押すと項目が開きます。該当しなければ「該当なし」を押してください。",
+          "グループの見出しを押すと項目が開きます。該当しなければ「該当なし・次へ」を押してください。",
           "一覧になければ「直接入力」で書けます。書いていただいた病名は正式な傷病表記に合わせて保存します。",
           "「話して入力」を押して話すと、その言葉がメモとして残り回答にも反映されます。",
         ],
@@ -3056,7 +3081,7 @@ function HealthPickerCard({
             ))}
           </>
         ) : (
-          <span className="health-summary-empty">{copy.noneOption}</span>
+          <span className="health-summary-empty">{copy.noneSelected}</span>
         )}
       </div>
 
@@ -3064,7 +3089,7 @@ function HealthPickerCard({
         <div ref={pickerRef} className="health-picker">
           <input
             ref={inputRef}
-            placeholder={copy.inputPlaceholder}
+            placeholder={kind === "allergy" ? copy.allergyPlaceholder : copy.conditionPlaceholder}
             list={datalistId}
             onKeyDown={onAddTag}
             aria-label={inputLabel}
@@ -3211,6 +3236,22 @@ export default function SilverLensApp({
   const [, setAnswerCardIndex] = useState(0);
   const [chatError, setChatError] = useState("");
   const [isLoadingAnswer, setIsLoadingAnswer] = useState(false);
+  /*
+   * 답변에는 10~20초가 걸린다. 점 세 개만 계속 보이면 멈춘 줄 알기 쉬워서
+   * 시간이 지나는 데 맞춰 지금 무엇을 하는지 문구를 바꿔 보여 준다.
+   */
+  const [loadingStage, setLoadingStage] = useState(0);
+  useEffect(() => {
+    if (!isLoadingAnswer) return;
+    const timers = [4000, 10000, 20000].map((delay, index) =>
+      window.setTimeout(() => setLoadingStage(index + 1), delay),
+    );
+    // 답변이 끝나면 다음 질문을 위해 첫 문구로 되돌린다.
+    return () => {
+      timers.forEach((timer) => window.clearTimeout(timer));
+      setLoadingStage(0);
+    };
+  }, [isLoadingAnswer]);
   const [pendingQuestion, setPendingQuestion] = useState("");
   const [isNarrating, setIsNarrating] = useState(false);
   const [isTranscribingVoice, setIsTranscribingVoice] = useState(false);
@@ -5792,9 +5833,6 @@ export default function SilverLensApp({
           {(chatTurns.length > 0 || pendingQuestion) && <h1>{rooms.find((room) => room.id === activeRoomId)?.title ?? activeCopy.headline}</h1>}
 
           <section className="answer-section conversation-feed" aria-label={activeCopy.answerLabel}>
-            <div className="answer-heading"><span className="answer-label">{activeCopy.answerLabel}</span>
-              <span className="answer-state" role="status">{isLoadingAnswer ? activeCopy.answerLoading : chatTurns.length ? `${activeCopy.conversation} ${chatTurns.length}` : activeCopy.answerWaiting}</span>
-            </div>
             {chatTurns.length === 0 && !pendingQuestion && <article className="answer-card conversation-empty empty-chat-welcome">
               <div className="empty-chat-intro">
                 <h1>{activeCopy.headline}</h1>
@@ -5844,7 +5882,7 @@ export default function SilverLensApp({
             {pendingQuestion && <article className="answer-card conversation-turn pending-turn">
               <div className="user-message"><div className="answer-question"><strong>{pendingQuestion}</strong></div></div>
               <div className="assistant-message"><span className="chat-avatar" aria-hidden="true">✦</span><div className="assistant-message-body">
-                <div className="assistant-identity">{activeLanguage === "ko-KR" ? "실버렌즈 AI" : "SilverLens AI"}</div><div className="assistant-bubble typing-bubble" role="status"><span className="typing-dots" aria-hidden="true"><i /><i /><i /></span>{activeCopy.answerLoading}</div>
+                <div className="assistant-identity">{activeLanguage === "ko-KR" ? "실버렌즈 AI" : "SilverLens AI"}</div><div className="assistant-bubble typing-bubble" role="status"><span className="typing-dots" aria-hidden="true"><i /><i /><i /></span>{answerLoadingStages[activeLanguage][loadingStage] ?? activeCopy.answerLoading}</div>
               </div></div>
             </article>}
           </section>
@@ -6275,6 +6313,10 @@ export default function SilverLensApp({
             onChange={changeNarrationRate}
             aria-valuetext={narrationRateLabel}
           />
+          <div className="speed-scale" aria-hidden="true">
+            <span>{activeCopy.speedSlow}</span>
+            <span>{activeCopy.speedFast}</span>
+          </div>
           <button className="speed-preview" onClick={previewNarrationRate}>
             {activeCopy.answerSpeedPreview}
           </button>
@@ -6312,7 +6354,10 @@ export default function SilverLensApp({
             </button>
           </div>
         </fieldset>
-        {<button className="start-button" disabled={!gender} onClick={advanceProfileWizard}>{activeCopy.next}</button>}
+        <div className="wizard-finish">
+          <button className="start-button" disabled={!gender} onClick={advanceProfileWizard}>{activeCopy.next}</button>
+          {!gender && <button type="button" className="wizard-skip" onClick={advanceProfileWizard}>{activeCopy.skipStep}</button>}
+        </div>
         </>}
 
         {(profileWizardStep === "age") && <>
@@ -6352,7 +6397,10 @@ export default function SilverLensApp({
               : activeCopy.ageHelp}
           </p>
         </fieldset>
-        {<button className="start-button" disabled={!ageConfirmed} onClick={advanceProfileWizard}>{activeCopy.next}</button>}
+        <div className="wizard-finish">
+          <button className="start-button" disabled={!ageConfirmed} onClick={advanceProfileWizard}>{activeCopy.next}</button>
+          {!ageConfirmed && <button type="button" className="wizard-skip" onClick={advanceProfileWizard}>{activeCopy.skipStep}</button>}
+        </div>
         </>}
 
         {(profileWizardStep === "allergy" || profileWizardStep === "condition") && <>
@@ -6410,13 +6458,16 @@ export default function SilverLensApp({
           )}
         </div>
         {<div className="wizard-finish">
-          <button className="start-button" disabled={isTranscribingVoice || Boolean(recordingContext)} onClick={profileWizardStep === "allergy" ? advanceProfileWizard : finishProfileWizard}>{profileWizardStep === "allergy" ? activeCopy.next : activeCopy.profileDone}</button>
-          <button className="wizard-skip" disabled={isTranscribingVoice || Boolean(recordingContext)} onClick={profileWizardStep === "allergy" ? advanceProfileWizard : finishProfileWizard}>{activeLanguage === "ko-KR" ? "건너뛰기" : activeLanguage === "ja-JP" ? "スキップ" : "Skip"}</button>
+          <button className="start-button" disabled={isTranscribingVoice || Boolean(recordingContext)} onClick={profileWizardStep === "allergy" ? advanceProfileWizard : finishProfileWizard}>
+            {(profileWizardStep === "allergy" ? allergyIds : conditionIds).length > 0
+              ? (profileWizardStep === "allergy" ? activeCopy.next : activeCopy.profileDone)
+              : (profileWizardStep === "allergy" ? activeCopy.noneNext : activeCopy.noneDone)}
+          </button>
         </div>}
         </>}
-        <p className="health-language-note">
+        {profileWizardStep === "language" && <p className="health-language-note">
           {activeCopy.healthLanguageNote}
-        </p>
+        </p>}
 
         {/*
           정보 입력은 선택이므로 미완성이어도 항상 대화로 돌아갈 수 있다.

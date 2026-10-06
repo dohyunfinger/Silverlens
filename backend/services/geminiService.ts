@@ -10,7 +10,7 @@ import { callGeminiGenerateContent } from "./geminiClient";
 import { findRuntimePillCandidates } from "./mfdsPillData";
 import {
   findAllergyTermConflicts,
-  getHealthCatalogForPrompt,
+  getCompactHealthCatalogForPrompt,
   getHealthLabel,
   isHealthTermId,
   toHealthLanguage,
@@ -488,7 +488,8 @@ export async function generateSeniorFriendlyAnswer(
     .filter(Boolean)
     .join("\n");
   const selectedLanguage = toHealthLanguage(profile.language);
-  const healthCatalog = getHealthCatalogForPrompt();
+  // 짧은 한 줄 형식으로 보낸다. JSON 그대로면 프롬프트가 두 배 가까이 커진다.
+  const healthCatalog = getCompactHealthCatalogForPrompt();
 
   const profileAllergies =
     profile.allergies ??
@@ -624,7 +625,7 @@ export async function generateSeniorFriendlyAnswer(
     `어르신이 음성으로 남긴 상세 메모: ${
       healthNoteLines.length > 0 ? JSON.stringify(healthNoteLines) : "없음"
     }`,
-    `건강정보 선택 목록 DATA: ${JSON.stringify(healthCatalog)}`,
+    `건강정보 선택 목록 DATA(ID: 이름들):\n${healthCatalog}`,
     `이전 대화: ${JSON.stringify(conversationHistory)}`,
     `질문에서 찾은 방언 참고: ${JSON.stringify(knowledge.dialectHints)}`,
     `질문에서 찾은 외래어·별칭 참고: ${JSON.stringify(knowledge.foodAliasHints)}`,

@@ -249,6 +249,19 @@ function containsShortName(text: string, name: string) {
   });
 }
 
+/**
+ * 프롬프트에 붙일 건강정보 카탈로그를 "ID: 이름들" 한 줄씩으로 만든다.
+ * JSON 객체 그대로 보내면 키 이름이 반복돼 토큰이 크게 늘고 응답이 느려진다.
+ */
+export function getCompactHealthCatalogForPrompt() {
+  return getHealthCatalogForPrompt()
+    .map((term) => {
+      const names = [...new Set([...Object.values(term.labels), ...term.aliases])];
+      return `${term.id}: ${names.join(", ")}`;
+    })
+    .join("\n");
+}
+
 export function findAllergyTermConflicts(text: string, allergyIds: string[]) {
   const normalizedText = normalize(text);
   return allergyIds
