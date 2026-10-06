@@ -9,12 +9,14 @@ import { higherRisk, type RiskFloorHit } from "../data/loadData";
 import { callGeminiGenerateContent } from "./geminiClient";
 import { findRuntimePillCandidates } from "./mfdsPillData";
 import {
+  filterStatedHealthIds,
   findAllergyTermConflicts,
   getCompactHealthCatalogForPrompt,
   getHealthLabel,
   isHealthTermId,
   toHealthLanguage,
   type HealthKind,
+  type HealthLanguage,
 } from "../data/healthTerms";
 
 export type RiskLevel = "danger" | "caution" | "safe";
@@ -143,6 +145,8 @@ export type SeniorAnswerResult = {
   followUpQuestions?: string[];
   conversationTitle?: string;
   summary?: string;
+  /** 요리 방법 질문일 때만 채운다. 화면이 유튜브 검색 결과로 이어 주는 검색어다. */
+  videoSearchQuery?: string;
 };
 
 type GeminiResponse = {
@@ -279,7 +283,21 @@ type StructuredAnswer = {
   follow_up_questions?: unknown;
   conversation_title?: unknown;
   summary?: unknown;
+  video_search_query?: unknown;
 };
+
+/**
+ * 모델이 준 유튜브 검색어를 화면에 붙여도 되는 모양으로 다듬는다.
+ * 주소나 이상한 기호가 섞이면 버리고, 너무 길면 쓰지 않는다.
+ */
+function cleanVideoSearchQuery(value: unknown) {
+  if (typeof value !== "string") return undefined;
+  const query = value.replace(/["'`<>]/g, "").replace(/\s+/g, " ").trim();
+  if (query.length < 2 || query.length > 40) return undefined;
+  if (/https?:|www\.|\.com|youtu/i.test(query)) return undefined;
+  if (!/[\p{L}]/u.test(query)) return undefined;
+  return query;
+}
 
 function cleanProfileUpdateIds(value: unknown, kind: HealthKind) {
   if (!Array.isArray(value)) return [];
@@ -381,6 +399,62 @@ function parseStructuredAnswer(text: string): SeniorAnswerResult {
       parsed.profile_condition_ids,
       "condition",
     ),
+    videoSearchQuery: cleanVideoSearchQuery(parsed.video_search_query),
+  };
+}
+
+/** 고른 언어가 영어·일본어인데 답의 한글이 그 언어 글자보다 많으면 잘못된 언어로 본다. */
+function isWrongAnswerLanguage(text: string, language: HealthLanguage) {
+  if (language === "ko-KR") return false;
+  const hangul = (text.match(/\p{Script=Hangul}/gu) ?? []).length;
+  if (language === "ja-JP") {
+    const japanese = (text.match(/[\p{Script=Hiragana}\p{Script=Katakana}\p{Script=Han}]/gu) ?? []).length;
+    return hangul > japanese;
+  }
+  const latin = (text.match(/\p{Script=Latin}/gu) ?? []).length;
+  return hangul > latin;
+}
+
+/** 다른 언어로 온 답을 고른 언어로 옮긴다. 내용·위험도·ID는 바꾸지 않고 글만 번역한다. */
+async function translateAnswer(
+  parsed: SeniorAnswerResult,
+  language: HealthLanguage,
+  requestAnswer: (contents: GeminiContent[]) => Promise<SeniorAnswerResult>,
+) {
+  const target = language === "ja-JP" ? "Japanese" : "English";
+  const source = {
+    summary: parsed.summary ?? "",
+    answer: parsed.answer,
+    risk_level: parsed.riskLevel,
+    warning_message: parsed.warningMessage,
+    follow_up_questions: parsed.followUpQuestions ?? [],
+    conversation_title: parsed.conversationTitle ?? "",
+    video_search_query: parsed.videoSearchQuery ?? "",
+    profile_allergy_ids: parsed.profileAllergyIds,
+    profile_condition_ids: parsed.profileConditionIds,
+  };
+  const translated = await requestAnswer([
+    {
+      role: "user",
+      parts: [
+        {
+          text: [
+            `Translate every text value of this JSON into natural ${target} for an older reader.`,
+            "Keep the meaning, facts and warnings exactly the same. Do not add or remove information.",
+            "Keep risk_level, profile_allergy_ids and profile_condition_ids unchanged.",
+            "Return only the JSON object with the same keys.",
+            JSON.stringify(source),
+          ].join("\n"),
+        },
+      ],
+    },
+  ]);
+  // 번역이 위험도나 등록할 항목을 바꾸지 못하게 원래 값을 지킨다.
+  return {
+    ...translated,
+    riskLevel: parsed.riskLevel,
+    profileAllergyIds: parsed.profileAllergyIds,
+    profileConditionIds: parsed.profileConditionIds,
   };
 }
 
@@ -511,6 +585,16 @@ export async function generateSeniorFriendlyAnswer(
     conditionIds: profile.conditionIds ?? [],
   });
 
+  // 질문과 맞아떨어진 내부 요리 자료의 이름. 모델이 없는 요리를 있다고 지어내지 않게 근거로 준다.
+  const knownDishNames = [
+    ...new Set(
+      [
+        ...knowledge.dishNameHints.map((item) => item.name),
+        ...knowledge.recipes.map((item) => item.standard_name),
+        ...knowledge.globalDishes.map((item) => item.standard_name),
+      ].filter((name): name is string => typeof name === "string" && name.trim().length > 0),
+    ),
+  ];
   const images = media.images ?? [];
   const medicineImages = images.filter((image) => image.purpose === "medicine");
   const isDrugIdentificationRequest =
@@ -547,14 +631,27 @@ export async function generateSeniorFriendlyAnswer(
   ])];
 
   const prompt = [
+    answerLanguageInstruction(selectedLanguage),
     "당신은 시니어에게 식재료와 조리 정보를 쉬운 말로 설명하는 보조 AI입니다.",
     "음식·영양·건강·사투리·서비스 이용과 무관한 질문(예: 스포츠 선수, 연예인, 시사, 일반 상식)이면 관련 지식으로 답하지 말고, 시니어 식품·영양 정보를 돕는 AI임을 밝히고 음식이나 건강 관련 질문을 다시 안내하세요.",
     "음식 이름의 뜻, 유래, 재료, 맛, 조리법을 묻는 질문도 서비스 범위입니다. 푸아그라가 뭐야?, 라클렛이 뭐예요?, What is foie gras?처럼 음식·건강이라는 단어 없이 음식명만 물어도 먼저 그 음식을 쉽게 설명하세요. 내부 자료나 키워드 목록에 없다는 이유로 범위 밖이라고 거절하지 마세요.",
     "생소한 명칭은 현재 질문과 대화 맥락으로 의미를 판단하세요. 알고 있는 음식이면 직접 답하고, 의미를 확실히 알 수 없으면 이름이나 어떤 음식인지 한 가지를 확인하세요. 모르는 단어라는 이유만으로 자기소개나 서비스 범위 안내로 답변을 대신하지 마세요.",
+    // 실제 사례: "감귤녹두전"을 "실제로 즐겨 먹는 별미"라고 지어내고, 자세히 보기에서는 "창작 요리"라고 말을 바꿨다.
+    "아래 '내부 자료에 있는 요리 이름'과 같지 않고, 널리 알려진 요리인지 확실하지 않은 이름(예: 두 음식을 이어 붙인 이름)은 실제로 있는 요리·별미·전통 음식이라고 단정하지 마세요. '즐겨 먹는', '예부터', '별미' 같은 말로 있는 것처럼 꾸미지 마세요.",
+    "그런 이름이면 첫 문장에서 '널리 알려진 요리는 아니에요'라고 먼저 밝히고, 이름에 든 재료를 기준으로 만든다면 맛·궁합·주의할 점이 어떤지 설명하세요. summary와 answer는 이 사실을 똑같이 말해야 합니다.",
+    "반대로 근거 없이 '소화에 부담된다', '어울리지 않는다', '권하지 않는다'고 깎아내리지도 마세요. 재료마다 알려진 특징만으로 담담하게 설명하고, 등록된 알레르기·질병과 부딪힐 때만 피하라고 하세요.",
+    "있지도 않은 유래, 통계, 연구 결과, 기관·문헌 이름을 지어내지 마세요.",
+    "사용자가 '진짜 있는 거야?', '맞아?'처럼 사실을 되물으면 앞 답을 고집하지 말고 다시 판단해, 틀렸으면 틀렸다고 바로 정정하세요.",
+    "사용자가 출처나 근거를 물으면 솔직하게 답하세요. 실버렌즈의 답은 AI가 일반적인 식품·영양 지식과 서비스 참고 자료(실버렌즈 팀이 정리한 식품·요리·안전 규칙 자료, 국립국어원 우리말샘 방언 정보, 식품의약품안전처 의약품 낱알식별 정보)를 바탕으로 만든 것입니다.",
+    "출처를 말할 때는 직전 답의 주제와 관계있는 자료만 말하세요(음식·요리 질문이면 팀이 정리한 식품·요리 자료, 사투리면 우리말샘, 약이면 식약처 자료). 관계없는 자료를 '활용했다'고 말하지 마세요.",
+    "직전 답이 내부 자료에 없는 내용이었다면 'AI가 일반 지식으로 쓴 답이라 틀릴 수 있다'고 밝히고, 중요한 건강 판단은 의사·약사·영양사에게 확인하도록 안내하세요. 출처·링크·영상 주소를 지어내지 마세요.",
+    "요리 영상을 원하시면 답변 아래 '유튜브에서 영상 보기' 버튼을 누르시라고 안내하세요. 영상 주소나 채널 이름을 직접 만들어 적지 마세요.",
+    "video_search_query에는 사용자가 요리 방법·레시피·만드는 법을 묻거나 답변이 특정 요리를 만드는 법을 안내할 때만 유튜브 검색어를 답변과 같은 언어로 적으세요(한국어 예: 녹두전 만드는 법, 영어 예: kimchi pancake recipe, 일본어 예: チヂミ 作り方). 널리 알려지지 않은 요리면 가장 가까운 알려진 요리 이름을 쓰세요.",
+    "등록된 알레르기 식품이 들어가는 요리, 위험(danger)으로 답한 음식, '먹어도 돼?'처럼 먹어도 되는지만 묻는 질문, 약·건강 상태·사투리·서비스 이용 질문처럼 요리 영상이 필요 없으면 video_search_query는 빈 문자열로 두세요.",
     answerLanguageInstruction(selectedLanguage),
     "의학적 진단이나 치료 지시를 하지 말고, 위험 가능성이 있으면 의료진 또는 약사 확인을 권하세요.",
     "등록된 알레르기 식품을 추천하거나 레시피 재료로 넣지 마세요.",
-    "현재 질문에 직접 답하세요. 등록된 알레르기가 현재 음식의 실제 재료와 관련 없으면 그 알레르기를 언급하거나 다른 음식으로 대체하지 마세요. 복숭아 알레르기만 등록된 사용자가 새우 요리를 물으면 새우 알레르기를 추측하지 말고 새우 요리를 추천하세요.",
+    "현재 질문에 직접 답하세요. 등록된 알레르기가 현재 음식의 실제 재료와 관련 없으면 그 알레르기를 언급하거나 다른 음식으로 대체하지 마세요. 예를 들어 A 식품 알레르기만 등록된 사용자가 B 요리를 물으면 B 알레르기를 추측하지 말고 B 요리를 추천하세요(A, B는 설명을 위한 자리표시자이며 사용자 정보가 아닙니다).",
     "음식 추천은 사람들이 일상에서 실제로 먹는 구체적인 메뉴 2~3개를 먼저 제시하세요. 새우 요리라면 새우볶음밥, 새우계란찜, 새우채소볶음처럼 친숙한 메뉴와 간단한 조리 팁을 제시하되 등록 알레르기와 실제 재료 충돌이 있으면 해당 메뉴를 제외하세요.",
     "나이가 많다는 이유만으로 무조건 맑은 국, 두부, 닭고기로 대체하거나 소화가 약하다고 가정하지 마세요. 단순 요리 추천에는 의료진·약사 상담을 상투적인 마무리로 붙이지 마세요.",
     "이전 대화에서 언급한 알레르기 식품은 현재 새 질문에 포함되지 않았으면 현재 음식의 재료로 간주하지 마세요. 이전의 잘못된 추천이나 제한도 답습하지 마세요.",
@@ -569,6 +666,7 @@ export async function generateSeniorFriendlyAnswer(
     "밀 알레르기에는 밀가루가 필요한 자리만 쌀가루·감자전분 등 안전한 대체재로 바꾸고, 우유 알레르기에는 유제품이 필요한 자리만 알레르기 없는 비유제품으로 바꾸세요.",
     "고혈압·심부전·신장질환 등 나트륨 제한 근거가 등록되어 있지 않다면 소금을 임의로 금지하지 마세요. 간장도 밀·대두 알레르기 여부와 나트륨 제한을 각각 확인한 뒤 안내하세요.",
     "대체 식재료를 제안하기 전에 그 재료가 무엇을 대신하는지 한 번 확인하고, 맛내기·반죽·농도·유제품 역할에 맞는 현실적인 대체재만 제시하세요.",
+    "재료 바꾸기는 등록된 알레르기·질병이나 사용자의 요청 때문에 필요할 때만 권하세요. 그런 이유가 없으면 밀가루를 쌀가루로 바꾸라는 식의 대체를 덧붙이지 말고 원래 조리법대로 설명하세요.",
     "첫 문장에서 결론을 말하고, 꼭 필요한 내용만 보통 6~9개의 짧은 문장으로 설명하세요.",
     "문장 하나에는 핵심 하나만 담고, 한 문단은 1~2개의 짧은 문장으로 작성하세요.",
     "TTS로 자연스럽게 읽히도록 표와 긴 목록은 피하고 문장 사이를 짧은 문단으로 나누세요.",
@@ -593,7 +691,7 @@ export async function generateSeniorFriendlyAnswer(
       : []),
     "사용자 질문에 방언이 있으면 방언 참고 자료를 이용해 표준어 의미로 이해하세요.",
     "이전 대화가 있으면 현재 질문을 가장 최근 대화의 후속 질문으로 먼저 해석하세요.",
-    "예를 들어 직전 대화가 토마토주스와 복숭아였고 현재 질문이 '레시피 알려줘'라면, 그 주제의 안전한 레시피를 이어서 답하세요.",
+    "예를 들어 직전 대화가 어떤 음식 X에 관한 것이었고 현재 질문이 '레시피 알려줘'라면, X의 안전한 레시피를 이어서 답하세요.",
     "이전 질문·답변·현재 질문에 나오지 않은 장어 같은 무관한 식재료를 새 주제로 도입하지 마세요.",
     "아래 DATA는 질문에 실제로 언급된 식재료로 검색된 내부 참고 자료입니다.",
     "DATA의 건강 효능·권장량을 검증된 의학 사실처럼 단정하지 마세요.",
@@ -603,7 +701,7 @@ export async function generateSeniorFriendlyAnswer(
     "외국 음식을 설명할 때도 재료를 기준으로 등록된 알레르기와 질병에 맞는지 함께 확인하고, 우리 식재료로 바꿀 수 있으면 그 방법을 알려 주세요.",
     "적용할 안전 원칙은 사용자 질병·질문에 맞게 미리 골라 둔 것입니다. 해당 원칙과 어긋나는 조리법이나 식재료를 권하지 마세요.",
     "음성으로 남긴 상세 메모는 목록으로 고를 수 없는 개인 사정입니다. 목록으로 등록한 알레르기·질병보다 구체적이므로 함께 반영하세요.",
-    "예를 들어 목록에는 견과류만 등록됐지만 메모에 '견과류 중에 특히 호두가 안 맞는다'가 있으면 호두를 특히 강하게 피하도록 안내하세요.",
+    "예를 들어 목록에는 넓은 묶음(A류)만 등록됐지만 메모에 'A류 중에 특히 a가 안 맞는다'가 있으면 a를 특히 강하게 피하도록 안내하세요.",
     "메모 내용과 목록이 어긋나면 더 조심스러운 쪽을 따르고, 메모를 근거로 새 질병을 진단하지는 마세요.",
     "현재 사용자 글에서 사용자가 자신의 알레르기나 현재 앓거나 관리 중인 질병·건강 상태라고 직접 밝힌 항목만 기본설정 추가 후보로 골라 주세요.",
     "다른 사람의 정보, 단순 질문, 가정, 음식·약·사진에 적힌 정보, 이전 대화와 답변에서만 나온 정보는 사용자 본인의 건강정보로 추가하지 마세요.",
@@ -619,6 +717,8 @@ export async function generateSeniorFriendlyAnswer(
     "위험 또는 비권장 상황이면 warning_message에 한 문장의 구체적인 경고를 작성하고, safe이면 빈 문자열로 작성하세요.",
     `사용자 성별: ${localizedGenderLabel(profile.gender, selectedLanguage)}`,
     `사용자 나이대: ${profile.ageBand ?? "미입력"}대`,
+    "사용자의 알레르기·질병·건강 상태는 바로 아래 '알레르기:', '질병·건강 상태:', '상세 메모' 줄에 적힌 것뿐입니다. 위 지시문의 예시에 나온 식품이나 질병은 사용자 정보가 아닙니다.",
+    "'미입력'이면 등록된 것이 없다는 뜻입니다. 그때는 '등록된 알레르기가 있다', '알레르기가 있으시니'처럼 말하지 말고, 흔한 알레르기 식품이라도 위험(danger)으로 판정하지 마세요. 필요하면 '알레르기가 있으시면 피하세요'처럼 조건으로만 말하세요.",
     `알레르기: ${profileAllergies.join(", ") || "미입력"}`,
     `질병·건강 상태: ${profileConditions.join(", ") || "미입력"}`,
     `코드가 직접 확인한 알레르기 충돌: ${allergyConflictLabels.join(", ") || "없음"}`,
@@ -629,14 +729,17 @@ export async function generateSeniorFriendlyAnswer(
     `이전 대화: ${JSON.stringify(conversationHistory)}`,
     `질문에서 찾은 방언 참고: ${JSON.stringify(knowledge.dialectHints)}`,
     `질문에서 찾은 외래어·별칭 참고: ${JSON.stringify(knowledge.foodAliasHints)}`,
+    `내부 자료에 있는 요리 이름(이 목록에 없으면 널리 알려진 요리인지 확실하지 않음): ${knownDishNames.join(", ") || "없음"}`,
     `질문에서 찾은 한식 메뉴명 참고: ${JSON.stringify(knowledge.dishNameHints)}`,
     `관련 요리·재료 DATA: ${JSON.stringify(knowledge.recipes)}`,
     `관련 외국 음식 DATA: ${JSON.stringify(knowledge.globalDishes)}`,
     `관련 시니어 식품 DATA: ${JSON.stringify(knowledge.foods)}`,
     `적용할 안전 원칙: ${JSON.stringify(knowledge.safetyRules)}`,
     `현재 사용자 글 질문: ${message || "없음. 첨부된 음성이나 사진을 중심으로 답변할 것"}`,
+    // 지시문이 거의 한국어라 영어·일본어 설정에서도 한국어로 답하는 일이 있었다. 끝에서 한 번 더 못 박는다.
+    `${answerLanguageInstruction(selectedLanguage)} summary, answer, warning_message, follow_up_questions, conversation_title 모두 이 언어로 쓰세요. 아래 JSON 양식의 한국어 설명은 형식 안내일 뿐입니다.`,
     "반드시 다음 JSON 객체 하나만 반환하세요.",
-    '{"summary":"핵심 결론과 행동을 쉬운 말로 2~3문장","answer":"자세히 보기에서 읽을 구체적인 설명","risk_level":"danger|caution|safe","warning_message":"위험·비권장일 때만 한 문장, 아니면 빈 문자열","profile_allergy_ids":["사용자가 직접 밝힌 목록 ID"],"profile_condition_ids":["사용자가 직접 밝힌 목록 ID"],"follow_up_questions":["답변에 이어지는 짧은 질문 4개"],"conversation_title":"대화 주제 요약 제목"}',
+    '{"summary":"핵심 결론과 행동을 쉬운 말로 2~3문장","answer":"자세히 보기에서 읽을 구체적인 설명","risk_level":"danger|caution|safe","warning_message":"위험·비권장일 때만 한 문장, 아니면 빈 문자열","profile_allergy_ids":["사용자가 직접 밝힌 목록 ID"],"profile_condition_ids":["사용자가 직접 밝힌 목록 ID"],"follow_up_questions":["답변에 이어지는 짧은 질문 4개"],"conversation_title":"대화 주제 요약 제목","video_search_query":"요리 방법 질문일 때만 예: 녹두전 만드는 법, 아니면 빈 문자열"}',
   ].join("\n");
 
   const requestContent: GeminiContent = {
@@ -672,31 +775,59 @@ export async function generateSeniorFriendlyAnswer(
     return cachedAnswer;
   }
 
-  const { rawBody, modelUsed } = await callGeminiGenerateContent({
-    apiKey,
-    models: textModelChain,
-    language: selectedLanguage,
-    body: {
-      contents: [requestContent],
-      generationConfig: {
-        temperature: 0.15,
-        maxOutputTokens: 4096,
-        responseMimeType: "application/json",
+  const requestAnswer = async (contents: GeminiContent[]) => {
+    const { rawBody, modelUsed } = await callGeminiGenerateContent({
+      apiKey,
+      models: textModelChain,
+      language: selectedLanguage,
+      body: {
+        contents,
+        generationConfig: {
+          temperature: 0.15,
+          maxOutputTokens: 4096,
+          responseMimeType: "application/json",
+        },
       },
-    },
-  });
-  if (modelUsed !== textModelChain[0]) {
-    console.info(`[SilverLens] 예비 모델로 답변했습니다: ${modelUsed}`);
+    });
+    if (modelUsed !== textModelChain[0]) {
+      console.info(`[SilverLens] 예비 모델로 답변했습니다: ${modelUsed}`);
+    }
+    const payload = JSON.parse(rawBody) as GeminiResponse;
+    const generated = payload.candidates?.[0]?.content?.parts
+      ?.map((part) => part.text || "")
+      .join("")
+      .trim();
+    if (!generated) throw new Error("Gemini가 빈 답변을 반환했습니다.");
+    return parseStructuredAnswer(generated);
+  };
+
+  let parsed = await requestAnswer([requestContent]);
+  /*
+   * 참고 자료가 한국어라서, 영어·일본어를 골라도 한국어로 답하는 일이 있었다.
+   * 특히 한도에 걸려 작은 예비 모델이 답하면 다시 써 달라고 해도 한국어로 돌아왔다.
+   * 그래서 다시 생성하지 않고, 받은 답을 고른 언어로 그대로 번역하게 한다(작은 모델도 잘하는 일).
+   */
+  if (isWrongAnswerLanguage(`${parsed.summary ?? ""} ${parsed.answer}`, selectedLanguage)) {
+    console.info(`[SilverLens] ${selectedLanguage} 대신 다른 언어로 답해 번역을 요청합니다.`);
+    try {
+      parsed = await translateAnswer(parsed, selectedLanguage, requestAnswer);
+    } catch (error) {
+      console.warn("[SilverLens] 답변 번역에 실패해 원래 답을 씁니다.", error instanceof Error ? error.message : error);
+    }
   }
-  const payload = JSON.parse(rawBody) as GeminiResponse;
-
-  const generated = payload.candidates?.[0]?.content?.parts
-    ?.map((part) => part.text || "")
-    .join("")
-    .trim();
-  if (!generated) throw new Error("Gemini가 빈 답변을 반환했습니다.");
-
-  const parsed = parseStructuredAnswer(generated);
+  // 모델이 내 정보에 넣자고 고른 항목은 사용자 글에서 직접 밝힌 것만 남긴다.
+  // 예: 감귤 알레르기가 있는 분의 "감귤초콜릿 먹어도 돼?"에서 초콜릿을 알레르기로 넣지 않는다.
+  parsed.profileAllergyIds = filterStatedHealthIds(message, parsed.profileAllergyIds, "allergy");
+  parsed.profileConditionIds = filterStatedHealthIds(message, parsed.profileConditionIds, "condition");
+  // 등록된 알레르기 식품이 이름에 든 요리, 위험으로 판정한 음식은 영상으로 이어 주지 않는다.
+  if (
+    parsed.videoSearchQuery &&
+    (parsed.riskLevel === "danger" ||
+      allergyConflictLabels.length > 0 ||
+      findAllergyTermConflicts(parsed.videoSearchQuery, profile.allergyIds ?? []).length > 0)
+  ) {
+    parsed.videoSearchQuery = undefined;
+  }
   const result = applySafetyFloor(
     parsed,
     selectedLanguage,

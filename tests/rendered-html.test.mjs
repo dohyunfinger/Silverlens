@@ -4,7 +4,7 @@ import test from "node:test";
 const developmentPreviewMeta =
   /<meta(?=[^>]*\bname=["']codex-preview["'])(?=[^>]*\bcontent=["']development["'])[^>]*>/i;
 
-test("starts with the introduction, then renders the senior service on return visits", async () => {
+test("starts with the introduction, then opens My info on return visits", async () => {
   const workerUrl = new URL("../dist/server/index.js", import.meta.url);
   workerUrl.searchParams.set("test", `${process.pid}-${Date.now()}`);
   const { default: worker } = await import(workerUrl.href);
@@ -56,18 +56,16 @@ test("starts with the introduction, then renders the senior service on return vi
   const returnHtml = await returnResponse.text();
 
   assert.equal(returnResponse.status, 200);
-  assert.match(returnHtml, /기본설정/);
-  assert.match(returnHtml, /내 정보 입력하기/);
-  assert.match(returnHtml, /class="quick-ask-strip"/);
+  // 소개를 본 뒤 다시 오면, 정보 입력을 마쳤는지 모르는 서버 렌더링은 "내 정보" 첫 단계부터 연다.
+  // (마친 사람은 저장소를 읽은 뒤 대화 화면으로 넘어간다. tests/first-visit-intro.test.mjs 참고)
+  assert.match(returnHtml, /<h1>내 정보<\/h1>/);
+  assert.match(returnHtml, /class="setup-screen profile-wizard" data-step="language"/);
+  assert.doesNotMatch(returnHtml, /사투리를 이해하는 AI/);
   assert.doesNotMatch(returnHtml, /class="profile-lang/);
   assert.doesNotMatch(returnHtml, /class="chat-quick-profile-head"/);
   assert.doesNotMatch(returnHtml, /class="chat-quick-profile"/);
   assert.doesNotMatch(returnHtml, /class="chat-quick-speak/);
   assert.doesNotMatch(returnHtml, /class="chat-quick-open-profile"/);
-  assert.ok(
-    returnHtml.indexOf('class="quick-ask-strip"') <
-      returnHtml.indexOf("<h1"),
-  );
   assert.doesNotMatch(returnHtml, /class="chat-quick-row"/);
   assert.doesNotMatch(returnHtml, /href=["']\/caregiver/);
   assert.doesNotMatch(returnHtml, /돌봄이 화면/);

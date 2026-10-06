@@ -34,7 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title,
       description,
       type: "website",
-      images: [{ url: imageUrl, width: 1536, height: 1024, alt: "실버렌즈 시니어 식생활 AI" }],
+      images: [{ url: imageUrl, width: 1200, height: 630, alt: "실버렌즈 시니어 식생활 AI" }],
     },
     twitter: {
       card: "summary_large_image",

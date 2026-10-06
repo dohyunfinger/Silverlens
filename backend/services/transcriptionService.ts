@@ -3,6 +3,7 @@ import { callGeminiGenerateContent } from "./geminiClient";
 import { extractAgeFromTranscript } from "./koreanAge";
 import { getDialectDictionaryForPrompt } from "../data/loadData";
 import {
+  filterStatedHealthIds,
   getCompactHealthCatalogForPrompt,
   isHealthTermId,
   toHealthLanguage,
@@ -291,5 +292,17 @@ export async function transcribeAudio(
     .join("")
     .trim();
   if (!generated) throw new Error("음성에서 말을 찾지 못했습니다.");
-  return parseStructuredResult(generated, selectedLanguage);
+  const result = parseStructuredResult(generated, selectedLanguage);
+  // 모델이 고른 알레르기·질병은 받아쓴 문장에서 확인되는 것만 내 정보에 넣는다.
+  // 알레르기·질병 입력 화면에서는 "새우, 게"처럼 이름만 말해도 뜻이 분명하므로 이름만 확인한다.
+  const requireStatement = purpose === "chat" || purpose === "setup";
+  return {
+    ...result,
+    allergies: filterStatedHealthIds(result.transcript, result.allergies, "allergy", {
+      requireStatement: requireStatement || purpose === "condition",
+    }),
+    conditions: filterStatedHealthIds(result.transcript, result.conditions, "condition", {
+      requireStatement: requireStatement || purpose === "allergy",
+    }),
+  };
 }

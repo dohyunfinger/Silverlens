@@ -50,6 +50,8 @@ type ChatTurn = {
   followUpQuestions?: string[];
   summary?: string;
   createdAt?: number;
+  /** 요리 방법 답변일 때만 있다. 유튜브 검색 결과로 이어 준다. */
+  videoSearchQuery?: string;
   pages: string[];
   attachmentLabels: string[];
   riskLevel: "danger" | "caution" | "safe";
@@ -632,7 +634,7 @@ const ageChoices = [40, 50, 60, 70, 80, 90];
  */
 type QuickAsk = {
   id: string;
-  icon: string;
+  icon: LineIconName;
   action: "photo" | "ask";
   label: Record<Language, string>;
   question?: Record<Language, string>;
@@ -641,7 +643,7 @@ type QuickAsk = {
 const quickAsks: QuickAsk[] = [
   {
     id: "photo",
-    icon: "📷",
+    icon: "camera",
     action: "photo",
     label: {
       "ko-KR": "사진으로 물어보기",
@@ -651,7 +653,7 @@ const quickAsks: QuickAsk[] = [
   },
   {
     id: "medicine",
-    icon: "💊",
+    icon: "pill",
     action: "ask",
     label: {
       "ko-KR": "약과 안 맞는 음식",
@@ -666,7 +668,7 @@ const quickAsks: QuickAsk[] = [
   },
   {
     id: "soft-food",
-    icon: "🥣",
+    icon: "bowl",
     action: "ask",
     label: {
       "ko-KR": "부드럽게 먹는 방법",
@@ -681,7 +683,7 @@ const quickAsks: QuickAsk[] = [
   },
   {
     id: "today-meal",
-    icon: "🍚",
+    icon: "rice",
     action: "ask",
     label: {
       "ko-KR": "오늘 뭐 먹을까요",
@@ -782,6 +784,10 @@ function sanitizeChatTurns(value: unknown): ChatTurn[] {
       summary: typeof turn.summary === "string" ? turn.summary : undefined,
       createdAt: typeof turn.createdAt === "number" && Number.isFinite(turn.createdAt) && turn.createdAt > 0 && turn.createdAt < 8640000000000000 ? turn.createdAt : undefined,
       followUpQuestions: stringArray(turn.followUpQuestions).slice(0, 4),
+      videoSearchQuery:
+        typeof turn.videoSearchQuery === "string" && turn.videoSearchQuery.trim()
+          ? turn.videoSearchQuery.trim().slice(0, 40)
+          : undefined,
       pages: stringArray(turn.pages),
       attachmentLabels: stringArray(turn.attachmentLabels),
       riskLevel: (turn.riskLevel === "danger" || turn.riskLevel === "caution"
@@ -911,25 +917,25 @@ function deviceLikelyHasCamera() {
 
 const photoPurposeOptions: Array<{
   id: PhotoPurpose;
-  icon: string;
+  icon: LineIconName;
   labelKey: "photoPurposeLabel" | "photoPurposeFood" | "photoPurposeMedicine";
   tipKey: "photoPurposeLabelTip" | "photoPurposeFoodTip" | "photoPurposeMedicineTip";
 }> = [
   {
     id: "label",
-    icon: "🏷️",
+    icon: "tag",
     labelKey: "photoPurposeLabel",
     tipKey: "photoPurposeLabelTip",
   },
   {
     id: "food",
-    icon: "🍚",
+    icon: "rice",
     labelKey: "photoPurposeFood",
     tipKey: "photoPurposeFoodTip",
   },
   {
     id: "medicine",
-    icon: "💊",
+    icon: "pill",
     labelKey: "photoPurposeMedicine",
     tipKey: "photoPurposeMedicineTip",
   },
@@ -963,7 +969,7 @@ const uiCopy = {
     autoVoiceHelpOff: "누르면 자동 재생이 켜집니다.",
     answerSpeed: "답변 속도",
     answerSpeedHelp: "손이나 마우스로 끌어 음성 답변 속도를 조절하세요.",
-    answerSpeedPreview: "🔈 이 속도로 들어보기",
+    answerSpeedPreview: "이 속도로 들어보기",
     answerSpeedSample: "이 속도는 어떠세요? 아래에서 조절해 주세요.",
     answerSpeedLimited: "이 기기에서는 문장 사이를 쉬어 읽는 방식으로 속도를 맞춰요.",
     speedSlow: "느리게",
@@ -994,7 +1000,7 @@ const uiCopy = {
     pickerHint: "묶음 제목을 누르면 항목이 펼쳐집니다.",
     clearSelection: "선택 모두 지우기",
     selectedSummary: "{count}개 선택",
-    voiceInput: "🎙 말해서 입력",
+    voiceInput: "말해서 입력",
     recordingDone: "■ 녹음 완료",
     allergyPlaceholder: "예: 호두, 새우",
     conditionPlaceholder: "예: 당뇨, 고혈압",
@@ -1025,7 +1031,7 @@ const uiCopy = {
     welcomeTitle: "말씀만 하시면 됩니다",
     welcomeBody:
       "드시려는 음식 이름을 말하거나 사진을 찍어 보여주세요. 드셔도 괜찮은지 큰 글자로 알려드립니다.",
-    welcomeReplay: "🔊 안내 다시 듣기",
+    welcomeReplay: "안내 다시 듣기",
     openProfile: "내 정보 입력하기",
     openProfileHelp: "알레르기·건강 상태를 알려주면 더 정확해요",
     profileDone: "입력 완료, 대화로 돌아가기",
@@ -1068,9 +1074,10 @@ const uiCopy = {
     lastPageNotice: "이 답변은 여기까지입니다.",
     cardSelector: "답변 카드 선택",
     stopReplay: "■ 답변 재생 멈추기",
-    preparingReplay: "🔊 음성 준비 중 · 준비되면 바로 재생",
-    readyReplay: "🔊 답변 다시 듣기 · 즉시 재생",
-    replayAnswer: "🔊 현재 답변 다시 듣기",
+    preparingReplay: "음성 준비 중 · 준비되면 바로 재생",
+    readyReplay: "답변 다시 듣기 · 즉시 재생",
+    replayAnswer: "현재 답변 다시 듣기",
+    watchVideo: "유튜브에서 ‘{query}’ 영상 보기",
     questionArea: "질문 작성",
     textQuestion: "글자로 질문하기",
     questionPlaceholder: "예: 닭고기를 많이 먹어도 괜찮나요?",
@@ -1157,7 +1164,7 @@ const uiCopy = {
     autoVoiceHelpOff: "Tap to turn automatic playback on.",
     answerSpeed: "Answer speed",
     answerSpeedHelp: "Drag with your hand or mouse to adjust voice answer speed.",
-    answerSpeedPreview: "🔈 Hear this speed",
+    answerSpeedPreview: "Hear this speed",
     answerSpeedSample: "I will read answers at this speed.",
     answerSpeedLimited: "On this device, speed is adjusted by pausing between sentences.",
     speedSlow: "Slower",
@@ -1188,7 +1195,7 @@ const uiCopy = {
     pickerHint: "Tap a group title to open its items.",
     clearSelection: "Clear all selections",
     selectedSummary: "{count} selected",
-    voiceInput: "🎙 Speak to enter",
+    voiceInput: "Speak to enter",
     recordingDone: "■ Finish recording",
     allergyPlaceholder: "e.g. walnut, shrimp",
     conditionPlaceholder: "e.g. diabetes, high blood pressure",
@@ -1219,7 +1226,7 @@ const uiCopy = {
     welcomeTitle: "Just speak to me",
     welcomeBody:
       "Say the name of a food or show me a photo. I will tell you in large text whether it is fine to eat.",
-    welcomeReplay: "🔊 Play the guide again",
+    welcomeReplay: "Play the guide again",
     openProfile: "My information",
     openProfileHelp: "Allergies and conditions make answers more precise",
     profileDone: "Done, back to the conversation",
@@ -1262,9 +1269,10 @@ const uiCopy = {
     lastPageNotice: "That is the end of this answer.",
     cardSelector: "Choose answer card",
     stopReplay: "■ Stop answer playback",
-    preparingReplay: "🔊 Voice preparing · plays when ready",
-    readyReplay: "🔊 Replay answer · play now",
-    replayAnswer: "🔊 Replay current answer",
+    preparingReplay: "Voice preparing · plays when ready",
+    readyReplay: "Replay answer · play now",
+    replayAnswer: "Replay current answer",
+    watchVideo: "Watch ‘{query}’ videos on YouTube",
     questionArea: "Write a question",
     textQuestion: "Ask with text",
     questionPlaceholder: "Example: Is it okay to eat a lot of chicken?",
@@ -1351,7 +1359,7 @@ const uiCopy = {
     autoVoiceHelpOff: "押すと自動再生をオンにします。",
     answerSpeed: "回答速度",
     answerSpeedHelp: "指やマウスで動かして音声回答の速さを調整してください。",
-    answerSpeedPreview: "🔈 この速さで聞く",
+    answerSpeedPreview: "この速さで聞く",
     answerSpeedSample: "この速さで回答をお読みします。",
     answerSpeedLimited: "この端末では、文の間に少し間をあけて速さを調整します。",
     speedSlow: "ゆっくり",
@@ -1382,7 +1390,7 @@ const uiCopy = {
     pickerHint: "グループの見出しを押すと項目が開きます。",
     clearSelection: "選択をすべて消す",
     selectedSummary: "{count}件 選択",
-    voiceInput: "🎙 話して入力",
+    voiceInput: "話して入力",
     recordingDone: "■ 録音完了",
     allergyPlaceholder: "例：くるみ、えび",
     conditionPlaceholder: "例：糖尿病、高血圧",
@@ -1413,7 +1421,7 @@ const uiCopy = {
     welcomeTitle: "話すだけで大丈夫です",
     welcomeBody:
       "食べたい食品の名前を言うか、写真を撮って見せてください。食べても大丈夫か大きな文字でお知らせします。",
-    welcomeReplay: "🔊 案内をもう一度聞く",
+    welcomeReplay: "案内をもう一度聞く",
     openProfile: "私の情報を入力",
     openProfileHelp: "アレルギーや健康状態を教えるとより正確です",
     profileDone: "入力完了、会話に戻る",
@@ -1456,9 +1464,10 @@ const uiCopy = {
     lastPageNotice: "この回答はここまでです。",
     cardSelector: "回答カードを選択",
     stopReplay: "■ 回答再生を止める",
-    preparingReplay: "🔊 音声準備中 · 準備後すぐ再生",
-    readyReplay: "🔊 回答をもう一度聞く · すぐ再生",
-    replayAnswer: "🔊 現在の回答をもう一度聞く",
+    preparingReplay: "音声準備中 · 準備後すぐ再生",
+    readyReplay: "回答をもう一度聞く · すぐ再生",
+    replayAnswer: "現在の回答をもう一度聞く",
+    watchVideo: "YouTubeで「{query}」の動画を見る",
     questionArea: "質問作成",
     textQuestion: "文字で質問する",
     questionPlaceholder: "例：鶏肉をたくさん食べても大丈夫ですか？",
@@ -1539,7 +1548,7 @@ type AboutSource = {
 /**
  * 소개 페이지의 "이렇게 쓰세요" 단계.
  *
- * public/guide/step-1 ~ step-4 에 실제 화면 사진을 넣어 두면 그 사진을 쓴다.
+ * public/guide/step-1 ~ step-5 에 실제 화면 사진을 넣어 두면 그 사진을 쓴다.
  * 사진이 없으면 아래 mock* 값으로 CSS 목업을 그려서, 사진 없이도 설명이 끊기지 않는다.
  */
 type AboutGuideStep = {
@@ -1792,24 +1801,23 @@ const aboutCopy: Record<Language, AboutCopy> = {
     guideTitle: "처음 오셨어도 괜찮습니다,",
     guideTitleAccent: "다섯 단계만 보시면 됩니다",
     guideDescription:
-      "아래 다섯 단계에서 기본정보 입력, 질문, 답변 확인과 내 데이터 백업 방법을 안내합니다.",
+      "아래 다섯 단계에서 내 정보 입력, 질문, 답변 확인과 지난 대화 보기를 안내합니다.",
     guideTipsLabel: "이렇게 하시면 편합니다",
     guideSteps: [
       {
         step: "1단계",
-        title: "기본설정에서 언어·성별·나이를 고릅니다",
-        text: "처음 화면의 큰 '내 정보 입력하기' 버튼이나 왼쪽 '기본설정' 메뉴를 누르면 나옵니다. 넣지 않아도 질문할 수 있고, 입력한 값은 필요한 맞춤 안내에만 참고합니다.",
+        title: "내 정보에서 언어·성별·나이를 고릅니다",
+        text: "처음 들어오시면 '내 정보' 화면이 한 단계씩 나옵니다. 답하고 싶지 않은 질문은 '이 질문 건너뛰기'로 넘기셔도 되고, 나중에 아래 '내 정보' 메뉴에서 언제든 바꿀 수 있습니다.",
         tips: [
-          "기본설정에서 '내 정보 말하기'를 누르고 말씀하시면 성별과 나이가 한 번에 채워집니다.",
-          "기본설정을 마친 뒤에도 왼쪽 메뉴에서 언제든 다시 바꿀 수 있습니다.",
+          "한 화면에 질문이 하나씩 나옵니다. 고른 뒤 '다음'을 누르세요.",
           "잘못 눌렀으면 같은 버튼을 한 번 더 눌러 취소합니다.",
           "언어를 바꾸면 등록해 둔 건강 정보 표기도 함께 바뀝니다.",
+          "자동 음성 안내를 켜 두면 화면 안내를 소리로 읽어 드립니다.",
         ],
         mockTitle: "언어 · 성별 · 나이",
-        // 국기 이모지는 Windows 에서 "KR" 같은 글자로 보여 목업에서는 쓰지 않는다.
         mockItems: ["한국어", "여자", "70대"],
-        mockNote: "첫 화면에서 말하거나 눌러도 됩니다",
-        mockCaption: "언어, 성별, 나이를 고르면 더 정확한 안내를 받으실 수 있습니다.",
+        mockNote: "고르기 싫으면 건너뛰셔도 됩니다",
+        mockCaption: "언어 · 성별 · 나이를 고르면 더 알맞게 안내해 드려요.",
         mockHighlight: 1,
       },
       {
@@ -1817,14 +1825,15 @@ const aboutCopy: Record<Language, AboutCopy> = {
         title: "알레르기와 질병·건강 상태를 등록합니다",
         text: "여기까지 넣어 두시면 답변이 달라집니다. 등록한 알레르기 식품은 추천에서 빠지고, 질병과 부딪히는 음식은 안전 규칙이 정한 위험도까지 코드가 끌어올려 알려 드립니다.",
         tips: [
-          "묶음 제목을 누르면 항목이 펼쳐집니다. 고를 것이 없으면 '해당 없음 · 다음'을 누르세요.",
-          "목록에 없으면 '직접 입력'으로 적으실 수 있고, 적어 주신 병명은 정식 상병 표기로 맞춰 저장합니다.",
-          "'말해서 입력'을 누르고 말씀하시면 그대로 메모로 남아 답변에 함께 반영됩니다.",
+          "'직접 입력'을 누르면 묶음 목록이 펼쳐집니다. 묶음 제목을 누르고 항목을 고르세요.",
+          "고를 것이 없으면 '해당 없음 · 다음'을 누르세요.",
+          "목록에 없으면 입력칸에 직접 적으실 수 있습니다.",
+          "'말해서 입력'을 누르고 말씀하시면 알아서 골라 드리고, 말씀하신 내용은 메모로 남아 답변에 함께 반영됩니다.",
         ],
         mockTitle: "알레르기 · 건강 상태",
-        mockItems: ["우유", "견과류", "🎙 말해서 입력"],
+        mockItems: ["우유", "호두", "말해서 입력"],
         mockNote: "목록에서 골라도, 말로 해도 됩니다",
-        mockCaption: "알레르기와 건강 상태를 넣어 두시면 더 안전하게 안내합니다.",
+        mockCaption: "목록에서 고르거나, 말로 하셔도 돼요.",
         mockHighlight: 2,
       },
       {
@@ -1832,47 +1841,47 @@ const aboutCopy: Record<Language, AboutCopy> = {
         title: "말하거나, 찍거나, 적어서 물어봅니다",
         text: "세 가지 중 편한 것을 쓰시면 됩니다. 사투리로 말씀하셔도 알아듣습니다. 음성과 사진을 함께 보내면 하나의 질문으로 이해합니다.",
         tips: [
-          "음성은 큰 마이크 버튼을 누르고 말한 뒤 한 번 더 누르면 첨부됩니다.",
-          "사진은 성분표·음식·약 봉투 또는 알약 중 무엇을 찍는지 먼저 고르면 찍는 방법을 알려 드립니다.",
-          "휴대폰에서는 지금 찍거나 저장된 사진에서 고를 수 있고, 한 상을 나눠 찍어 네 장까지 함께 보낼 수 있습니다.",
-          "사진의 밝기와 흔들림은 미리 봐 드리고, 무엇이 찍혔는지는 답변에서 알려 드립니다.",
+          "큰 마이크 버튼을 누르고 말한 뒤 한 번 더 누르면 글자로 바뀝니다. 확인하고 파란 '보내기'를 누르세요.",
+          "사진은 성분표·음식·약 중 무엇을 찍는지 먼저 고르면 찍는 방법을 알려 드립니다.",
+          "한 상을 나눠 찍어 네 장까지 함께 보낼 수 있습니다.",
+          "'이런 것도 물어보실 수 있어요' 버튼을 누르면 바로 물어볼 수 있습니다.",
         ],
         mockTitle: "물어보는 방법",
-        mockItems: ["🎙 음성으로 말하기", "📷 사진 올리기", "⌨ 글로 쓰기"],
+        mockItems: ["음성 녹음", "사진 올리기", "글로 쓰기"],
         mockNote: "자주 묻는 질문 버튼을 눌러도 됩니다",
-        mockCaption: "말하거나, 사진을 올리거나, 직접 적으시면 됩니다.",
-        mockHighlight: 1,
+        mockCaption: "큰 마이크 버튼을 누르고 말씀하세요. 사진이나 글로도 물어볼 수 있어요.",
+        mockHighlight: 0,
       },
       {
         step: "4단계",
-        title: "답변을 한 장씩 넘겨 봅니다",
-        text: "답변이 길면 여러 장으로 나눠 드립니다. 카드 아래 '다음 장에 내용이 이어집니다' 버튼에 몇 장 중 몇 장인지 함께 적혀 있고, 그 버튼을 누르면 뒷장이 나옵니다.",
+        title: "답변은 핵심부터 크게 보여 드립니다",
+        text: "답변 첫머리에 결론과 하실 일을 큰 글씨로 먼저 보여 드립니다. 더 자세한 설명이 필요하시면 '자세히 보기'를 누르세요.",
         tips: [
-          "손가락으로 좌우로 밀어서 넘기실 수도 있습니다.",
-          "마지막 장에는 '이 답변은 여기까지입니다'라고 적혀 있습니다.",
-          "'답변 다시 듣기'를 누르면 소리로 읽어 드립니다.",
+          "'현재 답변 다시 듣기'를 누르면 소리로 읽어 드립니다.",
+          "조심해야 할 음식이면 답변 맨 위에 주의 안내가 함께 나옵니다.",
+          "답변 아래 이어지는 질문 버튼을 누르면 바로 이어서 물어볼 수 있습니다.",
         ],
-        mockTitle: "대화 1 · 답변 1/3",
+        mockTitle: "실버렌즈 AI",
         mockItems: ["무를 푹 끓이면 단맛이 살아나요. 설탕은 넣지 않으셔도 됩니다."],
-        mockNote: "다음 장에 내용이 이어집니다 →",
-        mockCaption: "큰 글씨 카드로 보여주고, 길면 다음 카드로 이어집니다.",
+        mockNote: "자세히 보기",
+        mockCaption: "핵심을 큰 글씨로 먼저 보여 드려요. 더 보시려면 '자세히 보기'를 누르세요.",
         mockHighlight: -1,
       },
       {
         step: "5단계",
-        title: "데이터를 파일로 안전하게 보관합니다",
-        text: "왼쪽 '데이터' 메뉴에서 저장 파일 내보내기를 누르면 건강정보와 대화를 백업할 수 있습니다. 다른 기기나 새 브라우저에서는 저장 파일 불러오기로 복원합니다.",
+        title: "지난 대화는 '이전 대화'에서 다시 봅니다",
+        text: "질문과 답변은 이 기기에 저장됩니다. 아래 '이전 대화' 메뉴를 누르면 지난 대화를 주제별로 모아 보실 수 있습니다.",
         tips: [
-          "저장 파일은 본인만 확인할 수 있는 안전한 장소에 보관해 주세요.",
-          "복원할 때는 '저장 파일 불러오기'를 누르고 내보낸 JSON 파일을 선택합니다.",
-          "공용 컴퓨터에서는 사용 후 데이터 삭제를 눌러 개인정보를 지워 주세요.",
-          "마지막 저장 시각도 같은 화면에서 확인할 수 있습니다.",
+          "음식 · 약 · 건강 버튼으로 주제별로 골라 볼 수 있습니다.",
+          "검색 칸에 음식 이름을 적으면 그 대화를 찾아 드립니다.",
+          "대화를 누르면 그 자리에서 이어서 물어볼 수 있습니다.",
+          "여럿이 쓰는 기기라면 사용 후 소개 화면 맨 아래 '저장한 내용 지우기'를 눌러 주세요.",
         ],
-        mockTitle: "내 데이터 관리",
-        mockItems: ["저장 파일 내보내기", "저장 파일 불러오기", "내 데이터 삭제"],
-        mockNote: "내 정보는 이 기기에 저장됩니다",
-        mockCaption: "데이터 화면에서 저장 내용을 백업하거나 복원할 수 있습니다.",
-        mockHighlight: 1,
+        mockTitle: "이전 대화",
+        mockItems: ["음식 · 약 · 건강", "대화 열기", "대화 검색"],
+        mockNote: "이 기기에만 저장됩니다",
+        mockCaption: "지난 대화는 '이전 대화'에서 언제든 다시 보실 수 있어요.",
+        mockHighlight: -1,
       },
     ],
     guideCta: "바로 시작해 보기",
@@ -2046,86 +2055,87 @@ const aboutCopy: Record<Language, AboutCopy> = {
     guideTitle: "First time here is fine,",
     guideTitleAccent: "five steps are all it takes",
     guideDescription:
-      "These five steps cover personal settings, asking questions, reading answers, and backing up your saved data.",
+      "These five steps cover entering your details, asking, reading answers and finding past chats.",
     guideTipsLabel: "Handy to know",
     guideSteps: [
       {
         step: "Step 1",
-        title: "Choose language, gender, and age in Basic settings",
-        text: "Use the large Enter my details button on the first screen or Basic settings in the left menu. You can still ask without them; entered values are used only where personalised guidance needs them.",
+        title: "Choose language, gender and age in My info",
+        text: "On your first visit, My info opens one question at a time. You can skip any question you would rather not answer, and change everything later from My info in the bottom menu.",
         tips: [
-          "Press Say my details in Basic settings and speak to fill gender and age at once.",
-          "You can return to Basic settings from the left menu at any time.",
-          "Pressed the wrong one? Press the same button again to clear it.",
-          "Changing the language also changes how saved health details are shown.",
+          "Each screen asks one thing. Choose, then press Next.",
+          "Pressed the wrong one? Press the same button again to cancel.",
+          "Changing the language also changes how your saved health details are shown.",
+          "Turn on voice guidance to hear the screen read aloud.",
         ],
         mockTitle: "Language · Gender · Age",
         mockItems: ["English", "Female", "70s"],
-        mockNote: "Speak it or tap it on the first screen",
-        mockCaption: "Choosing language, gender, and age makes the guidance more precise.",
+        mockNote: "You can skip any question",
+        mockCaption: "Choosing language, gender and age makes the guidance fit you better.",
         mockHighlight: 1,
       },
       {
         step: "Step 2",
-        title: "Register allergies and conditions",
+        title: "Register allergies and health conditions",
         text: "This is what changes the answers. Registered allergens are dropped from suggestions, and for foods that clash with your condition, code raises the risk to the level the safety rule requires.",
         tips: [
-          "Press a group heading to open its items, or press 'None · Next' if nothing applies.",
-          "Not on the list? Type it in with direct entry, and the name is saved in its standard clinical form.",
-          "Press Speak to enter and your own words are kept as a note the AI reads too.",
+          "Press '+ Type directly' to open the grouped list, then press a group title and choose items.",
+          "If nothing applies, press 'None · Next'.",
+          "If something is missing from the list, type it in the box.",
+          "Press 'Speak to enter' and talk; we pick the items for you and keep what you said as a note for answers.",
         ],
-        mockTitle: "Allergies · Conditions",
-        mockItems: ["Milk", "Tree nuts", "🎙 Speak to enter"],
-        mockNote: "Pick from the list or just say it",
-        mockCaption: "Adding allergies and conditions lets us guide you more safely.",
+        mockTitle: "Allergies · Health",
+        mockItems: ["Milk", "Walnut", "Speak to enter"],
+        mockNote: "Choose from the list or just say it",
+        mockCaption: "Choose from the list, or simply say it.",
         mockHighlight: 2,
       },
       {
         step: "Step 3",
-        title: "Speak, snap, or type your question",
-        text: "Use whichever is easiest. Dialect is understood. Send voice and a photo together and both are read as one question.",
+        title: "Ask by speaking, taking a photo or typing",
+        text: "Use whichever is easiest. Dialects are understood. A voice note and photos sent together are read as one question.",
         tips: [
-          "For voice, press the big microphone, speak, then press once more to attach.",
-          "For photos, choose label, food, medicine packaging, or a pill first and we explain how to shoot it.",
-          "On a phone you can take one now or pick a saved photo, and send up to four photos of the same table together.",
-          "We check brightness and blur in advance; what is actually in the photo is told to you in the answer.",
+          "Press the big microphone, speak, then press it again to turn it into text. Check it and press the blue Send.",
+          "For photos, first choose label, food or medicine and we will show how to take it.",
+          "You can send up to four photos of one meal together.",
+          "Press a button under 'You can also ask things like these' to ask right away.",
         ],
         mockTitle: "Ways to ask",
-        mockItems: ["🎙 Speak", "📷 Upload a photo", "⌨ Type it"],
-        mockNote: "The common question buttons work too",
-        mockCaption: "Speak it, snap a photo, or type it out.",
-        mockHighlight: 1,
+        mockItems: ["Voice recording", "Upload photo", "Write text"],
+        mockNote: "Suggestion buttons work too",
+        mockCaption: "Press the big microphone and speak. Photos and typing work too.",
+        mockHighlight: 0,
       },
       {
         step: "Step 4",
-        title: "Turn the answer one card at a time",
-        text: "Long answers are split across cards. The button below the card reads \"The answer continues on the next page\" with the page count beside it, and pressing it opens the next card.",
+        title: "Answers start with the key point in large text",
+        text: "Each answer opens with the conclusion and what to do, in large text. Press 'See details' for the full explanation.",
         tips: [
-          "You can also swipe left or right to turn cards.",
-          "The last card says \"That is the end of this answer.\"",
-          "Press Replay answer to hear it out loud.",
+          "Press 'Replay current answer' to hear it read aloud.",
+          "If a food needs care, a caution note appears at the top of the answer.",
+          "Press a follow-up question under the answer to keep asking.",
         ],
-        mockTitle: "Conversation 1 · Answer 1/3",
-        mockItems: ["Simmer the radish well and its own sweetness comes out. No sugar needed."],
-        mockNote: "The answer continues on the next page →",
-        mockCaption: "Answers come as large-type cards and continue onto the next card.",
+        mockTitle: "SilverLens AI",
+        mockItems: ["Simmer radish slowly to bring out its sweetness. No sugar needed."],
+        mockNote: "See details",
+        mockCaption: "The key point comes first in large text. Press See details for more.",
         mockHighlight: -1,
       },
       {
         step: "Step 5",
-        title: "Keep your data safe in a file",
-        text: "Open Data in the left menu and export a saved file containing your health information and chats. Use Import saved file to restore it on another device or browser.",
+        title: "Find past chats in History",
+        text: "Questions and answers are saved on this device. Press History in the bottom menu to see past chats grouped by topic.",
         tips: [
-          "Keep the saved file in a private, secure location.",
-          "Choose Import saved file and select the exported JSON file to restore it.",
-          "On a shared computer, use Erase my data when you finish.",
-          "The same page shows when your information was last saved.",
+          "Use the Food, Medicine and Health buttons to filter by topic.",
+          "Type a food name in the search box to find that chat.",
+          "Open a chat to keep asking from where you left off.",
+          "On a shared device, press 'Delete saved data' at the bottom of the intro page when you are done.",
         ],
-        mockTitle: "My data",
-        mockItems: ["Export saved file", "Import saved file", "Erase my data"],
-        mockNote: "Your information stays on this device",
-        mockCaption: "Back up or restore your saved information from the Data page.",
-        mockHighlight: 1,
+        mockTitle: "History",
+        mockItems: ["Food · Medicine · Health", "Open chat", "Search chats"],
+        mockNote: "Saved only on this device",
+        mockCaption: "Past chats are always in History.",
+        mockHighlight: -1,
       },
     ],
     guideCta: "Try it now",
@@ -2300,86 +2310,87 @@ const aboutCopy: Record<Language, AboutCopy> = {
     guideTitle: "はじめてでも大丈夫、",
     guideTitleAccent: "五つの手順だけです",
     guideDescription:
-      "下の五つの手順で、基本設定、質問、回答の確認、保存データのバックアップ方法を説明します。",
+      "下の五つの手順で、自分の情報の入力、質問、回答の見方、過去の会話の見方を説明します。",
     guideTipsLabel: "覚えておくと便利です",
     guideSteps: [
       {
-        step: "手順 1",
-        title: "基本設定で言語・性別・年齢を選びます",
-        text: "最初の大きな「私の情報を入力」ボタン、または左の「基本設定」メニューから開きます。入力しなくても質問でき、必要な個別案内にだけ使います。",
+        step: "手順1",
+        title: "自分の情報で言語・性別・年齢を選びます",
+        text: "初めて開くと「自分の情報」が一つずつ表示されます。答えたくない質問は「この質問をとばす」で進めてかまいません。あとで下の「自分の情報」メニューからいつでも変えられます。",
         tips: [
-          "基本設定で「自分の情報を話す」を押すと、性別と年齢を一度に入力できます。",
-          "設定後も左のメニューからいつでも変更できます。",
-          "押し間違えたら同じボタンをもう一度押して取り消せます。",
-          "言語を変えると、登録した健康情報の表記も一緒に変わります。",
+          "1画面に質問は一つです。選んでから「次へ」を押してください。",
+          "間違えたときは同じボタンをもう一度押すと取り消せます。",
+          "言語を変えると、登録した健康情報の表示も一緒に変わります。",
+          "自動音声案内をオンにすると、画面の案内を読み上げます。",
         ],
-        mockTitle: "言語 · 性別 · 年齢",
+        mockTitle: "言語・性別・年齢",
         mockItems: ["日本語", "女性", "70代"],
-        mockNote: "最初の画面で話すか押すだけでも大丈夫です",
-        mockCaption: "言語・性別・年齢を選ぶと、より正確な案内を受けられます。",
+        mockNote: "答えたくなければとばせます",
+        mockCaption: "言語・性別・年齢を選ぶと、より合った案内になります。",
         mockHighlight: 1,
       },
       {
-        step: "手順 2",
-        title: "アレルギーと疾患を登録します",
-        text: "ここまで入れると答えが変わります。登録したアレルギー食品はおすすめから外れ、疾患とぶつかる食品は安全ルールが定めた危険度までコードが引き上げてお知らせします。",
+        step: "手順2",
+        title: "アレルギーと病気・健康状態を登録します",
+        text: "ここまで入れておくと回答が変わります。登録したアレルギー食品はおすすめから外れ、病気と合わない食品は安全ルールが定めた危険度までコードが引き上げてお知らせします。",
         tips: [
-          "グループの見出しを押すと項目が開きます。該当しなければ「該当なし・次へ」を押してください。",
-          "一覧になければ「直接入力」で書けます。書いていただいた病名は正式な傷病表記に合わせて保存します。",
-          "「話して入力」を押して話すと、その言葉がメモとして残り回答にも反映されます。",
+          "「直接入力」を押すとグループの一覧が開きます。グループ名を押して項目を選んでください。",
+          "当てはまるものがなければ「該当なし・次へ」を押してください。",
+          "一覧にないものは入力欄に直接書けます。",
+          "「話して入力」を押して話すと自動で選び、話した内容はメモとして回答に反映されます。",
         ],
-        mockTitle: "アレルギー · 疾患",
-        mockItems: ["牛乳", "ナッツ類", "🎙 話して入力"],
-        mockNote: "一覧から選んでも、話してもいいです",
-        mockCaption: "アレルギーと疾患を入れておくと、より安全に案内します。",
+        mockTitle: "アレルギー・健康状態",
+        mockItems: ["牛乳", "くるみ", "話して入力"],
+        mockNote: "一覧から選んでも、話してもかまいません",
+        mockCaption: "一覧から選ぶか、話してもかまいません。",
         mockHighlight: 2,
       },
       {
-        step: "手順 3",
-        title: "話す・撮る・書く、どれでも質問できます",
-        text: "楽な方法を選んでください。方言のままでも通じます。音声と写真を一緒に送ると、ひとつの質問として理解します。",
+        step: "手順3",
+        title: "話す・撮る・書くのどれかで質問します",
+        text: "使いやすい方法でかまいません。方言で話しても聞き取ります。音声と写真を一緒に送ると、一つの質問として理解します。",
         tips: [
-          "音声は大きなマイクを押して話し、もう一度押すと添付されます。",
-          "写真は成分表・料理・薬の袋・錠剤のどれを撮るか先に選ぶと、撮り方をお伝えします。",
-          "スマートフォンでは今撮ることも、保存された写真から選ぶこともでき、食卓を分けて4枚まで一緒に送れます。",
-          "写真の明るさとぶれは先に確認し、何が写っているかは回答でお伝えします。",
+          "大きなマイクボタンを押して話し、もう一度押すと文字になります。確認して青い「送信」を押してください。",
+          "写真は、成分表・料理・薬のどれを撮るかを先に選ぶと撮り方を案内します。",
+          "一つの食卓を分けて撮り、4枚まで一緒に送れます。",
+          "「こんなことも聞けます」のボタンを押すとすぐ質問できます。",
         ],
-        mockTitle: "質問の方法",
-        mockItems: ["🎙 音声で話す", "📷 写真を追加", "⌨ 文字で書く"],
-        mockNote: "よくある質問ボタンからでも大丈夫です",
-        mockCaption: "話すか、写真を送るか、直接書けば大丈夫です。",
-        mockHighlight: 1,
+        mockTitle: "質問のしかた",
+        mockItems: ["音声録音", "写真を追加", "文字で書く"],
+        mockNote: "よくある質問ボタンも使えます",
+        mockCaption: "大きなマイクボタンを押して話してください。写真や文字でも質問できます。",
+        mockHighlight: 0,
       },
       {
-        step: "手順 4",
-        title: "回答を一枚ずつめくって読みます",
-        text: "答えが長いときは何枚かに分けます。カードの下の「次のページに続きがあります」ボタンに何枚中何枚かも書かれていて、そのボタンを押すと次の枚が出ます。",
+        step: "手順4",
+        title: "回答は大事なことから大きく表示します",
+        text: "回答の最初に、結論とすることを大きな文字で表示します。くわしい説明は「詳しく見る」を押してください。",
         tips: [
-          "指で左右に払ってめくることもできます。",
-          "最後の枚には「この回答はここまでです。」と書かれています。",
-          "「回答をもう一度聞く」を押すと声で読み上げます。",
+          "「現在の回答をもう一度聞く」を押すと読み上げます。",
+          "注意が必要な食品のときは、回答のいちばん上に注意が表示されます。",
+          "回答の下の続きの質問ボタンを押すと、そのまま続けて質問できます。",
         ],
-        mockTitle: "会話 1 · 回答 1/3",
-        mockItems: ["大根をよく煮ると甘みが出ます。砂糖は入れなくて大丈夫です。"],
-        mockNote: "次のページに続きがあります →",
-        mockCaption: "大きな文字のカードで見せ、長ければ次のカードへ続きます。",
+        mockTitle: "SilverLens AI",
+        mockItems: ["大根はじっくり煮ると甘みが出ます。砂糖は入れなくてかまいません。"],
+        mockNote: "詳しく見る",
+        mockCaption: "大事なことを大きな文字で先に表示します。くわしくは「詳しく見る」を押してください。",
         mockHighlight: -1,
       },
       {
-        step: "手順 5",
-        title: "データをファイルで安全に保管します",
-        text: "左の「データ」から保存ファイルを書き出すと、健康情報と会話をバックアップできます。別の端末やブラウザでは、保存ファイルの読み込みで復元します。",
+        step: "手順5",
+        title: "過去の会話は「履歴」で見られます",
+        text: "質問と回答はこの端末に保存されます。下の「履歴」メニューを押すと、過去の会話をテーマ別に見られます。",
         tips: [
-          "保存ファイルは本人だけが確認できる安全な場所に保管してください。",
-          "復元するときは「保存ファイルを読み込む」を押し、書き出したJSONファイルを選びます。",
-          "共用パソコンでは使用後にデータ削除を押してください。",
-          "最後の保存時刻も同じ画面で確認できます。",
+          "食べ物・薬・健康のボタンでテーマ別に絞り込めます。",
+          "検索欄に食べ物の名前を書くと、その会話を探します。",
+          "会話を押すと、そこから続けて質問できます。",
+          "共用の端末では、使い終わったら紹介画面のいちばん下の「保存した内容を消す」を押してください。",
         ],
-        mockTitle: "マイデータ管理",
-        mockItems: ["保存ファイルを書き出す", "保存ファイルを読み込む", "データを削除"],
-        mockNote: "情報はこの端末に保存されます",
-        mockCaption: "データ画面で保存内容をバックアップ・復元できます。",
-        mockHighlight: 1,
+        mockTitle: "履歴",
+        mockItems: ["食べ物・薬・健康", "会話を開く", "会話を検索"],
+        mockNote: "この端末にだけ保存されます",
+        mockCaption: "過去の会話は「履歴」でいつでも見られます。",
+        mockHighlight: -1,
       },
     ],
     guideCta: "すぐに始めてみる",
@@ -2576,10 +2587,10 @@ const aboutGuideIcons = [
     <path d="M8 3h11a2 2 0 0 1 2 2v11" />
     <path d="M6 11h6M6 15h4" />
   </svg>,
-  <svg key="link" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
-    <path d="M9.5 14.5 14.5 9.5" />
-    <path d="M7.2 16.8 5.6 18.4a3.4 3.4 0 0 1-4.8-4.8l3.4-3.4A3.4 3.4 0 0 1 9 10" />
-    <path d="m16.8 7.2 1.6-1.6a3.4 3.4 0 0 1 4.8 4.8l-3.4 3.4A3.4 3.4 0 0 1 15 14" />
+  // 다섯째 단계는 "이전 대화"라서 시계 방향 화살표가 붙은 말풍선으로 그린다.
+  <svg key="history" viewBox="0 0 24 24" fill="none" stroke="currentColor" aria-hidden="true">
+    <path d="M4.5 6.5A2.5 2.5 0 0 1 7 4h10a2.5 2.5 0 0 1 2.5 2.5v7A2.5 2.5 0 0 1 17 16h-6.5L6 19.5V16H7a2.5 2.5 0 0 1-2.5-2.5Z" />
+    <path d="M12 7.5V10l2 1.5" />
   </svg>,
 ];
 
@@ -2590,7 +2601,7 @@ const aboutGuideIcons = [
  * 내보내는 형식이 사람마다 달라서 png, jpg, webp 를 차례로 찾아본다.
  * 하나도 없으면 CSS 목업이 그대로 남으므로 코드를 고칠 필요가 없다.
  */
-const ABOUT_GUIDE_SHOT_TYPES = ["png", "jpg", "jpeg", "webp"] as const;
+const ABOUT_GUIDE_SHOT_TYPES = ["jpg", "png", "jpeg", "webp"] as const;
 
 /**
  * 사용 가이드의 화면 그림.
@@ -2606,7 +2617,7 @@ function AboutGuideMock({ index, step }: { index: number; step: AboutGuideStep }
   // 확장자를 하나씩 시도한다. 다 실패하면 사진 없이 목업만 남는다.
   const [typeIndex, setTypeIndex] = useState(0);
   const [shotLoaded, setShotLoaded] = useState(false);
-  const shotType = index === 4 ? undefined : ABOUT_GUIDE_SHOT_TYPES[typeIndex];
+  const shotType = ABOUT_GUIDE_SHOT_TYPES[typeIndex];
   const itemClass = (itemIndex: number, base: string) =>
     itemIndex === step.mockHighlight ? `${base} highlight` : base;
 
@@ -2946,6 +2957,118 @@ function Sidebar({
   );
 }
 
+/*
+ * 화면 곳곳의 그림 아이콘.
+ *
+ * 이모지는 기기마다 그림이 달라(Windows·안드로이드·아이폰) 화면이 들쭉날쭉해 보였다.
+ * 하단 메뉴 아이콘과 같은 굵기의 선 아이콘으로 통일한다. 색은 글자색(currentColor)을 따른다.
+ */
+type LineIconName =
+  | "camera"
+  | "pill"
+  | "bowl"
+  | "rice"
+  | "tag"
+  | "mic"
+  | "stop"
+  | "keyboard"
+  | "send"
+  | "speaker"
+  | "shield"
+  | "heart"
+  | "chat"
+  | "play";
+
+function LineIcon({ name, className }: { name: LineIconName; className?: string }) {
+  const paths: Record<LineIconName, React.ReactNode> = {
+    camera: (
+      <>
+        <path d="M4 8.5A1.5 1.5 0 0 1 5.5 7h2.2l1.5-2h5.6l1.5 2h2.2A1.5 1.5 0 0 1 20 8.5v9a1.5 1.5 0 0 1-1.5 1.5h-13A1.5 1.5 0 0 1 4 17.5Z" />
+        <circle cx="12" cy="13" r="3.4" />
+      </>
+    ),
+    pill: (
+      <>
+        <rect x="3.2" y="8.6" width="17.6" height="6.8" rx="3.4" transform="rotate(-40 12 12)" />
+        <path d="m9.1 9.6 5.2 4.6" />
+      </>
+    ),
+    bowl: (
+      <>
+        <path d="M3.5 11h17a8.5 8.5 0 0 1-17 0Z" />
+        <path d="M9 20h6" />
+        <path d="M14 7.5 18.5 3" />
+      </>
+    ),
+    rice: (
+      <>
+        <path d="M4 12h16a8 8 0 0 1-16 0Z" />
+        <path d="M6.5 12a5.5 4 0 0 1 11 0" />
+        <path d="M10 8.6v.01M13.5 8.2v.01M12 10v.01" />
+      </>
+    ),
+    tag: (
+      <>
+        <path d="M3.5 12.6V4.5a1 1 0 0 1 1-1h8.1l8 8a1.4 1.4 0 0 1 0 2l-7 7a1.4 1.4 0 0 1-2 0Z" />
+        <circle cx="8.2" cy="8.2" r="1.5" />
+      </>
+    ),
+    mic: (
+      <>
+        <rect x="9" y="3" width="6" height="11.5" rx="3" />
+        <path d="M5.5 11a6.5 6.5 0 0 0 13 0M12 17.5V21M9 21h6" />
+      </>
+    ),
+    stop: <rect x="7" y="7" width="10" height="10" rx="2.2" className="line-icon-fill" />,
+    keyboard: (
+      <>
+        <rect x="2.8" y="6" width="18.4" height="12" rx="2.2" />
+        <path d="M6.5 10h.01M10 10h.01M13.5 10h.01M17 10h.01M6.5 13.5h.01M17 13.5h.01M9.5 14h5" />
+      </>
+    ),
+    send: <path d="M4.5 12h13M12.5 6l6 6-6 6" />,
+    speaker: (
+      <>
+        <path d="M4 9.5h3.5L12 5.5v13l-4.5-4H4Z" />
+        <path d="M15.5 9a4 4 0 0 1 0 6M18 6.5a7.5 7.5 0 0 1 0 11" />
+      </>
+    ),
+    shield: (
+      <>
+        <path d="M12 3.2 19 6v5.6c0 4.3-2.9 7.6-7 9.2-4.1-1.6-7-4.9-7-9.2V6Z" />
+        <path d="m9 12 2.2 2.2L15.2 10" />
+      </>
+    ),
+    heart: <path d="M12 19.5s-7.5-4.4-7.5-10A4.2 4.2 0 0 1 12 7a4.2 4.2 0 0 1 7.5 2.5c0 5.6-7.5 10-7.5 10Z" />,
+    chat: (
+      <>
+        <path d="M4.5 6.5A2.5 2.5 0 0 1 7 4h10a2.5 2.5 0 0 1 2.5 2.5v7A2.5 2.5 0 0 1 17 16h-6.5L6 19.5V16H7a2.5 2.5 0 0 1-2.5-2.5Z" />
+        <path d="M8.5 9.5h7M8.5 12.5h4.5" />
+      </>
+    ),
+    play: (
+      <>
+        <rect x="2.8" y="5" width="18.4" height="14" rx="4" />
+        <path d="M10 9.2v5.6l4.8-2.8Z" className="line-icon-fill" />
+      </>
+    ),
+  };
+  return (
+    <svg
+      className={className ? `line-icon ${className}` : "line-icon"}
+      viewBox="0 0 24 24"
+      aria-hidden="true"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="1.9"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      {paths[name]}
+    </svg>
+  );
+}
+
 function QuickAskButtons({
   items,
   language,
@@ -2969,7 +3092,7 @@ function QuickAskButtons({
           onClick={() => onPick(item)}
           disabled={disabled}
         >
-          <span aria-hidden="true">{item.icon}</span>
+          <span className="quick-ask-icon" aria-hidden="true"><LineIcon name={item.icon} /></span>
           <strong>{item.label[language]}</strong>
         </button>
       ))}
@@ -5120,6 +5243,7 @@ export default function SilverLensApp({
         followUpQuestions?: string[];
         conversationTitle?: string;
         summary?: string;
+        videoSearchQuery?: string;
         riskLevel?: "danger" | "caution" | "safe";
         warningMessage?: string;
         profileAllergyIds?: string[];
@@ -5164,6 +5288,10 @@ export default function SilverLensApp({
         summary: payload.summary?.trim() || payload.answer.split(/\n\s*\n/)[0],
         createdAt: Date.now(),
         followUpQuestions: stringArray(payload.followUpQuestions).slice(0, 4),
+        videoSearchQuery:
+          typeof payload.videoSearchQuery === "string" && payload.videoSearchQuery.trim()
+            ? payload.videoSearchQuery.trim().slice(0, 40)
+            : undefined,
         pages: splitAnswerIntoPages(payload.summary?.trim() || payload.answer.split(/\n\s*\n/)[0]),
         attachmentLabels,
         riskLevel: payload.riskLevel ?? "safe",
@@ -5768,9 +5896,9 @@ export default function SilverLensApp({
         <div className="history-toolbar"><div className="history-filters">{(["all", "food", "medicine", "health"] as const).map((topic) => <button key={topic} aria-pressed={historyTopic === topic} onClick={() => setHistoryTopic(topic)}>{labels[topic]}</button>)}</div>
           <input aria-label={labels.search} placeholder={labels.search} value={historySearch} onChange={(event) => setHistorySearch(event.target.value)} /></div>
         <section className="room-list" aria-label={labels.title}>
-          {filtered.length === 0 && <div className="history-empty"><span aria-hidden="true">💬</span><h2>{rooms.length ? labels.none : labels.empty}</h2><p>{labels.help}</p></div>}
+          {filtered.length === 0 && <div className="history-empty"><span aria-hidden="true"><LineIcon name="chat" /></span><h2>{rooms.length ? labels.none : labels.empty}</h2><p>{labels.help}</p></div>}
           {filtered.map((room) => <button className="room-row" key={room.id} onClick={() => openConversation(room)}>
-            <span className={`room-icon ${room.topic}`} aria-hidden="true">{room.topic === "food" ? "🍽️" : room.topic === "medicine" ? "💊" : "💚"}</span>
+            <span className={`room-icon ${room.topic}`} aria-hidden="true"><LineIcon name={room.topic === "food" ? "bowl" : room.topic === "medicine" ? "pill" : "heart"} /></span>
             <span className="room-content"><span className="room-topic">{labels[room.topic]}</span><strong>{room.title}</strong><span className="room-preview">{room.turns.at(-1)?.answer.replace(/[#*_`]/g, "")}</span></span>
             <span className="room-date"><time dateTime={new Date(room.updatedAt).toISOString()}>{new Intl.DateTimeFormat(activeLanguage, { month: "short", day: "numeric", year: "numeric" }).format(room.updatedAt)}</time><span>{room.turns.length} {activeLanguage === "ko-KR" ? "개의 질문" : activeLanguage === "ja-JP" ? "件" : "questions"} ›</span></span>
           </button>)}
@@ -5870,7 +5998,17 @@ export default function SilverLensApp({
                     const pages = narrationPagesForTurn(turn);
                     if (narrationStatus[turn.id] === "error") speakAnswerPagesWithBrowser(pages, 0, firstCardIndex, activeLanguage);
                     else void speakGeminiAnswer(turn.id, pages, 0, firstCardIndex, activeLanguage);
-                  }}>{isNarrating ? activeCopy.stopReplay : activeCopy.replayAnswer}</button>
+                  }}>{!isNarrating && <LineIcon name="speaker" />}{isNarrating ? activeCopy.stopReplay : activeCopy.replayAnswer}</button>
+                  {/* 영상은 유튜브 검색 결과로 넘겨 준다. 링크를 만들어 내지 않으니 없는 영상을 가리킬 일이 없다. */}
+                  {turn.videoSearchQuery && <a
+                    className="answer-video-link"
+                    href={`https://www.youtube.com/results?search_query=${encodeURIComponent(turn.videoSearchQuery)}`}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                  >
+                    <LineIcon name="play" />
+                    <span>{activeCopy.watchVideo.replace("{query}", turn.videoSearchQuery)}</span>
+                  </a>}
                   {turnTime(turn) && <time className="chat-message-time assistant-time">{turnTime(turn)}</time>}
                   {Boolean(turn.followUpQuestions?.length) && <div className="answer-followups" aria-label={activeCopy.quickAskTitle}>
                     <p>{activeCopy.quickAskTitle}</p>
@@ -5887,7 +6025,7 @@ export default function SilverLensApp({
             </article>}
           </section>
 
-          <p className="medical-note">🛡 {activeCopy.medicalNote}</p>
+          <p className="medical-note"><LineIcon name="shield" /> {activeCopy.medicalNote}</p>
           </div>
 
           <section className="question-composer fixed-composer" aria-label={activeCopy.questionArea}>
@@ -5920,14 +6058,14 @@ export default function SilverLensApp({
               aria-pressed={isRecording}
               disabled={isLoadingAnswer || isTranscribingVoice}
             >
-              <span className="mic-icon" aria-hidden="true">{isRecording ? "●" : "🎙️"}</span>
+              <span className="mic-icon" aria-hidden="true"><LineIcon name={isRecording ? "stop" : "mic"} /></span>
               <strong>{isRecording ? activeCopy.recording : activeCopy.voiceRecord}</strong>
               <small>{isRecording ? activeCopy.recordingHelp : activeCopy.voiceRecordHelp}</small>
             </button>}
 
             <div className="composer-secondary">
               <button className="composer-tool" disabled={isRecording || isLoadingAnswer} onClick={openPhotoFlow}>
-                <span aria-hidden="true">📷</span>
+                <span aria-hidden="true"><LineIcon name="camera" /></span>
                 <strong>{activeCopy.uploadPhoto}</strong>
               </button>
               {/* 지금 찍기: capture 를 주면 폰에서 카메라가 바로 열린다. */}
@@ -5959,7 +6097,7 @@ export default function SilverLensApp({
                 aria-expanded={isTextInputVisible}
                 aria-controls="chat-question"
               >
-                <span aria-hidden="true">⌨</span>
+                <span aria-hidden="true"><LineIcon name={isTextInputVisible ? "mic" : "keyboard"} /></span>
                 <strong>{isTextInputVisible ? activeCopy.voiceRecord : activeCopy.writeText}</strong>
               </button>
             </div>
@@ -5992,19 +6130,16 @@ export default function SilverLensApp({
               </p>
             )}
 
-            <button
+            {(isLoadingAnswer || Boolean(chatInput.trim() || pendingAudio || pendingImages.length > 0)) && <button
               className="send-question"
               onClick={() => askGemini()}
-              disabled={
-                isLoadingAnswer || isRecording || isTranscribingVoice ||
-                (!chatInput.trim() && !pendingAudio && pendingImages.length === 0)
-              }
+              disabled={isLoadingAnswer || isRecording || isTranscribingVoice}
             >
-              <span aria-hidden="true">➤</span>
+              <span aria-hidden="true"><LineIcon name="send" /></span>
               <strong className="send-label-full">{isLoadingAnswer ? activeCopy.sendingQuestion : activeCopy.sendQuestion}</strong>
               <strong className="send-label-mobile">{activeLanguage === "ko-KR" ? (isLoadingAnswer ? "전송 중" : "보내기") : activeLanguage === "ja-JP" ? (isLoadingAnswer ? "送信中" : "送信") : (isLoadingAnswer ? "Sending" : "Send")}</strong>
               <small>{activeCopy.sendHelp}</small>
-            </button>
+            </button>}
           </section>
 
 
@@ -6025,7 +6160,7 @@ export default function SilverLensApp({
                         choosePhotoPurpose(option.id, activeCopy[option.tipKey])
                       }
                     >
-                      <span className="photo-purpose-icon" aria-hidden="true">{option.icon}</span>
+                      <span className="photo-purpose-icon" aria-hidden="true"><LineIcon name={option.icon} /></span>
                       <span className="photo-purpose-text">
                         <strong>{activeCopy[option.labelKey]}</strong>
                         <small>{activeCopy[option.tipKey]}</small>
@@ -6318,7 +6453,7 @@ export default function SilverLensApp({
             <span>{activeCopy.speedFast}</span>
           </div>
           <button className="speed-preview" onClick={previewNarrationRate}>
-            {activeCopy.answerSpeedPreview}
+            <LineIcon name="speaker" />{activeCopy.answerSpeedPreview}
           </button>
           <small>
             {voiceRateMode === "browser-limited"

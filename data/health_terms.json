@@ -1656,9 +1656,9 @@
     "id": "allergy_orange",
     "kind": "allergy",
     "labels": {
-      "ko-KR": "오렌지",
-      "en-US": "Orange",
-      "ja-JP": "オレンジ"
+      "ko-KR": "귤 · 오렌지",
+      "en-US": "Orange / mandarin",
+      "ja-JP": "みかん・オレンジ"
     },
     "aliases": [
       "오렌지 알레르기",
@@ -1666,7 +1666,13 @@
       "감귤",
       "orange allergy",
       "オレンジアレルギー",
-      "みかん"
+      "みかん",
+      "오렌지",
+      "귤 알레르기",
+      "감귤 알레르기",
+      "mandarin",
+      "tangerine",
+      "オレンジ"
     ]
   },
   {

@@ -4,7 +4,7 @@ import test from "node:test";
 
 const readText = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
-test("about page shows official source logos and a fifth data-backup guide", async () => {
+test("about page shows official source logos and a fifth past-chats guide", async () => {
   const source = await readText("frontend/SilverLensApp.tsx");
 
   assert.match(source, /icon: "opendict"/);
@@ -14,7 +14,8 @@ test("about page shows official source logos and a fifth data-backup guide", asy
   assert.match(source, /source-icons\/data-go\.png/);
   assert.match(source, /brand\/silverlens-mark\.png/);
   assert.match(source, /step: "5단계"/);
-  assert.match(source, /데이터를 파일로 안전하게 보관합니다/);
+  // 다섯째 단계는 메뉴에서 실제로 찾아갈 수 있는 "이전 대화"를 안내한다.
+  assert.match(source, /지난 대화는 '이전 대화'에서 다시 봅니다/);
   assert.match(source, /className="about-guide-mock-data"/);
   assert.match(source, /index === 4 \? " is-data"/);
   assert.match(source, /className="about-temp-reset"/);
@@ -25,7 +26,7 @@ test("about page shows official source logos and a fifth data-backup guide", asy
   );
 });
 
-test("about hero uses a credited family photo and step five uses the backup mock", async () => {
+test("about hero uses a credited family photo and every guide step uses a real screenshot", async () => {
   const [source, css, heroPhoto] = await Promise.all([
     readText("frontend/SilverLensApp.tsx"),
     readText("app/globals.css"),
@@ -36,7 +37,11 @@ test("about hero uses a credited family photo and step five uses the backup mock
   assert.match(source, /grandmother-laughing-with-her-grandchildren-wearing-white-DxPgOHdcwes/);
   assert.match(source, /heroPhotoCredit/);
   assert.match(css, /url\("\/about\/grandparents-hero\.jpg"\)/);
-  assert.match(source, /const shotType = index === 4 \? undefined/);
+  assert.match(source, /const shotType = ABOUT_GUIDE_SHOT_TYPES\[typeIndex\];/);
+  for (let step = 1; step <= 5; step += 1) {
+    const shot = await readFile(new URL(`../public/guide/step-${step}.jpg`, import.meta.url));
+    assert.deepEqual([...shot.subarray(0, 2)], [0xff, 0xd8]);
+  }
   assert.deepEqual([...heroPhoto.subarray(0, 2)], [0xff, 0xd8]);
 });
 
