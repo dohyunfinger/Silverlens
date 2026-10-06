@@ -153,8 +153,12 @@ function normalizeApiRecord(item: Record<string, unknown>): PillIdentificationRe
 
 function recordsFromPayload(payload: Record<string, unknown>) {
   const body = payload.body as Record<string, unknown> | undefined;
-  const itemsContainer = body?.items as Record<string, unknown> | undefined;
-  const rawItems = itemsContainer?.item;
+  // JSON 응답은 body.items 가 곧바로 배열이고, XML을 옮긴 형태는 body.items.item 이다.
+  // 배열 형태를 놓치면 매 페이지 0건으로 읽혀 동기화가 끝날 때 기존 데이터까지 지워진다.
+  const itemsContainer = body?.items;
+  const rawItems = Array.isArray(itemsContainer)
+    ? itemsContainer
+    : (itemsContainer as Record<string, unknown> | undefined)?.item;
   const items = Array.isArray(rawItems) ? rawItems : rawItems ? [rawItems] : [];
   return items
     .filter((item): item is Record<string, unknown> => Boolean(item && typeof item === "object"))
@@ -277,12 +281,14 @@ export async function syncMfdsPillCatalog(env: MfdsRuntimeEnv): Promise<MfdsSync
     ).first<SyncStateRow>();
     if (!state) throw new Error("MFDS_SYNC_STATE_MISSING");
 
-    const generation = state.generation || `${now}-${crypto.randomUUID()}`;
-    let pageNo = state.generation ? Math.max(1, state.next_page) : 1;
-    let recordsSynced = state.generation ? state.records_synced : 0;
-    let totalCount = state.generation ? state.total_count : 0;
+    // 진행 중인 회차가 지금까지 한 건도 저장하지 못했다면 이어 가지 않고 처음부터 다시 받는다.
+    const resuming = Boolean(state.generation) && state.records_synced > 0;
+    const generation = resuming ? state.generation : `${now}-${crypto.randomUUID()}`;
+    let pageNo = resuming ? Math.max(1, state.next_page) : 1;
+    let recordsSynced = resuming ? state.records_synced : 0;
+    let totalCount = resuming ? state.total_count : 0;
 
-    if (!state.generation) {
+    if (!resuming) {
       await database.prepare(
         `UPDATE mfds_sync_state SET generation = ?, next_page = 1,
          total_pages = 0, total_count = 0, records_synced = 0,
@@ -301,6 +307,8 @@ export async function syncMfdsPillCatalog(env: MfdsRuntimeEnv): Promise<MfdsSync
       recordsSynced += page.records.length;
 
       if (pageNo >= totalPages) {
+        // 한 건도 못 받았는데 옛 데이터를 지우면 검색이 통째로 비므로 실패로 남긴다.
+        if (recordsSynced === 0) throw new Error("MFDS_NO_RECORDS_PARSED");
         await database.prepare(
           "DELETE FROM mfds_pills WHERE sync_generation <> ?",
         ).bind(generation).run();

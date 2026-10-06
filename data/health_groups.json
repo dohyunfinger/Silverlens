@@ -17,7 +17,9 @@
       "allergy_mango",
       "allergy_pineapple",
       "allergy_avocado",
-      "allergy_tomato"
+      "allergy_tomato",
+      "allergy_watermelon",
+      "allergy_melon"
     ]
   },
   {
@@ -76,7 +78,9 @@
       "allergy_wheat",
       "allergy_buckwheat",
       "allergy_soy",
-      "allergy_gluten"
+      "allergy_gluten",
+      "allergy_chickpea",
+      "allergy_pea"
     ]
   },
   {
@@ -121,7 +125,9 @@
     "members": [
       "allergy_mushroom",
       "allergy_celery",
-      "allergy_garlic"
+      "allergy_garlic",
+      "allergy_broccoli",
+      "allergy_cabbage"
     ]
   },
   {
@@ -138,7 +144,10 @@
       "allergy_msg",
       "allergy_caffeine",
       "allergy_alcohol",
-      "allergy_medication"
+      "allergy_medication",
+      "allergy_green_tea",
+      "allergy_yeast",
+      "allergy_cocoa"
     ]
   },
   {
@@ -158,7 +167,8 @@
       "condition_hypothyroidism",
       "condition_hyperthyroidism",
       "condition_prediabetes",
-      "condition_menopause"
+      "condition_menopause",
+      "condition_hyperparathyroidism"
     ]
   },
   {
@@ -195,7 +205,9 @@
       "condition_dialysis",
       "condition_kidney_stones",
       "condition_benign_prostatic_hyperplasia",
-      "condition_incontinence"
+      "condition_incontinence",
+      "condition_overactive_bladder",
+      "condition_cystitis"
     ]
   },
   {
@@ -233,7 +245,8 @@
       "condition_osteoarthritis",
       "condition_rheumatoid_arthritis",
       "condition_sarcopenia",
-      "condition_vitamin_d_deficiency"
+      "condition_vitamin_d_deficiency",
+      "condition_frailty_syndrome"
     ]
   },
   {
@@ -251,7 +264,8 @@
       "condition_peripheral_neuropathy",
       "condition_depression",
       "condition_anxiety",
-      "condition_insomnia"
+      "condition_insomnia",
+      "condition_restless_legs_syndrome"
     ]
   },
   {
@@ -267,7 +281,9 @@
       "condition_cataract",
       "condition_glaucoma",
       "condition_macular_degeneration",
-      "condition_hearing_loss"
+      "condition_hearing_loss",
+      "condition_dry_eye_syndrome",
+      "condition_diabetic_retinopathy"
     ]
   },
   {
@@ -283,7 +299,10 @@
       "condition_dysphagia",
       "condition_denture",
       "condition_periodontal_disease",
-      "condition_malnutrition"
+      "condition_malnutrition",
+      "condition_stomatitis",
+      "condition_xerostomia",
+      "condition_dental_caries"
     ]
   },
   {
@@ -298,7 +317,9 @@
     "members": [
       "condition_asthma",
       "condition_copd",
-      "condition_sleep_apnea"
+      "condition_sleep_apnea",
+      "condition_pneumonia",
+      "condition_bronchiectasis"
     ]
   },
   {
@@ -326,7 +347,6 @@
     "members": [
       "allergy_orange",
       "allergy_lemon",
-      "allergy_lime",
       "allergy_grapefruit",
       "allergy_yuzu"
     ]
@@ -344,8 +364,7 @@
       "allergy_cashew",
       "allergy_pistachio",
       "allergy_hazelnut",
-      "allergy_macadamia",
-      "allergy_brazil_nut"
+      "allergy_macadamia"
     ]
   },
   {
@@ -363,44 +382,9 @@
       "allergy_mustard",
       "allergy_cinnamon",
       "allergy_ginger",
-      "allergy_nutmeg",
-      "allergy_turmeric"
-    ]
-  },
-  {
-    "id": "group_allergy_seeds_legumes",
-    "kind": "allergy",
-    "icon": "🫛",
-    "labels": {
-      "ko-KR": "기타 씨앗 · 콩류",
-      "en-US": "Other seeds and legumes",
-      "ja-JP": " 기타種子・豆類"
-    },
-    "members": [
-      "allergy_chickpea",
-      "allergy_lentil",
-      "allergy_pea",
-      "allergy_chia_seed",
-      "allergy_flaxseed",
-      "allergy_sunflower_seed"
-    ]
-  },
-  {
-    "id": "group_allergy_environmental",
-    "kind": "allergy",
-    "icon": "🌿",
-    "labels": {
-      "ko-KR": "환경 · 접촉성 알레르기",
-      "en-US": "Environmental and contact allergies",
-      "ja-JP": "環境・接触アレルギー"
-    },
-    "members": [
-      "allergy_latex",
-      "allergy_dust_mite",
-      "allergy_pollen",
-      "allergy_pet_dander",
-      "allergy_nickel",
-      "allergy_bee_venom"
+      "allergy_turmeric",
+      "allergy_cilantro",
+      "allergy_mint"
     ]
   },
   {
@@ -416,7 +400,6 @@
       "allergy_benzoate",
       "allergy_nitrites",
       "allergy_artificial_colors",
-      "allergy_tartrazine",
       "allergy_aspartame"
     ]
   },
@@ -431,12 +414,9 @@
     },
     "members": [
       "condition_celiac_disease",
-      "condition_lupus",
       "condition_crohns_disease",
       "condition_ulcerative_colitis",
-      "condition_sjogrens_syndrome",
-      "condition_ankylosing_spondylitis",
-      "condition_hashimoto_thyroiditis"
+      "condition_sjogrens_syndrome"
     ]
   },
   {
@@ -449,31 +429,9 @@
       "ja-JP": "皮膚・頭皮"
     },
     "members": [
-      "condition_atopic_dermatitis",
-      "condition_eczema",
-      "condition_acne",
-      "condition_rosacea",
       "condition_urticaria",
       "condition_psoriasis",
-      "condition_alopecia"
-    ]
-  },
-  {
-    "id": "group_condition_life_stage",
-    "kind": "condition",
-    "icon": "🤰",
-    "labels": {
-      "ko-KR": "생애주기 · 여성건강",
-      "en-US": "Life stages and women's health",
-      "ja-JP": "ライフステージ・女性健康"
-    },
-    "members": [
-      "condition_pregnancy",
-      "condition_lactation",
-      "condition_postpartum",
-      "condition_infancy",
-      "condition_toddler",
-      "condition_adolescence"
+      "condition_shingles"
     ]
   },
   {
@@ -487,30 +445,9 @@
     },
     "members": [
       "condition_epilepsy",
-      "condition_adhd",
-      "condition_bipolar_disorder",
       "condition_migraine",
       "condition_vertigo",
-      "condition_schizophrenia",
-      "condition_panic_disorder"
-    ]
-  },
-  {
-    "id": "group_condition_endocrine_extra",
-    "kind": "condition",
-    "icon": "⚖️",
-    "labels": {
-      "ko-KR": "내분비 · 생식샘",
-      "en-US": "Endocrine and reproductive disorders",
-      "ja-JP": "内分泌・生殖器"
-    },
-    "members": [
-      "condition_pcos",
-      "condition_endometriosis",
-      "condition_addisons_disease",
-      "condition_cushings_syndrome",
-      "condition_hyperparathyroidism",
-      "condition_adrenal_insufficiency"
+      "condition_essential_tremor"
     ]
   },
   {
@@ -523,12 +460,8 @@
       "ja-JP": "血液・血栓疾患"
     },
     "members": [
-      "condition_hemophilia",
       "condition_deep_vein_thrombosis",
-      "condition_varicose_veins",
-      "condition_thrombocytopenia",
-      "condition_leukopenia",
-      "condition_polycythemia"
+      "condition_varicose_veins"
     ]
   },
   {
@@ -541,32 +474,9 @@
       "ja-JP": "感染症・慢性症候群"
     },
     "members": [
-      "condition_hiv_aids",
       "condition_hepatitis_b",
       "condition_hepatitis_c",
-      "condition_tuberculosis",
-      "condition_long_covid",
-      "condition_chronic_fatigue_syndrome"
-    ]
-  },
-  {
-    "id": "group_dietary_preference",
-    "kind": "dietary",
-    "icon": "🥗",
-    "labels": {
-      "ko-KR": "식이 취향 · 식이 요법",
-      "en-US": "Dietary preferences and restrictions",
-      "ja-JP": "食事の preference・食事療法"
-    },
-    "members": [
-      "diet_vegan",
-      "diet_vegetarian",
-      "diet_pescatarian",
-      "diet_halal",
-      "diet_kosher",
-      "diet_low_fodmap",
-      "diet_keto",
-      "diet_low_sodium"
+      "condition_tuberculosis"
     ]
   },
   {
@@ -580,28 +490,7 @@
     },
     "members": [
       "condition_post_surgery",
-      "condition_post_organ_transplant",
-      "condition_bariatric_surgery",
-      "condition_radiation_therapy",
-      "condition_chemotherapy"
-    ]
-  },
-  {
-    "id": "group_condition_ent_oral",
-    "kind": "condition",
-    "icon": "👂",
-    "labels": {
-      "ko-KR": "이비인후과 · 구강 확장",
-      "en-US": "ENT and oral health extended",
-      "ja-JP": "耳鼻咽喉科・口腔拡張"
-    },
-    "members": [
-      "condition_stomatitis",
-      "condition_xerostomia",
-      "condition_allergic_rhinitis",
-      "condition_sinusitis",
-      "condition_tinnitus",
-      "condition_otitis_media"
+      "condition_post_organ_transplant"
     ]
   },
   {
@@ -615,12 +504,8 @@
     },
     "members": [
       "allergy_blueberry",
-      "allergy_raspberry",
-      "allergy_blackberry",
-      "allergy_cranberry",
       "allergy_mulberry",
-      "allergy_goji_berry",
-      "allergy_elderberry"
+      "allergy_goji_berry"
     ]
   },
   {
@@ -636,7 +521,6 @@
       "allergy_cherry",
       "allergy_plum",
       "allergy_apricot",
-      "allergy_nectarine",
       "allergy_date",
       "allergy_fig"
     ]
@@ -652,11 +536,8 @@
     },
     "members": [
       "allergy_eggplant",
-      "allergy_paprika",
       "allergy_bell_pepper",
-      "allergy_potato",
-      "allergy_goji",
-      "allergy_tomatillo"
+      "allergy_potato"
     ]
   },
   {
@@ -671,46 +552,7 @@
     "members": [
       "allergy_lamb",
       "allergy_duck",
-      "allergy_turkey",
-      "allergy_venison",
-      "allergy_horse_meat",
       "allergy_goat"
-    ]
-  },
-  {
-    "id": "group_allergy_herbs",
-    "kind": "allergy",
-    "icon": "🌿",
-    "labels": {
-      "ko-KR": "허브류",
-      "en-US": "Herbs",
-      "ja-JP": "ハーブ類"
-    },
-    "members": [
-      "allergy_mint",
-      "allergy_basil",
-      "allergy_rosemary",
-      "allergy_thyme",
-      "allergy_oregano",
-      "allergy_cilantro"
-    ]
-  },
-  {
-    "id": "group_condition_sleep_disorders",
-    "kind": "condition",
-    "icon": "🌙",
-    "labels": {
-      "ko-KR": "수면 장애",
-      "en-US": "Sleep disorders",
-      "ja-JP": "睡眠障害"
-    },
-    "members": [
-      "condition_narcolepsy",
-      "condition_restless_legs_syndrome",
-      "condition_circadian_rhythm_disorder",
-      "condition_hypersomnia",
-      "condition_sleepwalking",
-      "condition_nightmare_disorder"
     ]
   },
   {
@@ -723,66 +565,8 @@
       "ja-JP": "心臓・血管疾患拡張"
     },
     "members": [
-      "condition_arrhythmia",
       "condition_aortic_aneurysm",
-      "condition_peripheral_artery_disease",
-      "condition_myocarditis",
-      "condition_pericarditis",
-      "condition_endocarditis"
-    ]
-  },
-  {
-    "id": "group_condition_respiratory_extra",
-    "kind": "condition",
-    "icon": "🫁",
-    "labels": {
-      "ko-KR": "호흡기 질환 확장",
-      "en-US": "Respiratory diseases extended",
-      "ja-JP": "呼吸器疾患拡張"
-    },
-    "members": [
-      "condition_pneumonia",
-      "condition_bronchitis",
-      "condition_pulmonary_fibrosis",
-      "condition_pulmonary_hypertension",
-      "condition_bronchiectasis",
-      "condition_pneumothorax"
-    ]
-  },
-  {
-    "id": "group_condition_pediatric_congenital",
-    "kind": "condition",
-    "icon": "👶",
-    "labels": {
-      "ko-KR": "소아 · 선천성 질환",
-      "en-US": "Pediatric and congenital conditions",
-      "ja-JP": "小児・先天性疾患"
-    },
-    "members": [
-      "condition_down_syndrome",
-      "condition_autism_spectrum",
-      "condition_cerebral_palsy",
-      "condition_cystic_fibrosis",
-      "condition_congenital_heart_defect",
-      "condition_spina_bifida"
-    ]
-  },
-  {
-    "id": "group_condition_urology_mens_health",
-    "kind": "condition",
-    "icon": "🚽",
-    "labels": {
-      "ko-KR": "비뇨기 · 남성건강",
-      "en-US": "Urology and men's health",
-      "ja-JP": "泌尿器・男性健康"
-    },
-    "members": [
-      "condition_prostatitis",
-      "condition_erectile_dysfunction",
-      "condition_overactive_bladder",
-      "condition_cystitis",
-      "condition_urethritis",
-      "condition_hypogonadism"
+      "condition_peripheral_artery_disease"
     ]
   },
   {
@@ -795,31 +579,9 @@
       "ja-JP": "筋骨格・脊椎疾患"
     },
     "members": [
-      "condition_fibromyalgia",
-      "condition_gouty_arthritis",
-      "condition_tendonitis",
-      "condition_bursitis",
       "condition_herniated_disc",
       "condition_spinal_stenosis",
-      "condition_scoliosis"
-    ]
-  },
-  {
-    "id": "group_condition_eye_extra",
-    "kind": "condition",
-    "icon": "👁️",
-    "labels": {
-      "ko-KR": "안과 질환 확장",
-      "en-US": "Eye conditions extended",
-      "ja-JP": "眼科疾患拡張"
-    },
-    "members": [
-      "condition_dry_eye_syndrome",
-      "condition_diabetic_retinopathy",
-      "condition_strabismus",
-      "condition_keratoconus",
-      "condition_blepharitis",
-      "condition_retinal_detachment"
+      "condition_frozen_shoulder"
     ]
   },
   {
@@ -832,86 +594,7 @@
       "ja-JP": "肝臓・胆道疾患"
     },
     "members": [
-      "condition_liver_cirrhosis",
-      "condition_cholecystitis",
-      "condition_cholangitis",
-      "condition_gilbert_syndrome",
-      "condition_hemochromatosis",
-      "condition_wilson_disease"
-    ]
-  },
-  {
-    "id": "group_condition_environmental_occupational",
-    "kind": "condition",
-    "icon": "🌡️",
-    "labels": {
-      "ko-KR": "환경 · 직업성 질환",
-      "en-US": "Environmental and occupational conditions",
-      "ja-JP": "環境・職業性疾患"
-    },
-    "members": [
-      "condition_heat_stroke",
-      "condition_hypothermia",
-      "condition_altitude_sickness",
-      "condition_decompression_sickness",
-      "condition_silicosis",
-      "condition_asbestosis"
-    ]
-  },
-  {
-    "id": "group_condition_eating_disorders",
-    "kind": "condition",
-    "icon": "🍽️",
-    "labels": {
-      "ko-KR": "섭식 장애",
-      "en-US": "Eating disorders",
-      "ja-JP": "摂食障害"
-    },
-    "members": [
-      "condition_anorexia_nervosa",
-      "condition_bulimia_nervosa",
-      "condition_binge_eating_disorder",
-      "condition_pica",
-      "condition_rumination_syndrome",
-      "condition_orthorexia"
-    ]
-  },
-  {
-    "id": "group_dietary_lifestyle",
-    "kind": "dietary",
-    "icon": "🥑",
-    "labels": {
-      "ko-KR": "식이 요법 · 라이프스타일",
-      "en-US": "Diets and lifestyle",
-      "ja-JP": "食事療法・ライフスタイル"
-    },
-    "members": [
-      "diet_low_carb",
-      "diet_dash_diet",
-      "diet_mediterranean",
-      "diet_paleo",
-      "diet_carnivore",
-      "diet_intermittent_fasting",
-      "diet_low_purine",
-      "diet_gluten_free"
-    ]
-  },
-  {
-    "id": "group_allergy_melons_tropical",
-    "kind": "allergy",
-    "icon": "🍈",
-    "labels": {
-      "ko-KR": "멜론 · 열대과일",
-      "en-US": "Melons and tropical fruits",
-      "ja-JP": "メロン・熱帯果물"
-    },
-    "members": [
-      "allergy_watermelon",
-      "allergy_melon",
-      "allergy_cantaloupe",
-      "allergy_papaya",
-      "allergy_passion_fruit",
-      "allergy_dragon_fruit"
+      "condition_liver_cirrhosis"
     ]
   },
   {
@@ -925,84 +608,9 @@
     },
     "members": [
       "allergy_carrot",
-      "allergy_onion",
       "allergy_radish",
-      "allergy_beetroot",
       "allergy_sweet_potato",
       "allergy_lotus_root"
-    ]
-  },
-  {
-    "id": "group_allergy_cruciferous",
-    "kind": "allergy",
-    "icon": "🥦",
-    "labels": {
-      "ko-KR": "십자화과 채소",
-      "en-US": "Cruciferous vegetables",
-      "ja-JP": "アブラナ科野菜"
-    },
-    "members": [
-      "allergy_broccoli",
-      "allergy_cabbage",
-      "allergy_cauliflower",
-      "allergy_kale",
-      "allergy_brussels_sprouts",
-      "allergy_arugula"
-    ]
-  },
-  {
-    "id": "group_allergy_beverages_fermented",
-    "kind": "allergy",
-    "icon": "🍵",
-    "labels": {
-      "ko-KR": "차 · 기호음료 · 효모",
-      "en-US": "Teas, beverages and yeast",
-      "ja-JP": "お茶・嗜好飲料・酵母"
-    },
-    "members": [
-      "allergy_green_tea",
-      "allergy_chamomile",
-      "allergy_kombucha",
-      "allergy_yeast",
-      "allergy_cocoa",
-      "allergy_tannins"
-    ]
-  },
-  {
-    "id": "group_condition_genetic_rare",
-    "kind": "condition",
-    "icon": "🧬",
-    "labels": {
-      "ko-KR": "유전 · 희귀 질환",
-      "en-US": "Genetic and rare diseases",
-      "ja-JP": "遺伝・希少疾患"
-    },
-    "members": [
-      "condition_phenylketonuria",
-      "condition_marfan_syndrome",
-      "condition_huntingtons_disease",
-      "condition_neurofibromatosis",
-      "condition_muscular_dystrophy",
-      "condition_gaucher_disease",
-      "condition_albinism"
-    ]
-  },
-  {
-    "id": "group_condition_immunology_rheum",
-    "kind": "condition",
-    "icon": "🔬",
-    "labels": {
-      "ko-KR": "면역 · 류마티스 질환",
-      "en-US": "Immunology and rheumatology",
-      "ja-JP": "免疫・リウマチ疾患"
-    },
-    "members": [
-      "condition_sarcoidosis",
-      "condition_scleroderma",
-      "condition_polymyalgia_rheumatica",
-      "condition_behcets_disease",
-      "condition_kawasaki_disease",
-      "condition_giant_cell_arteritis"
     ]
   },
   {
@@ -1016,65 +624,9 @@
     },
     "members": [
       "condition_gastroparesis",
-      "condition_barretts_esophagus",
       "condition_diverticulitis",
       "condition_hemorrhoids",
-      "condition_hiatal_hernia",
-      "condition_sibo"
-    ]
-  },
-  {
-    "id": "group_condition_skin_extra",
-    "kind": "condition",
-    "icon": "🩹",
-    "labels": {
-      "ko-KR": "피부 질환 확장",
-      "en-US": "Skin conditions extended",
-      "ja-JP": "皮膚疾患拡張"
-    },
-    "members": [
-      "condition_vitiligo",
-      "condition_hidradenitis_suppurativa",
-      "condition_seborrheic_dermatitis",
-      "condition_contact_dermatitis",
-      "condition_molluscum_contagiosum",
-      "condition_shingles"
-    ]
-  },
-  {
-    "id": "group_condition_dental_oral_extra",
-    "kind": "condition",
-    "icon": "🦷",
-    "labels": {
-      "ko-KR": "구강 · 턱관절 질환",
-      "en-US": "Oral and TMJ conditions",
-      "ja-JP": "口腔・顎関節疾患"
-    },
-    "members": [
-      "condition_tmj_disorder",
-      "condition_bruxism",
-      "condition_gingivitis",
-      "condition_glossitis",
-      "condition_dental_caries",
-      "condition_oral_thrush"
-    ]
-  },
-  {
-    "id": "group_condition_neurological_extra_2",
-    "kind": "condition",
-    "icon": "⚡",
-    "labels": {
-      "ko-KR": "중추 · 말초신경계 질환",
-      "en-US": "Central and peripheral nervous system",
-      "ja-JP": "中枢・末梢神経系疾患"
-    },
-    "members": [
-      "condition_multiple_sclerosis",
-      "condition_als",
-      "condition_myasthenia_gravis",
-      "condition_guillain_barre",
-      "condition_trigeminal_neuralgia",
-      "condition_essential_tremor"
+      "condition_hiatal_hernia"
     ]
   },
   {
@@ -1092,101 +644,7 @@
       "condition_colorectal_cancer",
       "condition_prostate_cancer",
       "condition_stomach_cancer",
-      "condition_thyroid_cancer",
-      "condition_lymphoma"
-    ]
-  },
-  {
-    "id": "group_condition_mental_behavioral",
-    "kind": "condition",
-    "icon": "🧠",
-    "labels": {
-      "ko-KR": "정신건강 · 행동 장애",
-      "en-US": "Mental and behavioral disorders",
-      "ja-JP": "メンタルヘルス・行動障害"
-    },
-    "members": [
-      "condition_ptsd",
-      "condition_ocd",
-      "condition_borderline_personality",
-      "condition_dissociative_disorder",
-      "condition_adjustment_disorder",
-      "condition_social_anxiety",
-      "condition_hoarding_disorder"
-    ]
-  },
-  {
-    "id": "group_condition_posture_orthopedic",
-    "kind": "condition",
-    "icon": "🧍",
-    "labels": {
-      "ko-KR": "관절 · 인대 · 척추 손상",
-      "en-US": "Joint, ligament and spinal conditions",
-      "ja-JP": "関節・靭帯・脊椎損傷"
-    },
-    "members": [
-      "condition_frozen_shoulder",
-      "condition_carpal_tunnel",
-      "condition_plantar_fasciitis",
-      "condition_tennis_elbow",
-      "condition_patellar_tendonitis",
-      "condition_meniscus_tear"
-    ]
-  },
-  {
-    "id": "group_dietary_medical_special",
-    "kind": "dietary",
-    "icon": "🍏",
-    "labels": {
-      "ko-KR": "질환별 특수 식단",
-      "en-US": "Special therapeutic diets",
-      "ja-JP": "疾患別特殊食事"
-    },
-    "members": [
-      "diet_low_histamine",
-      "diet_low_oxalate",
-      "diet_low_salicylate",
-      "diet_renal",
-      "diet_diabetic",
-      "diet_soft_food",
-      "diet_liquid"
-    ]
-  },
-  {
-    "id": "group_condition_infectious_extra",
-    "kind": "condition",
-    "icon": "💉",
-    "labels": {
-      "ko-KR": "감염성 질환 확장",
-      "en-US": "Infectious diseases extended",
-      "ja-JP": "感染症拡張"
-    },
-    "members": [
-      "condition_lyme_disease",
-      "condition_mononucleosis",
-      "condition_malaria",
-      "condition_dengue",
-      "condition_sepsis",
-      "condition_cellulitis",
-      "condition_epstein_barr"
-    ]
-  },
-  {
-    "id": "group_condition_geriatric",
-    "kind": "condition",
-    "icon": "👵",
-    "labels": {
-      "ko-KR": "노년기 증후군",
-      "en-US": "Geriatric syndromes",
-      "ja-JP": "老年症候群"
-    },
-    "members": [
-      "condition_frailty_syndrome",
-      "condition_presbyopia",
-      "condition_presbycusis",
-      "condition_sarcopenic_obesity",
-      "condition_gait_disorder"
+      "condition_thyroid_cancer"
     ]
   }
-  
 ]

@@ -43,8 +43,8 @@ test("health catalog contains all senior health additions exactly once", async (
     .filter((group) => group.kind === "condition")
     .flatMap((group) => group.members);
 
-  assert.equal(terms.filter((term) => term.kind === "allergy").length, 46);
-  assert.equal(conditionIds.length, 53);
+  assert.equal(terms.filter((term) => term.kind === "allergy").length, 93);
+  assert.equal(conditionIds.length, 99);
   assert.equal(new Set(ids).size, ids.length, "health IDs must be unique");
   assert.equal(
     new Set(conditionGroupMembers).size,

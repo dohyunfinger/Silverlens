@@ -194,6 +194,61 @@ export function getHealthCatalogForPrompt() {
   }));
 }
 
+/**
+ * "무", "게", "가지"처럼 짧은 한글 이름은 문장 속 다른 말("무엇", "어떻게", "몇 가지")에
+ * 그대로 들어 있어 글자 포함만으로 찾으면 엉뚱한 알레르기 경고가 뜬다.
+ * 이런 이름은 낱말 단위로만 본다. 낱말 그대로이거나, 뒤에 조사가 붙거나,
+ * "가지볶음"·"무생채"처럼 음식 이름 꼬리가 붙은 경우만 같은 식품으로 인정한다.
+ */
+const SHORT_HANGUL_NAME = /^\p{Script=Hangul}{1,2}$/u;
+const PARTICLE_SUFFIXES = [
+  "은", "는", "이", "가", "을", "를", "도", "만", "랑", "이랑", "하고", "과", "와",
+  "에", "에는", "로", "으로", "요", "이요", "이나", "나", "같은", "넣은", "든",
+];
+const DISH_SUFFIXES = [
+  "볶음", "무침", "나물", "국", "국밥", "탕", "찜", "전", "구이", "즙", "차", "김치",
+  "조림", "생채", "백숙", "주스", "잼", "청", "떡", "밥", "죽", "말랭이", "튀김",
+  "샐러드", "소스", "가루", "장아찌", "절임", "깍두기", "고기", "장", "젓", "젓갈", "회",
+];
+/** "몇 가지", "여러 가지"처럼 개수를 세는 말 뒤의 "가지"는 채소가 아니다. */
+const COUNTED_NAMES = new Set(["가지"]);
+const COUNTER_WORDS = new Set([
+  "몇", "여러", "한", "두", "세", "네", "다섯", "여섯", "일곱", "여덟", "아홉", "열",
+  "모든", "온갖", "각", "갖은",
+]);
+
+function endsWithOptionalParticle(rest: string, base: string) {
+  return rest === base || PARTICLE_SUFFIXES.some((particle) => rest === base + particle);
+}
+
+function containsShortName(text: string, name: string) {
+  const tokens = text
+    .split(/[\s'’"“”.,/#!?$%^&*;:{}=_`~()[\]<>\-+·…]+/u)
+    .map(normalize)
+    .filter(Boolean);
+  return tokens.some((token, index) => {
+    if (!token.includes(name)) return false;
+    if (COUNTED_NAMES.has(name)) {
+      const before = token.startsWith(name) ? tokens[index - 1] : token.slice(0, token.indexOf(name));
+      if (before && (COUNTER_WORDS.has(before) || /^\d+$/.test(before))) return false;
+    }
+    // 낱말 첫머리: "무", "무는", "무생채", "가지볶음을"
+    if (token.startsWith(name)) {
+      const rest = token.slice(name.length);
+      if (endsWithOptionalParticle(rest, "")) return true;
+      if (DISH_SUFFIXES.some((suffix) => endsWithOptionalParticle(rest, suffix))) return true;
+    }
+    // 낱말 끝의 음식 이름: "간장게장", "열무김치"는 맞고 "어떻게"는 음식 꼬리가 없어 제외된다.
+    let at = token.indexOf(name, 1);
+    while (at > 0) {
+      const rest = token.slice(at + name.length);
+      if (DISH_SUFFIXES.some((suffix) => endsWithOptionalParticle(rest, suffix))) return true;
+      at = token.indexOf(name, at + 1);
+    }
+    return false;
+  });
+}
+
 export function findAllergyTermConflicts(text: string, allergyIds: string[]) {
   const normalizedText = normalize(text);
   return allergyIds
@@ -206,10 +261,11 @@ export function findAllergyTermConflicts(text: string, allergyIds: string[]) {
         ...term.aliases,
       ].some((candidate) => {
         const normalizedCandidate = normalize(candidate);
-        return (
-          normalizedCandidate.length >= 1 &&
-          normalizedText.includes(normalizedCandidate)
-        );
+        if (normalizedCandidate.length < 1) return false;
+        if (SHORT_HANGUL_NAME.test(normalizedCandidate)) {
+          return containsShortName(text, normalizedCandidate);
+        }
+        return normalizedText.includes(normalizedCandidate);
       }),
     );
 }

@@ -55,7 +55,9 @@ function normalizeRecord(item) {
 }
 
 function itemsFrom(payload) {
-  const items = payload?.body?.items?.item;
+  // JSON 응답은 body.items 가 곧바로 배열이고, XML을 옮긴 형태는 body.items.item 이다.
+  const container = payload?.body?.items;
+  const items = Array.isArray(container) ? container : container?.item;
   if (!items) return [];
   return Array.isArray(items) ? items : [items];
 }

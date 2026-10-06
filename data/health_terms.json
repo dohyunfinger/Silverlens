@@ -1651,5 +1651,1414 @@
       "ビタミンD欠乏症",
       "ビタミンD不足"
     ]
+  },
+  {
+    "id": "allergy_orange",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "오렌지",
+      "en-US": "Orange",
+      "ja-JP": "オレンジ"
+    },
+    "aliases": [
+      "오렌지 알레르기",
+      "귤",
+      "감귤",
+      "orange allergy",
+      "オレンジアレルギー",
+      "みかん"
+    ]
+  },
+  {
+    "id": "allergy_lemon",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "레몬",
+      "en-US": "Lemon",
+      "ja-JP": "レモン"
+    },
+    "aliases": [
+      "레몬 알레르기",
+      "lemon allergy",
+      "レモンアレルギー"
+    ]
+  },
+  {
+    "id": "allergy_grapefruit",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "자몽",
+      "en-US": "Grapefruit",
+      "ja-JP": "グレープフルーツ"
+    },
+    "aliases": [
+      "자몽 알레르기",
+      "그레이프프루트",
+      "grapefruit allergy",
+      "グレープフルーツアレルギー"
+    ]
+  },
+  {
+    "id": "allergy_yuzu",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "유자",
+      "en-US": "Yuzu",
+      "ja-JP": "柚子"
+    },
+    "aliases": [
+      "유자 알레르기",
+      "유자차",
+      "yuzu allergy",
+      "ゆず",
+      "ユズ"
+    ]
+  },
+  {
+    "id": "allergy_cashew",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "캐슈너트",
+      "en-US": "Cashew",
+      "ja-JP": "カシューナッツ"
+    },
+    "aliases": [
+      "캐슈넛",
+      "캐슈",
+      "cashew nut",
+      "cashew allergy",
+      "カシューナッツアレルギー"
+    ]
+  },
+  {
+    "id": "allergy_pistachio",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "피스타치오",
+      "en-US": "Pistachio",
+      "ja-JP": "ピスタチオ"
+    },
+    "aliases": [
+      "pistachio allergy",
+      "ピスタチオアレルギー"
+    ]
+  },
+  {
+    "id": "allergy_hazelnut",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "헤이즐넛",
+      "en-US": "Hazelnut",
+      "ja-JP": "ヘーゼルナッツ"
+    },
+    "aliases": [
+      "개암",
+      "hazelnut allergy",
+      "ヘーゼルナッツアレルギー"
+    ]
+  },
+  {
+    "id": "allergy_macadamia",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "마카다미아",
+      "en-US": "Macadamia nut",
+      "ja-JP": "マカダミアナッツ"
+    },
+    "aliases": [
+      "마카다미아넛",
+      "macadamia",
+      "マカダミア"
+    ]
+  },
+  {
+    "id": "allergy_chili_pepper",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "고추 · 고춧가루",
+      "en-US": "Chili pepper",
+      "ja-JP": "唐辛子"
+    },
+    "aliases": [
+      "고추",
+      "고춧가루",
+      "고추 알레르기",
+      "chili",
+      "red pepper",
+      "とうがらし",
+      "トウガラシ"
+    ]
+  },
+  {
+    "id": "allergy_black_pepper",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "후추",
+      "en-US": "Black pepper",
+      "ja-JP": "胡椒"
+    },
+    "aliases": [
+      "후춧가루",
+      "pepper",
+      "コショウ",
+      "こしょう"
+    ]
+  },
+  {
+    "id": "allergy_mustard",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "겨자",
+      "en-US": "Mustard",
+      "ja-JP": "からし"
+    },
+    "aliases": [
+      "겨자 알레르기",
+      "머스터드",
+      "mustard allergy",
+      "マスタード",
+      "辛子"
+    ]
+  },
+  {
+    "id": "allergy_cinnamon",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "계피",
+      "en-US": "Cinnamon",
+      "ja-JP": "シナモン"
+    },
+    "aliases": [
+      "시나몬",
+      "수정과",
+      "cinnamon allergy",
+      "桂皮"
+    ]
+  },
+  {
+    "id": "allergy_ginger",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "생강",
+      "en-US": "Ginger",
+      "ja-JP": "生姜"
+    },
+    "aliases": [
+      "생강 알레르기",
+      "생강차",
+      "ginger allergy",
+      "しょうが",
+      "ショウガ"
+    ]
+  },
+  {
+    "id": "allergy_turmeric",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "강황 · 울금",
+      "en-US": "Turmeric",
+      "ja-JP": "ウコン"
+    },
+    "aliases": [
+      "강황",
+      "울금",
+      "카레 가루",
+      "curcumin",
+      "ターメリック"
+    ]
+  },
+  {
+    "id": "allergy_cilantro",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "고수",
+      "en-US": "Cilantro",
+      "ja-JP": "パクチー"
+    },
+    "aliases": [
+      "고수 알레르기",
+      "coriander",
+      "コリアンダー",
+      "香菜"
+    ]
+  },
+  {
+    "id": "allergy_mint",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "박하 · 민트",
+      "en-US": "Mint",
+      "ja-JP": "ミント"
+    },
+    "aliases": [
+      "박하",
+      "민트",
+      "peppermint",
+      "ハッカ",
+      "薄荷"
+    ]
+  },
+  {
+    "id": "allergy_benzoate",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "안식향산나트륨 (보존제)",
+      "en-US": "Sodium benzoate",
+      "ja-JP": "安息香酸ナトリウム"
+    },
+    "aliases": [
+      "안식향산나트륨",
+      "안식향산",
+      "benzoate",
+      "安息香酸"
+    ]
+  },
+  {
+    "id": "allergy_nitrites",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "아질산나트륨 (발색제)",
+      "en-US": "Sodium nitrite",
+      "ja-JP": "亜硝酸ナトリウム"
+    },
+    "aliases": [
+      "아질산나트륨",
+      "아질산염",
+      "nitrite",
+      "nitrites",
+      "亜硝酸塩"
+    ]
+  },
+  {
+    "id": "allergy_artificial_colors",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "타르색소 (인공색소)",
+      "en-US": "Artificial food coloring",
+      "ja-JP": "合成着色料"
+    },
+    "aliases": [
+      "타르색소",
+      "인공색소",
+      "식용색소",
+      "artificial colors",
+      "food dye",
+      "タール色素",
+      "着色料"
+    ]
+  },
+  {
+    "id": "allergy_aspartame",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "아스파탐 (감미료)",
+      "en-US": "Aspartame",
+      "ja-JP": "アスパルテーム"
+    },
+    "aliases": [
+      "아스파탐",
+      "인공감미료",
+      "artificial sweetener",
+      "人工甘味料"
+    ]
+  },
+  {
+    "id": "allergy_blueberry",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "블루베리",
+      "en-US": "Blueberry",
+      "ja-JP": "ブルーベリー"
+    },
+    "aliases": [
+      "blueberry allergy",
+      "ブルーベリーアレルギー"
+    ]
+  },
+  {
+    "id": "allergy_mulberry",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "오디 · 뽕나무 열매",
+      "en-US": "Mulberry",
+      "ja-JP": "桑の実"
+    },
+    "aliases": [
+      "오디",
+      "뽕나무 열매",
+      "mulberry allergy",
+      "マルベリー"
+    ]
+  },
+  {
+    "id": "allergy_goji_berry",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "구기자",
+      "en-US": "Goji berry",
+      "ja-JP": "クコの実"
+    },
+    "aliases": [
+      "구기자차",
+      "goji",
+      "wolfberry",
+      "枸杞",
+      "クコ"
+    ]
+  },
+  {
+    "id": "allergy_cherry",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "체리 · 앵두",
+      "en-US": "Cherry",
+      "ja-JP": "さくらんぼ"
+    },
+    "aliases": [
+      "체리",
+      "앵두",
+      "cherry allergy",
+      "チェリー",
+      "サクランボ"
+    ]
+  },
+  {
+    "id": "allergy_plum",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "자두 · 매실",
+      "en-US": "Plum",
+      "ja-JP": "すもも"
+    },
+    "aliases": [
+      "자두",
+      "매실",
+      "매실청",
+      "plum allergy",
+      "プラム",
+      "梅"
+    ]
+  },
+  {
+    "id": "allergy_apricot",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "살구",
+      "en-US": "Apricot",
+      "ja-JP": "あんず"
+    },
+    "aliases": [
+      "살구 알레르기",
+      "apricot allergy",
+      "アプリコット",
+      "杏"
+    ]
+  },
+  {
+    "id": "allergy_date",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "대추",
+      "en-US": "Jujube (date)",
+      "ja-JP": "なつめ"
+    },
+    "aliases": [
+      "대추차",
+      "jujube",
+      "dates",
+      "ナツメ",
+      "棗"
+    ]
+  },
+  {
+    "id": "allergy_fig",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "무화과",
+      "en-US": "Fig",
+      "ja-JP": "いちじく"
+    },
+    "aliases": [
+      "무화과 알레르기",
+      "fig allergy",
+      "イチジク",
+      "無花果"
+    ]
+  },
+  {
+    "id": "allergy_eggplant",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "가지",
+      "en-US": "Eggplant",
+      "ja-JP": "なす"
+    },
+    "aliases": [
+      "가지 알레르기",
+      "aubergine",
+      "eggplant allergy",
+      "ナス",
+      "茄子"
+    ]
+  },
+  {
+    "id": "allergy_bell_pepper",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "피망 · 파프리카",
+      "en-US": "Bell pepper",
+      "ja-JP": "ピーマン"
+    },
+    "aliases": [
+      "피망",
+      "파프리카",
+      "paprika",
+      "sweet pepper",
+      "パプリカ"
+    ]
+  },
+  {
+    "id": "allergy_potato",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "감자",
+      "en-US": "Potato",
+      "ja-JP": "じゃがいも"
+    },
+    "aliases": [
+      "감자 알레르기",
+      "potato allergy",
+      "ジャガイモ",
+      "馬鈴薯"
+    ]
+  },
+  {
+    "id": "allergy_lamb",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "양고기",
+      "en-US": "Lamb",
+      "ja-JP": "羊肉"
+    },
+    "aliases": [
+      "양고기 알레르기",
+      "mutton",
+      "lamb allergy",
+      "ラム肉",
+      "マトン"
+    ]
+  },
+  {
+    "id": "allergy_duck",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "오리고기",
+      "en-US": "Duck",
+      "ja-JP": "鴨肉"
+    },
+    "aliases": [
+      "오리",
+      "오리 알레르기",
+      "duck meat",
+      "アヒル肉",
+      "合鴨"
+    ]
+  },
+  {
+    "id": "allergy_goat",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "염소고기 · 흑염소",
+      "en-US": "Goat meat",
+      "ja-JP": "ヤギ肉"
+    },
+    "aliases": [
+      "염소고기",
+      "흑염소",
+      "염소 알레르기",
+      "goat",
+      "山羊肉"
+    ]
+  },
+  {
+    "id": "allergy_watermelon",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "수박",
+      "en-US": "Watermelon",
+      "ja-JP": "スイカ"
+    },
+    "aliases": [
+      "수박 알레르기",
+      "watermelon allergy",
+      "西瓜"
+    ]
+  },
+  {
+    "id": "allergy_melon",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "참외 · 멜론",
+      "en-US": "Melon",
+      "ja-JP": "メロン"
+    },
+    "aliases": [
+      "참외",
+      "멜론",
+      "melon allergy",
+      "マクワウリ",
+      "cantaloupe"
+    ]
+  },
+  {
+    "id": "allergy_carrot",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "당근",
+      "en-US": "Carrot",
+      "ja-JP": "にんじん"
+    },
+    "aliases": [
+      "당근 알레르기",
+      "carrot allergy",
+      "ニンジン",
+      "人参"
+    ]
+  },
+  {
+    "id": "allergy_radish",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "무",
+      "en-US": "Korean radish",
+      "ja-JP": "大根"
+    },
+    "aliases": [
+      "무 알레르기",
+      "radish",
+      "daikon",
+      "だいこん"
+    ]
+  },
+  {
+    "id": "allergy_sweet_potato",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "고구마",
+      "en-US": "Sweet potato",
+      "ja-JP": "さつまいも"
+    },
+    "aliases": [
+      "고구마 알레르기",
+      "sweet potato allergy",
+      "サツマイモ"
+    ]
+  },
+  {
+    "id": "allergy_lotus_root",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "연근",
+      "en-US": "Lotus root",
+      "ja-JP": "れんこん"
+    },
+    "aliases": [
+      "연근 알레르기",
+      "lotus",
+      "レンコン",
+      "蓮根"
+    ]
+  },
+  {
+    "id": "allergy_broccoli",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "브로콜리",
+      "en-US": "Broccoli",
+      "ja-JP": "ブロッコリー"
+    },
+    "aliases": [
+      "broccoli allergy"
+    ]
+  },
+  {
+    "id": "allergy_cabbage",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "양배추 · 배추",
+      "en-US": "Cabbage",
+      "ja-JP": "キャベツ"
+    },
+    "aliases": [
+      "양배추",
+      "배추",
+      "cabbage allergy",
+      "白菜"
+    ]
+  },
+  {
+    "id": "allergy_green_tea",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "녹차",
+      "en-US": "Green tea",
+      "ja-JP": "緑茶"
+    },
+    "aliases": [
+      "녹차 알레르기",
+      "말차",
+      "matcha",
+      "抹茶"
+    ]
+  },
+  {
+    "id": "allergy_yeast",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "효모 (이스트)",
+      "en-US": "Yeast",
+      "ja-JP": "酵母"
+    },
+    "aliases": [
+      "효모",
+      "이스트",
+      "yeast allergy",
+      "イースト"
+    ]
+  },
+  {
+    "id": "allergy_cocoa",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "카카오 · 초콜릿",
+      "en-US": "Cocoa / chocolate",
+      "ja-JP": "カカオ・チョコレート"
+    },
+    "aliases": [
+      "카카오",
+      "초콜릿",
+      "코코아",
+      "chocolate",
+      "cocoa",
+      "チョコレート",
+      "ココア"
+    ]
+  },
+  {
+    "id": "allergy_chickpea",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "병아리콩",
+      "en-US": "Chickpea",
+      "ja-JP": "ひよこ豆"
+    },
+    "aliases": [
+      "병아리콩 알레르기",
+      "garbanzo",
+      "hummus",
+      "ガルバンゾー"
+    ]
+  },
+  {
+    "id": "allergy_pea",
+    "kind": "allergy",
+    "labels": {
+      "ko-KR": "완두콩",
+      "en-US": "Green pea",
+      "ja-JP": "えんどう豆"
+    },
+    "aliases": [
+      "완두",
+      "완두콩 알레르기",
+      "peas",
+      "グリーンピース"
+    ]
+  },
+  {
+    "id": "condition_celiac_disease",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "셀리악병",
+      "en-US": "Celiac disease",
+      "ja-JP": "セリアック病"
+    },
+    "aliases": [
+      "실리악병",
+      "셀리악",
+      "celiac",
+      "coeliac disease",
+      "グルテン腸症"
+    ]
+  },
+  {
+    "id": "condition_crohns_disease",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "크론병",
+      "en-US": "Crohn's disease",
+      "ja-JP": "クローン病"
+    },
+    "aliases": [
+      "크론",
+      "crohn's",
+      "crohn disease"
+    ]
+  },
+  {
+    "id": "condition_ulcerative_colitis",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "궤양성 대장염",
+      "en-US": "Ulcerative colitis",
+      "ja-JP": "潰瘍性大腸炎"
+    },
+    "aliases": [
+      "궤양성대장염",
+      "UC",
+      "colitis"
+    ]
+  },
+  {
+    "id": "condition_sjogrens_syndrome",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "쇼그렌 증후군",
+      "en-US": "Sjögren's syndrome",
+      "ja-JP": "シェーグレン症候群"
+    },
+    "aliases": [
+      "쇼그렌증후군",
+      "쇼그렌",
+      "sjogren's syndrome",
+      "sjogren"
+    ]
+  },
+  {
+    "id": "condition_urticaria",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "두드러기",
+      "en-US": "Hives (urticaria)",
+      "ja-JP": "じんましん"
+    },
+    "aliases": [
+      "만성 두드러기",
+      "urticaria",
+      "hives",
+      "蕁麻疹"
+    ]
+  },
+  {
+    "id": "condition_psoriasis",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "건선",
+      "en-US": "Psoriasis",
+      "ja-JP": "乾癬"
+    },
+    "aliases": [
+      "마른버짐",
+      "psoriasis",
+      "かんせん"
+    ]
+  },
+  {
+    "id": "condition_shingles",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "대상포진",
+      "en-US": "Shingles",
+      "ja-JP": "帯状疱疹"
+    },
+    "aliases": [
+      "대상 포진",
+      "herpes zoster",
+      "zoster",
+      "たいじょうほうしん"
+    ]
+  },
+  {
+    "id": "condition_epilepsy",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "뇌전증 (간질)",
+      "en-US": "Epilepsy",
+      "ja-JP": "てんかん"
+    },
+    "aliases": [
+      "뇌전증",
+      "간질",
+      "발작",
+      "seizure disorder",
+      "癲癇"
+    ]
+  },
+  {
+    "id": "condition_migraine",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "편두통",
+      "en-US": "Migraine",
+      "ja-JP": "片頭痛"
+    },
+    "aliases": [
+      "만성 두통",
+      "migraine headache",
+      "偏頭痛"
+    ]
+  },
+  {
+    "id": "condition_vertigo",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "어지럼증 · 이석증",
+      "en-US": "Dizziness / vertigo",
+      "ja-JP": "めまい"
+    },
+    "aliases": [
+      "어지럼증",
+      "이석증",
+      "현훈",
+      "dizziness",
+      "vertigo",
+      "眩暈",
+      "良性発作性頭位めまい症"
+    ]
+  },
+  {
+    "id": "condition_essential_tremor",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "본태성 떨림",
+      "en-US": "Essential tremor",
+      "ja-JP": "本態性振戦"
+    },
+    "aliases": [
+      "수전증",
+      "손떨림",
+      "tremor",
+      "ふるえ"
+    ]
+  },
+  {
+    "id": "condition_restless_legs_syndrome",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "하지불안 증후군",
+      "en-US": "Restless legs syndrome",
+      "ja-JP": "むずむず脚症候群"
+    },
+    "aliases": [
+      "하지불안증후군",
+      "하지불안",
+      "RLS",
+      "レストレスレッグス症候群"
+    ]
+  },
+  {
+    "id": "condition_hyperparathyroidism",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "부갑상선 기능항진증",
+      "en-US": "Hyperparathyroidism",
+      "ja-JP": "副甲状腺機能亢進症"
+    },
+    "aliases": [
+      "부갑상선항진증",
+      "부갑상선",
+      "parathyroid"
+    ]
+  },
+  {
+    "id": "condition_aortic_aneurysm",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "대동맥류",
+      "en-US": "Aortic aneurysm",
+      "ja-JP": "大動脈瘤"
+    },
+    "aliases": [
+      "복부 대동맥류",
+      "aneurysm",
+      "腹部大動脈瘤"
+    ]
+  },
+  {
+    "id": "condition_peripheral_artery_disease",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "말초동맥질환",
+      "en-US": "Peripheral artery disease",
+      "ja-JP": "末梢動脈疾患"
+    },
+    "aliases": [
+      "하지동맥 폐색",
+      "PAD",
+      "閉塞性動脈硬化症"
+    ]
+  },
+  {
+    "id": "condition_deep_vein_thrombosis",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "심부정맥 혈전증",
+      "en-US": "Deep vein thrombosis",
+      "ja-JP": "深部静脈血栓症"
+    },
+    "aliases": [
+      "혈전증",
+      "다리 혈전",
+      "DVT",
+      "blood clot",
+      "エコノミークラス症候群"
+    ]
+  },
+  {
+    "id": "condition_varicose_veins",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "하지정맥류",
+      "en-US": "Varicose veins",
+      "ja-JP": "下肢静脈瘤"
+    },
+    "aliases": [
+      "정맥류",
+      "varicose vein",
+      "静脈瘤"
+    ]
+  },
+  {
+    "id": "condition_hepatitis_b",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "B형 간염",
+      "en-US": "Hepatitis B",
+      "ja-JP": "B型肝炎"
+    },
+    "aliases": [
+      "B형간염",
+      "비형간염",
+      "hepatitis b",
+      "HBV"
+    ]
+  },
+  {
+    "id": "condition_hepatitis_c",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "C형 간염",
+      "en-US": "Hepatitis C",
+      "ja-JP": "C型肝炎"
+    },
+    "aliases": [
+      "C형간염",
+      "씨형간염",
+      "hepatitis c",
+      "HCV"
+    ]
+  },
+  {
+    "id": "condition_tuberculosis",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "결핵",
+      "en-US": "Tuberculosis",
+      "ja-JP": "結核"
+    },
+    "aliases": [
+      "폐결핵",
+      "결핵약 복용",
+      "TB",
+      "肺結核"
+    ]
+  },
+  {
+    "id": "condition_post_surgery",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "수술 후 회복 중",
+      "en-US": "Recovering from surgery",
+      "ja-JP": "手術後の回復期"
+    },
+    "aliases": [
+      "수술 후",
+      "수술후",
+      "수술 회복",
+      "post-surgery",
+      "術後"
+    ]
+  },
+  {
+    "id": "condition_post_organ_transplant",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "장기이식 후 (면역억제제 복용)",
+      "en-US": "After organ transplant",
+      "ja-JP": "臓器移植後"
+    },
+    "aliases": [
+      "장기이식",
+      "신장이식",
+      "간이식",
+      "면역억제제",
+      "organ transplant",
+      "免疫抑制剤"
+    ]
+  },
+  {
+    "id": "condition_stomatitis",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "구내염",
+      "en-US": "Mouth sores (stomatitis)",
+      "ja-JP": "口内炎"
+    },
+    "aliases": [
+      "입병",
+      "입안 헐음",
+      "stomatitis",
+      "mouth ulcer",
+      "canker sore"
+    ]
+  },
+  {
+    "id": "condition_xerostomia",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "구강건조증",
+      "en-US": "Dry mouth",
+      "ja-JP": "口腔乾燥症"
+    },
+    "aliases": [
+      "입마름",
+      "입 마름",
+      "xerostomia",
+      "dry mouth",
+      "ドライマウス"
+    ]
+  },
+  {
+    "id": "condition_dental_caries",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "충치",
+      "en-US": "Tooth decay",
+      "ja-JP": "虫歯"
+    },
+    "aliases": [
+      "치아우식증",
+      "dental caries",
+      "cavity",
+      "う蝕"
+    ]
+  },
+  {
+    "id": "condition_pneumonia",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "폐렴 · 흡인성 폐렴",
+      "en-US": "Pneumonia",
+      "ja-JP": "肺炎"
+    },
+    "aliases": [
+      "폐렴",
+      "흡인성 폐렴",
+      "흡인성폐렴",
+      "aspiration pneumonia",
+      "誤嚥性肺炎"
+    ]
+  },
+  {
+    "id": "condition_bronchiectasis",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "기관지확장증",
+      "en-US": "Bronchiectasis",
+      "ja-JP": "気管支拡張症"
+    },
+    "aliases": [
+      "기관지 확장증",
+      "bronchiectasis"
+    ]
+  },
+  {
+    "id": "condition_overactive_bladder",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "과민성 방광",
+      "en-US": "Overactive bladder",
+      "ja-JP": "過活動膀胱"
+    },
+    "aliases": [
+      "과민성방광",
+      "빈뇨",
+      "야간뇨",
+      "OAB",
+      "頻尿"
+    ]
+  },
+  {
+    "id": "condition_cystitis",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "방광염",
+      "en-US": "Bladder infection (cystitis)",
+      "ja-JP": "膀胱炎"
+    },
+    "aliases": [
+      "요로감염",
+      "cystitis",
+      "UTI",
+      "urinary tract infection",
+      "尿路感染症"
+    ]
+  },
+  {
+    "id": "condition_spinal_stenosis",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "척추관 협착증",
+      "en-US": "Spinal stenosis",
+      "ja-JP": "脊柱管狭窄症"
+    },
+    "aliases": [
+      "척추관협착증",
+      "협착증",
+      "spinal stenosis",
+      "lumbar stenosis"
+    ]
+  },
+  {
+    "id": "condition_herniated_disc",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "허리 디스크",
+      "en-US": "Herniated disc",
+      "ja-JP": "椎間板ヘルニア"
+    },
+    "aliases": [
+      "디스크",
+      "추간판 탈출증",
+      "목 디스크",
+      "slipped disc",
+      "ヘルニア"
+    ]
+  },
+  {
+    "id": "condition_frozen_shoulder",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "오십견 (어깨 유착)",
+      "en-US": "Frozen shoulder",
+      "ja-JP": "五十肩"
+    },
+    "aliases": [
+      "오십견",
+      "유착성 관절낭염",
+      "frozen shoulder",
+      "四十肩"
+    ]
+  },
+  {
+    "id": "condition_frailty_syndrome",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "노쇠 (허약 증후군)",
+      "en-US": "Frailty",
+      "ja-JP": "フレイル"
+    },
+    "aliases": [
+      "노쇠",
+      "노쇠 증후군",
+      "허약",
+      "frailty syndrome",
+      "虚弱"
+    ]
+  },
+  {
+    "id": "condition_dry_eye_syndrome",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "안구건조증",
+      "en-US": "Dry eye",
+      "ja-JP": "ドライアイ"
+    },
+    "aliases": [
+      "안구 건조증",
+      "눈마름",
+      "dry eye syndrome",
+      "眼球乾燥症"
+    ]
+  },
+  {
+    "id": "condition_diabetic_retinopathy",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "당뇨망막병증",
+      "en-US": "Diabetic retinopathy",
+      "ja-JP": "糖尿病網膜症"
+    },
+    "aliases": [
+      "당뇨병성 망막병증",
+      "당뇨 망막증",
+      "diabetic retinopathy"
+    ]
+  },
+  {
+    "id": "condition_liver_cirrhosis",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "간경변 (간경화)",
+      "en-US": "Liver cirrhosis",
+      "ja-JP": "肝硬変"
+    },
+    "aliases": [
+      "간경변",
+      "간경화",
+      "간경변증",
+      "cirrhosis"
+    ]
+  },
+  {
+    "id": "condition_diverticulitis",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "게실염",
+      "en-US": "Diverticulitis",
+      "ja-JP": "憩室炎"
+    },
+    "aliases": [
+      "대장 게실",
+      "게실",
+      "diverticulosis",
+      "大腸憩室"
+    ]
+  },
+  {
+    "id": "condition_hemorrhoids",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "치질 · 치핵",
+      "en-US": "Hemorrhoids",
+      "ja-JP": "痔"
+    },
+    "aliases": [
+      "치질",
+      "치핵",
+      "piles",
+      "痔核",
+      "いぼ痔"
+    ]
+  },
+  {
+    "id": "condition_hiatal_hernia",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "식도열공 탈장",
+      "en-US": "Hiatal hernia",
+      "ja-JP": "食道裂孔ヘルニア"
+    },
+    "aliases": [
+      "열공 탈장",
+      "식도 탈장",
+      "hiatus hernia"
+    ]
+  },
+  {
+    "id": "condition_gastroparesis",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "위 무력증 (위마비)",
+      "en-US": "Gastroparesis",
+      "ja-JP": "胃不全麻痺"
+    },
+    "aliases": [
+      "위마비",
+      "위무력증",
+      "당뇨성 위마비",
+      "胃麻痺"
+    ]
+  },
+  {
+    "id": "condition_stomach_cancer",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "위암",
+      "en-US": "Stomach cancer",
+      "ja-JP": "胃がん"
+    },
+    "aliases": [
+      "위절제",
+      "위 절제술 후",
+      "gastric cancer",
+      "胃癌"
+    ]
+  },
+  {
+    "id": "condition_colorectal_cancer",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "대장암",
+      "en-US": "Colorectal cancer",
+      "ja-JP": "大腸がん"
+    },
+    "aliases": [
+      "직장암",
+      "결장암",
+      "colon cancer",
+      "大腸癌"
+    ]
+  },
+  {
+    "id": "condition_lung_cancer",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "폐암",
+      "en-US": "Lung cancer",
+      "ja-JP": "肺がん"
+    },
+    "aliases": [
+      "lung cancer",
+      "肺癌"
+    ]
+  },
+  {
+    "id": "condition_breast_cancer",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "유방암",
+      "en-US": "Breast cancer",
+      "ja-JP": "乳がん"
+    },
+    "aliases": [
+      "breast cancer",
+      "乳癌"
+    ]
+  },
+  {
+    "id": "condition_prostate_cancer",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "전립선암",
+      "en-US": "Prostate cancer",
+      "ja-JP": "前立腺がん"
+    },
+    "aliases": [
+      "prostate cancer",
+      "前立腺癌"
+    ]
+  },
+  {
+    "id": "condition_thyroid_cancer",
+    "kind": "condition",
+    "labels": {
+      "ko-KR": "갑상선암",
+      "en-US": "Thyroid cancer",
+      "ja-JP": "甲状腺がん"
+    },
+    "aliases": [
+      "thyroid cancer",
+      "甲状腺癌"
+    ]
   }
 ]
