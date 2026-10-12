@@ -2,6 +2,7 @@
   "name": "silverlens-senior-assistant",
   "version": "0.1.0",
   "private": true,
+  "license": "MIT",
   "engines": {
     "node": ">=22.13.0"
   },
@@ -15,7 +16,8 @@
     "validate:artifact": "node scripts/validate-artifact.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern .next",
     "prepare:data": "python3 scripts/prepare_knowledge_data.py",
-    "sync:drug-data": "node scripts/sync-mfds-pill-data.mjs"
+    "sync:drug-data": "node scripts/sync-mfds-pill-data.mjs",
+    "narration:guide": "node --env-file-if-exists=.env.local scripts/generate-guide-narration.mjs"
   },
   "dependencies": {
     "next": "16.2.6",

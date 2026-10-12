@@ -1,0 +1,19 @@
+{
+  "voices": {
+    "ko-KR": "EXAVITQu4vr4xnSDxMaL"
+  },
+  "entries": {
+    "ko-KR|마이크를 눌러 말씀하시고, 보내기를 누르세요. 사진이나 글로도 질문할 수 있어요.": "narration/ko-KR/90434b10a37448bc.mp3",
+    "ko-KR|편하신 언어부터 골라 주세요. 나중에 입력하시려면 모두 건너뛰기를 누르세요.": "narration/ko-KR/8c34f55cfb94091a.mp3",
+    "ko-KR|이 속도는 어떠세요? 아래에서 조절해 주세요.": "narration/ko-KR/a994de328d76d9e2.mp3",
+    "ko-KR|사용할 언어를 선택해 주세요.": "narration/ko-KR/32d32e29b0098d54.mp3",
+    "ko-KR|성별을 선택해 주세요.": "narration/ko-KR/9d6f8b0ac4aafb1f.mp3",
+    "ko-KR|해당하는 나이대 버튼을 눌러 주세요.": "narration/ko-KR/086fa649d64dfbc3.mp3",
+    "ko-KR|기본 설정이 끝났습니다. 알레르기와 질병·건강 상태는 선택해서 추가할 수 있어요.": "narration/ko-KR/f8f746cc468637d0.mp3",
+    "ko-KR|음성이 첨부되었습니다. 사진이나 글을 더한 뒤 질문 보내기 버튼을 눌러 주세요.": "narration/ko-KR/1b243640b55af775.mp3",
+    "ko-KR|사진이 첨부되었습니다. 음성이나 글을 더한 뒤 질문 보내기 버튼을 눌러 주세요.": "narration/ko-KR/a1b02bd794ff2df9.mp3",
+    "ko-KR|글자가 화면을 가득 채우게, 봉지를 펴서 찍어 주세요.": "narration/ko-KR/1d54d9d29e8e6632.mp3",
+    "ko-KR|음식 전체가 들어오게, 위에서 내려다보며 찍어 주세요.": "narration/ko-KR/d8da0228af8b15ba.mp3",
+    "ko-KR|약 이름과 하루 몇 번 먹는지가 보이게 찍어 주세요.": "narration/ko-KR/8ee7a006a0ba4a43.mp3"
+  }
+}

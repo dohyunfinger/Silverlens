@@ -23,6 +23,12 @@ import {
   type StoredPendingPhoto,
   writeStore,
 } from "./localStore";
+import {
+  GUIDE_NARRATION_MANIFEST_URL,
+  guideNarrationCopy,
+  guideNarrationKey,
+  type GuideNarrationManifest,
+} from "./guideNarration";
 import { type PhotoIssue, preparePhoto } from "./photoCapture";
 import {
   getHealthGroupOptions,
@@ -166,6 +172,30 @@ function lazyNarrationChunk(factory: () => Promise<Blob>): NarrationChunkRequest
     }
     return pending;
   };
+}
+
+/**
+ * 미리 만든 안내 음성 목록. 앱을 연 뒤 한 번만 받아 온다.
+ * 목록이 없거나 받지 못하면 빈 목록으로 보고 기존 경로(브라우저·서버 TTS)로 읽는다.
+ */
+let guideNarrationEntriesPromise: Promise<GuideNarrationManifest["entries"]> | null = null;
+
+function loadGuideNarrationEntries() {
+  if (!guideNarrationEntriesPromise) {
+    guideNarrationEntriesPromise = fetch(GUIDE_NARRATION_MANIFEST_URL)
+      .then((response) =>
+        response.ok ? (response.json() as Promise<GuideNarrationManifest>) : null,
+      )
+      .then((manifest) => manifest?.entries ?? {})
+      .catch(() => ({}));
+  }
+  return guideNarrationEntriesPromise;
+}
+
+async function prebuiltGuideNarrationUrl(lang: Language, text: string) {
+  const entries = await loadGuideNarrationEntries();
+  const path = entries[guideNarrationKey(lang, text)];
+  return path ? `/${path}` : null;
 }
 
 function plainTextFromMarkdown(markdown: string) {
@@ -854,26 +884,27 @@ function readLegacyHealthNotes(): HealthNote[] {
 }
 /** 메모는 프롬프트에 그대로 들어가므로 최근 것만 유지한다. */
 const MAX_HEALTH_NOTES = 8;
-const TTS_CACHE_NAME = "silverlens-tts-v1";
+// v2: 나레이션 목소리를 ElevenLabs로 바꾸면서 예전 Gemini 음성을 버린다.
+const TTS_CACHE_NAME = "silverlens-tts-v2";
 
 const promptCopy: Record<Language, Record<SetupStep, string>> = {
   "ko-KR": {
-    language: "사용할 언어를 선택해 주세요.",
-    gender: "성별을 선택해 주세요.",
-    age: "해당하는 나이대 버튼을 눌러 주세요.",
-    complete: "기본 설정이 끝났습니다. 알레르기와 질병·건강 상태는 선택해서 추가할 수 있어요.",
+    language: guideNarrationCopy["ko-KR"].setupLanguage,
+    gender: guideNarrationCopy["ko-KR"].setupGender,
+    age: guideNarrationCopy["ko-KR"].setupAge,
+    complete: guideNarrationCopy["ko-KR"].setupComplete,
   },
   "en-US": {
-    language: "Please choose your language.",
-    gender: "Please choose your gender.",
-    age: "Please tap the button for your age group.",
-    complete: "Basic setup is complete. You may add allergy and health information.",
+    language: guideNarrationCopy["en-US"].setupLanguage,
+    gender: guideNarrationCopy["en-US"].setupGender,
+    age: guideNarrationCopy["en-US"].setupAge,
+    complete: guideNarrationCopy["en-US"].setupComplete,
   },
   "ja-JP": {
-    language: "使用する言語を選んでください。",
-    gender: "性別を選んでください。",
-    age: "該当する年齢層のボタンを押してください。",
-    complete: "基本設定が完了しました。アレルギーや病気・健康状態も追加できます。",
+    language: guideNarrationCopy["ja-JP"].setupLanguage,
+    gender: guideNarrationCopy["ja-JP"].setupGender,
+    age: guideNarrationCopy["ja-JP"].setupAge,
+    complete: guideNarrationCopy["ja-JP"].setupComplete,
   },
 };
 
@@ -882,16 +913,16 @@ const automaticNoticeCopy: Record<
   { audioAttached: string; photoAttached: string }
 > = {
   "ko-KR": {
-    audioAttached: "음성이 첨부되었습니다. 사진이나 글을 더한 뒤 질문 보내기 버튼을 눌러 주세요.",
-    photoAttached: "사진이 첨부되었습니다. 음성이나 글을 더한 뒤 질문 보내기 버튼을 눌러 주세요.",
+    audioAttached: guideNarrationCopy["ko-KR"].audioAttached,
+    photoAttached: guideNarrationCopy["ko-KR"].photoAttached,
   },
   "en-US": {
-    audioAttached: "Your recording is attached. Add a photo or text if needed, then press Send question.",
-    photoAttached: "Your photo is attached. Add a recording or text if needed, then press Send question.",
+    audioAttached: guideNarrationCopy["en-US"].audioAttached,
+    photoAttached: guideNarrationCopy["en-US"].photoAttached,
   },
   "ja-JP": {
-    audioAttached: "音声を追加しました。必要なら写真や文字も足して、「質問を送る」を押してください。",
-    photoAttached: "写真を追加しました。必要なら音声や文字も足して、「質問を送る」を押してください。",
+    audioAttached: guideNarrationCopy["ja-JP"].audioAttached,
+    photoAttached: guideNarrationCopy["ja-JP"].photoAttached,
   },
 };
 
@@ -982,7 +1013,7 @@ const uiCopy = {
     answerSpeed: "답변 속도",
     answerSpeedHelp: "손이나 마우스로 끌어 음성 답변 속도를 조절하세요.",
     answerSpeedPreview: "이 속도로 들어보기",
-    answerSpeedSample: "이 속도는 어떠세요? 아래에서 조절해 주세요.",
+    answerSpeedSample: guideNarrationCopy["ko-KR"].answerSpeedSample,
     answerSpeedLimited: "이 기기에서는 문장 사이를 쉬어 읽는 방식으로 속도를 맞춰요.",
     speedSlow: "느리게",
     speedFast: "빠르게",
@@ -1045,8 +1076,8 @@ const uiCopy = {
     completionHint: "언어·성별·나이대를 선택하면 대화를 시작할 수 있어요.",
     backToSetup: "← 설정으로",
     welcomeVoice:
-      "마이크를 눌러 말씀하시고, 보내기를 누르세요. 사진이나 글로도 질문할 수 있어요.",
-    profileIntroVoice: "편하신 언어부터 골라 주세요. 나중에 입력하시려면 모두 건너뛰기를 누르세요.",
+      guideNarrationCopy["ko-KR"].welcomeVoice,
+    profileIntroVoice: guideNarrationCopy["ko-KR"].profileIntroVoice,
     welcomeTitle: "말씀만 하시면 됩니다",
     welcomeBody:
       "드시려는 음식 이름을 말하거나 사진을 찍어 보여주세요. 드셔도 괜찮은지 큰 글자로 알려드립니다.",
@@ -1141,11 +1172,11 @@ const uiCopy = {
     photoSourceGalleryHelp: "앨범에서 고릅니다",
     photoSourceBack: "← 무엇을 찍을지 다시 고르기",
     photoPurposeLabel: "성분표·라벨",
-    photoPurposeLabelTip: "글자가 화면을 가득 채우게, 봉지를 펴서 찍어 주세요.",
+    photoPurposeLabelTip: guideNarrationCopy["ko-KR"].photoPurposeLabelTip,
     photoPurposeFood: "음식·식재료",
-    photoPurposeFoodTip: "음식 전체가 들어오게, 위에서 내려다보며 찍어 주세요.",
+    photoPurposeFoodTip: guideNarrationCopy["ko-KR"].photoPurposeFoodTip,
     photoPurposeMedicine: "약 봉투·약 이름",
-    photoPurposeMedicineTip: "약 이름과 하루 몇 번 먹는지가 보이게 찍어 주세요.",
+    photoPurposeMedicineTip: guideNarrationCopy["ko-KR"].photoPurposeMedicineTip,
     photoPreparing: "사진을 확인하고 있어요.",
     photoReviewTitle: "사진을 확인해 주세요",
     photoReviewHelp: "찍으려던 것이 잘 보이면 그대로 물어보시고, 아니면 다시 찍어 주세요.",
@@ -1184,7 +1215,7 @@ const uiCopy = {
     answerSpeed: "Answer speed",
     answerSpeedHelp: "Drag with your hand or mouse to adjust voice answer speed.",
     answerSpeedPreview: "Hear this speed",
-    answerSpeedSample: "I will read answers at this speed.",
+    answerSpeedSample: guideNarrationCopy["en-US"].answerSpeedSample,
     answerSpeedLimited: "On this device, speed is adjusted by pausing between sentences.",
     speedSlow: "Slower",
     speedFast: "Faster",
@@ -1247,8 +1278,8 @@ const uiCopy = {
     completionHint: "Choose language, gender, and age to start chatting.",
     backToSetup: "← Back to setup",
     welcomeVoice:
-      "Tap the microphone, speak, then tap Send. You can also use a photo or text.",
-    profileIntroVoice: "Choose your preferred language. To add your information later, tap Skip all.",
+      guideNarrationCopy["en-US"].welcomeVoice,
+    profileIntroVoice: guideNarrationCopy["en-US"].profileIntroVoice,
     welcomeTitle: "Just speak to me",
     welcomeBody:
       "Say the name of a food or show me a photo. I will tell you in large text whether it is fine to eat.",
@@ -1343,11 +1374,11 @@ const uiCopy = {
     photoSourceGalleryHelp: "Pick from your album",
     photoSourceBack: "← Choose what to photograph again",
     photoPurposeLabel: "Ingredient list or label",
-    photoPurposeLabelTip: "Flatten the package and fill the screen with the text.",
+    photoPurposeLabelTip: guideNarrationCopy["en-US"].photoPurposeLabelTip,
     photoPurposeFood: "Food or ingredient",
-    photoPurposeFoodTip: "Look down from above so the whole dish fits in.",
+    photoPurposeFoodTip: guideNarrationCopy["en-US"].photoPurposeFoodTip,
     photoPurposeMedicine: "Medicine packet or name",
-    photoPurposeMedicineTip: "Make sure the medicine name and daily doses are visible.",
+    photoPurposeMedicineTip: guideNarrationCopy["en-US"].photoPurposeMedicineTip,
     photoPreparing: "Checking the photo.",
     photoReviewTitle: "Please check the photo",
     photoReviewHelp: "If what you meant to capture is clear, go ahead and ask. If not, take it again.",
@@ -1386,7 +1417,7 @@ const uiCopy = {
     answerSpeed: "回答速度",
     answerSpeedHelp: "指やマウスで動かして音声回答の速さを調整してください。",
     answerSpeedPreview: "この速さで聞く",
-    answerSpeedSample: "この速さで回答をお読みします。",
+    answerSpeedSample: guideNarrationCopy["ja-JP"].answerSpeedSample,
     answerSpeedLimited: "この端末では、文の間に少し間をあけて速さを調整します。",
     speedSlow: "ゆっくり",
     speedFast: "はやく",
@@ -1449,8 +1480,8 @@ const uiCopy = {
     completionHint: "言語・性別・年齢を選ぶと会話を始められます。",
     backToSetup: "← 設定へ戻る",
     welcomeVoice:
-      "マイクを押して話し、送信を押してください。写真や文字でも質問できます。",
-    profileIntroVoice: "使いやすい言語を選んでください。情報をあとで入力する場合は、すべてスキップを押してください。",
+      guideNarrationCopy["ja-JP"].welcomeVoice,
+    profileIntroVoice: guideNarrationCopy["ja-JP"].profileIntroVoice,
     welcomeTitle: "話すだけで大丈夫です",
     welcomeBody:
       "食べたい食品の名前を言うか、写真を撮って見せてください。食べても大丈夫か大きな文字でお知らせします。",
@@ -1545,11 +1576,11 @@ const uiCopy = {
     photoSourceGalleryHelp: "アルバムから選びます",
     photoSourceBack: "← 何を撮るかもう一度選ぶ",
     photoPurposeLabel: "成分表・ラベル",
-    photoPurposeLabelTip: "袋を平らに伸ばし、文字が画面いっぱいになるように撮ってください。",
+    photoPurposeLabelTip: guideNarrationCopy["ja-JP"].photoPurposeLabelTip,
     photoPurposeFood: "料理・食材",
-    photoPurposeFoodTip: "真上から見下ろして、料理全体が入るように撮ってください。",
+    photoPurposeFoodTip: guideNarrationCopy["ja-JP"].photoPurposeFoodTip,
     photoPurposeMedicine: "薬の袋・薬の名前",
-    photoPurposeMedicineTip: "薬の名前と一日何回飲むかが見えるように撮ってください。",
+    photoPurposeMedicineTip: guideNarrationCopy["ja-JP"].photoPurposeMedicineTip,
     photoPreparing: "写真を確認しています。",
     photoReviewTitle: "写真を確認してください",
     photoReviewHelp: "撮りたかったものがはっきり見えていればそのまま質問し、見えていなければ撮り直してください。",
@@ -3810,7 +3841,7 @@ export default function SilverLensApp({
           const store = await caches.open(TTS_CACHE_NAME);
           await store.put(
             cacheUrl,
-            new Response(blob, { headers: { "Content-Type": "audio/wav" } }),
+            new Response(blob, { headers: { "Content-Type": blob.type || "audio/wav" } }),
           );
         } catch {
           // 저장 실패는 재생에 영향을 주지 않는다.
@@ -3977,6 +4008,42 @@ export default function SilverLensApp({
     [fetchGuideNarrationChunk, playNarrationPages, stopNarration],
   );
 
+  /**
+   * 미리 만든 안내 음성 파일을 재생한다.
+   * 파일이라 생성 대기와 크레딧이 들지 않고, 속도는 재생 속도로 맞춘다.
+   */
+  const speakPrebuiltGuide = useCallback(
+    async (url: string, onFailure: () => void) => {
+      stopNarration();
+      const sequence = narrationSequenceRef.current;
+      const pageRequests: NarrationPageRequests = [
+        [
+          lazyNarrationChunk(async () => {
+            const response = await fetch(url);
+            if (!response.ok) {
+              throw new Error(`안내 음성 파일을 불러오지 못했습니다 (${response.status}).`);
+            }
+            return response.blob();
+          }),
+        ],
+      ];
+
+      setIsNarrating(true);
+      try {
+        await playNarrationPages(pageRequests, 0, null, sequence);
+        if (sequence === narrationSequenceRef.current) setIsNarrating(false);
+      } catch (error) {
+        console.warn(
+          "[SilverLens] 미리 만든 안내 음성 재생 실패 → 기존 경로로 전환합니다.",
+          error,
+        );
+        if (sequence !== narrationSequenceRef.current) return;
+        onFailure();
+      }
+    },
+    [playNarrationPages, stopNarration],
+  );
+
   const speakGuideNarration = useCallback(
     (text: string, lang: Language = activeLanguage) => {
       if (typeof window === "undefined" || !("speechSynthesis" in window)) return;
@@ -3989,28 +4056,43 @@ export default function SilverLensApp({
           lang,
         });
 
-      const sequence = narrationSequenceRef.current;
-      void ensureSpeechVoicesReady().then(() => {
-        if (sequence !== narrationSequenceRef.current) return;
-        const rate = narrationRateRef.current;
-        const voice = pickSpeechVoice(lang);
-        const serverBlocked = Date.now() < serverTtsBlockedUntilRef.current;
-        const needsServer = needsServerNarration(voice, lang, rate);
+      const speakLive = () => {
+        const sequence = narrationSequenceRef.current;
+        void ensureSpeechVoicesReady().then(() => {
+          if (sequence !== narrationSequenceRef.current) return;
+          const rate = narrationRateRef.current;
+          const voice = pickSpeechVoice(lang);
+          const serverBlocked = Date.now() < serverTtsBlockedUntilRef.current;
+          const needsServer = needsServerNarration(voice, lang, rate);
 
-        if (!serverBlocked && needsServer) {
-          console.info(`[SilverLens] 음성 경로: 서버 TTS (${lang}, rate=${rate})`);
-          setVoiceRateMode("server");
-          void speakPagesWithServerTts([text], 0, null, lang, () => speakInBrowser());
+          if (!serverBlocked && needsServer) {
+            console.info(`[SilverLens] 음성 경로: 서버 TTS (${lang}, rate=${rate})`);
+            setVoiceRateMode("server");
+            void speakPagesWithServerTts([text], 0, null, lang, () => speakInBrowser());
+            return;
+          }
+
+          setVoiceRateMode(
+            browserRateIsReliable(voice, lang) ? "browser" : "browser-limited",
+          );
+          speakInBrowser();
+        });
+      };
+
+      // 미리 만든 음성이 있으면 속도와 관계없이 그 파일을 먼저 쓴다.
+      const sequence = narrationSequenceRef.current;
+      void prebuiltGuideNarrationUrl(lang, text).then((url) => {
+        if (sequence !== narrationSequenceRef.current) return;
+        if (!url) {
+          speakLive();
           return;
         }
-
-        setVoiceRateMode(
-          browserRateIsReliable(voice, lang) ? "browser" : "browser-limited",
-        );
-        speakInBrowser();
+        console.info(`[SilverLens] 음성 경로: 미리 만든 안내 음성 (${lang})`);
+        setVoiceRateMode("server");
+        void speakPrebuiltGuide(url, speakLive);
       });
     },
-    [activeLanguage, runBrowserNarration, speakPagesWithServerTts],
+    [activeLanguage, runBrowserNarration, speakPagesWithServerTts, speakPrebuiltGuide],
   );
 
   const prepareGeminiAnswer = useCallback(

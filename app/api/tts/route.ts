@@ -20,10 +20,10 @@ export async function POST(request: Request) {
       );
     }
     const language = typeof body.language === "string" ? body.language : "ko-KR";
-    const wav = await generateNarration(text, language);
-    return new Response(wav, {
+    const { audio, contentType } = await generateNarration(text, language);
+    return new Response(audio, {
       headers: {
-        "Content-Type": "audio/wav",
+        "Content-Type": contentType,
         /*
          * 같은 문장을 다시 들을 때 서버까지 가지 않도록 브라우저 캐시를 허용한다.
          * 건강 정보가 담긴 음성이라 공용 캐시(CDN)에는 저장하지 않는다.

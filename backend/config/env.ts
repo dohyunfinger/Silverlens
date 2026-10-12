@@ -51,6 +51,53 @@ export function getGeminiConfig() {
   };
 }
 
+/** 한국어 기본 목소리: ElevenLabs Voice Library "Anna Kim - Tender, Calm and Clear". */
+const DEFAULT_ELEVENLABS_VOICE_KO = "uyVNoMrnUku1dZyVEXwD";
+/**
+ * Voice Library 목소리는 유료 요금제에서만 API로 쓸 수 있다.
+ * 무료 요금제에서는 ElevenLabs 기본 목소리 "Sarah - Mature, Reassuring"로 대신 읽는다.
+ */
+const DEFAULT_ELEVENLABS_FREE_VOICE_KO = "EXAVITQu4vr4xnSDxMaL";
+const DEFAULT_ELEVENLABS_MODEL = "eleven_multilingual_v2";
+/** 건강 안내라 매번 같은 톤으로, 과장 없이, 어르신이 듣기 편한 속도로 읽는다. */
+const ELEVENLABS_VOICE_SETTINGS = {
+  stability: 0.65,
+  similarity_boost: 0.75,
+  style: 0,
+  speed: 0.9,
+};
+
+/**
+ * ElevenLabs 나레이션 설정. 키가 없으면 null을 돌려 Gemini TTS만 쓴다.
+ *
+ * 한국어 목소리로 영어·일본어를 읽으면 한국어 억양이 섞이므로
+ * 영어·일본어는 목소리 ID를 따로 지정했을 때만 ElevenLabs를 쓴다.
+ * 언어마다 앞에서부터 시도할 목소리 목록을 돌려준다.
+ */
+export function getElevenLabsConfig() {
+  const apiKey = process.env.ELEVENLABS_API_KEY?.trim();
+  if (!apiKey) return null;
+
+  const voices: Record<string, Array<string | undefined>> = {
+    "ko-KR": [
+      process.env.ELEVENLABS_VOICE_ID_KO?.trim() || DEFAULT_ELEVENLABS_VOICE_KO,
+      process.env.ELEVENLABS_FREE_VOICE_ID_KO?.trim() ||
+        DEFAULT_ELEVENLABS_FREE_VOICE_KO,
+    ],
+    "en-US": [process.env.ELEVENLABS_VOICE_ID_EN?.trim()],
+    "ja-JP": [process.env.ELEVENLABS_VOICE_ID_JA?.trim()],
+  };
+
+  return {
+    apiKey,
+    model: process.env.ELEVENLABS_MODEL?.trim() || DEFAULT_ELEVENLABS_MODEL,
+    voiceSettings: ELEVENLABS_VOICE_SETTINGS,
+    voicesFor: (language: string) => [
+      ...new Set((voices[language] ?? []).filter((id): id is string => Boolean(id))),
+    ],
+  };
+}
+
 /**
  * 데이터 점검 화면(/log)과 그 API(/api/log)를 열어 둘지 판단한다.
  *

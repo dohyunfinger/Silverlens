@@ -91,6 +91,7 @@ export async function GET(request: Request) {
       geminiTtsModel:
         process.env.GEMINI_TTS_MODEL ?? "기본값(gemini-2.5-flash-preview-tts)",
       dialectApiUrl: process.env.NEXT_PUBLIC_DIALECT_API_URL ?? "미설정",
+      elevenLabsApiKey: process.env.ELEVENLABS_API_KEY ? "설정됨" : "없음",
     },
     modelCooldowns: getGeminiModelCooldowns(),
     narrationCache: getNarrationCacheStats(),
