@@ -366,8 +366,19 @@ export function filterStatedHealthIds(
  * 프롬프트에 붙일 건강정보 카탈로그를 "ID: 이름들" 한 줄씩으로 만든다.
  * JSON 객체 그대로 보내면 키 이름이 반복돼 토큰이 크게 늘고 응답이 느려진다.
  */
-export function getCompactHealthCatalogForPrompt() {
+export function getCompactHealthCatalogForPrompt(text?: string) {
+  const normalizedText = text === undefined ? "" : normalize(text);
   return getHealthCatalogForPrompt()
+    // text 를 주면 그 글에 이름이 나온 항목만 남긴다. 내 정보에 넣을 항목은 어차피
+    // filterStatedHealthIds 가 글에 나온 것만 받으므로, 나머지를 보내 봐야 지시문만 길어진다.
+    .filter((term) => {
+      if (text === undefined) return true;
+      const healthTerm = getHealthTerm(term.id);
+      return Boolean(
+        healthTerm &&
+          candidateNames(healthTerm).some((name) => mentionsTerm(text, normalizedText, name)),
+      );
+    })
     .map((term) => {
       const names = [...new Set([...Object.values(term.labels), ...term.aliases])];
       return `${term.id}: ${names.join(", ")}`;

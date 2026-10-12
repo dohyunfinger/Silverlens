@@ -75,7 +75,8 @@ export default function RootLayout({
       <body
         className={`${geistSans.variable} ${geistMono.variable} antialiased`}
       >
-        {children}
+        {/* PC에서는 이 상자가 휴대폰 폭 화면의 스크롤을 맡는다(globals.css 끝 참고). */}
+        <div className="phone-frame-scroll">{children}</div>
       </body>
     </html>
   );

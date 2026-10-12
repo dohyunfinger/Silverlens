@@ -11,6 +11,7 @@ import {
 } from "react";
 import ReactMarkdown from "react-markdown";
 import { getEntryScreen } from "./entryScreen";
+import { matchesSearch } from "./chosung";
 import { appendConversationTurn, newConversationId, restoreConversations, type ConversationRoom, type ConversationTopic } from "./conversations";
 import {
   clearPendingPhotos,
@@ -52,11 +53,21 @@ type ChatTurn = {
   createdAt?: number;
   /** 요리 방법 답변일 때만 있다. 유튜브 검색 결과로 이어 준다. */
   videoSearchQuery?: string;
+  /** 답에 쓰인 참고 자료 종류. 내부 자료를 안 썼으면 "general"(AI 일반 지식). */
+  sources?: AnswerSource[];
   pages: string[];
   attachmentLabels: string[];
   riskLevel: "danger" | "caution" | "safe";
   warningMessage: string;
 };
+type AnswerSource = "food" | "dialect" | "mfds" | "general";
+const ANSWER_SOURCES: AnswerSource[] = ["food", "dialect", "mfds", "general"];
+function cleanAnswerSources(value: unknown): AnswerSource[] | undefined {
+  const sources = stringArray(value).filter((item): item is AnswerSource =>
+    ANSWER_SOURCES.includes(item as AnswerSource),
+  );
+  return sources.length > 0 ? [...new Set(sources)] : undefined;
+}
 type AnswerCard = {
   id: string;
   turnId: string;
@@ -788,6 +799,7 @@ function sanitizeChatTurns(value: unknown): ChatTurn[] {
         typeof turn.videoSearchQuery === "string" && turn.videoSearchQuery.trim()
           ? turn.videoSearchQuery.trim().slice(0, 40)
           : undefined,
+      sources: cleanAnswerSources(turn.sources),
       pages: stringArray(turn.pages),
       attachmentLabels: stringArray(turn.attachmentLabels),
       riskLevel: (turn.riskLevel === "danger" || turn.riskLevel === "caution"
@@ -997,7 +1009,14 @@ const uiCopy = {
     skipStep: "이 질문 건너뛰기",
     directInput: "+ 직접 입력",
     directInputClose: "− 목록 닫기",
-    pickerHint: "묶음 제목을 누르면 항목이 펼쳐집니다.",
+    pickerHint: "묶음 제목을 누르거나, 위 칸에 이름이나 초성(예: ㄷㄴ)을 적어 찾으세요.",
+    searchResults: "찾은 항목",
+    chooseLanguageFirst: "먼저 위에서 언어를 하나 골라 주세요.",
+    sourceLabel: "참고한 자료",
+    sourceFood: "실버렌즈 식품·안전 자료",
+    sourceDialect: "국립국어원 우리말샘",
+    sourceMfds: "식약처 의약품 낱알식별 정보",
+    sourceGeneral: "AI 일반 지식(틀릴 수 있어요)",
     clearSelection: "선택 모두 지우기",
     selectedSummary: "{count}개 선택",
     voiceInput: "말해서 입력",
@@ -1192,7 +1211,14 @@ const uiCopy = {
     skipStep: "Skip this question",
     directInput: "+ Type directly",
     directInputClose: "− Close the list",
-    pickerHint: "Tap a group title to open its items.",
+    pickerHint: "Tap a group title, or type a name in the box above to find it.",
+    searchResults: "Matching items",
+    chooseLanguageFirst: "Please choose a language above first.",
+    sourceLabel: "Based on",
+    sourceFood: "SilverLens food and safety data",
+    sourceDialect: "National Institute of Korean Language (Urimalsaem)",
+    sourceMfds: "MFDS pill identification data",
+    sourceGeneral: "General AI knowledge (may be wrong)",
     clearSelection: "Clear all selections",
     selectedSummary: "{count} selected",
     voiceInput: "Speak to enter",
@@ -1387,7 +1413,14 @@ const uiCopy = {
     skipStep: "この質問をとばす",
     directInput: "+ 直接入力",
     directInputClose: "− 一覧を閉じる",
-    pickerHint: "グループの見出しを押すと項目が開きます。",
+    pickerHint: "グループの見出しを押すか、上の欄に名前を書いて探してください。",
+    searchResults: "見つかった項目",
+    chooseLanguageFirst: "先に上から言語を一つ選んでください。",
+    sourceLabel: "参考にした資料",
+    sourceFood: "SilverLens 食品・安全データ",
+    sourceDialect: "韓国国立国語院 ウリマルセム",
+    sourceMfds: "韓国食品医薬品安全処 錠剤識別情報",
+    sourceGeneral: "AIの一般知識（間違うことがあります）",
     clearSelection: "選択をすべて消す",
     selectedSummary: "{count}件 選択",
     voiceInput: "話して入力",
@@ -3147,6 +3180,15 @@ function HealthPickerCard({
   recordDisabled: boolean;
 }) {
   const hasSelection = selectedIds.length > 0;
+  const [query, setQuery] = useState("");
+  const suggestions = query.trim()
+    ? options.filter((item) => matchesSearch(item.label, query)).slice(0, 8)
+    : [];
+  const pickSuggestion = (id: string) => {
+    if (!selectedIds.includes(id)) onToggleId(id);
+    setQuery("");
+    inputRef.current?.focus();
+  };
   const pickerRef = useRef<HTMLDivElement | null>(null);
   const inputRef = useRef<HTMLInputElement | null>(null);
   useEffect(() => {
@@ -3213,17 +3255,46 @@ function HealthPickerCard({
           <input
             ref={inputRef}
             placeholder={kind === "allergy" ? copy.allergyPlaceholder : copy.conditionPlaceholder}
-            list={datalistId}
-            onKeyDown={onAddTag}
+            value={query}
+            onChange={(event) => setQuery(event.target.value)}
+            onKeyDown={(event) => {
+              if (event.key !== "Enter" || event.nativeEvent.isComposing) return;
+              // 목록에서 찾은 항목이 있으면 그것을 고른다. "ㄷㄴ" 같은 초성이 그대로 등록되지 않게 한다.
+              if (suggestions.length > 0) {
+                event.preventDefault();
+                pickSuggestion(suggestions[0].id);
+                return;
+              }
+              onAddTag(event);
+              setQuery("");
+            }}
             aria-label={inputLabel}
+            aria-describedby={`${datalistId}-hint`}
           />
-          <datalist id={datalistId}>
-            {options.map((item) => (
-              <option key={item.id} value={item.label} />
-            ))}
-          </datalist>
+          {/*
+            휴대폰 기본 자동완성(datalist)은 글자가 작고 초성으로 찾지 못한다.
+            "ㄷㄴ"처럼 초성만 쳐도 찾게 큰 버튼으로 바로 보여 준다.
+          */}
+          {suggestions.length > 0 && (
+            <div className="health-suggestions" aria-label={copy.searchResults}>
+              {suggestions.map((item) => {
+                const picked = selectedIds.includes(item.id);
+                return (
+                  <button
+                    key={item.id}
+                    type="button"
+                    className={picked ? "selected" : ""}
+                    aria-pressed={picked}
+                    onClick={() => pickSuggestion(item.id)}
+                  >
+                    <span aria-hidden="true">{picked ? "✓" : "+"}</span> {item.label}
+                  </button>
+                );
+              })}
+            </div>
+          )}
           <div className="health-picker-head">
-            <small>{copy.pickerHint}</small>
+            <small id={`${datalistId}-hint`}>{copy.pickerHint}</small>
             <button
               type="button"
               className="health-clear"
@@ -3420,6 +3491,8 @@ export default function SilverLensApp({
   useEffect(() => {
     if (screen !== "setup" || (profileCompleted && !editingProfile)) return;
     window.scrollTo({ top: 0, behavior: "instant" });
+    // PC에서는 휴대폰 폭 화면 상자가 따로 스크롤된다.
+    document.querySelector(".phone-frame-scroll")?.scrollTo({ top: 0, behavior: "instant" });
     const question = profileQuestionRef.current?.querySelector<HTMLElement>("legend, .voice-choice h2, .health-card h2, .health-card h3");
     if (question) {
       question.tabIndex = -1;
@@ -5244,6 +5317,7 @@ export default function SilverLensApp({
         conversationTitle?: string;
         summary?: string;
         videoSearchQuery?: string;
+        sources?: string[];
         riskLevel?: "danger" | "caution" | "safe";
         warningMessage?: string;
         profileAllergyIds?: string[];
@@ -5292,6 +5366,7 @@ export default function SilverLensApp({
           typeof payload.videoSearchQuery === "string" && payload.videoSearchQuery.trim()
             ? payload.videoSearchQuery.trim().slice(0, 40)
             : undefined,
+        sources: cleanAnswerSources(payload.sources),
         pages: splitAnswerIntoPages(payload.summary?.trim() || payload.answer.split(/\n\s*\n/)[0]),
         attachmentLabels,
         riskLevel: payload.riskLevel ?? "safe",
@@ -5888,7 +5963,7 @@ export default function SilverLensApp({
       ? { title: "会話履歴", all: "すべて", food: "食べ物", medicine: "薬", health: "健康", search: "会話を検索", empty: "会話はまだありません", none: "会話が見つかりません", start: "新しい質問", help: "会話はこの端末に保存されます。" }
       : { title: "Previous conversations", all: "All", food: "Food", medicine: "Medicine", health: "Health", search: "Search conversations", empty: "No conversations yet", none: "No matching conversations", start: "New question", help: "Conversations are saved on this device." };
     const filtered = rooms.filter((room) => (historyTopic === "all" || room.topic === historyTopic) &&
-      `${room.title} ${room.turns.map((turn) => `${turn.question} ${turn.answer}`).join(" ")}`.toLocaleLowerCase().includes(historySearch.toLocaleLowerCase()));
+      matchesSearch(`${room.title} ${room.turns.map((turn) => `${turn.question} ${turn.answer}`).join(" ")}`, historySearch));
     return <div className="app-shell history-screen">
       <Sidebar active="history" onNavigate={navigate} copy={activeCopy} />
       <main className="workspace conversation-history">
@@ -5985,7 +6060,13 @@ export default function SilverLensApp({
                 <div className="assistant-message-body">
                   <div className="assistant-identity">{activeLanguage === "ko-KR" ? "실버렌즈 AI" : "SilverLens AI"}</div>
                   <div className="assistant-bubble" tabIndex={-1} ref={turnIndex === chatTurns.length - 1 && !pendingQuestion ? latestAnswerRef : undefined}>
-                    {turn.warningMessage && <div className={`answer-warning ${turn.riskLevel}`}><p>{turn.warningMessage}</p></div>}
+                    {turn.warningMessage && <div className={`answer-warning ${turn.riskLevel}`}>
+                      {/* 색만으로 구분하면 색약이 있는 분은 알기 어렵다. 위험·주의를 글자로도 붙인다. */}
+                      {(turn.riskLevel === "danger" || turn.riskLevel === "caution") && <strong className={`risk-badge ${turn.riskLevel}`}>
+                        <span aria-hidden="true">{turn.riskLevel === "danger" ? "⛔" : "⚠"}</span> {turn.riskLevel === "danger" ? activeCopy.riskDanger : activeCopy.riskCaution}
+                      </strong>}
+                      <p>{turn.warningMessage}</p>
+                    </div>}
                     <div className="answer-markdown"><ReactMarkdown>{turn.summary || turn.answer.split(/\n\s*\n/)[0]}</ReactMarkdown></div>
                     {turn.answer.trim() !== (turn.summary || turn.answer.split(/\n\s*\n/)[0]).trim() && <details className="answer-details">
                       <summary>{activeLanguage === "ko-KR" ? "자세히 보기" : activeLanguage === "ja-JP" ? "詳しく見る" : "See details"}<span aria-hidden="true">⌄</span></summary>
@@ -6009,6 +6090,11 @@ export default function SilverLensApp({
                     <LineIcon name="play" />
                     <span>{activeCopy.watchVideo.replace("{query}", turn.videoSearchQuery)}</span>
                   </a>}
+                  {turn.sources && <p className="answer-sources">
+                    <LineIcon name="shield" /> {activeCopy.sourceLabel}: {turn.sources.map((source) => activeCopy[
+                      source === "food" ? "sourceFood" : source === "dialect" ? "sourceDialect" : source === "mfds" ? "sourceMfds" : "sourceGeneral"
+                    ]).join(" · ")}
+                  </p>}
                   {turnTime(turn) && <time className="chat-message-time assistant-time">{turnTime(turn)}</time>}
                   {Boolean(turn.followUpQuestions?.length) && <div className="answer-followups" aria-label={activeCopy.quickAskTitle}>
                     <p>{activeCopy.quickAskTitle}</p>
@@ -6416,6 +6502,7 @@ export default function SilverLensApp({
           </div>
         </fieldset>
         <div className="wizard-finish language-navigation">
+          {!language && <p className="wizard-hint" role="status">{activeCopy.chooseLanguageFirst}</p>}
           <button className="start-button" disabled={!language} onClick={advanceProfileWizard}>{activeCopy.next}</button>
           {!profileCompleted && !editingProfile && <button type="button" className="wizard-skip" onClick={finishProfileWizard}>
             {activeLanguage === "ko-KR" ? "모두 건너뛰기" : activeLanguage === "ja-JP" ? "すべてスキップ" : "Skip all"}

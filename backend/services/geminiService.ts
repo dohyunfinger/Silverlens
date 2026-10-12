@@ -147,6 +147,8 @@ export type SeniorAnswerResult = {
   summary?: string;
   /** 요리 방법 질문일 때만 채운다. 화면이 유튜브 검색 결과로 이어 주는 검색어다. */
   videoSearchQuery?: string;
+  /** 이 답에 실제로 쓰인 참고 자료. 화면 답변 아래 "참고한 자료"로 보여 준다. */
+  sources?: Array<"food" | "dialect" | "mfds" | "general">;
 };
 
 type GeminiResponse = {
@@ -563,7 +565,8 @@ export async function generateSeniorFriendlyAnswer(
     .join("\n");
   const selectedLanguage = toHealthLanguage(profile.language);
   // 짧은 한 줄 형식으로 보낸다. JSON 그대로면 프롬프트가 두 배 가까이 커진다.
-  const healthCatalog = getCompactHealthCatalogForPrompt();
+  // 질문에 이름이 나온 항목만 보낸다. 전체(약 1만 6천 자)를 보내면 지시문이 2.5배로 늘어 답이 느려진다.
+  const healthCatalog = getCompactHealthCatalogForPrompt(message);
 
   const profileAllergies =
     profile.allergies ??
@@ -725,7 +728,7 @@ export async function generateSeniorFriendlyAnswer(
     `어르신이 음성으로 남긴 상세 메모: ${
       healthNoteLines.length > 0 ? JSON.stringify(healthNoteLines) : "없음"
     }`,
-    `건강정보 선택 목록 DATA(ID: 이름들):\n${healthCatalog}`,
+    `건강정보 선택 목록 DATA(ID: 이름들, 질문에 나온 항목만):\n${healthCatalog || "없음"}`,
     `이전 대화: ${JSON.stringify(conversationHistory)}`,
     `질문에서 찾은 방언 참고: ${JSON.stringify(knowledge.dialectHints)}`,
     `질문에서 찾은 외래어·별칭 참고: ${JSON.stringify(knowledge.foodAliasHints)}`,
@@ -786,6 +789,9 @@ export async function generateSeniorFriendlyAnswer(
           temperature: 0.15,
           maxOutputTokens: 4096,
           responseMimeType: "application/json",
+          // 기본(깊은 생각)으로 두면 답 하나에 10초 넘게 걸렸다. 안전 판정은 코드 하한선이 함께 지키므로 낮춘다.
+          // 이 설정을 모르는 모델이면 geminiClient 가 빼고 다시 보낸다.
+          thinkingConfig: { thinkingLevel: "low" },
         },
       },
     });
@@ -801,7 +807,11 @@ export async function generateSeniorFriendlyAnswer(
     return parseStructuredAnswer(generated);
   };
 
+  const answerStartedAt = Date.now();
   let parsed = await requestAnswer([requestContent]);
+  console.info(
+    `[SilverLens] 답변 생성 ${((Date.now() - answerStartedAt) / 1000).toFixed(1)}초 · 지시문 ${prompt.length}자 · 사진 ${images.length}장`,
+  );
   /*
    * 참고 자료가 한국어라서, 영어·일본어를 골라도 한국어로 답하는 일이 있었다.
    * 특히 한도에 걸려 작은 예비 모델이 답하면 다시 써 달라고 해도 한국어로 돌아왔다.
@@ -834,6 +844,25 @@ export async function generateSeniorFriendlyAnswer(
     allergyConflictLabels,
     knowledge.riskFloorHits,
   );
+
+  /*
+   * 어르신은 "어디서 나온 말인지"를 보고 믿는다. 이번 질문에 실제로 걸린 내부 자료만 적고,
+   * 아무 자료도 쓰지 않았으면 AI 일반 지식이라고 솔직하게 적는다.
+   */
+  const sources: NonNullable<SeniorAnswerResult["sources"]> = [];
+  if (
+    knowledge.recipes.length > 0 ||
+    knowledge.foods.length > 0 ||
+    knowledge.globalDishes.length > 0 ||
+    knowledge.dishNameHints.length > 0 ||
+    knowledge.riskFloorHits.length > 0 ||
+    allergyConflictLabels.length > 0
+  ) {
+    sources.push("food");
+  }
+  if (knowledge.dialectHints.length > 0) sources.push("dialect");
+  if (medicineCandidateGroups.some((group) => group.candidates.length > 0)) sources.push("mfds");
+  result.sources = sources.length > 0 ? sources : ["general"];
 
   writeAnswerCache(cacheKey, result);
   return result;

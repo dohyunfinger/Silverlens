@@ -161,7 +161,8 @@ export async function callGeminiGenerateContent({
         break;
       }
 
-      if (response.status >= 500 && attempt === 0) {
+      // 503(사용량 폭주)은 잠깐 기다려도 대개 그대로라, 같은 모델을 다시 부르지 않고 바로 예비 모델로 넘긴다.
+      if (response.status >= 500 && response.status !== 503 && attempt === 0) {
         await wait(SERVER_ERROR_RETRY_DELAY_MS);
         continue;
       }

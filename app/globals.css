@@ -8216,3 +8216,172 @@ html[lang="ja-JP"] .answer-video-link {
   word-break: normal;
   line-break: strict;
 }
+
+/*
+ * PC에서도 휴대폰 화면으로 보여 준다.
+ * 화면 규칙은 build/mobile-only-media.mjs 가 휴대폰 기준으로 맞춰 두고,
+ * 넓은 화면에서는 가운데 휴대폰 폭(430px) 기둥 안에만 그린다.
+ *
+ * body 에 transform 을 주면 position: fixed 인 하단 메뉴·입력창이 화면 전체가 아니라
+ * 이 기둥을 기준으로 붙는다. 그래서 body 는 화면 높이로 고정하고, 실제 스크롤은
+ * 안쪽 .phone-frame-scroll 이 맡는다(body 가 스크롤되면 고정 요소까지 같이 밀려 올라간다).
+ * 이 조건은 실제 화면 폭으로 판단해야 하므로 위 플러그인이 계산하지 않는다.
+ */
+@media (min-width: 521px) {
+  html {
+    height: 100%;
+    overflow: hidden;
+    background: #e4e9f1;
+  }
+  body {
+    width: 430px;
+    height: 100dvh;
+    margin: 0 auto;
+    overflow: hidden;
+    transform: translateZ(0);
+    box-shadow: 0 0 0 1px #d3dae6, 0 24px 60px rgba(20, 40, 80, .16);
+  }
+  .phone-frame-scroll {
+    height: 100%;
+    overflow-x: hidden;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+  }
+}
+
+/* ===== 어르신 접근성 기준 (글자 16px 이상 · 대비 4.5:1 이상 · 누르는 곳 44px 이상) ===== */
+
+/* 회색 안내 글자가 연한 바탕에서 4.3:1 로 기준(4.5:1)에 조금 못 미쳤다. 한 단계 진하게. */
+:root {
+  --toss-muted: #5b6676;
+}
+/* 단계 번호(STEP 03·04)는 장식 색 그대로면 3.4:1 이라 글자만 진하게 섞는다. */
+.about-workflow-card .about-step,
+.about-guide-head .about-step {
+  color: color-mix(in srgb, var(--flow-b, var(--guide-b, #1b64da)) 72%, #000);
+}
+
+/* 16px 미만이던 글자들 */
+.medical-note,
+.health-language-note,
+.speed-control small,
+.health-picker-head small,
+.health-clear,
+.age-note,
+.about-section-badge,
+.about-guide-tips-label,
+.about-team-title,
+.about-team li span,
+.about-photo-story figcaption span,
+.chat-date-divider span,
+.chat-message-time,
+.room-date,
+.room-date span,
+.room-date time {
+  font-size: 16px;
+}
+.speed-control > div > span,
+.health-group summary em {
+  font-size: 16px;
+}
+.chat-layout .fixed-composer .composer-tool strong,
+.chat-layout .chat-screen .fixed-composer .composer-tool strong {
+  font-size: 16px;
+  line-height: 1.15;
+}
+
+/* 44px 보다 작던 누르는 곳 */
+.health-clear {
+  min-height: 44px;
+  padding-inline: 14px;
+}
+.about-bar-brand,
+.about-lang-item,
+.about-bar-cta {
+  min-width: 44px;
+  min-height: 44px;
+}
+
+/* 초성 검색 결과: 입력칸 바로 아래 큰 버튼으로 보여 준다. */
+.health-suggestions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+}
+.health-suggestions button {
+  min-height: 48px;
+  padding: 10px 16px;
+  border: 1.5px solid #c9d8ff;
+  border-radius: 14px;
+  background: #fff;
+  color: #1b3f86;
+  font-size: 18px;
+  font-weight: 800;
+  word-break: keep-all;
+}
+.health-suggestions button.selected {
+  border-color: #1b64da;
+  background: #e8f3ff;
+}
+
+/* 위험·주의를 색뿐 아니라 글자로도 보여 준다. */
+.answer-warning .risk-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 6px;
+  padding: 4px 12px;
+  border-radius: 999px;
+  font-size: 17px;
+  font-weight: 900;
+}
+.answer-warning .risk-badge.danger {
+  background: #b42318;
+  color: #fff;
+}
+.answer-warning .risk-badge.caution {
+  background: #704600;
+  color: #fff;
+}
+
+/* 비활성 버튼은 왜 못 누르는지 함께 알린다. 글자도 읽히게 대비를 올린다. */
+.wizard-hint {
+  margin: 0 0 4px;
+  color: #3d4a5c;
+  font-size: 17px;
+  font-weight: 700;
+  text-align: center;
+  word-break: keep-all;
+}
+.profile-wizard .start-button:disabled {
+  background: #dfe5ef;
+  color: #4d5868;
+  opacity: 1;
+}
+
+/* 답변 아래 "참고한 자료" */
+.answer-sources {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 4px 6px;
+  margin: 10px 0 0;
+  color: #3d4a5c;
+  font-size: 16px;
+  line-height: 1.5;
+  word-break: keep-all;
+}
+.answer-sources .line-icon {
+  color: #1b64da;
+  font-size: 18px;
+}
+html[lang="ja-JP"] .answer-sources,
+html[lang="ja-JP"] .health-suggestions button,
+html[lang="ja-JP"] .wizard-hint {
+  word-break: normal;
+  line-break: strict;
+}
+.about-photo-story figcaption > span,
+.about-care-story figcaption > span {
+  font-size: 16px;
+}

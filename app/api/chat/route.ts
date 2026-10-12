@@ -198,6 +198,7 @@ export async function POST(request: Request) {
       answer: result.answer,
       followUpQuestions: result.followUpQuestions ?? [],
       videoSearchQuery: result.videoSearchQuery,
+      sources: result.sources,
       conversationTitle: result.conversationTitle,
       summary: result.summary,
       riskLevel: result.riskLevel,
