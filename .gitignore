@@ -41,6 +41,8 @@
 *.webm
 *.wav
 *.mp3
+# 미리 만든 안내 음성은 배포에 필요하므로 저장소에 포함한다 (npm run narration:guide)
+!/public/narration/**/*.mp3
 
 # environment variables
 .env
